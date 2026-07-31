@@ -20,6 +20,13 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
+- name: 🧠 AI 服务
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
 - name: 🔎 Google
   type: select
   proxies:
@@ -55,6 +62,13 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
+- name: 🗣 社交媒体
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
 - name: 📲 聊天软件
   type: select
   proxies:
@@ -70,6 +84,13 @@ proxy-groups:
   use:
   - subscription
 - name: 🎙 Discord
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🧑‍💻 开发服务
   type: select
   proxies:
   - ♻️ 手动切换
@@ -161,13 +182,6 @@ proxy-groups:
   use:
   - subscription
 - name: 🎬 PrimeVideo
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🎬 EMBY
   type: select
   proxies:
   - ♻️ 手动切换
@@ -315,6 +329,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/direct-override.yaml
     path: ./ruleset/direct-override.yaml
     interval: 86400
+  private:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/private.yaml
+    path: ./ruleset/private.yaml
+    interval: 86400
   openai:
     type: http
     behavior: classical
@@ -328,6 +349,13 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/claude.yaml
     path: ./ruleset/claude.yaml
+    interval: 86400
+  ai-platforms:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/ai-platforms.yaml
+    path: ./ruleset/ai-platforms.yaml
     interval: 86400
   onedrive:
     type: http
@@ -357,12 +385,47 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/mail.yaml
     path: ./ruleset/mail.yaml
     interval: 86400
-  messaging:
+  line:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/messaging.yaml
-    path: ./ruleset/messaging.yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/line.yaml
+    path: ./ruleset/line.yaml
+    interval: 86400
+  kakao-talk:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/kakao-talk.yaml
+    path: ./ruleset/kakao-talk.yaml
+    interval: 86400
+  whatsapp:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/whatsapp.yaml
+    path: ./ruleset/whatsapp.yaml
+    interval: 86400
+  telegram:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/telegram.yaml
+    path: ./ruleset/telegram.yaml
+    interval: 86400
+  social-platforms:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/social-platforms.yaml
+    path: ./ruleset/social-platforms.yaml
+    interval: 86400
+  developer-platforms:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/developer-platforms.yaml
+    path: ./ruleset/developer-platforms.yaml
     interval: 86400
   game-download:
     type: http
@@ -434,12 +497,12 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/youtube.yaml
     path: ./ruleset/youtube.yaml
     interval: 86400
-  music:
+  tidal:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/music.yaml
-    path: ./ruleset/music.yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/tidal.yaml
+    path: ./ruleset/tidal.yaml
     interval: 86400
   disney-plus:
     type: http
@@ -461,13 +524,6 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/hbo-max.yaml
     path: ./ruleset/hbo-max.yaml
-    interval: 86400
-  emby:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/emby.yaml
-    path: ./ruleset/emby.yaml
     interval: 86400
   dazn:
     type: http
@@ -504,12 +560,33 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/iqiyi.yaml
     path: ./ruleset/iqiyi.yaml
     interval: 86400
-  music-2:
+  spotify:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/music-2.yaml
-    path: ./ruleset/music-2.yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/spotify.yaml
+    path: ./ruleset/spotify.yaml
+    interval: 86400
+  spotify-2:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/spotify-2.yaml
+    path: ./ruleset/spotify-2.yaml
+    interval: 86400
+  qobuz:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/qobuz.yaml
+    path: ./ruleset/qobuz.yaml
+    interval: 86400
+  apple-music:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/apple-music.yaml
+    path: ./ruleset/apple-music.yaml
     interval: 86400
   tiktok:
     type: http
@@ -604,13 +681,20 @@ rule-providers:
     interval: 86400
 rules:
 - RULE-SET,direct-override,DIRECT
+- RULE-SET,private,DIRECT
 - RULE-SET,openai,🧲 OpenAI
 - RULE-SET,claude,🧲 Claude
+- RULE-SET,ai-platforms,🧠 AI 服务
 - RULE-SET,onedrive,🔖 OneDrive
 - RULE-SET,discord,🎙 Discord
 - RULE-SET,instagram,📲 Instagram
 - RULE-SET,mail,📪 邮件服务
-- RULE-SET,messaging,📲 聊天软件
+- RULE-SET,line,📲 聊天软件
+- RULE-SET,kakao-talk,📲 聊天软件
+- RULE-SET,whatsapp,📲 聊天软件
+- RULE-SET,telegram,📲 聊天软件
+- RULE-SET,social-platforms,🗣 社交媒体
+- RULE-SET,developer-platforms,🧑‍💻 开发服务
 - RULE-SET,game-download,🎮 游戏下载
 - RULE-SET,game-platform,🎮 游戏平台
 - RULE-SET,media-korea,🎬 韩国媒体
@@ -621,17 +705,19 @@ rules:
 - RULE-SET,bahamut,🎬 巴哈姆特
 - RULE-SET,media-japan,🎬 日本媒体
 - RULE-SET,youtube,🎬 YouTube
-- RULE-SET,music,🎵 音乐平台
+- RULE-SET,tidal,🎵 音乐平台
 - RULE-SET,disney-plus,🎬 DisneyPlus
 - RULE-SET,hbo-go,🎬 HBOGO
 - RULE-SET,hbo-max,🎬 HBOMAX
-- RULE-SET,emby,🎬 EMBY
 - RULE-SET,dazn,🎬 Dazn
 - RULE-SET,apple-tv-plus,🎬 AppleTV+
 - RULE-SET,bilibili-sea,🎬 B站东南亚
 - RULE-SET,bilibili-hmt,🎬 B站港澳台
 - RULE-SET,iqiyi,🎬 爱奇艺
-- RULE-SET,music-2,🎵 音乐平台
+- RULE-SET,spotify,🎵 音乐平台
+- RULE-SET,spotify-2,🎵 音乐平台
+- RULE-SET,qobuz,🎵 音乐平台
+- RULE-SET,apple-music,🎵 音乐平台
 - RULE-SET,tiktok,🎶 TikTok
 - RULE-SET,netflix,🎬 Netflix
 - RULE-SET,icloud,☁️ iCloud

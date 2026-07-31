@@ -42,10 +42,8 @@ DOMAIN-SUFFIX,afp.com
 DOMAIN-SUFFIX,afpforum.com
 DOMAIN-SUFFIX,aiv-cdn.net
 DOMAIN-SUFFIX,aiv-delivery.net
-DOMAIN-SUFFIX,akamaized.net
 DOMAIN-SUFFIX,amazon.jobs
 DOMAIN-SUFFIX,amazonaws.co.uk
-DOMAIN-SUFFIX,amazonaws.com
 DOMAIN-SUFFIX,amazonprimevideo.cn
 DOMAIN-SUFFIX,amazonprimevideos.com
 DOMAIN-SUFFIX,amazonuniversity.jobs
@@ -148,7 +146,6 @@ DOMAIN-SUFFIX,channel4.com
 DOMAIN-SUFFIX,channel5.com
 DOMAIN-SUFFIX,chocotv.com.tw
 DOMAIN-SUFFIX,cinemax.com
-DOMAIN-SUFFIX,cloudfront.net
 DOMAIN-SUFFIX,cnbc.com
 DOMAIN-SUFFIX,cnbcfm.com
 DOMAIN-SUFFIX,cnn.com
@@ -157,9 +154,6 @@ DOMAIN-SUFFIX,cnn.it
 DOMAIN-SUFFIX,cnnarabic.com
 DOMAIN-SUFFIX,cnnlabs.com
 DOMAIN-SUFFIX,cnnmoney.ch
-DOMAIN-SUFFIX,cobeuz.fr
-DOMAIN-SUFFIX,cobuz.fr
-DOMAIN-SUFFIX,cobuzz.fr
 DOMAIN-SUFFIX,content.jwplatform.com
 DOMAIN-SUFFIX,control.kochava.com
 DOMAIN-SUFFIX,conviva.com
@@ -668,7 +662,6 @@ DOMAIN-SUFFIX,kktix.com
 DOMAIN-SUFFIX,kktv.com.tw
 DOMAIN-SUFFIX,kktv.me
 DOMAIN-SUFFIX,kmplayer.com
-DOMAIN-SUFFIX,kobuz.fr
 DOMAIN-SUFFIX,ktvu.com
 DOMAIN-SUFFIX,line-cdn.net
 DOMAIN-SUFFIX,line-scdn.net
@@ -857,7 +850,6 @@ DOMAIN-SUFFIX,primevideo.org
 DOMAIN-SUFFIX,primevideo.tv
 DOMAIN-SUFFIX,prod.hjholdings.tv
 DOMAIN-SUFFIX,pronstore.com
-DOMAIN-SUFFIX,pscdn.co
 DOMAIN-SUFFIX,pv-cdn.net
 DOMAIN-SUFFIX,q13.com
 DOMAIN-SUFFIX,q13fox.com
@@ -885,8 +877,6 @@ DOMAIN-SUFFIX,qobuz.ro
 DOMAIN-SUFFIX,qobuz.se
 DOMAIN-SUFFIX,qobuz.tv
 DOMAIN-SUFFIX,qobuz.us
-DOMAIN-SUFFIX,quobuz.com
-DOMAIN-SUFFIX,quobuz.fr
 DOMAIN-SUFFIX,racked.com
 DOMAIN-SUFFIX,radiyoyacuvoa.com
 DOMAIN-SUFFIX,realamericanstories.com
@@ -901,7 +891,6 @@ DOMAIN-SUFFIX,rprimelab.com
 DOMAIN-SUFFIX,rthk.hk
 DOMAIN-SUFFIX,rthk.org.hk
 DOMAIN-SUFFIX,s-nbcnews.com
-DOMAIN-SUFFIX,s.yimg.jp
 DOMAIN-SUFFIX,sbnation.com
 DOMAIN-SUFFIX,scdn.co
 DOMAIN-SUFFIX,screens-lab.jp
@@ -940,13 +929,11 @@ DOMAIN-SUFFIX,spotifycodes.com
 DOMAIN-SUFFIX,spotifyforbrands.com
 DOMAIN-SUFFIX,spotifyjobs.com
 DOMAIN-SUFFIX,spotifynewsroom.jp
-DOMAIN-SUFFIX,spotilocal.com
 DOMAIN-SUFFIX,star-brasil.com
 DOMAIN-SUFFIX,star-latam.com
 DOMAIN-SUFFIX,starwars.com
 DOMAIN-SUFFIX,starwarsgalacticstarcruiser.com
 DOMAIN-SUFFIX,starwarskids.com
-DOMAIN-SUFFIX,static-qobuz.com
 DOMAIN-SUFFIX,streaks.jp
 DOMAIN-SUFFIX,streamingdisney.net
 DOMAIN-SUFFIX,syfy.com

@@ -1,0 +1,1031 @@
+{
+  "schema_version": 1,
+  "baseline": "phase-2-post-migration",
+  "before_fixture_sha256": "7719de7335aa4af647914242bf1f7892b7477bad31407ef04c9e68bfb6fc883b",
+  "products": {
+    "core": {
+      "summary": {
+        "segments": 52,
+        "rulesets": 51,
+        "groups": 44,
+        "rules": 15412,
+        "destination_ip_rules": 2205,
+        "coverage": {
+          "global": {
+            "exact_occurrences": 1653,
+            "broad_coverage_occurrences": 1057,
+            "overlap_between_categories": 333,
+            "union": 2377
+          },
+          "within_same_segment": {
+            "exact_occurrences": 0,
+            "broad_coverage_occurrences": 937,
+            "overlap_between_categories": 0,
+            "union": 937
+          },
+          "cross_segment_only": {
+            "union": 1440
+          }
+        }
+      },
+      "cases": [
+        {
+          "id": "private-ip",
+          "input": {
+            "ip": "10.0.0.1"
+          },
+          "result": {
+            "slug": "private",
+            "target": "DIRECT",
+            "rule": "IP-CIDR,10.0.0.0/8,no-resolve"
+          }
+        },
+        {
+          "id": "private-router",
+          "input": {
+            "domain": "router.asus.com"
+          },
+          "result": {
+            "slug": "private",
+            "target": "DIRECT",
+            "rule": "DOMAIN,router.asus.com"
+          }
+        },
+        {
+          "id": "ai-cursor",
+          "input": {
+            "domain": "cursor.com"
+          },
+          "result": {
+            "slug": "ai-platforms",
+            "target": "🧠 AI 服务",
+            "rule": "DOMAIN-SUFFIX,cursor.com"
+          }
+        },
+        {
+          "id": "ai-huggingface",
+          "input": {
+            "domain": "huggingface.co"
+          },
+          "result": {
+            "slug": "ai-platforms",
+            "target": "🧠 AI 服务",
+            "rule": "DOMAIN-SUFFIX,huggingface.co"
+          }
+        },
+        {
+          "id": "ai-poe",
+          "input": {
+            "domain": "poe.com"
+          },
+          "result": {
+            "slug": "ai-platforms",
+            "target": "🧠 AI 服务",
+            "rule": "DOMAIN-SUFFIX,poe.com"
+          }
+        },
+        {
+          "id": "social-x",
+          "input": {
+            "domain": "x.com"
+          },
+          "result": {
+            "slug": "social-platforms",
+            "target": "🗣 社交媒体",
+            "rule": "DOMAIN-SUFFIX,x.com"
+          }
+        },
+        {
+          "id": "social-reddit",
+          "input": {
+            "domain": "reddit.com"
+          },
+          "result": {
+            "slug": "social-platforms",
+            "target": "🗣 社交媒体",
+            "rule": "DOMAIN-SUFFIX,reddit.com"
+          }
+        },
+        {
+          "id": "social-facebook",
+          "input": {
+            "domain": "facebook.com"
+          },
+          "result": {
+            "slug": "social-platforms",
+            "target": "🗣 社交媒体",
+            "rule": "DOMAIN-SUFFIX,facebook.com"
+          }
+        },
+        {
+          "id": "dev-github",
+          "input": {
+            "domain": "github.com"
+          },
+          "result": {
+            "slug": "developer-platforms",
+            "target": "🧑‍💻 开发服务",
+            "rule": "DOMAIN-SUFFIX,github.com"
+          }
+        },
+        {
+          "id": "dev-gitlab",
+          "input": {
+            "domain": "gitlab.com"
+          },
+          "result": {
+            "slug": "developer-platforms",
+            "target": "🧑‍💻 开发服务",
+            "rule": "DOMAIN-SUFFIX,gitlab.com"
+          }
+        },
+        {
+          "id": "dev-docker",
+          "input": {
+            "domain": "docker.com"
+          },
+          "result": {
+            "slug": "developer-platforms",
+            "target": "🧑‍💻 开发服务",
+            "rule": "DOMAIN-SUFFIX,docker.com"
+          }
+        },
+        {
+          "id": "dev-stackoverflow",
+          "input": {
+            "domain": "stackoverflow.com"
+          },
+          "result": {
+            "slug": "developer-platforms",
+            "target": "🧑‍💻 开发服务",
+            "rule": "DOMAIN-SUFFIX,stackoverflow.com"
+          }
+        },
+        {
+          "id": "line",
+          "input": {
+            "domain": "line.me"
+          },
+          "result": {
+            "slug": "line",
+            "target": "📲 聊天软件",
+            "rule": "DOMAIN-SUFFIX,line.me"
+          }
+        },
+        {
+          "id": "kakao",
+          "input": {
+            "domain": "kakao.com"
+          },
+          "result": {
+            "slug": "kakao-talk",
+            "target": "📲 聊天软件",
+            "rule": "DOMAIN-SUFFIX,kakao.com"
+          }
+        },
+        {
+          "id": "whatsapp",
+          "input": {
+            "domain": "whatsapp.com"
+          },
+          "result": {
+            "slug": "whatsapp",
+            "target": "📲 聊天软件",
+            "rule": "DOMAIN-SUFFIX,whatsapp.com"
+          }
+        },
+        {
+          "id": "telegram",
+          "input": {
+            "domain": "telegram.org"
+          },
+          "result": {
+            "slug": "telegram",
+            "target": "📲 聊天软件",
+            "rule": "DOMAIN-SUFFIX,telegram.org"
+          }
+        },
+        {
+          "id": "tidal",
+          "input": {
+            "domain": "tidal.com"
+          },
+          "result": {
+            "slug": "tidal",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,tidal.com"
+          }
+        },
+        {
+          "id": "spotify",
+          "input": {
+            "domain": "spotify.com"
+          },
+          "result": {
+            "slug": "spotify-2",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,spotify.com"
+          }
+        },
+        {
+          "id": "spotify-legacy",
+          "input": {
+            "domain": "pscdn.co"
+          },
+          "result": {
+            "slug": "final",
+            "target": "🐟 漏网之鱼",
+            "rule": "MATCH"
+          }
+        },
+        {
+          "id": "qobuz",
+          "input": {
+            "domain": "qobuz.com"
+          },
+          "result": {
+            "slug": "qobuz",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,qobuz.com"
+          }
+        },
+        {
+          "id": "qobuz-typo",
+          "input": {
+            "domain": "quobuz.com"
+          },
+          "result": {
+            "slug": "final",
+            "target": "🐟 漏网之鱼",
+            "rule": "MATCH"
+          }
+        },
+        {
+          "id": "apple-music",
+          "input": {
+            "domain": "music.apple.com"
+          },
+          "result": {
+            "slug": "apple-music",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,music.apple.com"
+          }
+        },
+        {
+          "id": "emby-community",
+          "input": {
+            "domain": "pub1.emby.wtf"
+          },
+          "result": {
+            "slug": "final",
+            "target": "🐟 漏网之鱼",
+            "rule": "MATCH"
+          }
+        },
+        {
+          "id": "openai-shared-statsig",
+          "input": {
+            "domain": "statsig.com"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,statsig.com"
+          }
+        },
+        {
+          "id": "openai-shared-intercom",
+          "input": {
+            "domain": "intercom.io"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,intercom.io"
+          }
+        },
+        {
+          "id": "claude-shared-storage",
+          "input": {
+            "domain": "storage.googleapis.com"
+          },
+          "result": {
+            "slug": "google",
+            "target": "🔎 Google",
+            "rule": "DOMAIN-SUFFIX,googleapis.com"
+          }
+        },
+        {
+          "id": "claude-shared-cloudflare",
+          "input": {
+            "domain": "cdn.cloudflare.net"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,cdn.cloudflare.net"
+          }
+        },
+        {
+          "id": "dazn-shared-yahoo",
+          "input": {
+            "domain": "s.yimg.jp"
+          },
+          "result": {
+            "slug": "yahoo",
+            "target": "🔎 Yahoo",
+            "rule": "DOMAIN-SUFFIX,yimg.jp"
+          }
+        },
+        {
+          "id": "shared-aws",
+          "input": {
+            "domain": "example.amazonaws.com"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,amazonaws.com"
+          }
+        },
+        {
+          "id": "shared-cloudfront",
+          "input": {
+            "domain": "example.cloudfront.net"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,cloudfront.net"
+          }
+        },
+        {
+          "id": "dazn-specific-cdn",
+          "input": {
+            "domain": "dcalivedazn.akamaized.net"
+          },
+          "result": {
+            "slug": "dazn",
+            "target": "🎬 Dazn",
+            "rule": "DOMAIN-SUFFIX,dcalivedazn.akamaized.net"
+          }
+        },
+        {
+          "id": "hbo-max",
+          "input": {
+            "domain": "hbomax.com"
+          },
+          "result": {
+            "slug": "hbo-max",
+            "target": "🎬 HBOMAX",
+            "rule": "DOMAIN-SUFFIX,hbomax.com"
+          }
+        },
+        {
+          "id": "hulu",
+          "input": {
+            "domain": "hulu.com"
+          },
+          "result": {
+            "slug": "hbo-max",
+            "target": "🎬 HBOMAX",
+            "rule": "DOMAIN-SUFFIX,hulu.com"
+          }
+        },
+        {
+          "id": "discovery",
+          "input": {
+            "domain": "discoveryplus.com"
+          },
+          "result": {
+            "slug": "hbo-max",
+            "target": "🎬 HBOMAX",
+            "rule": "DOMAIN-SUFFIX,discoveryplus.com"
+          }
+        },
+        {
+          "id": "japan-abema",
+          "input": {
+            "domain": "abema.tv"
+          },
+          "result": {
+            "slug": "media-japan",
+            "target": "🎬 日本媒体",
+            "rule": "DOMAIN-SUFFIX,abema.tv"
+          }
+        },
+        {
+          "id": "korea-wavve",
+          "input": {
+            "domain": "wavve.com"
+          },
+          "result": {
+            "slug": "media-korea",
+            "target": "🎬 韩国媒体",
+            "rule": "DOMAIN-SUFFIX,wavve.com"
+          }
+        },
+        {
+          "id": "taiwan-friday",
+          "input": {
+            "domain": "friday.tw"
+          },
+          "result": {
+            "slug": "media-taiwan",
+            "target": "🎬 台湾媒体",
+            "rule": "DOMAIN-SUFFIX,friday.tw"
+          }
+        },
+        {
+          "id": "apple-core",
+          "input": {
+            "domain": "apple.com"
+          },
+          "result": {
+            "slug": "apple",
+            "target": "🍎 苹果服务",
+            "rule": "DOMAIN-SUFFIX,apple.com"
+          }
+        },
+        {
+          "id": "apple-legacy-mail",
+          "input": {
+            "domain": "me.com"
+          },
+          "result": {
+            "slug": "icloud",
+            "target": "☁️ iCloud",
+            "rule": "DOMAIN-SUFFIX,me.com"
+          }
+        },
+        {
+          "id": "google-core",
+          "input": {
+            "domain": "google.com"
+          },
+          "result": {
+            "slug": "google",
+            "target": "🔎 Google",
+            "rule": "DOMAIN-SUFFIX,google.com"
+          }
+        },
+        {
+          "id": "alphabet-waymo",
+          "input": {
+            "domain": "waymo.com"
+          },
+          "result": {
+            "slug": "google",
+            "target": "🔎 Google",
+            "rule": "DOMAIN-SUFFIX,waymo.com"
+          }
+        },
+        {
+          "id": "community-vikacg",
+          "input": {
+            "domain": "vikacg.com"
+          },
+          "result": {
+            "slug": "final",
+            "target": "🐟 漏网之鱼",
+            "rule": "MATCH"
+          }
+        },
+        {
+          "id": "streaming-neulion",
+          "input": {
+            "domain": "neulion.com"
+          },
+          "result": {
+            "slug": "final",
+            "target": "🐟 漏网之鱼",
+            "rule": "MATCH"
+          }
+        },
+        {
+          "id": "final",
+          "input": {
+            "domain": "example.invalid"
+          },
+          "result": {
+            "slug": "final",
+            "target": "🐟 漏网之鱼",
+            "rule": "MATCH"
+          }
+        }
+      ]
+    },
+    "extended": {
+      "summary": {
+        "segments": 58,
+        "rulesets": 57,
+        "groups": 45,
+        "rules": 15518,
+        "destination_ip_rules": 2205,
+        "coverage": {
+          "global": {
+            "exact_occurrences": 1653,
+            "broad_coverage_occurrences": 1129,
+            "overlap_between_categories": 333,
+            "union": 2449
+          },
+          "within_same_segment": {
+            "exact_occurrences": 0,
+            "broad_coverage_occurrences": 1009,
+            "overlap_between_categories": 0,
+            "union": 1009
+          },
+          "cross_segment_only": {
+            "union": 1440
+          }
+        }
+      },
+      "cases": [
+        {
+          "id": "private-ip",
+          "input": {
+            "ip": "10.0.0.1"
+          },
+          "result": {
+            "slug": "private",
+            "target": "DIRECT",
+            "rule": "IP-CIDR,10.0.0.0/8,no-resolve"
+          }
+        },
+        {
+          "id": "private-router",
+          "input": {
+            "domain": "router.asus.com"
+          },
+          "result": {
+            "slug": "private",
+            "target": "DIRECT",
+            "rule": "DOMAIN,router.asus.com"
+          }
+        },
+        {
+          "id": "ai-cursor",
+          "input": {
+            "domain": "cursor.com"
+          },
+          "result": {
+            "slug": "ai-platforms",
+            "target": "🧠 AI 服务",
+            "rule": "DOMAIN-SUFFIX,cursor.com"
+          }
+        },
+        {
+          "id": "ai-huggingface",
+          "input": {
+            "domain": "huggingface.co"
+          },
+          "result": {
+            "slug": "ai-platforms",
+            "target": "🧠 AI 服务",
+            "rule": "DOMAIN-SUFFIX,huggingface.co"
+          }
+        },
+        {
+          "id": "ai-poe",
+          "input": {
+            "domain": "poe.com"
+          },
+          "result": {
+            "slug": "ai-platforms",
+            "target": "🧠 AI 服务",
+            "rule": "DOMAIN-SUFFIX,poe.com"
+          }
+        },
+        {
+          "id": "social-x",
+          "input": {
+            "domain": "x.com"
+          },
+          "result": {
+            "slug": "social-platforms",
+            "target": "🗣 社交媒体",
+            "rule": "DOMAIN-SUFFIX,x.com"
+          }
+        },
+        {
+          "id": "social-reddit",
+          "input": {
+            "domain": "reddit.com"
+          },
+          "result": {
+            "slug": "social-platforms",
+            "target": "🗣 社交媒体",
+            "rule": "DOMAIN-SUFFIX,reddit.com"
+          }
+        },
+        {
+          "id": "social-facebook",
+          "input": {
+            "domain": "facebook.com"
+          },
+          "result": {
+            "slug": "social-platforms",
+            "target": "🗣 社交媒体",
+            "rule": "DOMAIN-SUFFIX,facebook.com"
+          }
+        },
+        {
+          "id": "dev-github",
+          "input": {
+            "domain": "github.com"
+          },
+          "result": {
+            "slug": "developer-platforms",
+            "target": "🧑‍💻 开发服务",
+            "rule": "DOMAIN-SUFFIX,github.com"
+          }
+        },
+        {
+          "id": "dev-gitlab",
+          "input": {
+            "domain": "gitlab.com"
+          },
+          "result": {
+            "slug": "developer-platforms",
+            "target": "🧑‍💻 开发服务",
+            "rule": "DOMAIN-SUFFIX,gitlab.com"
+          }
+        },
+        {
+          "id": "dev-docker",
+          "input": {
+            "domain": "docker.com"
+          },
+          "result": {
+            "slug": "developer-platforms",
+            "target": "🧑‍💻 开发服务",
+            "rule": "DOMAIN-SUFFIX,docker.com"
+          }
+        },
+        {
+          "id": "dev-stackoverflow",
+          "input": {
+            "domain": "stackoverflow.com"
+          },
+          "result": {
+            "slug": "developer-platforms",
+            "target": "🧑‍💻 开发服务",
+            "rule": "DOMAIN-SUFFIX,stackoverflow.com"
+          }
+        },
+        {
+          "id": "line",
+          "input": {
+            "domain": "line.me"
+          },
+          "result": {
+            "slug": "line",
+            "target": "📲 聊天软件",
+            "rule": "DOMAIN-SUFFIX,line.me"
+          }
+        },
+        {
+          "id": "kakao",
+          "input": {
+            "domain": "kakao.com"
+          },
+          "result": {
+            "slug": "kakao-talk",
+            "target": "📲 聊天软件",
+            "rule": "DOMAIN-SUFFIX,kakao.com"
+          }
+        },
+        {
+          "id": "whatsapp",
+          "input": {
+            "domain": "whatsapp.com"
+          },
+          "result": {
+            "slug": "whatsapp",
+            "target": "📲 聊天软件",
+            "rule": "DOMAIN-SUFFIX,whatsapp.com"
+          }
+        },
+        {
+          "id": "telegram",
+          "input": {
+            "domain": "telegram.org"
+          },
+          "result": {
+            "slug": "telegram",
+            "target": "📲 聊天软件",
+            "rule": "DOMAIN-SUFFIX,telegram.org"
+          }
+        },
+        {
+          "id": "tidal",
+          "input": {
+            "domain": "tidal.com"
+          },
+          "result": {
+            "slug": "tidal",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,tidal.com"
+          }
+        },
+        {
+          "id": "spotify",
+          "input": {
+            "domain": "spotify.com"
+          },
+          "result": {
+            "slug": "spotify-2",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,spotify.com"
+          }
+        },
+        {
+          "id": "spotify-legacy",
+          "input": {
+            "domain": "pscdn.co"
+          },
+          "result": {
+            "slug": "spotify-legacy",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,pscdn.co"
+          }
+        },
+        {
+          "id": "qobuz",
+          "input": {
+            "domain": "qobuz.com"
+          },
+          "result": {
+            "slug": "qobuz",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,qobuz.com"
+          }
+        },
+        {
+          "id": "qobuz-typo",
+          "input": {
+            "domain": "quobuz.com"
+          },
+          "result": {
+            "slug": "qobuz-brand-defense-2",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,quobuz.com"
+          }
+        },
+        {
+          "id": "apple-music",
+          "input": {
+            "domain": "music.apple.com"
+          },
+          "result": {
+            "slug": "apple-music",
+            "target": "🎵 音乐平台",
+            "rule": "DOMAIN-SUFFIX,music.apple.com"
+          }
+        },
+        {
+          "id": "emby-community",
+          "input": {
+            "domain": "pub1.emby.wtf"
+          },
+          "result": {
+            "slug": "emby-community",
+            "target": "🎬 EMBY",
+            "rule": "DOMAIN-KEYWORD,emby"
+          }
+        },
+        {
+          "id": "openai-shared-statsig",
+          "input": {
+            "domain": "statsig.com"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,statsig.com"
+          }
+        },
+        {
+          "id": "openai-shared-intercom",
+          "input": {
+            "domain": "intercom.io"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,intercom.io"
+          }
+        },
+        {
+          "id": "claude-shared-storage",
+          "input": {
+            "domain": "storage.googleapis.com"
+          },
+          "result": {
+            "slug": "google",
+            "target": "🔎 Google",
+            "rule": "DOMAIN-SUFFIX,googleapis.com"
+          }
+        },
+        {
+          "id": "claude-shared-cloudflare",
+          "input": {
+            "domain": "cdn.cloudflare.net"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,cdn.cloudflare.net"
+          }
+        },
+        {
+          "id": "dazn-shared-yahoo",
+          "input": {
+            "domain": "s.yimg.jp"
+          },
+          "result": {
+            "slug": "yahoo",
+            "target": "🔎 Yahoo",
+            "rule": "DOMAIN-SUFFIX,yimg.jp"
+          }
+        },
+        {
+          "id": "shared-aws",
+          "input": {
+            "domain": "example.amazonaws.com"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,amazonaws.com"
+          }
+        },
+        {
+          "id": "shared-cloudfront",
+          "input": {
+            "domain": "example.cloudfront.net"
+          },
+          "result": {
+            "slug": "global-web",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,cloudfront.net"
+          }
+        },
+        {
+          "id": "dazn-specific-cdn",
+          "input": {
+            "domain": "dcalivedazn.akamaized.net"
+          },
+          "result": {
+            "slug": "dazn",
+            "target": "🎬 Dazn",
+            "rule": "DOMAIN-SUFFIX,dcalivedazn.akamaized.net"
+          }
+        },
+        {
+          "id": "hbo-max",
+          "input": {
+            "domain": "hbomax.com"
+          },
+          "result": {
+            "slug": "hbo-max",
+            "target": "🎬 HBOMAX",
+            "rule": "DOMAIN-SUFFIX,hbomax.com"
+          }
+        },
+        {
+          "id": "hulu",
+          "input": {
+            "domain": "hulu.com"
+          },
+          "result": {
+            "slug": "hbo-max",
+            "target": "🎬 HBOMAX",
+            "rule": "DOMAIN-SUFFIX,hulu.com"
+          }
+        },
+        {
+          "id": "discovery",
+          "input": {
+            "domain": "discoveryplus.com"
+          },
+          "result": {
+            "slug": "hbo-max",
+            "target": "🎬 HBOMAX",
+            "rule": "DOMAIN-SUFFIX,discoveryplus.com"
+          }
+        },
+        {
+          "id": "japan-abema",
+          "input": {
+            "domain": "abema.tv"
+          },
+          "result": {
+            "slug": "media-japan",
+            "target": "🎬 日本媒体",
+            "rule": "DOMAIN-SUFFIX,abema.tv"
+          }
+        },
+        {
+          "id": "korea-wavve",
+          "input": {
+            "domain": "wavve.com"
+          },
+          "result": {
+            "slug": "media-korea",
+            "target": "🎬 韩国媒体",
+            "rule": "DOMAIN-SUFFIX,wavve.com"
+          }
+        },
+        {
+          "id": "taiwan-friday",
+          "input": {
+            "domain": "friday.tw"
+          },
+          "result": {
+            "slug": "media-taiwan",
+            "target": "🎬 台湾媒体",
+            "rule": "DOMAIN-SUFFIX,friday.tw"
+          }
+        },
+        {
+          "id": "apple-core",
+          "input": {
+            "domain": "apple.com"
+          },
+          "result": {
+            "slug": "apple",
+            "target": "🍎 苹果服务",
+            "rule": "DOMAIN-SUFFIX,apple.com"
+          }
+        },
+        {
+          "id": "apple-legacy-mail",
+          "input": {
+            "domain": "me.com"
+          },
+          "result": {
+            "slug": "icloud",
+            "target": "☁️ iCloud",
+            "rule": "DOMAIN-SUFFIX,me.com"
+          }
+        },
+        {
+          "id": "google-core",
+          "input": {
+            "domain": "google.com"
+          },
+          "result": {
+            "slug": "google",
+            "target": "🔎 Google",
+            "rule": "DOMAIN-SUFFIX,google.com"
+          }
+        },
+        {
+          "id": "alphabet-waymo",
+          "input": {
+            "domain": "waymo.com"
+          },
+          "result": {
+            "slug": "google",
+            "target": "🔎 Google",
+            "rule": "DOMAIN-SUFFIX,waymo.com"
+          }
+        },
+        {
+          "id": "community-vikacg",
+          "input": {
+            "domain": "vikacg.com"
+          },
+          "result": {
+            "slug": "community-overrides",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,vikacg.com"
+          }
+        },
+        {
+          "id": "streaming-neulion",
+          "input": {
+            "domain": "neulion.com"
+          },
+          "result": {
+            "slug": "streaming-legacy",
+            "target": "🌏 国外网站",
+            "rule": "DOMAIN-SUFFIX,neulion.com"
+          }
+        },
+        {
+          "id": "final",
+          "input": {
+            "domain": "example.invalid"
+          },
+          "result": {
+            "slug": "final",
+            "target": "🐟 漏网之鱼",
+            "rule": "MATCH"
+          }
+        }
+      ]
+    }
+  }
+}

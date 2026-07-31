@@ -1,7 +1,8 @@
 # Rule Changes
 
-All dates below use the audit date **2026-07-30**. Canonical rule edits are made only under
-`sources/rules/`; generated products are rebuilt and independently validated after each batch.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 uses **2026-07-31**.
+Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
+independently validated after each batch.
 
 ## ER-001 — Canonical-source migration
 
@@ -207,14 +208,54 @@ Representative behavior:
 - `.gitattributes` forces LF for canonical and generated text on Windows and Linux.
 - Regression coverage increased from 11 to 20 tests, including mutation and failure-path tests.
 
+## ER-011 — Phase 2 scoped classification
+
+**Type:** product split, service classification, and first-match precision correction
+
+- Added explicit `core` and `optional` scope to every segment and policy group.
+- Split Messaging into LINE, Kakao, WhatsApp, and Telegram without changing their shared policy.
+- Split music into Tidal, Spotify, Qobuz, and Apple Music. Optional Spotify legacy and Qobuz
+  brand-defense entries remain in their original relative positions in Extended.
+- Added minimal AI, social, and developer policies, plus a `private` ruleset targeting `DIRECT`.
+- Moved Emby community, personal/community, and historical-streaming preferences out of Core.
+- Moved shared OpenAI/Claude dependencies to global routing and removed shared CDN roots from
+  `global-media`; service-specific CDN hosts remain specialized.
+- Removed 23 occurrences only when they were covered duplicates, overbroad keywords, shared
+  misclassification, or residual copies of stale entries already approved in ER-004.
+- Preserved Apple/Google aggregate rules pending separate complete line-by-line brand-defense and
+  legacy migrations; Phase 2 does not claim that work is complete.
+- Hardened the release gates after adversarial review: Core/Extended scope metrics are now frozen,
+  YAML/JSON duplicate keys and symbolic links are rejected, known credential formats are scanned,
+  every Subconverter control is checked even without regeneration, and Legacy importer output now
+  completes the standard generate/validate chain.
+
+Behavior examples:
+
+| Input | Before | Core after | Extended after |
+|---|---|---|---|
+| `10.0.0.1` | China web | DIRECT private | DIRECT private |
+| `cursor.com` | Global web | AI services | AI services |
+| `github.com` | Global web keyword | Developer services | Developer services |
+| `line.me` | Messaging | LINE slug / same policy | LINE slug / same policy |
+| `pscdn.co` | Music | Global media fallback | Spotify legacy / Music |
+| `pub1.emby.wtf` | EMBY | FINAL | Emby community / EMBY |
+| `statsig.com` | OpenAI | Global web | Global web |
+| `storage.googleapis.com` | Claude | Google | Google |
+| `example.amazonaws.com` | Global media | Global web | Global web |
+| `dcalivedazn.akamaized.net` | DAZN | DAZN | DAZN |
+
+Migration closure is frozen in `tests/fixtures/phase-2-migration-ledger.json`:
+
+```text
+15,540 old file rules = 15,517 Extended + 23 explicit removals
+15,517 Extended = 15,411 Core + 106 optional
+```
+
 ## Current verified result
 
-- 42 rule files and 43 ordered segments
-- 42 ordered proxy groups
-- 15,541 rules including FINAL
-- 2,205 destination-IP rules, all with `no-resolve`
-- zero same-segment exact duplicates
-- zero non-strict CIDRs
-- first-match unreachable union reduced from 2,734 to 2,489
-- same-segment unreachable union reduced from 1,182 to 1,035
-- cross-segment-only unreachable union reduced from 1,552 to 1,454
+- Core: 51 rule files, 52 ordered segments, 44 proxy groups, 15,412 rules including FINAL
+- Extended: 57 rule files, 58 ordered segments, 45 proxy groups, 15,518 rules including FINAL
+- 2,205 destination-IP rules in both products, all with `no-resolve`
+- zero same-segment exact duplicates and zero non-strict CIDRs
+- Core first-match unreachable union: 2,377; same-segment: 937; cross-segment-only: 1,440
+- Extended first-match unreachable union: 2,449; same-segment: 1,009; cross-segment-only: 1,440

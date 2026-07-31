@@ -6,13 +6,16 @@ Reusable routing rules and subscription templates for Subconverter and Mihomo. T
 
 ## Outputs
 
-- `config/ekko-rules.ini`: Core online preset without a Clash base override.
-- `config/ekko-rules-full.ini`: Optional full preset using the included base.
-- `config/ekko-rules-local.ini`: Local core preset with its base disabled by default.
+- `config/ekko-rules.ini`: Default Core online preset without a Clash base override.
+- `config/ekko-rules-full.ini`: Core plus the sanitized base; it does not silently enable optional rules.
+- `config/ekko-rules-local.ini`: Local Core preset with its base disabled by default.
+- `config/ekko-rules-extended.ini`: Core plus optional legacy, brand-defense, and community rules without a base override.
+- `config/ekko-rules-extended-local.ini`: Local Extended preset.
 - `base/GeneralClashConfig.yml`: Optional sanitized Clash base.
 - `Ruleset/*.list`: Classical Subconverter rules.
 - `Providers/Ruleset/*.yaml`: Classical Mihomo Rule Providers.
-- `Mihomo/reversed-template.yaml`: Native Mihomo template with a subscription placeholder.
+- `Mihomo/reversed-template.yaml`: Default Core Mihomo template.
+- `Mihomo/reversed-template-extended.yaml`: Extended Mihomo template.
 - `analysis.json`: Structure and quality metrics computed from canonical sources.
 - `manifest.json`: Generated-file SHA-256 inventory; it does not recursively hash itself.
 
@@ -25,8 +28,10 @@ Reusable routing rules and subscription templates for Subconverter and Mihomo. T
 
 ## Behavior
 
-- The declared order of all 43 rule segments and 42 proxy groups is preserved.
-- The two non-contiguous music segments remain `music` and `music-2`.
+- Core contains 51 rulesets, 52 segments, and 44 proxy groups.
+- Extended contains 57 rulesets, 58 segments, and 45 proxy groups.
+- Messaging and music are split by service while related services may still share an existing policy group.
+- AI, social, and developer services have minimal independent groups; the Private layer targets `DIRECT`.
 - Every destination-IP rule carries `no-resolve`.
 - Same-segment exact duplicates are zero; five non-strict CIDRs were deleted without guessing corrected prefixes.
 - Broad regional TLDs, shared cloud ranges, and shared infrastructure were removed from early service-specific policies or moved to general routing.

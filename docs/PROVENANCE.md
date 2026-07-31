@@ -4,11 +4,13 @@
 
 The canonical source is now the sanitized `sources/` tree. Normal generation is offline and does
 not fetch upstream projects. Every published product is deterministically derived from the
-manifest, ordered proxy groups, base configuration, and 42 canonical rule files.
+manifest, ordered proxy groups, base configuration, and canonical rule files. Phase 2 now declares
+57 canonical rulesets in one ordered manifest: Core selects 51 and Extended selects all 57.
 
-The one-time reconstruction was cross-checked against three Subconverter INI presets, 42 Mihomo
-providers, the Mihomo rule order, and the existing `.list` files before `sources/` became
-canonical.
+The one-time reconstruction was cross-checked against the original three Subconverter INI presets,
+42 Mihomo providers, the Mihomo rule order, and the existing `.list` files before `sources/` became
+canonical. `tests/fixtures/phase-2-before.json` preserves those hashes and behavior; the after fixture
+and migration ledger prove the later split without treating generated products as source evidence.
 
 Audit results retained as evidence:
 

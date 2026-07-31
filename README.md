@@ -6,117 +6,56 @@
 
 ## 项目定位
 
-Ekko Rules 采用与 ACL4SSR 在线预设相同的职责边界：
+Ekko Rules 采用与 ACL4SSR 在线预设相同的职责边界：不保存节点或订阅凭据，不接管 `proxies` 上方的端口、DNS、TUN 和控制器设置，只维护策略组、规则集、顺序和策略映射。`sources/` 是唯一规范源，`generated/reversed-profile/` 只能由生成器重建。
 
-- 不保存用户节点、订阅凭据或代理服务器信息；
-- 核心预设不接管 `proxies` 上方的端口、DNS、TUN 和控制器设置；
-- 维护策略组、节点筛选逻辑、规则集、规则优先级及策略映射；
-- 同时生成 Subconverter `.list` 和 Mihomo classical Rule Provider。
+## Core 与 Extended
 
-仓库内 `sources/` 是唯一规范源；`generated/reversed-profile/` 是确定性生成产物，不应手工修改。正常生成和验证不再依赖外部、含节点凭据的展开配置。
+| 产品 | Rulesets / Segments / Groups | 内容 | Base |
+|---|---:|---|---:|
+| Core | 51 / 52 / 44 | 默认服务规则；排除个人社区、legacy 和品牌防御 optional 层 | 否 |
+| Core Full | 51 / 52 / 44 | Core + 仓库脱敏基础配置 | 是 |
+| Extended | 57 / 58 / 45 | Core + Emby 社区、Spotify legacy、Qobuz 防御、社区和历史流媒体 | 否 |
 
-## 目录
+Subconverter：
 
-```text
-sources/
-├── manifest.yaml              43 个有序规则区段
-├── proxy-groups.yaml          42 个有序策略组
-├── base.yaml                  可选脱敏基础配置
-├── rules/*.list               42 个规范规则文件
-├── upstreams.yaml             固定上游快照、许可证和证据哈希
-├── quality-baseline.yaml      重复、CIDR 与首匹配覆盖门禁
-└── review.yaml                不参与生成的观察项
+- `config/ekko-rules.ini`：Core 在线预设；
+- `config/ekko-rules-full.ini`：Core + base；
+- `config/ekko-rules-local.ini`：本地 Core；
+- `config/ekko-rules-extended.ini`：Extended 在线预设；
+- `config/ekko-rules-extended-local.ini`：本地 Extended。
 
-scripts/
-├── profile_model.py           规范模型、校验、渲染和行为分析
-├── generate_profile.py        唯一正式生成入口
-├── validate_generated.py      独立产物验证门禁
-└── reverse_profile.py         仅用于迁移的 legacy importer
+Mihomo：
 
-generated/reversed-profile/
-├── config/                    Subconverter 预设
-├── Ruleset/                   Subconverter 经典规则
-├── Providers/Ruleset/         Mihomo classical Rule Providers
-├── Mihomo/                    Mihomo 原生模板
-├── base/                      可选 Clash 基础配置
-├── analysis.json              当前规范源派生统计
-└── manifest.json              产物文件清单和 SHA-256
-```
+- `Mihomo/reversed-template.yaml`：Core；
+- `Mihomo/reversed-template-extended.yaml`：Extended。
 
-## Subconverter 预设
+## 二期分类
 
-| 文件 | 用途 | 是否接管基础配置 |
-|---|---|---:|
-| `config/ekko-rules.ini` | 推荐的核心在线预设 | 否 |
-| `config/ekko-rules-full.ini` | 可选完整预设 | 是 |
-| `config/ekko-rules-local.ini` | 本地 Subconverter 预设 | 默认否 |
+- Messaging 拆为 LINE、Kakao、WhatsApp、Telegram，但继续共用 `📲 聊天软件`；
+- 音乐拆为 Tidal、Spotify、Qobuz、Apple Music，并以非连续 optional 段保留 Extended 的原始首匹配顺序；
+- 新增最小 `🧠 AI 服务`、`🗣 社交媒体`、`🧑‍💻 开发服务` 策略组；
+- 路由器、本地探测和保留地址进入 `private`，直接指向 `DIRECT`；
+- 共享 CDN/cloud/vendor 不再由 OpenAI、Claude、DAZN 或 global-media 前置专用策略独占；服务专属精确主机保留；
+- Apple/Google brand-defense 和 legacy 的完整逐行拆分留给后续独立批次，目前不声称已完成。
 
-用户订阅负责动态生成 `proxies`；`custom_proxy_group` 通过 `.*` 根据当前节点动态生成成员；端口、DNS、TUN 等由 Subconverter 服务端或客户端决定。
+Core 含 15,412 条规则，Extended 含 15,518 条规则，均含唯一 FINAL。两者都有 2,205 条目标 IP 规则，全部带 `no-resolve`。迁移闭合台账证明：旧 15,540 条文件规则 = Extended 15,517 + 23 条明确删除；Extended = Core 15,411 + 106 条 optional。删除项只来自共享误绑、覆盖重复、过宽 keyword 或一期已确认 stale 项，不依赖单次网络失败。
 
-## 生成
+## 生成与验证
 
 要求 Python 3.12：
 
 ```bash
 python -m pip install -r requirements.txt
 python scripts/generate_profile.py
-```
-
-生成器先在目标同级空 staging 中渲染和自检，再替换正式目录；失败时保留旧目录。生成内容不含时间戳、随机值或本机绝对路径。
-
-检查已提交产物是否最新，且不修改文件：
-
-```bash
 python scripts/generate_profile.py --check
-```
-
-## 验证与测试
-
-```bash
 python scripts/validate_generated.py
 python -m unittest discover -s tests -v
 ```
 
-门禁覆盖：
-
-- source schema、42 组、43 段、两个非连续 music 区段和 FINAL 顺序；
-- 三个 INI 的 target、slug、URL/本地路径、策略组成员和 base 开关；
-- Mihomo Provider、`RULE-SET/MATCH`、策略组和订阅占位符；
-- 42 对 `.list`/Provider payload 逐行同序一致；
-- 文件集合闭合、SHA-256、两次生成幂等和旧文件检测；
-- 所有目标 IP 规则带 `no-resolve`，CIDR strict 合法；
-- exact 重复、首匹配覆盖质量基线和代表路由行为；
-- 节点、凭据、UUID、token、真实订阅和绝对路径泄漏扫描。
-
-## 当前规则状态
-
-- 42 个规则文件、43 个有序区段、42 个策略组；
-- 15,541 条规则（含 FINAL）；
-- 2,205 条目标 IP 规则，全部带 `no-resolve`；
-- 同区段 exact 重复为 0；
-- 非 strict CIDR 为 0；
-- 严格不可达并集从 bootstrap 的 2,734 降至 2,489。
-
-详细变更和首匹配差异见 [`docs/CHANGES.md`](docs/CHANGES.md)。不确定、legacy、品牌防御和个人社区项保存在 `sources/review.yaml`，不会仅凭一次 NXDOMAIN、403、超时或 TLS 错误自动删除。
-
-## Legacy importer
-
-仅在迁移另一份展开配置时使用：
-
-```bash
-python scripts/reverse_profile.py expanded-profile.yaml candidate-sources
-```
-
-输出目录必须不存在。它只生成待人工审查的候选 `sources/`，不会覆盖正式 `generated/`，也无法恢复原始上游边界。候选源必须补齐 provenance 后再考虑发布。
+生成器使用同盘 staging 和原子目录替换；失败保留旧输出。门禁检查 Core/Extended 顺序、唯一 FINAL、Provider、SHA-256、敏感信息、strict CIDR、`no-resolve`、迁移前后首匹配和迁移闭合。
 
 ## 私有仓库与发布门禁
 
-仓库目前保持私有。GitHub Raw URL 已配置为 `ZaunEkko/ekko-rules` 的 `main` 分支，但外部 Subconverter/Mihomo 通常无法匿名读取私有 Raw 文件。
+仓库保持 Private。外部客户端通常不能匿名读取 Private GitHub Raw。当前不授予统一再分发许可，也不会自动提交、推送、发布或改变可见性。公开前必须完成人工来源和许可证审查：[`NOTICE.md`](NOTICE.md)、[`docs/PROVENANCE.md`](docs/PROVENANCE.md)、[`docs/PUBLICATION-GATE.md`](docs/PUBLICATION-GATE.md)。
 
-当前不授予统一再分发许可，也不会自动提交、推送、发布或改变仓库可见性。公开前必须完成：
-
-- [`NOTICE.md`](NOTICE.md)
-- [`docs/PROVENANCE.md`](docs/PROVENANCE.md)
-- [`docs/PUBLICATION-GATE.md`](docs/PUBLICATION-GATE.md)
-
-DNS/TUN 仍属于客户端职责；`no-resolve` 能阻止 IP 规则为匹配目标而主动解析域名，但不能替代 DNS 劫持、加密 DNS、`strict-route` 等客户端防泄漏配置。
+DNS/TUN 仍属于客户端职责；`no-resolve` 不能替代 DNS 劫持、加密 DNS 或 `strict-route`。

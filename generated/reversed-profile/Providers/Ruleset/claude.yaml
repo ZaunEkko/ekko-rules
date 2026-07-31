@@ -8,9 +8,3 @@ payload:
 - DOMAIN-SUFFIX,auth.anthropic.com
 - DOMAIN-SUFFIX,accounts.anthropic.com
 - DOMAIN-SUFFIX,claudeusercontent.com
-- DOMAIN-SUFFIX,storage.googleapis.com
-- DOMAIN-SUFFIX,cdn.cloudflare.net
-- DOMAIN-SUFFIX,analytics.google.com
-- DOMAIN-SUFFIX,amplitude.com
-- DOMAIN-KEYWORD,claude
-- DOMAIN-KEYWORD,anthropic
