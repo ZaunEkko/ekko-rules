@@ -1,0 +1,121 @@
+schema_version: 1
+reviewed_on: 2026-07-30
+purpose: >-
+  Non-generating review queue for uncertain, legacy, brand-defense, personal/community,
+  or relocation candidates. Entries here never change generated routing by themselves.
+allowed_statuses:
+  - observe
+  - legacy
+  - brand-defense
+  - personal-community
+  - candidate-remove
+  - candidate-move
+items:
+  - id: apple-brand-defense
+    status: brand-defense
+    scope: apple
+    summary: Apple defensive registrations and non-core domains need category-level review.
+    evidence:
+      - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Apple
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: apple-brand-defense
+
+  - id: apple-legacy-products
+    status: legacy
+    scope: apple
+    summary: Historical Apple products and compatibility domains require usage evidence before removal.
+    evidence:
+      - https://www.apple.com/newsroom/2022/05/the-music-lives-on/
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: apple-legacy
+
+  - id: google-brand-defense
+    status: brand-defense
+    scope: google
+    summary: Google and Alphabet defensive registrations must be separated from confirmed service domains.
+    evidence:
+      - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Google
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: google-brand-defense
+
+  - id: google-legacy-products
+    status: legacy
+    scope: google
+    summary: Discontinued Google product domains require compatibility review before removal.
+    evidence:
+      - https://github.com/v2fly/domain-list-community/commit/8dc538dce9bcdd5650c2dcbce077c44ac44f5a28
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: google-legacy
+
+  - id: alphabet-and-community
+    status: candidate-move
+    scope: google
+    summary: Alphabet sibling companies and open-source/community properties may not belong to Google core routing.
+    evidence:
+      - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Google
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: developer-and-community
+
+  - id: emby-community-servers
+    status: personal-community
+    scope: emby
+    summary: Personal and community Emby endpoints are preference-specific and need a separate optional layer.
+    evidence:
+      - sources/rules/emby.list
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: emby-community
+
+  - id: global-web-personal-community
+    status: personal-community
+    scope: global-web
+    summary: bit.no.com, btlibrary.me, cccat.io, vikacg.com, and picjs.xyz are personal/community preferences rather than universal global-web infrastructure.
+    evidence:
+      - https://github.com/ACL4SSR/ACL4SSR/blob/cc5226ec097907cb6d679bc95cebf798aea008f2/Clash/ProxyGFWlist.list
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: optional-community-layer
+
+  - id: historical-streaming-hosts
+    status: observe
+    scope: global-web
+    summary: neulion.com, icntv.xyz, and flzbcdn.xyz require service-specific evidence; acquisition, 403, or one failed connection is not sufficient for automatic deletion.
+    evidence:
+      - https://www.globenewswire.com/news-release/2018/05/07/1497585/0/en/NeuLion-Announces-Closing-of-Acquisition-by-Endeavor.html
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: streaming-legacy
+
+  - id: spotify-legacy-cdn
+    status: observe
+    scope: music-2
+    summary: pscdn.co has historical Spotify CDN evidence and an active parent zone but no confirmed current sample; do not remove from one NODATA result.
+    evidence:
+      - https://www.netify.ai/resources/domains/pscdn.co
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: spotify-core
+
+  - id: qobuz-brand-defense
+    status: brand-defense
+    scope: music-2
+    summary: Qobuz typo domains still redirect but may belong in an optional brand-defense layer instead of core playback routing.
+    evidence:
+      - https://www.qobuz.com/
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: qobuz-brand-defense
+
+  - id: transient-resolution-failures
+    status: observe
+    scope: all
+    summary: NXDOMAIN with a live parent zone, NODATA, SERVFAIL, 403, timeout, or TLS errors are insufficient removal evidence alone.
+    evidence: []
+    first_observed: 2026-07-30
+    last_verified: 2026-07-30
+    phase_2_candidate: evidence-refresh

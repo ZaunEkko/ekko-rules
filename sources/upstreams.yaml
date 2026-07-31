@@ -1,0 +1,79 @@
+schema_version: 1
+reviewed_on: 2026-07-30
+scope_note: >-
+  These records preserve audit and lineage evidence. Content similarity does not by
+  itself prove direct copying, and no upstream is fetched during normal generation.
+upstreams:
+  - id: acl4ssr-current
+    repository: https://github.com/ACL4SSR/ACL4SSR
+    revision: 4b461ca03b430c46d33b505cf4384e2f4f1be4b1
+    license: CC-BY-SA-4.0
+    license_url: https://github.com/ACL4SSR/ACL4SSR/blob/4b461ca03b430c46d33b505cf4384e2f4f1be4b1/LICENCE
+    license_sha256: 7abe19ec9bb73b36141b999b861d24ad855e808bafe0f81e84cce28556f6c297
+    usage: comparison
+    notes:
+      - Current project structure and Subconverter preset behavior were compared.
+      - No normal-build dependency is created.
+
+  - id: acl4ssr-proxy-gfwlist-2023
+    repository: https://github.com/ACL4SSR/ACL4SSR
+    revision: cc5226ec097907cb6d679bc95cebf798aea008f2
+    path: Clash/ProxyGFWlist.list
+    artifact_sha256: b0803a6cd7183a553d3ab34a1b882635d65e2681b2fb35867d7f3d7f9789ffc0
+    license: CC-BY-SA-4.0
+    license_url: https://github.com/ACL4SSR/ACL4SSR/blob/cc5226ec097907cb6d679bc95cebf798aea008f2/LICENCE
+    usage: lineage
+    notes:
+      - 6233 of 6242 global-web rules matched this historical file in original order during the audit.
+      - This is strong lineage evidence, not a claim that every local rule was directly copied from this revision.
+
+  - id: blackmatrix7-ios-rule-script
+    repository: https://github.com/blackmatrix7/ios_rule_script
+    revision: 011471410d3fcc3301c168ee91eb92bc74ebded6
+    license: GPL-2.0
+    license_url: https://github.com/blackmatrix7/ios_rule_script/blob/011471410d3fcc3301c168ee91eb92bc74ebded6/LICENSE
+    license_sha256: 8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643
+    sample_path: rule/Clash/OpenAI/OpenAI.list
+    sample_sha256: 6f4047cdbf6953cf5d9b38c4ccd6da7bc6f1acb91b7a87134f25d5b8f5d2408b
+    usage: lineage
+    notes:
+      - 13591 of 13919 unique local matchers appeared in the pinned Clash corpus during the audit.
+      - The upstream is itself a multi-source aggregate, so overlap does not establish direct origin.
+
+  - id: loyalsoldier-clash-rules
+    repository: https://github.com/Loyalsoldier/clash-rules
+    revision: c416aff9cb2fd493589dcba4a9d642687f27a19a
+    branch_context:
+      master_revision_reviewed: ab21f1c70d263c683990a0aed446ad3bf09a2961
+      generated_branch: release
+    license: GPL-3.0
+    license_url: https://github.com/Loyalsoldier/clash-rules/blob/ab21f1c70d263c683990a0aed446ad3bf09a2961/LICENSE
+    license_sha256: 3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986
+    sample_path: proxy.txt
+    sample_sha256: 3228ae88f145489faa1df91931873ca05213e48ae1602e985897b48171ebf71b
+    usage: comparison
+    notes:
+      - Used to compare maintained aggregate-rule conventions and content lineage.
+      - No normal-build dependency is created.
+
+  - id: metacubex-meta-rules-dat
+    repository: https://github.com/MetaCubeX/meta-rules-dat
+    revision: 89cbee7e969df0c76d7a27cdd54de9dc54c75703
+    branch_context:
+      master_revision_reviewed: 4178770badecb1b349fbcd62c737e0d7a2079729
+      generated_branch: meta
+    license: GPL-3.0
+    license_url: https://github.com/MetaCubeX/meta-rules-dat/blob/4178770badecb1b349fbcd62c737e0d7a2079729/LICENSE
+    license_sha256: 3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986
+    sample_path: geo/geosite/google.yaml
+    sample_sha256: fdacab750221c72a95701e26a5359d8ebe58accabd693c7dbf083bea93d47896
+    usage: comparison
+    notes:
+      - Used to compare current Mihomo-oriented generated rule formats and categories.
+      - No normal-build dependency is created.
+
+unlicensed_evidence:
+  policy: >-
+    Unlicensed gists or mirrors may be cited as historical evidence only. They must
+    not be fetched into sources, treated as reusable inputs, or included in releases.
+  included_sources: []

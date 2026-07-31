@@ -1,0 +1,15 @@
+DOMAIN-SUFFIX,anthropic.com
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,chat.claude.ai
+DOMAIN-SUFFIX,console.anthropic.com
+DOMAIN-SUFFIX,api.anthropic.com
+DOMAIN-SUFFIX,api.claude.ai
+DOMAIN-SUFFIX,auth.anthropic.com
+DOMAIN-SUFFIX,accounts.anthropic.com
+DOMAIN-SUFFIX,claudeusercontent.com
+DOMAIN-SUFFIX,storage.googleapis.com
+DOMAIN-SUFFIX,cdn.cloudflare.net
+DOMAIN-SUFFIX,analytics.google.com
+DOMAIN-SUFFIX,amplitude.com
+DOMAIN-KEYWORD,claude
+DOMAIN-KEYWORD,anthropic

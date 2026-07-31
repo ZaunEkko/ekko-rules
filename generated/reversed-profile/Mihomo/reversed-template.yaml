@@ -1,0 +1,648 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+external-controller: 127.0.0.1:9090
+proxy-providers:
+  subscription:
+    type: http
+    url: PUT_YOUR_SUBSCRIPTION_URL_HERE
+    path: ./proxy_provider/subscription.yaml
+    interval: 3600
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+proxy-groups:
+- name: ♻️ 手动切换
+  type: select
+  proxies:
+  - DIRECT
+  use:
+  - subscription
+- name: 🔎 Google
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🔎 Bing
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🔎 Yahoo
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🧲 OpenAI
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🧲 Claude
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 📲 聊天软件
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 📲 Instagram
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎙 Discord
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 YouTube
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 Netflix
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 DisneyPlus
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 巴哈姆特
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 viuTV
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 KKTV
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 日本媒体
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 韩国媒体
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 台湾媒体
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 AppleTV+
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 HBOGO
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 HBOMAX
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 PrimeVideo
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 EMBY
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 Dazn
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎶 TikTok
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎵 音乐平台
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🎬 爱奇艺
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 🎬 B站港澳台
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 🎬 B站东南亚
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🌏 国外流媒体
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🌏 国内流媒体
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 🔖 OneDrive
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: ☁️ iCloud
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🧩 微软服务
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 🍎 苹果服务
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 🎮 游戏平台
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 🎮 游戏下载
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 📪 邮件服务
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 🌏 学术网站
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🌏 国外网站
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🌏 国内网站
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: 🐟 漏网之鱼
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+rule-providers:
+  direct-override:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/direct-override.yaml
+    path: ./ruleset/direct-override.yaml
+    interval: 86400
+  openai:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/openai.yaml
+    path: ./ruleset/openai.yaml
+    interval: 86400
+  claude:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/claude.yaml
+    path: ./ruleset/claude.yaml
+    interval: 86400
+  onedrive:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/onedrive.yaml
+    path: ./ruleset/onedrive.yaml
+    interval: 86400
+  discord:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/discord.yaml
+    path: ./ruleset/discord.yaml
+    interval: 86400
+  instagram:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/instagram.yaml
+    path: ./ruleset/instagram.yaml
+    interval: 86400
+  mail:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/mail.yaml
+    path: ./ruleset/mail.yaml
+    interval: 86400
+  messaging:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/messaging.yaml
+    path: ./ruleset/messaging.yaml
+    interval: 86400
+  game-download:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/game-download.yaml
+    path: ./ruleset/game-download.yaml
+    interval: 86400
+  game-platform:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/game-platform.yaml
+    path: ./ruleset/game-platform.yaml
+    interval: 86400
+  media-korea:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/media-korea.yaml
+    path: ./ruleset/media-korea.yaml
+    interval: 86400
+  media-taiwan:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/media-taiwan.yaml
+    path: ./ruleset/media-taiwan.yaml
+    interval: 86400
+  prime-video:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/prime-video.yaml
+    path: ./ruleset/prime-video.yaml
+    interval: 86400
+  viutv:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/viutv.yaml
+    path: ./ruleset/viutv.yaml
+    interval: 86400
+  kktv:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/kktv.yaml
+    path: ./ruleset/kktv.yaml
+    interval: 86400
+  bahamut:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/bahamut.yaml
+    path: ./ruleset/bahamut.yaml
+    interval: 86400
+  media-japan:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/media-japan.yaml
+    path: ./ruleset/media-japan.yaml
+    interval: 86400
+  youtube:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/youtube.yaml
+    path: ./ruleset/youtube.yaml
+    interval: 86400
+  music:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/music.yaml
+    path: ./ruleset/music.yaml
+    interval: 86400
+  disney-plus:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/disney-plus.yaml
+    path: ./ruleset/disney-plus.yaml
+    interval: 86400
+  hbo-go:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/hbo-go.yaml
+    path: ./ruleset/hbo-go.yaml
+    interval: 86400
+  hbo-max:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/hbo-max.yaml
+    path: ./ruleset/hbo-max.yaml
+    interval: 86400
+  emby:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/emby.yaml
+    path: ./ruleset/emby.yaml
+    interval: 86400
+  dazn:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/dazn.yaml
+    path: ./ruleset/dazn.yaml
+    interval: 86400
+  apple-tv-plus:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/apple-tv-plus.yaml
+    path: ./ruleset/apple-tv-plus.yaml
+    interval: 86400
+  bilibili-sea:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/bilibili-sea.yaml
+    path: ./ruleset/bilibili-sea.yaml
+    interval: 86400
+  bilibili-hmt:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/bilibili-hmt.yaml
+    path: ./ruleset/bilibili-hmt.yaml
+    interval: 86400
+  iqiyi:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/iqiyi.yaml
+    path: ./ruleset/iqiyi.yaml
+    interval: 86400
+  music-2:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/music-2.yaml
+    path: ./ruleset/music-2.yaml
+    interval: 86400
+  tiktok:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/tiktok.yaml
+    path: ./ruleset/tiktok.yaml
+    interval: 86400
+  netflix:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/netflix.yaml
+    path: ./ruleset/netflix.yaml
+    interval: 86400
+  icloud:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/icloud.yaml
+    path: ./ruleset/icloud.yaml
+    interval: 86400
+  bing:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/bing.yaml
+    path: ./ruleset/bing.yaml
+    interval: 86400
+  microsoft:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/microsoft.yaml
+    path: ./ruleset/microsoft.yaml
+    interval: 86400
+  apple:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/apple.yaml
+    path: ./ruleset/apple.yaml
+    interval: 86400
+  global-media:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/global-media.yaml
+    path: ./ruleset/global-media.yaml
+    interval: 86400
+  google:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google.yaml
+    path: ./ruleset/google.yaml
+    interval: 86400
+  yahoo:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/yahoo.yaml
+    path: ./ruleset/yahoo.yaml
+    interval: 86400
+  academic:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/academic.yaml
+    path: ./ruleset/academic.yaml
+    interval: 86400
+  global-web:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/global-web.yaml
+    path: ./ruleset/global-web.yaml
+    interval: 86400
+  china-media:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-media.yaml
+    path: ./ruleset/china-media.yaml
+    interval: 86400
+  china-web:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-web.yaml
+    path: ./ruleset/china-web.yaml
+    interval: 86400
+rules:
+- RULE-SET,direct-override,DIRECT
+- RULE-SET,openai,🧲 OpenAI
+- RULE-SET,claude,🧲 Claude
+- RULE-SET,onedrive,🔖 OneDrive
+- RULE-SET,discord,🎙 Discord
+- RULE-SET,instagram,📲 Instagram
+- RULE-SET,mail,📪 邮件服务
+- RULE-SET,messaging,📲 聊天软件
+- RULE-SET,game-download,🎮 游戏下载
+- RULE-SET,game-platform,🎮 游戏平台
+- RULE-SET,media-korea,🎬 韩国媒体
+- RULE-SET,media-taiwan,🎬 台湾媒体
+- RULE-SET,prime-video,🎬 PrimeVideo
+- RULE-SET,viutv,🎬 viuTV
+- RULE-SET,kktv,🎬 KKTV
+- RULE-SET,bahamut,🎬 巴哈姆特
+- RULE-SET,media-japan,🎬 日本媒体
+- RULE-SET,youtube,🎬 YouTube
+- RULE-SET,music,🎵 音乐平台
+- RULE-SET,disney-plus,🎬 DisneyPlus
+- RULE-SET,hbo-go,🎬 HBOGO
+- RULE-SET,hbo-max,🎬 HBOMAX
+- RULE-SET,emby,🎬 EMBY
+- RULE-SET,dazn,🎬 Dazn
+- RULE-SET,apple-tv-plus,🎬 AppleTV+
+- RULE-SET,bilibili-sea,🎬 B站东南亚
+- RULE-SET,bilibili-hmt,🎬 B站港澳台
+- RULE-SET,iqiyi,🎬 爱奇艺
+- RULE-SET,music-2,🎵 音乐平台
+- RULE-SET,tiktok,🎶 TikTok
+- RULE-SET,netflix,🎬 Netflix
+- RULE-SET,icloud,☁️ iCloud
+- RULE-SET,bing,🔎 Bing
+- RULE-SET,microsoft,🧩 微软服务
+- RULE-SET,apple,🍎 苹果服务
+- RULE-SET,global-media,🌏 国外流媒体
+- RULE-SET,google,🔎 Google
+- RULE-SET,yahoo,🔎 Yahoo
+- RULE-SET,academic,🌏 学术网站
+- RULE-SET,global-web,🌏 国外网站
+- RULE-SET,china-media,🌏 国内流媒体
+- RULE-SET,china-web,🌏 国内网站
+- MATCH,🐟 漏网之鱼

@@ -1,0 +1,43 @@
+schema_version: 1
+phase: deterministic-cleanup
+measured_on: 2026-07-30
+scope:
+  rule_files: 42
+  rule_segments: 42
+  terminal_segments: 1
+  proxy_groups: 42
+  rules_in_files: 15540
+  rules_with_terminal: 15541
+  destination_ip_rules: 2205
+  destination_ip_rules_without_no_resolve: 0
+exact_duplicates_within_segment:
+  occurrences_beyond_first: 0
+  duplicate_keys: 0
+  by_slug: {}
+  previous_bootstrap_occurrences_removed: 143
+first_match_unreachable:
+  global:
+    exact_occurrences: 1666
+    broad_coverage_occurrences: 1157
+    overlap_between_categories: 334
+    union: 2489
+  within_same_segment:
+    exact_occurrences: 0
+    broad_coverage_occurrences: 1035
+    overlap_between_categories: 0
+    union: 1035
+  cross_segment_only:
+    union: 1454
+  previous_bootstrap:
+    global_union: 2734
+    within_same_segment_union: 1182
+    cross_segment_only_union: 1552
+known_non_strict_cidrs:
+  policy: All five bootstrap exceptions were deleted without guessing corrected prefixes.
+  entries: []
+  previous_bootstrap_entries_removed: 5
+next_gate:
+  exact_duplicate_occurrences_beyond_first: 0
+  non_strict_cidr_entries: 0
+  semantic_coverage_must_not_increase: true
+  cross_segment_dependencies_must_not_increase: true

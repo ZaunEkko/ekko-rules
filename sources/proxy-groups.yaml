@@ -1,0 +1,307 @@
+schema_version: 1
+node_placeholder: __ALL_SUBSCRIPTION_NODES__
+proxy_provider:
+  name: subscription
+  type: http
+  url: PUT_YOUR_SUBSCRIPTION_URL_HERE
+  path: ./proxy_provider/subscription.yaml
+  interval: 3600
+  health_check:
+    enable: true
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+  subconverter_filter: .*
+groups:
+- order: 1
+  name: ♻️ 手动切换
+  type: select
+  members:
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 2
+  name: 🔎 Google
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 3
+  name: 🔎 Bing
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 4
+  name: 🔎 Yahoo
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 5
+  name: 🧲 OpenAI
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 6
+  name: 🧲 Claude
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 7
+  name: 📲 聊天软件
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 8
+  name: 📲 Instagram
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 9
+  name: 🎙 Discord
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 10
+  name: 🎬 YouTube
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 11
+  name: 🎬 Netflix
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 12
+  name: 🎬 DisneyPlus
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 13
+  name: 🎬 巴哈姆特
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 14
+  name: 🎬 viuTV
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 15
+  name: 🎬 KKTV
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 16
+  name: 🎬 日本媒体
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 17
+  name: 🎬 韩国媒体
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 18
+  name: 🎬 台湾媒体
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 19
+  name: 🎬 AppleTV+
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 20
+  name: 🎬 HBOGO
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 21
+  name: 🎬 HBOMAX
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 22
+  name: 🎬 PrimeVideo
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 23
+  name: 🎬 EMBY
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 24
+  name: 🎬 Dazn
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 25
+  name: 🎶 TikTok
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 26
+  name: 🎵 音乐平台
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 27
+  name: 🎬 爱奇艺
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 28
+  name: 🎬 B站港澳台
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 29
+  name: 🎬 B站东南亚
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 30
+  name: 🌏 国外流媒体
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 31
+  name: 🌏 国内流媒体
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 32
+  name: 🔖 OneDrive
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 33
+  name: ☁️ iCloud
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 34
+  name: 🧩 微软服务
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 35
+  name: 🍎 苹果服务
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 36
+  name: 🎮 游戏平台
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 37
+  name: 🎮 游戏下载
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 38
+  name: 📪 邮件服务
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 39
+  name: 🌏 学术网站
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 40
+  name: 🌏 国外网站
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 41
+  name: 🌏 国内网站
+  type: select
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 42
+  name: 🐟 漏网之鱼
+  type: select
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
