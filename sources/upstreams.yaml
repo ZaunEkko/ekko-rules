@@ -24,8 +24,8 @@ upstreams:
     license_url: https://github.com/ACL4SSR/ACL4SSR/blob/cc5226ec097907cb6d679bc95cebf798aea008f2/LICENCE
     usage: lineage
     notes:
-      - 6233 of 6242 global-web rules matched this historical file in original order during the audit.
-      - This is strong lineage evidence, not a claim that every local rule was directly copied from this revision.
+      - 6233 of 6242 historical global-web rules matched this file in original order during the audit.
+      - Phase 3 removed that generic ruleset; the record remains lineage evidence, not a current build input or a claim of direct copying.
 
   - id: blackmatrix7-ios-rule-script
     repository: https://github.com/blackmatrix7/ios_rule_script

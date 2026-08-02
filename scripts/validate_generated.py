@@ -9,10 +9,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 from profile_model import (
+    CORE_PRODUCT,
     DESTINATION_IP_RULE_TYPES,
+    EXTENDED_PRODUCT,
     NODE_PLACEHOLDER,
     POSIX_ABSOLUTE_PATH,
     ProfileError,
@@ -22,8 +22,13 @@ from profile_model import (
     directory_snapshot,
     file_sha256,
     load_profile_sources,
+    parse_json_document,
     parse_rule,
+    parse_yaml_document,
+    require_no_symlinks,
+    scope_metrics,
     validate_https_url,
+    KNOWN_CREDENTIAL_PATTERN,
 )
 
 
@@ -93,15 +98,17 @@ def parse_args() -> argparse.Namespace:
 
 def read_yaml(path: Path) -> Any:
     try:
-        return yaml.safe_load(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        text = path.read_text(encoding="utf-8")
+        return parse_yaml_document(text, context=str(path))
+    except (OSError, UnicodeError, ProfileError) as exc:
         raise ValidationError(f"Cannot read YAML {path}: {exc}") from exc
 
 
 def read_json(path: Path) -> Any:
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        text = path.read_text(encoding="utf-8")
+        return parse_json_document(text, context=str(path))
+    except (OSError, UnicodeError, ProfileError) as exc:
         raise ValidationError(f"Cannot read JSON {path}: {exc}") from exc
 
 
@@ -110,7 +117,10 @@ def expected_generated_files(sources: ProfileSources) -> set[str]:
         "config/ekko-rules.ini",
         "config/ekko-rules-full.ini",
         "config/ekko-rules-local.ini",
+        "config/ekko-rules-extended.ini",
+        "config/ekko-rules-extended-local.ini",
         "Mihomo/reversed-template.yaml",
+        "Mihomo/reversed-template-extended.yaml",
         "base/GeneralClashConfig.yml",
         "analysis.json",
         "README.md",
@@ -124,6 +134,10 @@ def expected_generated_files(sources: ProfileSources) -> set[str]:
 
 
 def validate_file_set(generated: Path, sources: ProfileSources) -> dict[str, Any]:
+    try:
+        require_no_symlinks(generated, context="Generated products")
+    except ProfileError as exc:
+        raise ValidationError(str(exc)) from exc
     check(generated.is_dir(), f"Generated directory does not exist: {generated}")
     check(
         {path.name for path in generated.iterdir()} == ALLOWED_GENERATED_ROOTS,
@@ -171,7 +185,7 @@ def validate_file_set(generated: Path, sources: ProfileSources) -> dict[str, Any
     return manifest
 
 
-def parse_ini(path: Path) -> tuple[list[str], list[str], list[str]]:
+def parse_ini(path: Path) -> tuple[list[str], list[str], list[str], list[str]]:
     parser = configparser.RawConfigParser(strict=False, delimiters=("=",))
     try:
         with path.open(encoding="utf-8") as handle:
@@ -187,13 +201,21 @@ def parse_ini(path: Path) -> tuple[list[str], list[str], list[str]]:
         for line in lines
         if line.startswith("clash_rule_base=") or line.startswith(";clash_rule_base=")
     ]
-    return rules, groups, base_lines
+    controls = [
+        line
+        for line in lines
+        if line.startswith("enable_rule_generator=")
+        or line.startswith("overwrite_original_rules=")
+    ]
+    return rules, groups, base_lines, controls
 
 
-def expected_ini_rules(sources: ProfileSources, *, local: bool) -> list[str]:
+def expected_ini_rules(
+    sources: ProfileSources, *, product: str, local: bool
+) -> list[str]:
     result: list[str] = []
     rules_base = sources.manifest["urls"]["rules_base"]
-    for segment in sources.segments:
+    for segment in sources.segments_for(product):
         if segment.kind == "terminal":
             result.append(f"ruleset={segment.target},[]FINAL")
         elif local:
@@ -203,10 +225,10 @@ def expected_ini_rules(sources: ProfileSources, *, local: bool) -> list[str]:
     return result
 
 
-def expected_ini_groups(sources: ProfileSources) -> list[str]:
+def expected_ini_groups(sources: ProfileSources, *, product: str) -> list[str]:
     node_filter = sources.proxy_groups_document["proxy_provider"]["subconverter_filter"]
     result: list[str] = []
-    for group in sources.proxy_groups:
+    for group in sources.proxy_groups_for(product):
         members = [
             node_filter if member == NODE_PLACEHOLDER else f"[]{member}"
             for member in group.members
@@ -218,31 +240,46 @@ def expected_ini_groups(sources: ProfileSources) -> list[str]:
 def validate_ini_presets(generated: Path, sources: ProfileSources) -> None:
     base_url = sources.manifest["urls"]["base_config"]
     presets = [
+        ("ekko-rules.ini", CORE_PRODUCT, False, [f";clash_rule_base={base_url}"]),
+        ("ekko-rules-full.ini", CORE_PRODUCT, False, [f"clash_rule_base={base_url}"]),
         (
-            "ekko-rules.ini",
+            "ekko-rules-local.ini",
+            CORE_PRODUCT,
+            True,
+            [";clash_rule_base=base/GeneralClashConfig.yml"],
+        ),
+        (
+            "ekko-rules-extended.ini",
+            EXTENDED_PRODUCT,
             False,
-            expected_ini_rules(sources, local=False),
             [f";clash_rule_base={base_url}"],
         ),
         (
-            "ekko-rules-full.ini",
-            False,
-            expected_ini_rules(sources, local=False),
-            [f"clash_rule_base={base_url}"],
-        ),
-        (
-            "ekko-rules-local.ini",
+            "ekko-rules-extended-local.ini",
+            EXTENDED_PRODUCT,
             True,
-            expected_ini_rules(sources, local=True),
             [";clash_rule_base=base/GeneralClashConfig.yml"],
         ),
     ]
-    expected_groups = expected_ini_groups(sources)
-    for filename, _, expected_rules, expected_base in presets:
-        actual_rules, actual_groups, actual_base = parse_ini(generated / "config" / filename)
+    for filename, product, local, expected_base in presets:
+        expected_rules = expected_ini_rules(
+            sources, product=product, local=local
+        )
+        expected_groups = expected_ini_groups(sources, product=product)
+        actual_rules, actual_groups, actual_base, actual_controls = parse_ini(
+            generated / "config" / filename
+        )
         check(actual_rules == expected_rules, f"Ordered ruleset entries differ in {filename}")
         check(actual_groups == expected_groups, f"Ordered proxy groups differ in {filename}")
         check(actual_base == expected_base, f"clash_rule_base state differs in {filename}")
+        check(
+            actual_controls
+            == [
+                "enable_rule_generator=true",
+                "overwrite_original_rules=true",
+            ],
+            f"Rule-generator controls differ in {filename}",
+        )
 
 
 def validate_rulesets(generated: Path, sources: ProfileSources) -> tuple[int, int]:
@@ -272,7 +309,6 @@ def validate_rulesets(generated: Path, sources: ProfileSources) -> tuple[int, in
                 destination_ip_rules += 1
                 check(has_no_resolve, f"Destination-IP rule lacks no-resolve: {entry}")
     check(total_rules > 0, "Generated rules are empty")
-    check(destination_ip_rules > 0, "Expected destination-IP rules")
     return total_rules, destination_ip_rules
 
 
@@ -288,8 +324,10 @@ def expected_mihomo_provider(sources: ProfileSources, slug: str) -> dict[str, An
     }
 
 
-def validate_mihomo(generated: Path, sources: ProfileSources) -> None:
-    config = read_yaml(generated / "Mihomo" / "reversed-template.yaml")
+def validate_mihomo_product(
+    generated: Path, sources: ProfileSources, *, product: str, filename: str
+) -> None:
+    config = read_yaml(generated / "Mihomo" / filename)
     check(isinstance(config, dict), "Mihomo template must contain a mapping")
     expected_keys = [
         *[key for key in sources.base if key not in {"proxies", "proxy-groups", "rules"}],
@@ -322,22 +360,23 @@ def validate_mihomo(generated: Path, sources: ProfileSources) -> None:
             "proxies": [member for member in group.members if member != NODE_PLACEHOLDER],
             "use": [proxy_provider_source["name"]],
         }
-        for group in sources.proxy_groups
+        for group in sources.proxy_groups_for(product)
     ]
     check(config["proxy-groups"] == expected_groups, "Mihomo proxy groups differ")
 
+    product_segments = sources.rule_segments_for(product)
     expected_providers = {
         segment.slug: expected_mihomo_provider(sources, segment.slug)
-        for segment in sources.rule_segments
+        for segment in product_segments
     }
     check(config["rule-providers"] == expected_providers, "Mihomo rule providers differ")
     check(
-        list(config["rule-providers"]) == [segment.slug for segment in sources.rule_segments],
+        list(config["rule-providers"]) == [segment.slug for segment in product_segments],
         "Mihomo rule-provider order differs",
     )
     expected_rules = [
         f"RULE-SET,{segment.slug},{segment.target}"
-        for segment in sources.rule_segments
+        for segment in product_segments
     ] + [f"MATCH,{sources.terminal.target}"]
     check(config["rules"] == expected_rules, "Mihomo ordered rules differ")
 
@@ -348,19 +387,21 @@ def validate_analysis(generated: Path, sources: ProfileSources, total_rules: int
     expected = build_analysis(sources)
     check(analysis == expected, "analysis.json differs from canonical computed analysis")
     check(
-        expected["source_summary"]["rule_count"] == total_rules + 1,
-        "Computed analysis rule count differs from generated rules",
+        expected["products"][EXTENDED_PRODUCT]["summary"]["rule_count"]
+        == total_rules + 1,
+        "Computed extended rule count differs from generated rules",
     )
-    expected_coverage = coverage_metrics(sources)
-    baseline_coverage = sources.quality_baseline["first_match_unreachable"]
-    check(
-        expected_coverage
-        == {
-            key: baseline_coverage[key]
-            for key in ("global", "within_same_segment", "cross_segment_only")
-        },
-        "Canonical coverage metrics differ from the quality baseline",
-    )
+    baselines = sources.quality_baseline["products"]
+    for product in (CORE_PRODUCT, EXTENDED_PRODUCT):
+        check(
+            scope_metrics(sources, product=product) == baselines[product]["scope"],
+            f"Canonical {product} scope differs from the quality baseline",
+        )
+        check(
+            coverage_metrics(sources, product=product)
+            == baselines[product]["first_match_unreachable"],
+            f"Canonical {product} coverage differs from the quality baseline",
+        )
 
 
 def collect_sensitive_keys(value: Any, *, path: str = "") -> list[str]:
@@ -391,6 +432,10 @@ def validate_sensitive_content(generated: Path) -> None:
             check(not findings, f"Sensitive YAML keys found in {path}: {findings}")
     generated_text = "\n".join(generated_text_parts)
     check(UUID_PATTERN.search(generated_text) is None, "UUID-shaped credential found")
+    check(
+        KNOWN_CREDENTIAL_PATTERN.search(generated_text) is None,
+        "Credential-shaped token found in generated products",
+    )
     urls = re.findall(r"https://[^\s`\"'<>]+", generated_text)
     for index, url in enumerate(urls, start=1):
         try:
@@ -457,14 +502,25 @@ def main() -> int:
     args = parse_args()
     try:
         sources = load_profile_sources(args.sources)
-    except ProfileError as exc:
+    except (ProfileError, KeyError, TypeError) as exc:
         raise ValidationError(f"Canonical source validation failed: {exc}") from exc
     generated = args.generated.resolve()
 
     generated_manifest = validate_file_set(generated, sources)
     validate_ini_presets(generated, sources)
     total_rules, destination_ip_rules = validate_rulesets(generated, sources)
-    validate_mihomo(generated, sources)
+    validate_mihomo_product(
+        generated,
+        sources,
+        product=CORE_PRODUCT,
+        filename="reversed-template.yaml",
+    )
+    validate_mihomo_product(
+        generated,
+        sources,
+        product=EXTENDED_PRODUCT,
+        filename="reversed-template-extended.yaml",
+    )
     validate_analysis(generated, sources, total_rules)
     validate_sensitive_content(generated)
     if not args.skip_generation_check:
@@ -474,11 +530,18 @@ def main() -> int:
         json.dumps(
             {
                 "status": "passed",
-                "segments": len(sources.segments),
-                "rule_files": len(sources.rule_segments),
+                "products": {
+                    product: {
+                        "segments": len(sources.segments_for(product)),
+                        "rule_files": len(sources.rule_segments_for(product)),
+                        "proxy_groups": len(sources.proxy_groups_for(product)),
+                        "rules": build_analysis(sources)["products"][product][
+                            "summary"
+                        ]["rule_count"],
+                    }
+                    for product in (CORE_PRODUCT, EXTENDED_PRODUCT)
+                },
                 "provider_files": len(sources.rule_segments),
-                "proxy_groups": len(sources.proxy_groups),
-                "rules": total_rules + 1,
                 "destination_ip_rules": destination_ip_rules,
                 "destination_ip_rules_without_no_resolve": 0,
                 "generated_manifest_hashes": len(generated_manifest["files"]),

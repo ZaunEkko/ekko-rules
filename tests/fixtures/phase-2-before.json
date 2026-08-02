@@ -1,0 +1,779 @@
+{
+  "schema_version": 1,
+  "baseline": "phase-2-pre-migration",
+  "head": "f1adf157e05925e34bf5876cf7e148f4788f4fe6",
+  "manifest_sha256": "90905c416d547ae17a7c79122aeea115bdea241d90b1432a3bcf7dd5ccec8abb",
+  "proxy_groups_sha256": "4ee39c8e557d01f1709a6be540035888aeec754bcec43a00a6bd2340283d6a76",
+  "rule_files": {
+    "academic.list": "7331aa136c21f4f4e9f6f315f24c150daf1c3414241614d1605d9a8f8d3ef5fc",
+    "apple-tv-plus.list": "ffa90eb89ae2cecc89609906b9699e97ecc13f36ed737d95a9b7bf5394f93f21",
+    "apple.list": "7ace52c654dc91d91752592ee007d2fc948495239f40c6cc1591624486385485",
+    "bahamut.list": "5f29c59cd853201826dd02d42bb38ad8094d0871b7df57b46fcdf91a602b6596",
+    "bilibili-hmt.list": "f8e4fb8ebca492f77e8d275de0c70762716aa31a5ee9779dbfa94fd83986be7b",
+    "bilibili-sea.list": "bbd4a36d157f46e3cfdf3bcdb710b25bed11376b1d7538332ea761902b3e3ea7",
+    "bing.list": "38305fe4880995c0a09ccd324e71a0ee23269de39921e5b7824b0ee57c15b2f2",
+    "china-media.list": "16801f5a576bb70c236d4a7ba7ddfb7143c96910af9a990d4815bd03e519398c",
+    "china-web.list": "491e845c0397327c347ca6bf31c5e79a1bd812c962b2a15e7058a7242545b741",
+    "claude.list": "6a0c612c37a1c4b93b7d225ac329b1bb95547e6d88ce02ec715808202d9b8bc8",
+    "dazn.list": "7b1b39f438c1055b155cd3b26c76a4fe8e97f2dc285ba9db5d229c434568becb",
+    "direct-override.list": "61d3b4f94cedb30b6c6b12e9602f1bae41895f5043be4d93269ae71861f176c7",
+    "discord.list": "a6f6c824c444e8e403a91c17221ba21a7c9b2d122134603d06bc74c02cb47824",
+    "disney-plus.list": "677e48cc64f6d042209250be4632d8b5b4a92407b789991f875288568d9eaf57",
+    "emby.list": "dc263d0bdab66995784281e01d594d145db4f94823115dc165c7dce15c6424fd",
+    "game-download.list": "ad086fea01131a6f4a216772b27a8a9587d5460129c7f34b0bbaafee76498a30",
+    "game-platform.list": "a52afe451bf80ff9b035cece75a946ba675879d54a2b0d2cd9c67b43c0c1d949",
+    "global-media.list": "826060071823e8ea3e3ed7be04442534899eec306ed4f958c4ce74de09312c0c",
+    "global-web.list": "5569a7fa8b8873d83150bdb8a6bc71a3b8df3539203575a82f977eb965b7a6a1",
+    "google.list": "28ba611f655aa01c8f475974d204f0607c75ae00e1078725c71591748198bfdb",
+    "hbo-go.list": "0b1fdf757f895d1df4a29dc54a079854253f9d5be48d4c5327904c66feec0eff",
+    "hbo-max.list": "513fe9c96042ff5bae3f57e27c56ead34b34762dea14abe5bf71271ff58ece54",
+    "icloud.list": "a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
+    "instagram.list": "2c53e50d9ace34812d766055953f1bd4211d2cf1260bcef42959f470bf4469fa",
+    "iqiyi.list": "c0c0c850fef3e7df828c7c368f9af0d41dff54e4379b2376c29056df067602c0",
+    "kktv.list": "66ecc3be50cc4afdf368cbcc5d975695804466b3c49a80424ec261b3acb02266",
+    "mail.list": "4a03a077bbb03f2b7d1dd2a13e9635a603f3bf3fbce8f96e2954f4676a3b1b29",
+    "media-japan.list": "97d5d91c46e0bb66ceadbdfebca950c6b9baec5537c74f3a6672a3456825ce95",
+    "media-korea.list": "67f1c3d28312522b0d3b387834b99107577b354663eeef7e1aeb87613c69352e",
+    "media-taiwan.list": "03e875ee481619eab8925b0a25f4b0200b29d98ad907737d46364edbcc5bef14",
+    "messaging.list": "2ec540befe31b4aae8f6730e6b76c41655211614f841d237a4b4ad626e714130",
+    "microsoft.list": "0aee7ba78b96b4d0fccc8c1329bd8824f50f393c3c91d15cc468df7f1531c4c3",
+    "music-2.list": "130d014be09cfcadc091784fc7f0a3944be7dbb3cbc665363da165c49e8dc393",
+    "music.list": "d0acd90412c681d3e8a325a1630c05471495ebc855c3c74a7a8f97d4364cfd1f",
+    "netflix.list": "ba02baf25c118e886d21d100fbbb5b8668fbd3f80a154c6a91d2e94f1d1ae69a",
+    "onedrive.list": "70b2124935f9ed33e71bd6b2f6ee8ebb255fc0c31e1c9daea67312f42ed2e551",
+    "openai.list": "7d71400738ad88053f31a71a93a533c4eb09d757374e996aabb873f28df9f90b",
+    "prime-video.list": "b47f4c0600f095cf0c022b5ee45e5b4de6e4237316a7d1e4f77afb675fd7e48e",
+    "tiktok.list": "70ab7aa87682d8d54a45fa3f368b121d273042bb570451fb68207edbc92c1490",
+    "viutv.list": "1cf8c23c5ec95daf721e7a6726347c947973a7d55b203244f9a18546cb12c423",
+    "yahoo.list": "baa68a5f003148300b2b800562dd8bd388a157989330c057a6d96d527f48c06f",
+    "youtube.list": "5ed051f8c556dbef3838c470d3b22fb2e1a197ec0824fa0f68de05a05256ec14"
+  },
+  "segment_order": [
+    {
+      "slug": "direct-override",
+      "target": "DIRECT"
+    },
+    {
+      "slug": "openai",
+      "target": "🧲 OpenAI"
+    },
+    {
+      "slug": "claude",
+      "target": "🧲 Claude"
+    },
+    {
+      "slug": "onedrive",
+      "target": "🔖 OneDrive"
+    },
+    {
+      "slug": "discord",
+      "target": "🎙 Discord"
+    },
+    {
+      "slug": "instagram",
+      "target": "📲 Instagram"
+    },
+    {
+      "slug": "mail",
+      "target": "📪 邮件服务"
+    },
+    {
+      "slug": "messaging",
+      "target": "📲 聊天软件"
+    },
+    {
+      "slug": "game-download",
+      "target": "🎮 游戏下载"
+    },
+    {
+      "slug": "game-platform",
+      "target": "🎮 游戏平台"
+    },
+    {
+      "slug": "media-korea",
+      "target": "🎬 韩国媒体"
+    },
+    {
+      "slug": "media-taiwan",
+      "target": "🎬 台湾媒体"
+    },
+    {
+      "slug": "prime-video",
+      "target": "🎬 PrimeVideo"
+    },
+    {
+      "slug": "viutv",
+      "target": "🎬 viuTV"
+    },
+    {
+      "slug": "kktv",
+      "target": "🎬 KKTV"
+    },
+    {
+      "slug": "bahamut",
+      "target": "🎬 巴哈姆特"
+    },
+    {
+      "slug": "media-japan",
+      "target": "🎬 日本媒体"
+    },
+    {
+      "slug": "youtube",
+      "target": "🎬 YouTube"
+    },
+    {
+      "slug": "music",
+      "target": "🎵 音乐平台"
+    },
+    {
+      "slug": "disney-plus",
+      "target": "🎬 DisneyPlus"
+    },
+    {
+      "slug": "hbo-go",
+      "target": "🎬 HBOGO"
+    },
+    {
+      "slug": "hbo-max",
+      "target": "🎬 HBOMAX"
+    },
+    {
+      "slug": "emby",
+      "target": "🎬 EMBY"
+    },
+    {
+      "slug": "dazn",
+      "target": "🎬 Dazn"
+    },
+    {
+      "slug": "apple-tv-plus",
+      "target": "🎬 AppleTV+"
+    },
+    {
+      "slug": "bilibili-sea",
+      "target": "🎬 B站东南亚"
+    },
+    {
+      "slug": "bilibili-hmt",
+      "target": "🎬 B站港澳台"
+    },
+    {
+      "slug": "iqiyi",
+      "target": "🎬 爱奇艺"
+    },
+    {
+      "slug": "music-2",
+      "target": "🎵 音乐平台"
+    },
+    {
+      "slug": "tiktok",
+      "target": "🎶 TikTok"
+    },
+    {
+      "slug": "netflix",
+      "target": "🎬 Netflix"
+    },
+    {
+      "slug": "icloud",
+      "target": "☁️ iCloud"
+    },
+    {
+      "slug": "bing",
+      "target": "🔎 Bing"
+    },
+    {
+      "slug": "microsoft",
+      "target": "🧩 微软服务"
+    },
+    {
+      "slug": "apple",
+      "target": "🍎 苹果服务"
+    },
+    {
+      "slug": "global-media",
+      "target": "🌏 国外流媒体"
+    },
+    {
+      "slug": "google",
+      "target": "🔎 Google"
+    },
+    {
+      "slug": "yahoo",
+      "target": "🔎 Yahoo"
+    },
+    {
+      "slug": "academic",
+      "target": "🌏 学术网站"
+    },
+    {
+      "slug": "global-web",
+      "target": "🌏 国外网站"
+    },
+    {
+      "slug": "china-media",
+      "target": "🌏 国内流媒体"
+    },
+    {
+      "slug": "china-web",
+      "target": "🌏 国内网站"
+    },
+    {
+      "slug": "final",
+      "target": "🐟 漏网之鱼"
+    }
+  ],
+  "proxy_group_order": [
+    "♻️ 手动切换",
+    "🔎 Google",
+    "🔎 Bing",
+    "🔎 Yahoo",
+    "🧲 OpenAI",
+    "🧲 Claude",
+    "📲 聊天软件",
+    "📲 Instagram",
+    "🎙 Discord",
+    "🎬 YouTube",
+    "🎬 Netflix",
+    "🎬 DisneyPlus",
+    "🎬 巴哈姆特",
+    "🎬 viuTV",
+    "🎬 KKTV",
+    "🎬 日本媒体",
+    "🎬 韩国媒体",
+    "🎬 台湾媒体",
+    "🎬 AppleTV+",
+    "🎬 HBOGO",
+    "🎬 HBOMAX",
+    "🎬 PrimeVideo",
+    "🎬 EMBY",
+    "🎬 Dazn",
+    "🎶 TikTok",
+    "🎵 音乐平台",
+    "🎬 爱奇艺",
+    "🎬 B站港澳台",
+    "🎬 B站东南亚",
+    "🌏 国外流媒体",
+    "🌏 国内流媒体",
+    "🔖 OneDrive",
+    "☁️ iCloud",
+    "🧩 微软服务",
+    "🍎 苹果服务",
+    "🎮 游戏平台",
+    "🎮 游戏下载",
+    "📪 邮件服务",
+    "🌏 学术网站",
+    "🌏 国外网站",
+    "🌏 国内网站",
+    "🐟 漏网之鱼"
+  ],
+  "summary": {
+    "segments": 43,
+    "rulesets": 42,
+    "groups": 42,
+    "rules": 15541,
+    "destination_ip_rules": 2205,
+    "coverage": {
+      "global": {
+        "exact_occurrences": 1666,
+        "broad_coverage_occurrences": 1157,
+        "overlap_between_categories": 334,
+        "union": 2489
+      },
+      "within_same_segment": {
+        "exact_occurrences": 0,
+        "broad_coverage_occurrences": 1035,
+        "overlap_between_categories": 0,
+        "union": 1035
+      },
+      "cross_segment_only": {
+        "union": 1454
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "private-ip",
+      "input": {
+        "ip": "10.0.0.1"
+      },
+      "result": {
+        "slug": "china-web",
+        "target": "🌏 国内网站",
+        "rule": "IP-CIDR,10.0.0.0/8,no-resolve"
+      }
+    },
+    {
+      "id": "private-router",
+      "input": {
+        "domain": "router.asus.com"
+      },
+      "result": {
+        "slug": "china-web",
+        "target": "🌏 国内网站",
+        "rule": "DOMAIN,router.asus.com"
+      }
+    },
+    {
+      "id": "ai-cursor",
+      "input": {
+        "domain": "cursor.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,cursor.com"
+      }
+    },
+    {
+      "id": "ai-huggingface",
+      "input": {
+        "domain": "huggingface.co"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,huggingface.co"
+      }
+    },
+    {
+      "id": "ai-poe",
+      "input": {
+        "domain": "poe.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,poe.com"
+      }
+    },
+    {
+      "id": "social-x",
+      "input": {
+        "domain": "x.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,x.com"
+      }
+    },
+    {
+      "id": "social-reddit",
+      "input": {
+        "domain": "reddit.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,reddit.com"
+      }
+    },
+    {
+      "id": "social-facebook",
+      "input": {
+        "domain": "facebook.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-KEYWORD,facebook"
+      }
+    },
+    {
+      "id": "dev-github",
+      "input": {
+        "domain": "github.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-KEYWORD,github"
+      }
+    },
+    {
+      "id": "dev-gitlab",
+      "input": {
+        "domain": "gitlab.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,gitlab.com"
+      }
+    },
+    {
+      "id": "dev-docker",
+      "input": {
+        "domain": "docker.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,docker.com"
+      }
+    },
+    {
+      "id": "dev-stackoverflow",
+      "input": {
+        "domain": "stackoverflow.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,stackoverflow.com"
+      }
+    },
+    {
+      "id": "line",
+      "input": {
+        "domain": "line.me"
+      },
+      "result": {
+        "slug": "messaging",
+        "target": "📲 聊天软件",
+        "rule": "DOMAIN-SUFFIX,line.me"
+      }
+    },
+    {
+      "id": "kakao",
+      "input": {
+        "domain": "kakao.com"
+      },
+      "result": {
+        "slug": "messaging",
+        "target": "📲 聊天软件",
+        "rule": "DOMAIN-SUFFIX,kakao.com"
+      }
+    },
+    {
+      "id": "whatsapp",
+      "input": {
+        "domain": "whatsapp.com"
+      },
+      "result": {
+        "slug": "messaging",
+        "target": "📲 聊天软件",
+        "rule": "DOMAIN-SUFFIX,whatsapp.com"
+      }
+    },
+    {
+      "id": "telegram",
+      "input": {
+        "domain": "telegram.org"
+      },
+      "result": {
+        "slug": "messaging",
+        "target": "📲 聊天软件",
+        "rule": "DOMAIN-SUFFIX,telegram.org"
+      }
+    },
+    {
+      "id": "tidal",
+      "input": {
+        "domain": "tidal.com"
+      },
+      "result": {
+        "slug": "music",
+        "target": "🎵 音乐平台",
+        "rule": "DOMAIN-SUFFIX,tidal.com"
+      }
+    },
+    {
+      "id": "spotify",
+      "input": {
+        "domain": "spotify.com"
+      },
+      "result": {
+        "slug": "music-2",
+        "target": "🎵 音乐平台",
+        "rule": "DOMAIN-SUFFIX,spotify.com"
+      }
+    },
+    {
+      "id": "spotify-legacy",
+      "input": {
+        "domain": "pscdn.co"
+      },
+      "result": {
+        "slug": "music-2",
+        "target": "🎵 音乐平台",
+        "rule": "DOMAIN-SUFFIX,pscdn.co"
+      }
+    },
+    {
+      "id": "qobuz",
+      "input": {
+        "domain": "qobuz.com"
+      },
+      "result": {
+        "slug": "music-2",
+        "target": "🎵 音乐平台",
+        "rule": "DOMAIN-SUFFIX,qobuz.com"
+      }
+    },
+    {
+      "id": "qobuz-typo",
+      "input": {
+        "domain": "quobuz.com"
+      },
+      "result": {
+        "slug": "music-2",
+        "target": "🎵 音乐平台",
+        "rule": "DOMAIN-SUFFIX,quobuz.com"
+      }
+    },
+    {
+      "id": "apple-music",
+      "input": {
+        "domain": "music.apple.com"
+      },
+      "result": {
+        "slug": "music-2",
+        "target": "🎵 音乐平台",
+        "rule": "DOMAIN-SUFFIX,music.apple.com"
+      }
+    },
+    {
+      "id": "emby-community",
+      "input": {
+        "domain": "pub1.emby.wtf"
+      },
+      "result": {
+        "slug": "emby",
+        "target": "🎬 EMBY",
+        "rule": "DOMAIN-KEYWORD,emby"
+      }
+    },
+    {
+      "id": "openai-shared-statsig",
+      "input": {
+        "domain": "statsig.com"
+      },
+      "result": {
+        "slug": "openai",
+        "target": "🧲 OpenAI",
+        "rule": "DOMAIN-SUFFIX,statsig.com"
+      }
+    },
+    {
+      "id": "openai-shared-intercom",
+      "input": {
+        "domain": "intercom.io"
+      },
+      "result": {
+        "slug": "openai",
+        "target": "🧲 OpenAI",
+        "rule": "DOMAIN-SUFFIX,intercom.io"
+      }
+    },
+    {
+      "id": "claude-shared-storage",
+      "input": {
+        "domain": "storage.googleapis.com"
+      },
+      "result": {
+        "slug": "claude",
+        "target": "🧲 Claude",
+        "rule": "DOMAIN-SUFFIX,storage.googleapis.com"
+      }
+    },
+    {
+      "id": "claude-shared-cloudflare",
+      "input": {
+        "domain": "cdn.cloudflare.net"
+      },
+      "result": {
+        "slug": "claude",
+        "target": "🧲 Claude",
+        "rule": "DOMAIN-SUFFIX,cdn.cloudflare.net"
+      }
+    },
+    {
+      "id": "dazn-shared-yahoo",
+      "input": {
+        "domain": "s.yimg.jp"
+      },
+      "result": {
+        "slug": "dazn",
+        "target": "🎬 Dazn",
+        "rule": "DOMAIN-SUFFIX,s.yimg.jp"
+      }
+    },
+    {
+      "id": "shared-aws",
+      "input": {
+        "domain": "example.amazonaws.com"
+      },
+      "result": {
+        "slug": "global-media",
+        "target": "🌏 国外流媒体",
+        "rule": "DOMAIN-SUFFIX,amazonaws.com"
+      }
+    },
+    {
+      "id": "shared-cloudfront",
+      "input": {
+        "domain": "example.cloudfront.net"
+      },
+      "result": {
+        "slug": "global-media",
+        "target": "🌏 国外流媒体",
+        "rule": "DOMAIN-SUFFIX,cloudfront.net"
+      }
+    },
+    {
+      "id": "dazn-specific-cdn",
+      "input": {
+        "domain": "dcalivedazn.akamaized.net"
+      },
+      "result": {
+        "slug": "dazn",
+        "target": "🎬 Dazn",
+        "rule": "DOMAIN-SUFFIX,dcalivedazn.akamaized.net"
+      }
+    },
+    {
+      "id": "hbo-max",
+      "input": {
+        "domain": "hbomax.com"
+      },
+      "result": {
+        "slug": "hbo-max",
+        "target": "🎬 HBOMAX",
+        "rule": "DOMAIN-SUFFIX,hbomax.com"
+      }
+    },
+    {
+      "id": "hulu",
+      "input": {
+        "domain": "hulu.com"
+      },
+      "result": {
+        "slug": "hbo-max",
+        "target": "🎬 HBOMAX",
+        "rule": "DOMAIN-SUFFIX,hulu.com"
+      }
+    },
+    {
+      "id": "discovery",
+      "input": {
+        "domain": "discoveryplus.com"
+      },
+      "result": {
+        "slug": "hbo-max",
+        "target": "🎬 HBOMAX",
+        "rule": "DOMAIN-SUFFIX,discoveryplus.com"
+      }
+    },
+    {
+      "id": "japan-abema",
+      "input": {
+        "domain": "abema.tv"
+      },
+      "result": {
+        "slug": "media-japan",
+        "target": "🎬 日本媒体",
+        "rule": "DOMAIN-SUFFIX,abema.tv"
+      }
+    },
+    {
+      "id": "korea-wavve",
+      "input": {
+        "domain": "wavve.com"
+      },
+      "result": {
+        "slug": "media-korea",
+        "target": "🎬 韩国媒体",
+        "rule": "DOMAIN-SUFFIX,wavve.com"
+      }
+    },
+    {
+      "id": "taiwan-friday",
+      "input": {
+        "domain": "friday.tw"
+      },
+      "result": {
+        "slug": "media-taiwan",
+        "target": "🎬 台湾媒体",
+        "rule": "DOMAIN-SUFFIX,friday.tw"
+      }
+    },
+    {
+      "id": "apple-core",
+      "input": {
+        "domain": "apple.com"
+      },
+      "result": {
+        "slug": "apple",
+        "target": "🍎 苹果服务",
+        "rule": "DOMAIN-SUFFIX,apple.com"
+      }
+    },
+    {
+      "id": "apple-legacy-mail",
+      "input": {
+        "domain": "me.com"
+      },
+      "result": {
+        "slug": "icloud",
+        "target": "☁️ iCloud",
+        "rule": "DOMAIN-SUFFIX,me.com"
+      }
+    },
+    {
+      "id": "google-core",
+      "input": {
+        "domain": "google.com"
+      },
+      "result": {
+        "slug": "google",
+        "target": "🔎 Google",
+        "rule": "DOMAIN-SUFFIX,google.com"
+      }
+    },
+    {
+      "id": "alphabet-waymo",
+      "input": {
+        "domain": "waymo.com"
+      },
+      "result": {
+        "slug": "google",
+        "target": "🔎 Google",
+        "rule": "DOMAIN-SUFFIX,waymo.com"
+      }
+    },
+    {
+      "id": "community-vikacg",
+      "input": {
+        "domain": "vikacg.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,vikacg.com"
+      }
+    },
+    {
+      "id": "streaming-neulion",
+      "input": {
+        "domain": "neulion.com"
+      },
+      "result": {
+        "slug": "global-web",
+        "target": "🌏 国外网站",
+        "rule": "DOMAIN-SUFFIX,neulion.com"
+      }
+    },
+    {
+      "id": "final",
+      "input": {
+        "domain": "example.invalid"
+      },
+      "result": {
+        "slug": "final",
+        "target": "🐟 漏网之鱼",
+        "rule": "MATCH"
+      }
+    }
+  ]
+}

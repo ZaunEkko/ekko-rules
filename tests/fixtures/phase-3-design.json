@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "phase": "phase-3-specialization",
+  "principles": [
+    "Specialize AI, entertainment, games, and high-confidence NSFW traffic.",
+    "Delete generic and low-value rules instead of moving them to another catch-all ruleset.",
+    "Let MATCH handle ordinary uncategorized traffic.",
+    "Preserve the existing fallback group member order.",
+    "Require no-resolve on every destination-IP rule."
+  ],
+  "products": {
+    "core": {
+      "proxy_groups": 37
+    },
+    "extended": {
+      "proxy_groups": 38,
+      "additional_groups": [
+        "🎬 EMBY"
+      ]
+    }
+  },
+  "core_group_order": [
+    "♻️ 手动切换",
+    "🌐 海外 AI",
+    "🔎 Google",
+    "🧲 OpenAI",
+    "🧲 Claude",
+    "🗣 社交媒体",
+    "📲 聊天软件",
+    "🎙 Discord",
+    "🧑‍💻 开发服务",
+    "🎬 YouTube",
+    "🎬 Netflix",
+    "🎬 DisneyPlus",
+    "🎬 港澳台媒体",
+    "🎬 日本媒体",
+    "🎬 韩国媒体",
+    "🎬 AppleTV+",
+    "🎬 HBOGO",
+    "🎬 HBOMAX",
+    "🎬 PrimeVideo",
+    "🎬 Dazn",
+    "🎶 TikTok",
+    "🎵 音乐平台",
+    "🎬 爱奇艺",
+    "🎬 B站港澳台",
+    "🎬 东南亚媒体",
+    "🇺🇸 美国流媒体",
+    "🌏 国外流媒体",
+    "🌏 国内流媒体",
+    "☁️ 云盘服务",
+    "🧩 微软服务",
+    "🍎 苹果服务",
+    "🎮 游戏平台",
+    "🎮 游戏下载",
+    "📪 邮件服务",
+    "🔞 NSFW",
+    "🌏 国内网站",
+    "🐟 漏网之鱼"
+  ],
+  "removed_groups": [
+    "🔎 Bing",
+    "🔎 Yahoo",
+    "📲 Instagram",
+    "🎬 巴哈姆特",
+    "🎬 viuTV",
+    "🎬 KKTV",
+    "🔖 OneDrive",
+    "☁️ iCloud",
+    "🌏 学术网站",
+    "🌏 国外网站"
+  ],
+  "renamed_or_merged_groups": {
+    "🧠 AI 服务": "🌐 海外 AI",
+    "🔎 Bing": "🧩 微软服务",
+    "📲 Instagram": "🗣 社交媒体",
+    "🎬 巴哈姆特": "🎬 港澳台媒体",
+    "🎬 viuTV": "🎬 港澳台媒体",
+    "🎬 KKTV": "🎬 港澳台媒体",
+    "🎬 台湾媒体": "🎬 港澳台媒体",
+    "🎬 B站东南亚": "🎬 东南亚媒体",
+    "🔖 OneDrive": "☁️ 云盘服务",
+    "☁️ iCloud": "☁️ 云盘服务"
+  },
+  "groups_removed_to_final": [
+    "🔎 Yahoo",
+    "🌏 学术网站",
+    "🌏 国外网站"
+  ],
+  "new_groups": [
+    "🇺🇸 美国流媒体",
+    "🔞 NSFW"
+  ],
+  "segments": {
+    "delete": [
+      "academic",
+      "community-overrides",
+      "global-web",
+      "streaming-legacy",
+      "yahoo"
+    ],
+    "add": [
+      {
+        "slug": "google-ai",
+        "target": "🌐 海外 AI",
+        "scope": "core"
+      },
+      {
+        "slug": "xai",
+        "target": "🌐 海外 AI",
+        "scope": "core"
+      },
+      {
+        "slug": "microsoft-ai",
+        "target": "🌐 海外 AI",
+        "scope": "core"
+      },
+      {
+        "slug": "ai-developer",
+        "target": "🌐 海外 AI",
+        "scope": "core"
+      },
+      {
+        "slug": "nsfw",
+        "target": "🔞 NSFW",
+        "scope": "core"
+      },
+      {
+        "slug": "us-media",
+        "target": "🇺🇸 美国流媒体",
+        "scope": "core"
+      }
+    ],
+    "retarget": {
+      "ai-platforms": "🌐 海外 AI",
+      "onedrive": "☁️ 云盘服务",
+      "instagram": "🗣 社交媒体",
+      "media-taiwan": "🎬 港澳台媒体",
+      "viutv": "🎬 港澳台媒体",
+      "kktv": "🎬 港澳台媒体",
+      "bahamut": "🎬 港澳台媒体",
+      "bilibili-sea": "🎬 东南亚媒体",
+      "icloud": "☁️ 云盘服务",
+      "bing": "🧩 微软服务"
+    },
+    "preserve_independent": [
+      "openai",
+      "claude",
+      "youtube",
+      "netflix",
+      "disney-plus",
+      "bilibili-hmt",
+      "apple-tv-plus",
+      "hbo-go",
+      "hbo-max",
+      "prime-video",
+      "dazn",
+      "game-platform",
+      "game-download"
+    ],
+    "rebuild": [
+      "apple",
+      "china-media",
+      "game-platform",
+      "global-media",
+      "google",
+      "microsoft",
+      "netflix"
+    ]
+  },
+  "nsfw_policy": {
+    "rule_type": "DOMAIN-SUFFIX",
+    "target_rules": 38,
+    "move_without_copying": true,
+    "forbid_keywords": [
+      "adult",
+      "hentai",
+      "jav",
+      "porn",
+      "sex",
+      "xxx"
+    ],
+    "forbid_shared_infrastructure_roots": true
+  },
+  "destination_ip_rule_types": [
+    "IP-CIDR",
+    "IP-CIDR6",
+    "IP-SUFFIX",
+    "IP-ASN",
+    "GEOIP"
+  ],
+  "final_group_members": [
+    "♻️ 手动切换",
+    "DIRECT",
+    "__ALL_SUBSCRIPTION_NODES__"
+  ]
+}

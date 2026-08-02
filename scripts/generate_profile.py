@@ -12,6 +12,7 @@ from profile_model import (
     ProfileError,
     compare_trees,
     load_profile_sources,
+    parse_json_document,
     render_profile,
 )
 
@@ -49,8 +50,10 @@ def require_owned_output(path: Path) -> None:
     require_directory(path)
     manifest_path = path / "manifest.json"
     try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        manifest = parse_json_document(
+            manifest_path.read_text(encoding="utf-8"), context=str(manifest_path)
+        )
+    except (OSError, UnicodeError, ProfileError) as exc:
         raise ProfileError(
             f"Refusing to replace an unrecognized existing directory: {path}"
         ) from exc
@@ -151,9 +154,14 @@ def main() -> int:
                 {
                     "status": "generated",
                     "output": str(output_path),
-                    "segments": len(sources.segments),
-                    "rule_files": len(sources.rule_segments),
-                    "proxy_groups": len(sources.proxy_groups),
+                    "products": {
+                        product: {
+                            "segments": len(sources.segments_for(product)),
+                            "rule_files": len(sources.rule_segments_for(product)),
+                            "proxy_groups": len(sources.proxy_groups_for(product)),
+                        }
+                        for product in ("core", "extended")
+                    },
                     "previous_output_was_current": diff.clean,
                     "previous_difference": diff.as_dict(),
                 },

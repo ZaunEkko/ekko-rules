@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "baseline_head": "f1adf157e05925e34bf5876cf7e148f4788f4fe6",
+  "old_rules": 15540,
+  "core_rules": 15411,
+  "extended_only_rules": 106,
+  "removed_occurrences": 23,
+  "extended_rules": 15517,
+  "equations": [
+    "15540 = 15517 + 23",
+    "15517 = 15411 + 106"
+  ],
+  "added_rules": 0,
+  "removed": [
+    {
+      "rule": "DOMAIN,js.intercomcdn.com",
+      "occurrences_removed": 1,
+      "reason": "covered by intercomcdn.com after shared-vendor move"
+    },
+    {
+      "rule": "DOMAIN-KEYWORD,anthropic",
+      "occurrences_removed": 1,
+      "reason": "overbroad keyword removed; explicit Anthropic suffixes remain"
+    },
+    {
+      "rule": "DOMAIN-KEYWORD,claude",
+      "occurrences_removed": 1,
+      "reason": "overbroad keyword removed; explicit Claude suffixes remain"
+    },
+    {
+      "rule": "DOMAIN-KEYWORD,openai",
+      "occurrences_removed": 1,
+      "reason": "overbroad keyword removed; explicit OpenAI suffixes remain"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,akamaized.net",
+      "occurrences_removed": 1,
+      "reason": "shared CDN root removed from global-media; global-web remains"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,amazonaws.com",
+      "occurrences_removed": 1,
+      "reason": "shared cloud root removed from global-media; global-web remains"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,amplitude.com",
+      "occurrences_removed": 1,
+      "reason": "shared telemetry; existing global-web rule remains"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,analytics.google.com",
+      "occurrences_removed": 1,
+      "reason": "shared Google analytics infrastructure"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,cloudfront.net",
+      "occurrences_removed": 1,
+      "reason": "shared CDN root removed from global-media; global-web remains"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,cobeuz.fr",
+      "occurrences_removed": 1,
+      "reason": "Qobuz typo moved to optional ruleset; later duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,cobuz.fr",
+      "occurrences_removed": 1,
+      "reason": "Qobuz typo moved to optional ruleset; later duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,cobuzz.fr",
+      "occurrences_removed": 1,
+      "reason": "Qobuz typo moved to optional ruleset; later duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,events.statsigapi.net",
+      "occurrences_removed": 1,
+      "reason": "covered by statsigapi.net after shared-vendor move"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,intercom.io",
+      "occurrences_removed": 1,
+      "reason": "shared vendor duplicate removed from DAZN or global-media"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,kobuz.fr",
+      "occurrences_removed": 1,
+      "reason": "Qobuz typo moved to optional ruleset; later duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,pscdn.co",
+      "occurrences_removed": 1,
+      "reason": "Spotify legacy moved to optional ruleset; later duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,quobuz.com",
+      "occurrences_removed": 1,
+      "reason": "Qobuz typo moved to optional ruleset; later duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,quobuz.fr",
+      "occurrences_removed": 1,
+      "reason": "Qobuz typo moved to optional ruleset; later duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,s.yimg.jp",
+      "occurrences_removed": 2,
+      "reason": "covered by Yahoo yimg.jp"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,spotilocal.com",
+      "occurrences_removed": 1,
+      "reason": "stale Spotify domain already approved in ER-004; residual duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,static-qobuz.com",
+      "occurrences_removed": 1,
+      "reason": "stale Qobuz domain already approved in ER-004; residual duplicate removed"
+    },
+    {
+      "rule": "DOMAIN-SUFFIX,storage.googleapis.com",
+      "occurrences_removed": 1,
+      "reason": "shared Google infrastructure; googleapis.com handles this input"
+    }
+  ]
+}

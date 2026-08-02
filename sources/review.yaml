@@ -1,121 +1,154 @@
 schema_version: 1
-reviewed_on: 2026-07-30
-purpose: >-
-  Non-generating review queue for uncertain, legacy, brand-defense, personal/community,
-  or relocation candidates. Entries here never change generated routing by themselves.
+reviewed_on: 2026-08-01
+purpose: Non-generating review queue for uncertain, legacy, brand-defense, personal/community, or relocation candidates. Entries here never change generated routing by themselves.
 allowed_statuses:
-  - observe
-  - legacy
-  - brand-defense
-  - personal-community
-  - candidate-remove
-  - candidate-move
+- observe
+- legacy
+- brand-defense
+- personal-community
+- candidate-remove
+- candidate-move
 items:
-  - id: apple-brand-defense
-    status: brand-defense
-    scope: apple
-    summary: Apple defensive registrations and non-core domains need category-level review.
-    evidence:
-      - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Apple
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: apple-brand-defense
-
-  - id: apple-legacy-products
-    status: legacy
-    scope: apple
-    summary: Historical Apple products and compatibility domains require usage evidence before removal.
-    evidence:
-      - https://www.apple.com/newsroom/2022/05/the-music-lives-on/
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: apple-legacy
-
-  - id: google-brand-defense
-    status: brand-defense
-    scope: google
-    summary: Google and Alphabet defensive registrations must be separated from confirmed service domains.
-    evidence:
-      - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Google
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: google-brand-defense
-
-  - id: google-legacy-products
-    status: legacy
-    scope: google
-    summary: Discontinued Google product domains require compatibility review before removal.
-    evidence:
-      - https://github.com/v2fly/domain-list-community/commit/8dc538dce9bcdd5650c2dcbce077c44ac44f5a28
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: google-legacy
-
-  - id: alphabet-and-community
-    status: candidate-move
-    scope: google
-    summary: Alphabet sibling companies and open-source/community properties may not belong to Google core routing.
-    evidence:
-      - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Google
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: developer-and-community
-
-  - id: emby-community-servers
-    status: personal-community
-    scope: emby
-    summary: Personal and community Emby endpoints are preference-specific and need a separate optional layer.
-    evidence:
-      - sources/rules/emby.list
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: emby-community
-
-  - id: global-web-personal-community
-    status: personal-community
-    scope: global-web
-    summary: bit.no.com, btlibrary.me, cccat.io, vikacg.com, and picjs.xyz are personal/community preferences rather than universal global-web infrastructure.
-    evidence:
-      - https://github.com/ACL4SSR/ACL4SSR/blob/cc5226ec097907cb6d679bc95cebf798aea008f2/Clash/ProxyGFWlist.list
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: optional-community-layer
-
-  - id: historical-streaming-hosts
-    status: observe
-    scope: global-web
-    summary: neulion.com, icntv.xyz, and flzbcdn.xyz require service-specific evidence; acquisition, 403, or one failed connection is not sufficient for automatic deletion.
-    evidence:
-      - https://www.globenewswire.com/news-release/2018/05/07/1497585/0/en/NeuLion-Announces-Closing-of-Acquisition-by-Endeavor.html
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: streaming-legacy
-
-  - id: spotify-legacy-cdn
-    status: observe
-    scope: music-2
-    summary: pscdn.co has historical Spotify CDN evidence and an active parent zone but no confirmed current sample; do not remove from one NODATA result.
-    evidence:
-      - https://www.netify.ai/resources/domains/pscdn.co
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: spotify-core
-
-  - id: qobuz-brand-defense
-    status: brand-defense
-    scope: music-2
-    summary: Qobuz typo domains still redirect but may belong in an optional brand-defense layer instead of core playback routing.
-    evidence:
-      - https://www.qobuz.com/
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: qobuz-brand-defense
-
-  - id: transient-resolution-failures
-    status: observe
-    scope: all
-    summary: NXDOMAIN with a live parent zone, NODATA, SERVFAIL, 403, timeout, or TLS errors are insufficient removal evidence alone.
-    evidence: []
-    first_observed: 2026-07-30
-    last_verified: 2026-07-30
-    phase_2_candidate: evidence-refresh
+- id: apple-brand-defense
+  status: brand-defense
+  scope: apple
+  summary: Apple defensive registrations and non-core domains need category-level review.
+  evidence:
+  - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Apple
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: apple-brand-defense
+  recommended_action: split-deferred
+  preset: core-and-optional
+  resolution: Phase 3 keeps only evidenced Apple core rules. Historical brand-defense entries that reappear in apple-late-recovery are retained solely to restore Phase 2 DIRECT-default routing; their current Apple ownership is not reverified, and exact classification remains deferred to a separately evidenced batch.
+- id: apple-legacy-products
+  status: legacy
+  scope: apple
+  summary: Historical Apple products and compatibility domains require usage evidence before removal.
+  evidence:
+  - https://www.apple.com/newsroom/2022/05/the-music-lives-on/
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: apple-legacy
+  recommended_action: split-deferred
+  preset: core-and-optional
+  resolution: Phase 3 keeps evidenced current Apple roots. Historical product and compatibility entries that reappear in apple-late-recovery preserve Phase 2 DIRECT-default behavior only; they remain legacy review candidates rather than newly validated Apple ownership.
+- id: google-brand-defense
+  status: brand-defense
+  scope: google
+  summary: Google and Alphabet defensive registrations must be separated from confirmed service domains.
+  evidence:
+  - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Google
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: google-brand-defense
+  recommended_action: split-deferred
+  preset: core-and-optional
+  resolution: Confirmed typo and homograph domains will move to optional after DOMAIN-KEYWORD,google and service-bearing roots are resolved.
+- id: google-legacy-products
+  status: legacy
+  scope: google
+  summary: Discontinued Google product domains require compatibility review before removal.
+  evidence:
+  - https://github.com/v2fly/domain-list-community/commit/8dc538dce9bcdd5650c2dcbce077c44ac44f5a28
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: google-legacy
+  recommended_action: split-deferred
+  preset: core-and-optional
+  resolution: Shutdown products will move to optional while compatibility endpoints and shared backends remain core.
+- id: alphabet-and-community
+  status: candidate-move
+  scope: google
+  summary: Alphabet sibling companies and open-source/community properties may not belong to Google core routing.
+  evidence:
+  - https://github.com/blackmatrix7/ios_rule_script/tree/011471410d3fcc3301c168ee91eb92bc74ebded6/rule/Clash/Google
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: developer-and-community
+  recommended_action: split-deferred
+  preset: core
+  resolution: Alphabet siblings, independent Verily, Google OSS, neutral standards, and Google infrastructure require a complete Google line ledger.
+- id: emby-community-servers
+  status: candidate-move
+  scope: emby
+  summary: Personal and community Emby endpoints are preference-specific and need a separate optional layer.
+  evidence:
+  - sources/rules/emby.list
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: emby-community
+  recommended_action: moved
+  preset: extended
+  resolution: All existing Emby community rules moved to optional emby-community; the default Core no longer creates an EMBY group.
+- id: global-web-personal-community
+  status: candidate-move
+  scope: global-web
+  summary: bit.no.com, btlibrary.me, cccat.io, vikacg.com, and picjs.xyz are personal/community preferences rather than universal global-web infrastructure.
+  evidence:
+  - https://github.com/ACL4SSR/ACL4SSR/blob/cc5226ec097907cb6d679bc95cebf798aea008f2/Clash/ProxyGFWlist.list
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: optional-community-layer
+  recommended_action: removed
+  preset: none
+  resolution: Phase 3 removed the optional community-overrides ruleset; ordinary traffic now reaches FINAL.
+- id: historical-streaming-hosts
+  status: legacy
+  scope: global-web
+  summary: neulion.com, icntv.xyz, and flzbcdn.xyz require service-specific evidence; acquisition, 403, or one failed connection is not sufficient for automatic deletion.
+  evidence:
+  - https://www.globenewswire.com/news-release/2018/05/07/1497585/0/en/NeuLion-Announces-Closing-of-Acquisition-by-Endeavor.html
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: streaming-legacy
+  recommended_action: removed
+  preset: none
+  resolution: Phase 3 removed the streaming-legacy ruleset as a product-scope decision; no reachability failure is claimed as deletion evidence.
+- id: spotify-legacy-cdn
+  status: legacy
+  scope: music-2
+  summary: pscdn.co has historical Spotify CDN evidence and an active parent zone but no confirmed current sample; do not remove from one NODATA result.
+  evidence:
+  - https://www.netify.ai/resources/domains/pscdn.co
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: spotify-core
+  recommended_action: moved
+  preset: extended
+  resolution: pscdn.co moved to spotify-legacy in Extended and its later global-media duplicate was removed.
+- id: qobuz-brand-defense
+  status: candidate-move
+  scope: music-2
+  summary: Qobuz typo domains still redirect but may belong in an optional brand-defense layer instead of core playback routing.
+  evidence:
+  - https://www.qobuz.com/
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: qobuz-brand-defense
+  recommended_action: moved
+  preset: extended
+  resolution: Six typo domains moved to two ordered optional segments so Extended preserves their prior relative positions; correctly spelled alternate TLDs remain Core.
+- id: late-recovery-domain-keywords
+  status: candidate-remove
+  scope: direct-recovery
+  summary: Historical brand substring matchers can route unrelated lookalike domains to DIRECT-default policies.
+  evidence:
+  - https://en.help.roblox.com/hc/en-us/articles/115005744663-Troubleshooting-Education-Networks
+  first_observed: 2026-08-01
+  last_verified: '2026-08-01'
+  phase_2_candidate: direct-default-recovery
+  recommended_action: removed
+  preset: core-and-extended
+  resolution: All seven DOMAIN-KEYWORD candidates are excluded from late recovery. Roblox is replaced by anchored roblox.com and rbxcdn.com suffixes from the official education-network allowlist; the other six keywords were already represented by earlier precise rules. Lookalike domains continue to FINAL.
+- id: transient-resolution-failures
+  status: observe
+  scope: all
+  summary: NXDOMAIN with a live parent zone, NODATA, SERVFAIL, 403, timeout, or TLS errors are insufficient removal evidence alone.
+  evidence: []
+  first_observed: 2026-07-30
+  last_verified: '2026-07-31'
+  phase_2_candidate: evidence-refresh
+  recommended_action: policy-split
+  preset: non-generating
+  resolution: Technical failures and negative DNS/HTTP observations remain evidence policy only and map to no automatic deletion.

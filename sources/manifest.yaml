@@ -20,213 +20,382 @@ segments:
   slug: direct-override
   target: DIRECT
   source: rules/direct-override.list
+  scope: core
 - order: 2
+  kind: ruleset
+  slug: private
+  target: DIRECT
+  source: rules/private.list
+  scope: core
+- order: 3
   kind: ruleset
   slug: openai
   target: 🧲 OpenAI
   source: rules/openai.list
-- order: 3
+  scope: core
+- order: 4
   kind: ruleset
   slug: claude
   target: 🧲 Claude
   source: rules/claude.list
-- order: 4
+  scope: core
+- order: 5
+  kind: ruleset
+  slug: google-ai
+  target: 🌐 海外 AI
+  source: rules/google-ai.list
+  scope: core
+- order: 6
+  kind: ruleset
+  slug: xai
+  target: 🌐 海外 AI
+  source: rules/xai.list
+  scope: core
+- order: 7
+  kind: ruleset
+  slug: microsoft-ai
+  target: 🌐 海外 AI
+  source: rules/microsoft-ai.list
+  scope: core
+- order: 8
+  kind: ruleset
+  slug: ai-developer
+  target: 🌐 海外 AI
+  source: rules/ai-developer.list
+  scope: core
+- order: 9
+  kind: ruleset
+  slug: ai-platforms
+  target: 🌐 海外 AI
+  source: rules/ai-platforms.list
+  scope: core
+- order: 10
   kind: ruleset
   slug: onedrive
-  target: 🔖 OneDrive
+  target: ☁️ 云盘服务
   source: rules/onedrive.list
-- order: 5
+  scope: core
+- order: 11
   kind: ruleset
   slug: discord
   target: 🎙 Discord
   source: rules/discord.list
-- order: 6
+  scope: core
+- order: 12
   kind: ruleset
   slug: instagram
-  target: 📲 Instagram
+  target: 🗣 社交媒体
   source: rules/instagram.list
-- order: 7
+  scope: core
+- order: 13
   kind: ruleset
   slug: mail
   target: 📪 邮件服务
   source: rules/mail.list
-- order: 8
+  scope: core
+- order: 14
   kind: ruleset
-  slug: messaging
+  slug: line
   target: 📲 聊天软件
-  source: rules/messaging.list
-- order: 9
+  source: rules/line.list
+  scope: core
+- order: 15
+  kind: ruleset
+  slug: kakao-talk
+  target: 📲 聊天软件
+  source: rules/kakao-talk.list
+  scope: core
+- order: 16
+  kind: ruleset
+  slug: whatsapp
+  target: 📲 聊天软件
+  source: rules/whatsapp.list
+  scope: core
+- order: 17
+  kind: ruleset
+  slug: telegram
+  target: 📲 聊天软件
+  source: rules/telegram.list
+  scope: core
+- order: 18
+  kind: ruleset
+  slug: social-platforms
+  target: 🗣 社交媒体
+  source: rules/social-platforms.list
+  scope: core
+- order: 19
+  kind: ruleset
+  slug: developer-platforms
+  target: 🧑‍💻 开发服务
+  source: rules/developer-platforms.list
+  scope: core
+- order: 20
   kind: ruleset
   slug: game-download
   target: 🎮 游戏下载
   source: rules/game-download.list
-- order: 10
+  scope: core
+- order: 21
   kind: ruleset
   slug: game-platform
   target: 🎮 游戏平台
   source: rules/game-platform.list
-- order: 11
+  scope: core
+- order: 22
+  kind: ruleset
+  slug: nsfw
+  target: 🔞 NSFW
+  source: rules/nsfw.list
+  scope: core
+- order: 23
   kind: ruleset
   slug: media-korea
   target: 🎬 韩国媒体
   source: rules/media-korea.list
-- order: 12
+  scope: core
+- order: 24
   kind: ruleset
   slug: media-taiwan
-  target: 🎬 台湾媒体
+  target: 🎬 港澳台媒体
   source: rules/media-taiwan.list
-- order: 13
+  scope: core
+- order: 25
   kind: ruleset
   slug: prime-video
   target: 🎬 PrimeVideo
   source: rules/prime-video.list
-- order: 14
+  scope: core
+- order: 26
   kind: ruleset
   slug: viutv
-  target: 🎬 viuTV
+  target: 🎬 港澳台媒体
   source: rules/viutv.list
-- order: 15
+  scope: core
+- order: 27
   kind: ruleset
   slug: kktv
-  target: 🎬 KKTV
+  target: 🎬 港澳台媒体
   source: rules/kktv.list
-- order: 16
+  scope: core
+- order: 28
   kind: ruleset
   slug: bahamut
-  target: 🎬 巴哈姆特
+  target: 🎬 港澳台媒体
   source: rules/bahamut.list
-- order: 17
+  scope: core
+- order: 29
   kind: ruleset
   slug: media-japan
   target: 🎬 日本媒体
   source: rules/media-japan.list
-- order: 18
+  scope: core
+- order: 30
   kind: ruleset
   slug: youtube
   target: 🎬 YouTube
   source: rules/youtube.list
-- order: 19
+  scope: core
+- order: 31
   kind: ruleset
-  slug: music
+  slug: tidal
   target: 🎵 音乐平台
-  source: rules/music.list
-- order: 20
+  source: rules/tidal.list
+  scope: core
+- order: 32
   kind: ruleset
   slug: disney-plus
   target: 🎬 DisneyPlus
   source: rules/disney-plus.list
-- order: 21
+  scope: core
+- order: 33
   kind: ruleset
   slug: hbo-go
   target: 🎬 HBOGO
   source: rules/hbo-go.list
-- order: 22
+  scope: core
+- order: 34
   kind: ruleset
   slug: hbo-max
   target: 🎬 HBOMAX
   source: rules/hbo-max.list
-- order: 23
+  scope: core
+- order: 35
   kind: ruleset
-  slug: emby
+  slug: emby-community
   target: 🎬 EMBY
-  source: rules/emby.list
-- order: 24
+  source: rules/emby-community.list
+  scope: optional
+- order: 36
   kind: ruleset
   slug: dazn
   target: 🎬 Dazn
   source: rules/dazn.list
-- order: 25
+  scope: core
+- order: 37
   kind: ruleset
   slug: apple-tv-plus
   target: 🎬 AppleTV+
   source: rules/apple-tv-plus.list
-- order: 26
+  scope: core
+- order: 38
   kind: ruleset
   slug: bilibili-sea
-  target: 🎬 B站东南亚
+  target: 🎬 东南亚媒体
   source: rules/bilibili-sea.list
-- order: 27
+  scope: core
+- order: 39
   kind: ruleset
   slug: bilibili-hmt
   target: 🎬 B站港澳台
   source: rules/bilibili-hmt.list
-- order: 28
+  scope: core
+- order: 40
   kind: ruleset
   slug: iqiyi
   target: 🎬 爱奇艺
   source: rules/iqiyi.list
-- order: 29
+  scope: core
+- order: 41
   kind: ruleset
-  slug: music-2
+  slug: spotify
   target: 🎵 音乐平台
-  source: rules/music-2.list
-- order: 30
+  source: rules/spotify.list
+  scope: core
+- order: 42
+  kind: ruleset
+  slug: spotify-legacy
+  target: 🎵 音乐平台
+  source: rules/spotify-legacy.list
+  scope: optional
+- order: 43
+  kind: ruleset
+  slug: spotify-2
+  target: 🎵 音乐平台
+  source: rules/spotify-2.list
+  scope: core
+- order: 44
+  kind: ruleset
+  slug: qobuz-brand-defense
+  target: 🎵 音乐平台
+  source: rules/qobuz-brand-defense.list
+  scope: optional
+- order: 45
+  kind: ruleset
+  slug: qobuz
+  target: 🎵 音乐平台
+  source: rules/qobuz.list
+  scope: core
+- order: 46
+  kind: ruleset
+  slug: qobuz-brand-defense-2
+  target: 🎵 音乐平台
+  source: rules/qobuz-brand-defense-2.list
+  scope: optional
+- order: 47
+  kind: ruleset
+  slug: apple-music
+  target: 🎵 音乐平台
+  source: rules/apple-music.list
+  scope: core
+- order: 48
   kind: ruleset
   slug: tiktok
   target: 🎶 TikTok
   source: rules/tiktok.list
-- order: 31
+  scope: core
+- order: 49
   kind: ruleset
   slug: netflix
   target: 🎬 Netflix
   source: rules/netflix.list
-- order: 32
+  scope: core
+- order: 50
   kind: ruleset
   slug: icloud
-  target: ☁️ iCloud
+  target: ☁️ 云盘服务
   source: rules/icloud.list
-- order: 33
-  kind: ruleset
-  slug: bing
-  target: 🔎 Bing
-  source: rules/bing.list
-- order: 34
+  scope: core
+- order: 51
   kind: ruleset
   slug: microsoft
   target: 🧩 微软服务
   source: rules/microsoft.list
-- order: 35
+  scope: core
+- order: 52
   kind: ruleset
   slug: apple
   target: 🍎 苹果服务
   source: rules/apple.list
-- order: 36
+  scope: core
+- order: 53
+  kind: ruleset
+  slug: us-media
+  target: 🇺🇸 美国流媒体
+  source: rules/us-media.list
+  scope: core
+- order: 54
   kind: ruleset
   slug: global-media
   target: 🌏 国外流媒体
   source: rules/global-media.list
-- order: 37
+  scope: core
+- order: 55
   kind: ruleset
   slug: google
   target: 🔎 Google
   source: rules/google.list
-- order: 38
-  kind: ruleset
-  slug: yahoo
-  target: 🔎 Yahoo
-  source: rules/yahoo.list
-- order: 39
-  kind: ruleset
-  slug: academic
-  target: 🌏 学术网站
-  source: rules/academic.list
-- order: 40
-  kind: ruleset
-  slug: global-web
-  target: 🌏 国外网站
-  source: rules/global-web.list
-- order: 41
+  scope: core
+- order: 56
   kind: ruleset
   slug: china-media
   target: 🌏 国内流媒体
   source: rules/china-media.list
-- order: 42
+  scope: core
+- order: 57
   kind: ruleset
   slug: china-web
   target: 🌏 国内网站
   source: rules/china-web.list
-- order: 43
+  scope: core
+- order: 58
+  kind: ruleset
+  slug: game-platform-late-recovery
+  target: 🎮 游戏平台
+  source: rules/game-platform-late-recovery.list
+  scope: core
+- order: 59
+  kind: ruleset
+  slug: bilibili-hmt-late-recovery
+  target: 🎬 B站港澳台
+  source: rules/bilibili-hmt-late-recovery.list
+  scope: core
+- order: 60
+  kind: ruleset
+  slug: iqiyi-late-recovery
+  target: 🎬 爱奇艺
+  source: rules/iqiyi-late-recovery.list
+  scope: core
+- order: 61
+  kind: ruleset
+  slug: microsoft-late-recovery
+  target: 🧩 微软服务
+  source: rules/microsoft-late-recovery.list
+  scope: core
+- order: 62
+  kind: ruleset
+  slug: apple-late-recovery
+  target: 🍎 苹果服务
+  source: rules/apple-late-recovery.list
+  scope: core
+- order: 63
+  kind: ruleset
+  slug: china-media-late-recovery
+  target: 🌏 国内流媒体
+  source: rules/china-media-late-recovery.list
+  scope: core
+- order: 64
   kind: terminal
   slug: final
   target: 🐟 漏网之鱼
   matcher: MATCH
+  scope: core

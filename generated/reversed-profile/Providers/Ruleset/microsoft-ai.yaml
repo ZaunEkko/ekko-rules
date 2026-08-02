@@ -1,0 +1,9 @@
+payload:
+- DOMAIN,copilot-reports.github.com
+- DOMAIN,copilot-telemetry.githubusercontent.com
+- DOMAIN,copilot.cloud.microsoft
+- DOMAIN,copilot.microsoft.com
+- DOMAIN,copilot-proxy.githubusercontent.com
+- DOMAIN,origin-tracker.githubusercontent.com
+- DOMAIN-SUFFIX,copilotstudio.microsoft.com
+- DOMAIN-SUFFIX,githubcopilot.com

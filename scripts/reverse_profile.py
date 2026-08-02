@@ -15,6 +15,19 @@ from typing import Any
 
 import yaml
 
+from profile_model import (
+    CORE_PRODUCT,
+    EXTENDED_PRODUCT,
+    ProfileError,
+    ProfileSources,
+    ProxyGroup,
+    Segment,
+    coverage_metrics,
+    load_profile_sources,
+    parse_yaml_document,
+    scope_metrics,
+)
+
 
 FINAL_TARGET = "🐟 漏网之鱼"
 NODE_PLACEHOLDER = "__ALL_SUBSCRIPTION_NODES__"
@@ -81,7 +94,9 @@ def slugify(name: str) -> str:
         "DIRECT": "direct-override",
         "🧲 OpenAI": "openai",
         "🧲 Claude": "claude",
+        "🌐 海外 AI": "ai-platforms",
         "🔖 OneDrive": "onedrive",
+        "☁️ 云盘服务": "cloud-storage",
         "🎙 Discord": "discord",
         "📲 Instagram": "instagram",
         "📪 邮件服务": "mail",
@@ -90,6 +105,10 @@ def slugify(name: str) -> str:
         "🎮 游戏平台": "game-platform",
         "🎬 韩国媒体": "media-korea",
         "🎬 台湾媒体": "media-taiwan",
+        "🎬 港澳台媒体": "media-hmt",
+        "🎬 东南亚媒体": "media-southeast-asia",
+        "🇺🇸 美国流媒体": "us-media",
+        "🔞 NSFW": "nsfw",
         "🎬 PrimeVideo": "prime-video",
         "🎬 viuTV": "viutv",
         "🎬 KKTV": "kktv",
@@ -461,7 +480,7 @@ def write_readme(output: Path, rules_base_url: str) -> None:
 
 - `ruleset=` 和 `RULE-SET` 的顺序与原配置一致。
 - 所有目标 IP 规则（如 `IP-CIDR`、`IP-CIDR6`、`GEOIP`、`IP-ASN`）统一带 `no-resolve`，避免规则匹配主动触发 DNS 解析。
-- “音乐平台”在原配置中分属两个不连续区段，因此保留 `music.list` 与 `music-2.list`。
+- 同一策略目标可对应多个非连续区段；候选文件按导入时的连续段和顺序保留。
 - 精确重复规则和跨策略重叠暂时保留；在未完成优先级分析前去重可能改变首条命中行为。
 - 原配置没有自动测速组，生成的 Subconverter 预设只保留了一条注释示例。
 - 核心预设不管理 `proxies` 上方的端口、DNS、TUN、控制器等客户端配置。
@@ -501,7 +520,7 @@ Reusable routing rules and subscription templates for Subconverter and Mihomo. T
 
 - Ordered `ruleset=` and `RULE-SET` entries preserve source rule precedence.
 - Every destination-IP rule (including `IP-CIDR`, `IP-CIDR6`, `GEOIP`, and `IP-ASN`) carries `no-resolve` so rule matching does not trigger DNS resolution.
-- The music policy appears in two non-contiguous source segments, so both `music.list` and `music-2.list` are retained.
+- One policy target may have multiple non-contiguous segments; candidate files preserve imported contiguous segments and order.
 - Exact duplicates and cross-policy overlaps remain because removing them without precedence analysis may change first-match behavior.
 - The source profile had no automatic latency group; only a commented example is included.
 - The core preset intentionally does not manage ports, DNS, TUN, controller settings, or other fields above `proxies`.
@@ -513,7 +532,11 @@ Reusable routing rules and subscription templates for Subconverter and Mihomo. T
 
 def main() -> None:
     args = parse_args()
-    source = yaml.safe_load(args.source.read_text(encoding="utf-8"))
+    source = parse_yaml_document(
+        args.source.read_text(encoding="utf-8"), context=str(args.source)
+    )
+    if not isinstance(source, dict):
+        raise ValueError("Expanded profile must contain a YAML mapping")
     proxies = source.get("proxies") or []
     groups = source.get("proxy-groups") or []
     rules = [str(rule) for rule in source.get("rules") or []]
@@ -562,6 +585,7 @@ def main() -> None:
                     "slug": "final",
                     "target": FINAL_TARGET,
                     "matcher": "MATCH",
+                    "scope": "core",
                 }
             )
             continue
@@ -587,6 +611,7 @@ def main() -> None:
                 "slug": slug,
                 "target": segment["target"],
                 "source": f"rules/{slug}.list",
+                "scope": "core",
             }
         )
 
@@ -602,6 +627,7 @@ def main() -> None:
                 "order": order,
                 "name": group["name"],
                 "type": group.get("type", "select"),
+                "scope": "core",
                 "members": group.get("proxies") or [],
             }
         )
@@ -655,16 +681,71 @@ def main() -> None:
     ]
     base = {key: source[key] for key in base_keys if key in source}
     base.update({"proxies": [], "proxy-groups": [], "rules": []})
+    rule_entries = [
+        entry
+        for segment in manifest_segments
+        if segment["kind"] == "ruleset"
+        for entry in (rules_dir / f"{segment['slug']}.list").read_text(encoding="utf-8").splitlines()
+    ]
+    destination_entries = [
+        entry
+        for entry in rule_entries
+        if entry.split(",", 1)[0] in DESTINATION_IP_RULE_TYPES
+    ]
+    imported_scope = {
+        "rule_files": len(manifest_segments) - 1,
+        "rule_segments": len(manifest_segments) - 1,
+        "terminal_segments": 1,
+        "proxy_groups": len(canonical_groups),
+        "rules_in_files": len(rule_entries),
+        "rules_with_terminal": len(rule_entries) + 1,
+        "destination_ip_rules": len(destination_entries),
+        "destination_ip_rules_without_no_resolve": sum(
+            not entry.endswith(",no-resolve") for entry in destination_entries
+        ),
+    }
+    empty_coverage = {
+        "global": {
+            "exact_occurrences": 0,
+            "broad_coverage_occurrences": 0,
+            "overlap_between_categories": 0,
+            "union": 0,
+        },
+        "within_same_segment": {
+            "exact_occurrences": 0,
+            "broad_coverage_occurrences": 0,
+            "overlap_between_categories": 0,
+            "union": 0,
+        },
+        "cross_segment_only": {"union": 0},
+    }
     quality = {
         "schema_version": 1,
         "phase": "legacy-import-candidate",
+        "measured_on": None,
+        "products": {
+            product: {
+                "scope": dict(imported_scope),
+                "first_match_unreachable": dict(empty_coverage),
+            }
+            for product in (CORE_PRODUCT, EXTENDED_PRODUCT)
+        },
         "exact_duplicates_within_segment": {
             "occurrences_beyond_first": sum(duplicate_by_slug.values()),
+            "duplicate_keys": len(duplicate_by_slug),
             "by_slug": duplicate_by_slug,
+            "previous_bootstrap_occurrences_removed": 0,
         },
         "known_non_strict_cidrs": {
             "policy": "Candidate exceptions require manual review before publication.",
             "entries": non_strict_cidrs,
+            "previous_bootstrap_entries_removed": 0,
+        },
+        "next_gate": {
+            "exact_duplicate_occurrences_beyond_first": sum(duplicate_by_slug.values()),
+            "non_strict_cidr_entries": len(non_strict_cidrs),
+            "semantic_coverage_must_not_increase": True,
+            "cross_segment_dependencies_must_not_increase": True,
         },
     }
     upstreams = {
@@ -704,8 +785,57 @@ def main() -> None:
             yaml.safe_dump(data, allow_unicode=True, sort_keys=False, width=1000),
         )
 
-    from profile_model import load_profile_sources
-
+    temporary_sources = ProfileSources(
+        root=args.output.resolve(),
+        manifest=manifest,
+        proxy_groups_document=proxy_groups,
+        base=base,
+        quality_baseline=quality,
+        upstreams=upstreams,
+        review=review,
+        segments=tuple(
+            Segment(
+                order=record["order"],
+                kind=record["kind"],
+                slug=record["slug"],
+                target=record["target"],
+                scope=record["scope"],
+                source=record.get("source"),
+                matcher=record.get("matcher"),
+            )
+            for record in manifest_segments
+        ),
+        proxy_groups=tuple(
+            ProxyGroup(
+                order=record["order"],
+                name=record["name"],
+                type=record["type"],
+                scope=record["scope"],
+                members=tuple(record["members"]),
+            )
+            for record in canonical_groups
+        ),
+        rules={
+            segment["slug"]: tuple(
+                (rules_dir / f"{segment['slug']}.list")
+                .read_text(encoding="utf-8")
+                .splitlines()
+            )
+            for segment in manifest_segments
+            if segment["kind"] == "ruleset"
+        },
+    )
+    for product in (CORE_PRODUCT, EXTENDED_PRODUCT):
+        quality["products"][product]["scope"] = scope_metrics(
+            temporary_sources, product=product
+        )
+        quality["products"][product]["first_match_unreachable"] = coverage_metrics(
+            temporary_sources, product=product
+        )
+    write_text(
+        args.output / "quality-baseline.yaml",
+        yaml.safe_dump(quality, allow_unicode=True, sort_keys=False, width=1000),
+    )
     load_profile_sources(args.output)
     os.replace(args.output, final_output)
     atexit.unregister(cleanup_staging)
@@ -729,6 +859,6 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
-    except (FileExistsError, OSError, ValueError, yaml.YAMLError) as exc:
+    except (FileExistsError, OSError, ValueError, ProfileError, yaml.YAMLError) as exc:
         print(f"legacy import failed: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc

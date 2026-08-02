@@ -12,7 +12,7 @@ projects, pinned in `sources/upstreams.yaml`:
 
 | Project | Pinned context | License reported by upstream | Use in this repository |
 |---|---|---|---|
-| ACL4SSR | current and 2023 historical snapshots | CC-BY-SA-4.0 | responsibility model, comparison, strong `global-web` lineage evidence |
+| ACL4SSR | current and 2023 historical snapshots | CC-BY-SA-4.0 | responsibility model, comparison, and historical lineage evidence for the Phase 3-removed `global-web` segment |
 | blackmatrix7/ios_rule_script | fixed Clash corpus | GPL-2.0 | broad shared-content lineage evidence and comparison |
 | Loyalsoldier/clash-rules | fixed master/release context | GPL-3.0 | comparison |
 | MetaCubeX/meta-rules-dat | fixed master/meta context | GPL-3.0 | Mihomo-format and category comparison |
@@ -21,6 +21,13 @@ Content similarity does not by itself prove direct copying from a particular rev
 upstreams are aggregators themselves. The exact revisions, reviewed paths, license URLs, and
 SHA-256 evidence hashes are recorded in `sources/upstreams.yaml` and explained in
 `docs/PROVENANCE.md`.
+
+The six late recovery rulesets add no new external source lineage. They are deterministically
+selected from the repository's frozen Phase 2 evidence to preserve historical DIRECT-default
+routing after the Phase 3 reduction. Their placement under Apple, Microsoft, Game Platform, China
+Media, Bilibili HMT, or iQIYI policies is a compatibility mapping, not a renewed claim that every
+historical domain or IP is currently or exclusively owned by that vendor. The same unresolved
+upstream license and provenance obligations therefore continue to block public redistribution.
 
 Unlicensed gists or mirrors may be cited only as historical evidence. They are not canonical
 inputs, are not fetched by the build, and must not be copied into a release.
