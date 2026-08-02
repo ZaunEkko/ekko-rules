@@ -1,53 +1,42 @@
 # Publication Gate
 
-Status: **BLOCKED — private maintenance only**
+Status: **PREPARED — visibility change remains manual**
 
-The following items require human completion before making the repository public, publishing Raw
-URLs, creating releases, or redistributing generated products.
+The repository now has an MIT license, a closed single-product layout, deterministic generation, and local validation. Making the GitHub repository public remains an outward-facing operation and must be performed separately and explicitly.
 
-## License and provenance
+## Completed in the publication-preparation branch
 
-- [ ] Map canonical rule segments to attributable upstream sources where evidence permits.
-- [ ] Resolve compatibility and obligations across CC-BY-SA-4.0, GPL-2.0, GPL-3.0, and any deeper
-      upstream sources referenced by aggregators.
-- [ ] Replace or remove every rule whose only evidence is an unlicensed gist or mirror.
-- [ ] Prepare complete attribution, modification notices, source references, and required license
-      texts for the chosen distribution model.
-- [ ] Decide whether a repository-wide license is legally and operationally appropriate.
-- [ ] Obtain explicit human approval for publication. Automated checks cannot approve this item.
+- [x] Add a repository-wide MIT `LICENSE`.
+- [x] Update `NOTICE.md` and `docs/PROVENANCE.md` with factual source-overlap, trademark, and disclaimer language.
+- [x] Reduce the live product to one Subconverter entry and one Mihomo template backed by the same 59 rulesets.
+- [x] Remove Full, local, Extended, EMBY community, Spotify legacy, Qobuz brand-defense, and repository base-config products.
+- [x] Remove automatic-latency groups and Mihomo proxy-provider health probing.
+- [x] Pin GitHub Actions to immutable full commit SHAs.
+- [x] Enforce anchored domain matching for every DIRECT-default policy.
+- [x] Confirm all 206 destination-IP rules carry `no-resolve` and all CIDRs are strict.
+- [x] Preserve and validate the immutable Phase 2/3 migration and DIRECT-recovery ledgers.
+- [x] Validate the generated closed file set, SHA-256 manifest, sensitive-content gate, and deterministic clean render.
+- [x] Review the full Git history and Actions logs for live credentials; findings were false positives or masked values.
 
-## Security and privacy
+## Required before merging this preparation branch
 
-- [ ] Run `python scripts/validate_generated.py` and confirm zero sensitive findings.
-- [ ] Confirm no proxy node, server, port, password, UUID, private/public key, token, subscription
-      URL, local absolute path, or provider-specific private configuration is present.
-- [ ] Review full repository history before first push; generated outputs are clean, but local
-      source profiles may contain live credentials.
-- [ ] Rotate subscription or node credentials if exposure through local logs or earlier session
-      records is a concern.
+- [ ] Run the complete Python test suite on Windows and Linux CI.
+- [x] Confirm `python scripts/validate_generated.py` passes with zero sensitive findings.
+- [x] Confirm `python scripts/generate_profile.py --check` reports no differences.
+- [x] Verify the sole Subconverter artifact with `subconverter.exe -g --artifact`.
+- [x] Verify the sole Mihomo template with an isolated local-file Provider configuration and `verge-mihomo.exe -t` only.
+- [x] Confirm no validation process or port 25500 listener remains.
+- [ ] Review the final PR diff and merge only after required CI succeeds.
 
-## Product quality
+## Separate public-visibility operation
 
-- [ ] Run all Windows and Linux CI jobs successfully.
-- [ ] Confirm `python scripts/generate_profile.py --check` reports no differences.
-- [ ] Confirm exact duplicates remain zero, non-strict CIDRs remain zero, and quality metrics do
-      not regress.
-- [ ] Recompute the Phase 3 reduction and DIRECT-recovery ledgers; confirm the 2,737 historical
-      candidates produce 2,732 emitted matchers after the frozen 7-keyword exclusion and 2-rule
-      Roblox replacement, contain no `DOMAIN-KEYWORD`, capture zero proxy/manual-first residual
-      matchers, and keep every destination-IP matcher on `no-resolve`.
-- [ ] Review all `sources/review.yaml` candidates intended for publication, including recovered
-      historical ownership and brand-defense entries that are retained only for routing
-      compatibility.
-- [ ] Verify representative routing behavior in an actual Subconverter and Mihomo client.
-- [ ] Decide whether GitHub Raw is the intended long-term delivery mechanism.
+After the preparation PR is merged, the public switch must be a separate explicit action:
 
-## Release operation
+- [ ] Confirm README and Raw URLs are correct on `main`.
+- [ ] Optionally remove the historical remote `phase-2-classification` branch to simplify the public branch list.
+- [ ] Change repository visibility to Public.
+- [ ] Immediately configure a branch ruleset requiring Windows and Linux validation checks.
+- [ ] Enable Dependabot alerts, secret scanning, and push protection where available.
+- [ ] Recheck public Raw access for both documented entry points.
 
-- [ ] Review `NOTICE.md`, `docs/PROVENANCE.md`, and `docs/CHANGES.md` for accuracy.
-- [ ] Confirm README wording no longer describes the repository as private if visibility changes.
-- [ ] Confirm branch protection and required CI checks are configured.
-- [ ] Change repository visibility only through a separate, explicit, human-authorized action.
-- [ ] Commit, push, tag, and release only through separately authorized actions.
-
-No script in this repository changes GitHub visibility or publishes content.
+No repository script changes GitHub visibility, publishes a release, changes system proxy/DNS/TUN/routes, or starts a Mihomo service.

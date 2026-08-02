@@ -291,11 +291,34 @@ All late recovery rulesets reject `DOMAIN-KEYWORD`: the historical Epic Games, S
 
 The recovery set contains 101 destination-IP rules, all with `no-resolve`. It completely covers zero of the 8,765 first-effective proxy/manual-first residual matchers. Current detailed rules and CN GeoIP remain earlier, so recovery only changes traffic that would otherwise reach FINAL. Historical ownership and current vendor validity are not reasserted; the layer preserves the prior default network action and remains subject to publication provenance review.
 
-## Current verified result
+## Historical ER-013 verified result
+
+Before the public single-product reduction, ER-013 produced:
 
 - Core: 59 rule files, 60 ordered segments, 37 proxy groups, 4,250 rules including FINAL
 - Extended: 63 rule files, 64 ordered segments, 38 proxy groups, 4,348 rules including FINAL
 - 206 destination-IP rules in both products, all with `no-resolve`
 - zero same-segment exact duplicates and zero non-strict CIDRs
-- Core first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40
-- Extended first-match unreachable union: 125; same-segment: 85; cross-segment-only: 40
+
+These figures remain historical ledger context rather than current published-product metrics.
+
+## ER-014 — Public single-product reduction and routing hardening
+
+**Type:** product-surface reduction, license finalization, and DIRECT-default safety correction
+
+The live product is reduced to one standard configuration backed by 59 shared rulesets:
+
+- Subconverter: `config/ekko-rules.ini`
+- Mihomo: `Mihomo/reversed-template.yaml`
+
+Full, local, Extended, EMBY community, Spotify legacy, Qobuz brand-defense, and generated base-config artifacts are retired. No automatic-latency group or Mihomo proxy-provider health probe remains. The repository is licensed under MIT; factual overlap, trademark, and disclaimer language remains in `NOTICE.md` and `docs/PROVENANCE.md`.
+
+A load-time security gate now rejects `DOMAIN-KEYWORD` under every DIRECT-default policy, not only late recovery. The broad Microsoft and aria2 keywords were removed; Apple CDN entries use anchored suffixes and TestFlight is covered by the existing `apple.com` suffix.
+
+Current verified canonical result:
+
+- 59 rule files, 60 ordered segments, 37 proxy groups
+- 4,247 rules including the unique FINAL
+- 206 destination-IP rules, all with `no-resolve`
+- zero same-segment exact duplicates and zero non-strict CIDRs
+- first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40

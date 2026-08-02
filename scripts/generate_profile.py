@@ -24,7 +24,7 @@ DEFAULT_OUTPUT = PROJECT_ROOT / "generated" / "reversed-profile"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate Ekko Rules products from canonical in-repository sources."
+        description="Generate the Ekko Rules standard product from canonical sources."
     )
     parser.add_argument(
         "--sources",
@@ -154,13 +154,10 @@ def main() -> int:
                 {
                     "status": "generated",
                     "output": str(output_path),
-                    "products": {
-                        product: {
-                            "segments": len(sources.segments_for(product)),
-                            "rule_files": len(sources.rule_segments_for(product)),
-                            "proxy_groups": len(sources.proxy_groups_for(product)),
-                        }
-                        for product in ("core", "extended")
+                    "product": {
+                        "segments": len(sources.segments_for("core")),
+                        "rule_files": len(sources.rule_segments_for("core")),
+                        "proxy_groups": len(sources.proxy_groups_for("core")),
                     },
                     "previous_output_was_current": diff.clean,
                     "previous_difference": diff.as_dict(),

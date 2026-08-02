@@ -1,18 +1,9 @@
-mixed-port: 7890
-allow-lan: false
-mode: rule
-log-level: warning
-external-controller: 127.0.0.1:9090
 proxy-providers:
   subscription:
     type: http
     url: PUT_YOUR_SUBSCRIPTION_URL_HERE
     path: ./proxy_provider/subscription.yaml
     interval: 3600
-    health-check:
-      enable: true
-      url: https://www.gstatic.com/generate_204
-      interval: 300
 proxy-groups:
 - name: ♻️ 手动切换
   type: select

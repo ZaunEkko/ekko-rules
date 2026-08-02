@@ -1,8 +1,0 @@
-mixed-port: 7890
-allow-lan: false
-mode: rule
-log-level: warning
-external-controller: 127.0.0.1:9090
-proxies: []
-proxy-groups: []
-rules: []

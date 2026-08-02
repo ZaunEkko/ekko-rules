@@ -22,10 +22,9 @@ payload:
 - DOMAIN-SUFFIX,appstore.com
 - DOMAIN-SUFFIX,itunes.com
 - DOMAIN-SUFFIX,mzstatic.com
-- DOMAIN-KEYWORD,apple-support.akadns.net
-- DOMAIN-KEYWORD,apple.com.akadns.net
-- DOMAIN-KEYWORD,apple.com.edgekey.net
-- DOMAIN-KEYWORD,testflight
+- DOMAIN-SUFFIX,apple-support.akadns.net
+- DOMAIN-SUFFIX,apple.com.akadns.net
+- DOMAIN-SUFFIX,apple.com.edgekey.net
 - IP-CIDR,139.178.128.0/18,no-resolve
 - IP-CIDR,144.178.0.0/19,no-resolve
 - IP-CIDR,144.178.36.0/22,no-resolve

@@ -6,10 +6,6 @@ proxy_provider:
   url: PUT_YOUR_SUBSCRIPTION_URL_HERE
   path: ./proxy_provider/subscription.yaml
   interval: 3600
-  health_check:
-    enable: true
-    url: https://www.gstatic.com/generate_204
-    interval: 300
   subconverter_filter: .*
 groups:
 - order: 1
@@ -164,14 +160,6 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 20
-  name: 🎬 EMBY
-  type: select
-  scope: optional
-  members:
-  - ♻️ 手动切换
-  - DIRECT
-  - __ALL_SUBSCRIPTION_NODES__
-- order: 21
   name: 🎬 Dazn
   type: select
   scope: core
@@ -179,7 +167,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 22
+- order: 21
   name: 🎶 TikTok
   type: select
   scope: core
@@ -187,7 +175,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 23
+- order: 22
   name: 🎵 音乐平台
   type: select
   scope: core
@@ -195,7 +183,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 24
+- order: 23
   name: 🎬 爱奇艺
   type: select
   scope: core
@@ -203,7 +191,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 25
+- order: 24
   name: 🎬 B站港澳台
   type: select
   scope: core
@@ -211,7 +199,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 26
+- order: 25
   name: 🎬 东南亚媒体
   type: select
   scope: core
@@ -219,7 +207,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 27
+- order: 26
   name: 🇺🇸 美国流媒体
   type: select
   scope: core
@@ -227,7 +215,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 28
+- order: 27
   name: 🌏 国外流媒体
   type: select
   scope: core
@@ -235,7 +223,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 29
+- order: 28
   name: 🌏 国内流媒体
   type: select
   scope: core
@@ -243,7 +231,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 30
+- order: 29
   name: ☁️ 云盘服务
   type: select
   scope: core
@@ -251,7 +239,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 31
+- order: 30
   name: 🧩 微软服务
   type: select
   scope: core
@@ -259,7 +247,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 32
+- order: 31
   name: 🍎 苹果服务
   type: select
   scope: core
@@ -267,7 +255,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 33
+- order: 32
   name: 🎮 游戏平台
   type: select
   scope: core
@@ -275,7 +263,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 34
+- order: 33
   name: 🎮 游戏下载
   type: select
   scope: core
@@ -283,7 +271,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 35
+- order: 34
   name: 📪 邮件服务
   type: select
   scope: core
@@ -291,7 +279,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 36
+- order: 35
   name: 🔞 NSFW
   type: select
   scope: core
@@ -299,7 +287,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 37
+- order: 36
   name: 🌏 国内网站
   type: select
   scope: core
@@ -307,7 +295,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 38
+- order: 37
   name: 🐟 漏网之鱼
   type: select
   scope: core
