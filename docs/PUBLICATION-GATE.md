@@ -32,7 +32,13 @@ URLs, creating releases, or redistributing generated products.
 - [ ] Confirm `python scripts/generate_profile.py --check` reports no differences.
 - [ ] Confirm exact duplicates remain zero, non-strict CIDRs remain zero, and quality metrics do
       not regress.
-- [ ] Review all `sources/review.yaml` candidates intended for publication.
+- [ ] Recompute the Phase 3 reduction and DIRECT-recovery ledgers; confirm the 2,737 historical
+      candidates produce 2,732 emitted matchers after the frozen 7-keyword exclusion and 2-rule
+      Roblox replacement, contain no `DOMAIN-KEYWORD`, capture zero proxy/manual-first residual
+      matchers, and keep every destination-IP matcher on `no-resolve`.
+- [ ] Review all `sources/review.yaml` candidates intended for publication, including recovered
+      historical ownership and brand-defense entries that are retained only for routing
+      compatibility.
 - [ ] Verify representative routing behavior in an actual Subconverter and Mihomo client.
 - [ ] Decide whether GitHub Raw is the intended long-term delivery mechanism.
 

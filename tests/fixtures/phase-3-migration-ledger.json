@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "baseline_head": "8dbf3e6f7c2aedfa0fd9c485f63d76c1ace31faf",
+  "old_extended_rules": 15517,
+  "new_extended_rules": 1615,
+  "kept_occurrences": 1549,
+  "removed_occurrences": 13968,
+  "added_occurrences": 66,
+  "old_unique_rules": 13864,
+  "new_unique_rules": 1594,
+  "removed_unique_rules": 12994,
+  "added_unique_rules": 65,
+  "counter_digests": {
+    "kept": "bc554366bcad25acfda4a874c2466c5d491dcd34361030b3eb9bd5e326cede2a",
+    "removed": "9385f75fc202cf95393b01b641617f55c49e8f6495e0c63e2685957dbe9894de",
+    "added": "b06a64eb6002ea57b29984151aed262c8b031d130c990044070b924329240f90"
+  },
+  "equations": [
+    "15517 = 1549 + 13968",
+    "1615 = 1549 + 66"
+  ],
+  "deleted_rulesets": {
+    "academic": 229,
+    "community-overrides": 5,
+    "global-web": 6072,
+    "streaming-legacy": 3,
+    "yahoo": 170
+  },
+  "rebuilt_rulesets": {
+    "apple": {
+      "before": 1572,
+      "after": 41
+    },
+    "china-media": {
+      "before": 220,
+      "after": 39
+    },
+    "game-platform": {
+      "before": 663,
+      "after": 63
+    },
+    "global-media": {
+      "before": 2041,
+      "after": 30
+    },
+    "google": {
+      "before": 717,
+      "after": 41
+    },
+    "microsoft": {
+      "before": 668,
+      "after": 33
+    },
+    "netflix": {
+      "before": 1050,
+      "after": 53
+    }
+  },
+  "new_rulesets": {
+    "ai-developer": 11,
+    "google-ai": 12,
+    "microsoft-ai": 8,
+    "nsfw": 38,
+    "us-media": 55,
+    "xai": 3
+  },
+  "notes": [
+    "Rules absent from the new Counter intentionally fall through to later rules and ultimately MATCH.",
+    "Removed generic rules are not described as unreachable or defunct; removal reflects product scope.",
+    "Every destination-IP rule in the new products carries no-resolve."
+  ]
+}

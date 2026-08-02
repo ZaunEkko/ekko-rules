@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 uses **2026-07-31**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -251,11 +251,51 @@ Migration closure is frozen in `tests/fixtures/phase-2-migration-ledger.json`:
 15,517 Extended = 15,411 Core + 106 optional
 ```
 
+## ER-012 — Phase 3 AI/entertainment specialization and rule reduction
+
+**Type:** product specialization, policy-group consolidation, generic-rule removal, and large-ruleset rebuild
+
+- Consolidated Core from 44 to 37 policy groups; Extended now contains 38 with EMBY as its only additional group.
+- Kept OpenAI and Claude independent, replaced the old generic AI policy with `🌐 海外 AI`, and added separate Google AI, xAI, Microsoft AI, and AI developer-tool rulesets.
+- Added `🇺🇸 美国流媒体` and a 38-domain high-confidence `🔞 NSFW` ruleset. ESPN domains have a single owner in US Media rather than being shadowed by the earlier DisneyPlus segment. NSFW contains no broad keyword, public suffix, shared cloud root, or destination-IP rule.
+- Merged OneDrive/iCloud into Cloud Storage, Instagram into Social Media, Bing into Microsoft Services, ordinary HMT media into one group, and Bilibili SEA into Southeast Asian Media. Bilibili HMT remains independent. Bing's ordered entries are physically part of the adjacent Microsoft ruleset so Extended stays within Subconverter's 64-segment external-config limit without changing matcher order or target.
+- Removed `global-web`, `academic`, `yahoo`, `community-overrides`, and `streaming-legacy` entirely. These rules were not moved into another generic bucket; unmatched traffic naturally reaches FINAL.
+- Rebuilt Apple, Google, Microsoft, Netflix, global media, game platform, China media, YouTube, Bilibili HMT, iQIYI, and Japan/HMT media around service roots, dedicated infrastructure, processes, and clearly owned IP space.
+- Reduced Netflix from 1,050 to 53 rules by removing shared AWS ranges while retaining Netflix domains, process matching, and narrow Netflix network ranges.
+- Preserved `GEOIP,CN,no-resolve` and the parser-level requirement that every destination-IP matcher carries `no-resolve`.
+
+Migration closure is frozen in `tests/fixtures/phase-3-migration-ledger.json`:
+
+```text
+15,517 Phase 2 Extended rules = 1,549 common + 13,968 removed
+1,615 Phase 3 Extended rules = 1,549 common + 66 added
+```
+
+Removal is a product-scope decision and does not claim that every removed domain is defunct. The complete removed/added Counter digests are verified against the Phase 2 commit in CI.
+
+## ER-013 — DIRECT-default late recovery
+
+**Type:** default-routing compatibility correction without proxy-rule restoration
+
+Phase 3 correctly removed the five generic proxy/manual-first rulesets, but its large specialized-table rebuild also made historical DIRECT-default matchers fall through to proxy FINAL. ER-013 does not restore the generic proxy corpus. Instead, six Core recovery rulesets are placed after `china-web` (including `GEOIP,CN,no-resolve`) and immediately before FINAL, targeting the existing DIRECT-first Apple, Microsoft, Game Platform, China Media, Bilibili HMT, and iQIYI groups.
+
+The immutable `phase-3-after.json` preserves the 1,615-rule post-reduction state, while `phase-3-recovery-ledger.json` proves:
+
+```text
+3,472 historical DIRECT-default occurrences = 638 Phase-3-covered + 2,834 residual
+2,834 residual = 2,737 first-effective candidates + 97 historical-shadow/proxy-owner exclusions
+2,732 emitted recovery = 2,737 candidates - 7 unsafe DOMAIN-KEYWORD entries + 2 anchored Roblox suffixes
+```
+
+All late recovery rulesets reject `DOMAIN-KEYWORD`: the historical Epic Games, Steam, Roblox, iQIYI, and Bilibili substring matchers could route unrelated lookalike domains to DIRECT-default policies. Six were already represented by earlier precise service rules; Roblox is replaced by `roblox.com` and `rbxcdn.com`, based on Roblox's official education-network allowlist. Lookalike names now continue to FINAL.
+
+The recovery set contains 101 destination-IP rules, all with `no-resolve`. It completely covers zero of the 8,765 first-effective proxy/manual-first residual matchers. Current detailed rules and CN GeoIP remain earlier, so recovery only changes traffic that would otherwise reach FINAL. Historical ownership and current vendor validity are not reasserted; the layer preserves the prior default network action and remains subject to publication provenance review.
+
 ## Current verified result
 
-- Core: 51 rule files, 52 ordered segments, 44 proxy groups, 15,412 rules including FINAL
-- Extended: 57 rule files, 58 ordered segments, 45 proxy groups, 15,518 rules including FINAL
-- 2,205 destination-IP rules in both products, all with `no-resolve`
+- Core: 59 rule files, 60 ordered segments, 37 proxy groups, 4,250 rules including FINAL
+- Extended: 63 rule files, 64 ordered segments, 38 proxy groups, 4,348 rules including FINAL
+- 206 destination-IP rules in both products, all with `no-resolve`
 - zero same-segment exact duplicates and zero non-strict CIDRs
-- Core first-match unreachable union: 2,377; same-segment: 937; cross-segment-only: 1,440
-- Extended first-match unreachable union: 2,449; same-segment: 1,009; cross-segment-only: 1,440
+- Core first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40
+- Extended first-match unreachable union: 125; same-segment: 85; cross-segment-only: 40

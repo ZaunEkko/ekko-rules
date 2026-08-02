@@ -1,10 +1,5 @@
 payload:
 - DOMAIN-SUFFIX,anthropic.com
 - DOMAIN-SUFFIX,claude.ai
-- DOMAIN-SUFFIX,chat.claude.ai
-- DOMAIN-SUFFIX,console.anthropic.com
-- DOMAIN-SUFFIX,api.anthropic.com
-- DOMAIN-SUFFIX,api.claude.ai
-- DOMAIN-SUFFIX,auth.anthropic.com
-- DOMAIN-SUFFIX,accounts.anthropic.com
+- DOMAIN-SUFFIX,claude.com
 - DOMAIN-SUFFIX,claudeusercontent.com

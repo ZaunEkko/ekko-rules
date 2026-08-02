@@ -1,0 +1,1098 @@
+{
+  "schema_version": 1,
+  "baseline": "phase-3-pre-migration",
+  "head": "8dbf3e6f7c2aedfa0fd9c485f63d76c1ace31faf",
+  "manifest_sha256": "70312cc0059bbf986103e6ec51fd35089b1fee876769c51f312c2d925e461eb6",
+  "proxy_groups_sha256": "b862c2220d940b0e10f41d805727e436064fe6dda43bcb56f9c104e95d2f443b",
+  "products": {
+    "core": {
+      "scope": {
+        "rule_files": 51,
+        "rule_segments": 51,
+        "terminal_segments": 1,
+        "proxy_groups": 44,
+        "rules_in_files": 15411,
+        "rules_with_terminal": 15412,
+        "destination_ip_rules": 2205,
+        "destination_ip_rules_without_no_resolve": 0
+      },
+      "coverage": {
+        "global": {
+          "exact_occurrences": 1653,
+          "broad_coverage_occurrences": 1057,
+          "overlap_between_categories": 333,
+          "union": 2377
+        },
+        "within_same_segment": {
+          "exact_occurrences": 0,
+          "broad_coverage_occurrences": 937,
+          "overlap_between_categories": 0,
+          "union": 937
+        },
+        "cross_segment_only": {
+          "union": 1440
+        }
+      }
+    },
+    "extended": {
+      "scope": {
+        "rule_files": 57,
+        "rule_segments": 57,
+        "terminal_segments": 1,
+        "proxy_groups": 45,
+        "rules_in_files": 15517,
+        "rules_with_terminal": 15518,
+        "destination_ip_rules": 2205,
+        "destination_ip_rules_without_no_resolve": 0
+      },
+      "coverage": {
+        "global": {
+          "exact_occurrences": 1653,
+          "broad_coverage_occurrences": 1129,
+          "overlap_between_categories": 333,
+          "union": 2449
+        },
+        "within_same_segment": {
+          "exact_occurrences": 0,
+          "broad_coverage_occurrences": 1009,
+          "overlap_between_categories": 0,
+          "union": 1009
+        },
+        "cross_segment_only": {
+          "union": 1440
+        }
+      }
+    }
+  },
+  "rule_files": {
+    "academic.list": {
+      "rules": 229,
+      "sha256": "7331aa136c21f4f4e9f6f315f24c150daf1c3414241614d1605d9a8f8d3ef5fc"
+    },
+    "ai-platforms.list": {
+      "rules": 6,
+      "sha256": "cd808e519790f75023b080dea5ea2d786ab40e6100b4738a063ae38f6cc189ee"
+    },
+    "apple.list": {
+      "rules": 1572,
+      "sha256": "7ace52c654dc91d91752592ee007d2fc948495239f40c6cc1591624486385485"
+    },
+    "apple-music.list": {
+      "rules": 10,
+      "sha256": "8fce260b8ce8b5e63c0d995bf94de155cea12176123f74635db357b099eaecf9"
+    },
+    "apple-tv-plus.list": {
+      "rules": 8,
+      "sha256": "ffa90eb89ae2cecc89609906b9699e97ecc13f36ed737d95a9b7bf5394f93f21"
+    },
+    "bahamut.list": {
+      "rules": 9,
+      "sha256": "5f29c59cd853201826dd02d42bb38ad8094d0871b7df57b46fcdf91a602b6596"
+    },
+    "bilibili-hmt.list": {
+      "rules": 128,
+      "sha256": "f8e4fb8ebca492f77e8d275de0c70762716aa31a5ee9779dbfa94fd83986be7b"
+    },
+    "bilibili-sea.list": {
+      "rules": 8,
+      "sha256": "bbd4a36d157f46e3cfdf3bcdb710b25bed11376b1d7538332ea761902b3e3ea7"
+    },
+    "bing.list": {
+      "rules": 23,
+      "sha256": "38305fe4880995c0a09ccd324e71a0ee23269de39921e5b7824b0ee57c15b2f2"
+    },
+    "china-media.list": {
+      "rules": 220,
+      "sha256": "16801f5a576bb70c236d4a7ba7ddfb7143c96910af9a990d4815bd03e519398c"
+    },
+    "china-web.list": {
+      "rules": 44,
+      "sha256": "21784d5ffd87425f82aea3bc29839994bfdbf8351f9414f251837d7bfc12ce7d"
+    },
+    "claude.list": {
+      "rules": 9,
+      "sha256": "8fa81893ada4c314512a908d6db0522b1576ee4a0e4d5a08a3b51154eecb291d"
+    },
+    "community-overrides.list": {
+      "rules": 5,
+      "sha256": "396b3adcd202ef8de62243b0926d7a9747aaf2437d60e89c4eca6b7b2e580353"
+    },
+    "dazn.list": {
+      "rules": 15,
+      "sha256": "82da3ade078dd16fec09f3305316fed2e134bf9ebc4783046f19da3cd499f8a4"
+    },
+    "developer-platforms.list": {
+      "rules": 24,
+      "sha256": "8325dff2868295eeb4a7c1aaa4ed77d58263d82d8561a7db7a67e4d5eea26325"
+    },
+    "direct-override.list": {
+      "rules": 1,
+      "sha256": "61d3b4f94cedb30b6c6b12e9602f1bae41895f5043be4d93269ae71861f176c7"
+    },
+    "discord.list": {
+      "rules": 28,
+      "sha256": "a6f6c824c444e8e403a91c17221ba21a7c9b2d122134603d06bc74c02cb47824"
+    },
+    "disney-plus.list": {
+      "rules": 173,
+      "sha256": "677e48cc64f6d042209250be4632d8b5b4a92407b789991f875288568d9eaf57"
+    },
+    "emby-community.list": {
+      "rules": 91,
+      "sha256": "dc263d0bdab66995784281e01d594d145db4f94823115dc165c7dce15c6424fd"
+    },
+    "game-download.list": {
+      "rules": 54,
+      "sha256": "ad086fea01131a6f4a216772b27a8a9587d5460129c7f34b0bbaafee76498a30"
+    },
+    "game-platform.list": {
+      "rules": 663,
+      "sha256": "a52afe451bf80ff9b035cece75a946ba675879d54a2b0d2cd9c67b43c0c1d949"
+    },
+    "global-media.list": {
+      "rules": 2041,
+      "sha256": "ada31beca6c5dc2dd7a44733ace8fb7728ec68b252c802ebdcf9a2d5e5834058"
+    },
+    "global-web.list": {
+      "rules": 6072,
+      "sha256": "dade69f5ee8f3e161585a198cf51d9bbb9b6f66d63f5b775e6ed25375558bcfe"
+    },
+    "google.list": {
+      "rules": 717,
+      "sha256": "28ba611f655aa01c8f475974d204f0607c75ae00e1078725c71591748198bfdb"
+    },
+    "hbo-go.list": {
+      "rules": 66,
+      "sha256": "0b1fdf757f895d1df4a29dc54a079854253f9d5be48d4c5327904c66feec0eff"
+    },
+    "hbo-max.list": {
+      "rules": 391,
+      "sha256": "513fe9c96042ff5bae3f57e27c56ead34b34762dea14abe5bf71271ff58ece54"
+    },
+    "icloud.list": {
+      "rules": 58,
+      "sha256": "a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84"
+    },
+    "instagram.list": {
+      "rules": 74,
+      "sha256": "2c53e50d9ace34812d766055953f1bd4211d2cf1260bcef42959f470bf4469fa"
+    },
+    "iqiyi.list": {
+      "rules": 57,
+      "sha256": "c0c0c850fef3e7df828c7c368f9af0d41dff54e4379b2376c29056df067602c0"
+    },
+    "kakao-talk.list": {
+      "rules": 15,
+      "sha256": "4d7a40149baa508048e0258477af4df12e84a2c5a03de92602c744026da79244"
+    },
+    "kktv.list": {
+      "rules": 13,
+      "sha256": "66ecc3be50cc4afdf368cbcc5d975695804466b3c49a80424ec261b3acb02266"
+    },
+    "line.list": {
+      "rules": 36,
+      "sha256": "a8ce31e8b990bde4945e00b2c220086e48c269938adbbf04286cbcbb89461805"
+    },
+    "mail.list": {
+      "rules": 20,
+      "sha256": "4a03a077bbb03f2b7d1dd2a13e9635a603f3bf3fbce8f96e2954f4676a3b1b29"
+    },
+    "media-japan.list": {
+      "rules": 156,
+      "sha256": "97d5d91c46e0bb66ceadbdfebca950c6b9baec5537c74f3a6672a3456825ce95"
+    },
+    "media-korea.list": {
+      "rules": 32,
+      "sha256": "67f1c3d28312522b0d3b387834b99107577b354663eeef7e1aeb87613c69352e"
+    },
+    "media-taiwan.list": {
+      "rules": 63,
+      "sha256": "03e875ee481619eab8925b0a25f4b0200b29d98ad907737d46364edbcc5bef14"
+    },
+    "microsoft.list": {
+      "rules": 668,
+      "sha256": "0aee7ba78b96b4d0fccc8c1329bd8824f50f393c3c91d15cc468df7f1531c4c3"
+    },
+    "netflix.list": {
+      "rules": 1050,
+      "sha256": "ba02baf25c118e886d21d100fbbb5b8668fbd3f80a154c6a91d2e94f1d1ae69a"
+    },
+    "onedrive.list": {
+      "rules": 23,
+      "sha256": "70b2124935f9ed33e71bd6b2f6ee8ebb255fc0c31e1c9daea67312f42ed2e551"
+    },
+    "openai.list": {
+      "rules": 18,
+      "sha256": "c9eb45d2d7db0153301e3dbebe7a971e8074fc442d2cd2686038d1dff4fb1985"
+    },
+    "prime-video.list": {
+      "rules": 25,
+      "sha256": "b47f4c0600f095cf0c022b5ee45e5b4de6e4237316a7d1e4f77afb675fd7e48e"
+    },
+    "private.list": {
+      "rules": 45,
+      "sha256": "35a79b8d460c669ba1426809a754d89ee6d17ca80c35ed0802c7d24990268bd2"
+    },
+    "qobuz.list": {
+      "rules": 24,
+      "sha256": "d52e027f2ccf3ce1e4ee0b8a35b1be5f26cd8ae0bcb5df44ca9381f9a53ab37d"
+    },
+    "qobuz-brand-defense.list": {
+      "rules": 4,
+      "sha256": "1dc225f0ea0b91bc5a6b3c635c3b555345480c3c130b5c01a704fcd1104e558a"
+    },
+    "qobuz-brand-defense-2.list": {
+      "rules": 2,
+      "sha256": "038ab616afbe70eed42734858f7f12e96c249f9c14a1bc1e0f39373f723ec6f7"
+    },
+    "social-platforms.list": {
+      "rules": 54,
+      "sha256": "8cbd6aa2f31488f62994855eab9babebb768f9adc3131aa8dfc3f26ec4eb913f"
+    },
+    "spotify.list": {
+      "rules": 7,
+      "sha256": "fdcb49caabf05bc7ae52337c716ed083321c629d45fb6d4e085328643e193450"
+    },
+    "spotify-2.list": {
+      "rules": 14,
+      "sha256": "1197e4bd8607004d93075d893352879fd9e45d252278b5c695dfca4115a28e81"
+    },
+    "spotify-legacy.list": {
+      "rules": 1,
+      "sha256": "a80a6518e3537caa2aec1d0602d7c61030ec1d8600d24d2723216231772ee359"
+    },
+    "streaming-legacy.list": {
+      "rules": 3,
+      "sha256": "8eeba986760b42de178856c92caa26f04e48d982ba85747023ebc3fd2b5118d5"
+    },
+    "telegram.list": {
+      "rules": 34,
+      "sha256": "554877570fcd1b181d04a9c9be3a5ee3f24e595249106c91ee06c1a5551cc0ac"
+    },
+    "tidal.list": {
+      "rules": 4,
+      "sha256": "d0acd90412c681d3e8a325a1630c05471495ebc855c3c74a7a8f97d4364cfd1f"
+    },
+    "tiktok.list": {
+      "rules": 23,
+      "sha256": "70ab7aa87682d8d54a45fa3f368b121d273042bb570451fb68207edbc92c1490"
+    },
+    "viutv.list": {
+      "rules": 11,
+      "sha256": "1cf8c23c5ec95daf721e7a6726347c947973a7d55b203244f9a18546cb12c423"
+    },
+    "whatsapp.list": {
+      "rules": 26,
+      "sha256": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13"
+    },
+    "yahoo.list": {
+      "rules": 170,
+      "sha256": "baa68a5f003148300b2b800562dd8bd388a157989330c057a6d96d527f48c06f"
+    },
+    "youtube.list": {
+      "rules": 180,
+      "sha256": "5ed051f8c556dbef3838c470d3b22fb2e1a197ec0824fa0f68de05a05256ec14"
+    }
+  },
+  "segment_order": [
+    {
+      "order": 1,
+      "slug": "direct-override",
+      "target": "DIRECT",
+      "scope": "core"
+    },
+    {
+      "order": 2,
+      "slug": "private",
+      "target": "DIRECT",
+      "scope": "core"
+    },
+    {
+      "order": 3,
+      "slug": "openai",
+      "target": "🧲 OpenAI",
+      "scope": "core"
+    },
+    {
+      "order": 4,
+      "slug": "claude",
+      "target": "🧲 Claude",
+      "scope": "core"
+    },
+    {
+      "order": 5,
+      "slug": "ai-platforms",
+      "target": "🧠 AI 服务",
+      "scope": "core"
+    },
+    {
+      "order": 6,
+      "slug": "onedrive",
+      "target": "🔖 OneDrive",
+      "scope": "core"
+    },
+    {
+      "order": 7,
+      "slug": "discord",
+      "target": "🎙 Discord",
+      "scope": "core"
+    },
+    {
+      "order": 8,
+      "slug": "instagram",
+      "target": "📲 Instagram",
+      "scope": "core"
+    },
+    {
+      "order": 9,
+      "slug": "mail",
+      "target": "📪 邮件服务",
+      "scope": "core"
+    },
+    {
+      "order": 10,
+      "slug": "line",
+      "target": "📲 聊天软件",
+      "scope": "core"
+    },
+    {
+      "order": 11,
+      "slug": "kakao-talk",
+      "target": "📲 聊天软件",
+      "scope": "core"
+    },
+    {
+      "order": 12,
+      "slug": "whatsapp",
+      "target": "📲 聊天软件",
+      "scope": "core"
+    },
+    {
+      "order": 13,
+      "slug": "telegram",
+      "target": "📲 聊天软件",
+      "scope": "core"
+    },
+    {
+      "order": 14,
+      "slug": "social-platforms",
+      "target": "🗣 社交媒体",
+      "scope": "core"
+    },
+    {
+      "order": 15,
+      "slug": "developer-platforms",
+      "target": "🧑‍💻 开发服务",
+      "scope": "core"
+    },
+    {
+      "order": 16,
+      "slug": "game-download",
+      "target": "🎮 游戏下载",
+      "scope": "core"
+    },
+    {
+      "order": 17,
+      "slug": "game-platform",
+      "target": "🎮 游戏平台",
+      "scope": "core"
+    },
+    {
+      "order": 18,
+      "slug": "media-korea",
+      "target": "🎬 韩国媒体",
+      "scope": "core"
+    },
+    {
+      "order": 19,
+      "slug": "media-taiwan",
+      "target": "🎬 台湾媒体",
+      "scope": "core"
+    },
+    {
+      "order": 20,
+      "slug": "prime-video",
+      "target": "🎬 PrimeVideo",
+      "scope": "core"
+    },
+    {
+      "order": 21,
+      "slug": "viutv",
+      "target": "🎬 viuTV",
+      "scope": "core"
+    },
+    {
+      "order": 22,
+      "slug": "kktv",
+      "target": "🎬 KKTV",
+      "scope": "core"
+    },
+    {
+      "order": 23,
+      "slug": "bahamut",
+      "target": "🎬 巴哈姆特",
+      "scope": "core"
+    },
+    {
+      "order": 24,
+      "slug": "media-japan",
+      "target": "🎬 日本媒体",
+      "scope": "core"
+    },
+    {
+      "order": 25,
+      "slug": "youtube",
+      "target": "🎬 YouTube",
+      "scope": "core"
+    },
+    {
+      "order": 26,
+      "slug": "tidal",
+      "target": "🎵 音乐平台",
+      "scope": "core"
+    },
+    {
+      "order": 27,
+      "slug": "disney-plus",
+      "target": "🎬 DisneyPlus",
+      "scope": "core"
+    },
+    {
+      "order": 28,
+      "slug": "hbo-go",
+      "target": "🎬 HBOGO",
+      "scope": "core"
+    },
+    {
+      "order": 29,
+      "slug": "hbo-max",
+      "target": "🎬 HBOMAX",
+      "scope": "core"
+    },
+    {
+      "order": 30,
+      "slug": "emby-community",
+      "target": "🎬 EMBY",
+      "scope": "optional"
+    },
+    {
+      "order": 31,
+      "slug": "dazn",
+      "target": "🎬 Dazn",
+      "scope": "core"
+    },
+    {
+      "order": 32,
+      "slug": "apple-tv-plus",
+      "target": "🎬 AppleTV+",
+      "scope": "core"
+    },
+    {
+      "order": 33,
+      "slug": "bilibili-sea",
+      "target": "🎬 B站东南亚",
+      "scope": "core"
+    },
+    {
+      "order": 34,
+      "slug": "bilibili-hmt",
+      "target": "🎬 B站港澳台",
+      "scope": "core"
+    },
+    {
+      "order": 35,
+      "slug": "iqiyi",
+      "target": "🎬 爱奇艺",
+      "scope": "core"
+    },
+    {
+      "order": 36,
+      "slug": "spotify",
+      "target": "🎵 音乐平台",
+      "scope": "core"
+    },
+    {
+      "order": 37,
+      "slug": "spotify-legacy",
+      "target": "🎵 音乐平台",
+      "scope": "optional"
+    },
+    {
+      "order": 38,
+      "slug": "spotify-2",
+      "target": "🎵 音乐平台",
+      "scope": "core"
+    },
+    {
+      "order": 39,
+      "slug": "qobuz-brand-defense",
+      "target": "🎵 音乐平台",
+      "scope": "optional"
+    },
+    {
+      "order": 40,
+      "slug": "qobuz",
+      "target": "🎵 音乐平台",
+      "scope": "core"
+    },
+    {
+      "order": 41,
+      "slug": "qobuz-brand-defense-2",
+      "target": "🎵 音乐平台",
+      "scope": "optional"
+    },
+    {
+      "order": 42,
+      "slug": "apple-music",
+      "target": "🎵 音乐平台",
+      "scope": "core"
+    },
+    {
+      "order": 43,
+      "slug": "tiktok",
+      "target": "🎶 TikTok",
+      "scope": "core"
+    },
+    {
+      "order": 44,
+      "slug": "netflix",
+      "target": "🎬 Netflix",
+      "scope": "core"
+    },
+    {
+      "order": 45,
+      "slug": "icloud",
+      "target": "☁️ iCloud",
+      "scope": "core"
+    },
+    {
+      "order": 46,
+      "slug": "bing",
+      "target": "🔎 Bing",
+      "scope": "core"
+    },
+    {
+      "order": 47,
+      "slug": "microsoft",
+      "target": "🧩 微软服务",
+      "scope": "core"
+    },
+    {
+      "order": 48,
+      "slug": "apple",
+      "target": "🍎 苹果服务",
+      "scope": "core"
+    },
+    {
+      "order": 49,
+      "slug": "global-media",
+      "target": "🌏 国外流媒体",
+      "scope": "core"
+    },
+    {
+      "order": 50,
+      "slug": "google",
+      "target": "🔎 Google",
+      "scope": "core"
+    },
+    {
+      "order": 51,
+      "slug": "yahoo",
+      "target": "🔎 Yahoo",
+      "scope": "core"
+    },
+    {
+      "order": 52,
+      "slug": "academic",
+      "target": "🌏 学术网站",
+      "scope": "core"
+    },
+    {
+      "order": 53,
+      "slug": "community-overrides",
+      "target": "🌏 国外网站",
+      "scope": "optional"
+    },
+    {
+      "order": 54,
+      "slug": "streaming-legacy",
+      "target": "🌏 国外网站",
+      "scope": "optional"
+    },
+    {
+      "order": 55,
+      "slug": "global-web",
+      "target": "🌏 国外网站",
+      "scope": "core"
+    },
+    {
+      "order": 56,
+      "slug": "china-media",
+      "target": "🌏 国内流媒体",
+      "scope": "core"
+    },
+    {
+      "order": 57,
+      "slug": "china-web",
+      "target": "🌏 国内网站",
+      "scope": "core"
+    },
+    {
+      "order": 58,
+      "slug": "final",
+      "target": "🐟 漏网之鱼",
+      "scope": "core"
+    }
+  ],
+  "proxy_group_order": [
+    {
+      "order": 1,
+      "name": "♻️ 手动切换",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 2,
+      "name": "🧠 AI 服务",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 3,
+      "name": "🔎 Google",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 4,
+      "name": "🔎 Bing",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 5,
+      "name": "🔎 Yahoo",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 6,
+      "name": "🧲 OpenAI",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 7,
+      "name": "🧲 Claude",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 8,
+      "name": "🗣 社交媒体",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 9,
+      "name": "📲 聊天软件",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 10,
+      "name": "📲 Instagram",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 11,
+      "name": "🎙 Discord",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 12,
+      "name": "🧑‍💻 开发服务",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 13,
+      "name": "🎬 YouTube",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 14,
+      "name": "🎬 Netflix",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 15,
+      "name": "🎬 DisneyPlus",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 16,
+      "name": "🎬 巴哈姆特",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 17,
+      "name": "🎬 viuTV",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 18,
+      "name": "🎬 KKTV",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 19,
+      "name": "🎬 日本媒体",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 20,
+      "name": "🎬 韩国媒体",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 21,
+      "name": "🎬 台湾媒体",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 22,
+      "name": "🎬 AppleTV+",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 23,
+      "name": "🎬 HBOGO",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 24,
+      "name": "🎬 HBOMAX",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 25,
+      "name": "🎬 PrimeVideo",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 26,
+      "name": "🎬 EMBY",
+      "scope": "optional",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 27,
+      "name": "🎬 Dazn",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 28,
+      "name": "🎶 TikTok",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 29,
+      "name": "🎵 音乐平台",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 30,
+      "name": "🎬 爱奇艺",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 31,
+      "name": "🎬 B站港澳台",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 32,
+      "name": "🎬 B站东南亚",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 33,
+      "name": "🌏 国外流媒体",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 34,
+      "name": "🌏 国内流媒体",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 35,
+      "name": "🔖 OneDrive",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 36,
+      "name": "☁️ iCloud",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 37,
+      "name": "🧩 微软服务",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 38,
+      "name": "🍎 苹果服务",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 39,
+      "name": "🎮 游戏平台",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 40,
+      "name": "🎮 游戏下载",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 41,
+      "name": "📪 邮件服务",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 42,
+      "name": "🌏 学术网站",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 43,
+      "name": "🌏 国外网站",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 44,
+      "name": "🌏 国内网站",
+      "scope": "core",
+      "members": [
+        "DIRECT",
+        "♻️ 手动切换",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    },
+    {
+      "order": 45,
+      "name": "🐟 漏网之鱼",
+      "scope": "core",
+      "members": [
+        "♻️ 手动切换",
+        "DIRECT",
+        "__ALL_SUBSCRIPTION_NODES__"
+      ]
+    }
+  ]
+}

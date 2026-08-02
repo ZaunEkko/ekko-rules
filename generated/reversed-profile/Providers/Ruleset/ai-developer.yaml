@@ -1,0 +1,12 @@
+payload:
+- DOMAIN-SUFFIX,codeium.com
+- DOMAIN-SUFFIX,cursor-cdn.com
+- DOMAIN-SUFFIX,cursor.com
+- DOMAIN-SUFFIX,cursor.sh
+- DOMAIN-SUFFIX,cursorapi.com
+- DOMAIN-SUFFIX,cursorvm.com
+- DOMAIN-SUFFIX,endpoints.huggingface.cloud
+- DOMAIN-SUFFIX,hf.co
+- DOMAIN-SUFFIX,hf.space
+- DOMAIN-SUFFIX,huggingface.co
+- DOMAIN-SUFFIX,windsurf.com

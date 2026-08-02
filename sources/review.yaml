@@ -1,5 +1,5 @@
 schema_version: 1
-reviewed_on: 2026-07-30
+reviewed_on: 2026-08-01
 purpose: Non-generating review queue for uncertain, legacy, brand-defense, personal/community, or relocation candidates. Entries here never change generated routing by themselves.
 allowed_statuses:
 - observe
@@ -20,7 +20,7 @@ items:
   phase_2_candidate: apple-brand-defense
   recommended_action: split-deferred
   preset: core-and-optional
-  resolution: Apple core stays enabled; exact brand-defense classification is deferred to a separately evidenced batch.
+  resolution: Phase 3 keeps only evidenced Apple core rules. Historical brand-defense entries that reappear in apple-late-recovery are retained solely to restore Phase 2 DIRECT-default routing; their current Apple ownership is not reverified, and exact classification remains deferred to a separately evidenced batch.
 - id: apple-legacy-products
   status: legacy
   scope: apple
@@ -32,7 +32,7 @@ items:
   phase_2_candidate: apple-legacy
   recommended_action: split-deferred
   preset: core-and-optional
-  resolution: Confirmed legacy products will move to optional after a complete Apple line ledger; mac.com, me.com, and current QuickTime coverage remain core.
+  resolution: Phase 3 keeps evidenced current Apple roots. Historical product and compatibility entries that reappear in apple-late-recovery preserve Phase 2 DIRECT-default behavior only; they remain legacy review candidates rather than newly validated Apple ownership.
 - id: google-brand-defense
   status: brand-defense
   scope: google
@@ -90,9 +90,9 @@ items:
   first_observed: 2026-07-30
   last_verified: '2026-07-31'
   phase_2_candidate: optional-community-layer
-  recommended_action: moved
-  preset: extended
-  resolution: Five personal/community domains moved to community-overrides in Extended.
+  recommended_action: removed
+  preset: none
+  resolution: Phase 3 removed the optional community-overrides ruleset; ordinary traffic now reaches FINAL.
 - id: historical-streaming-hosts
   status: legacy
   scope: global-web
@@ -102,9 +102,9 @@ items:
   first_observed: 2026-07-30
   last_verified: '2026-07-31'
   phase_2_candidate: streaming-legacy
-  recommended_action: moved
-  preset: extended
-  resolution: neulion.com, icntv.xyz, and flzbcdn.xyz moved to streaming-legacy; no reachability failure was used as deletion evidence.
+  recommended_action: removed
+  preset: none
+  resolution: Phase 3 removed the streaming-legacy ruleset as a product-scope decision; no reachability failure is claimed as deletion evidence.
 - id: spotify-legacy-cdn
   status: legacy
   scope: music-2
@@ -129,6 +129,18 @@ items:
   recommended_action: moved
   preset: extended
   resolution: Six typo domains moved to two ordered optional segments so Extended preserves their prior relative positions; correctly spelled alternate TLDs remain Core.
+- id: late-recovery-domain-keywords
+  status: candidate-remove
+  scope: direct-recovery
+  summary: Historical brand substring matchers can route unrelated lookalike domains to DIRECT-default policies.
+  evidence:
+  - https://en.help.roblox.com/hc/en-us/articles/115005744663-Troubleshooting-Education-Networks
+  first_observed: 2026-08-01
+  last_verified: '2026-08-01'
+  phase_2_candidate: direct-default-recovery
+  recommended_action: removed
+  preset: core-and-extended
+  resolution: All seven DOMAIN-KEYWORD candidates are excluded from late recovery. Roblox is replaced by anchored roblox.com and rbxcdn.com suffixes from the official education-network allowlist; the other six keywords were already represented by earlier precise rules. Lookalike domains continue to FINAL.
 - id: transient-resolution-failures
   status: observe
   scope: all

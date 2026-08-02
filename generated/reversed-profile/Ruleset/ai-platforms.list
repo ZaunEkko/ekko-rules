@@ -1,6 +1,8 @@
-DOMAIN-SUFFIX,cursor-cdn.com
-DOMAIN-SUFFIX,cursor.com
-DOMAIN-SUFFIX,cursor.sh
-DOMAIN-SUFFIX,cursorapi.com
-DOMAIN-SUFFIX,huggingface.co
+DOMAIN-SUFFIX,codestral.com
+DOMAIN-SUFFIX,groq.com
+DOMAIN-SUFFIX,groqcloud.com
+DOMAIN-SUFFIX,mistral.ai
+DOMAIN-SUFFIX,openrouter.ai
+DOMAIN-SUFFIX,perplexity.ai
 DOMAIN-SUFFIX,poe.com
+DOMAIN-SUFFIX,pplx.ai

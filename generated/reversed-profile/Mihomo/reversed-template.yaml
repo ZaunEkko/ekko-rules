@@ -20,7 +20,7 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
-- name: 🧠 AI 服务
+- name: 🌐 海外 AI
   type: select
   proxies:
   - ♻️ 手动切换
@@ -28,20 +28,6 @@ proxy-groups:
   use:
   - subscription
 - name: 🔎 Google
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🔎 Bing
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🔎 Yahoo
   type: select
   proxies:
   - ♻️ 手动切换
@@ -70,13 +56,6 @@ proxy-groups:
   use:
   - subscription
 - name: 📲 聊天软件
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 📲 Instagram
   type: select
   proxies:
   - ♻️ 手动切换
@@ -118,21 +97,7 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
-- name: 🎬 巴哈姆特
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🎬 viuTV
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🎬 KKTV
+- name: 🎬 港澳台媒体
   type: select
   proxies:
   - ♻️ 手动切换
@@ -147,13 +112,6 @@ proxy-groups:
   use:
   - subscription
 - name: 🎬 韩国媒体
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🎬 台湾媒体
   type: select
   proxies:
   - ♻️ 手动切换
@@ -223,7 +181,14 @@ proxy-groups:
   - ♻️ 手动切换
   use:
   - subscription
-- name: 🎬 B站东南亚
+- name: 🎬 东南亚媒体
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🇺🇸 美国流媒体
   type: select
   proxies:
   - ♻️ 手动切换
@@ -244,14 +209,7 @@ proxy-groups:
   - ♻️ 手动切换
   use:
   - subscription
-- name: 🔖 OneDrive
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: ☁️ iCloud
+- name: ☁️ 云盘服务
   type: select
   proxies:
   - ♻️ 手动切换
@@ -293,14 +251,7 @@ proxy-groups:
   - ♻️ 手动切换
   use:
   - subscription
-- name: 🌏 学术网站
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🌏 国外网站
+- name: 🔞 NSFW
   type: select
   proxies:
   - ♻️ 手动切换
@@ -349,6 +300,34 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/claude.yaml
     path: ./ruleset/claude.yaml
+    interval: 86400
+  google-ai:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google-ai.yaml
+    path: ./ruleset/google-ai.yaml
+    interval: 86400
+  xai:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/xai.yaml
+    path: ./ruleset/xai.yaml
+    interval: 86400
+  microsoft-ai:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/microsoft-ai.yaml
+    path: ./ruleset/microsoft-ai.yaml
+    interval: 86400
+  ai-developer:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/ai-developer.yaml
+    path: ./ruleset/ai-developer.yaml
     interval: 86400
   ai-platforms:
     type: http
@@ -440,6 +419,13 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/game-platform.yaml
     path: ./ruleset/game-platform.yaml
+    interval: 86400
+  nsfw:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/nsfw.yaml
+    path: ./ruleset/nsfw.yaml
     interval: 86400
   media-korea:
     type: http
@@ -609,13 +595,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/icloud.yaml
     path: ./ruleset/icloud.yaml
     interval: 86400
-  bing:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/bing.yaml
-    path: ./ruleset/bing.yaml
-    interval: 86400
   microsoft:
     type: http
     behavior: classical
@@ -629,6 +608,13 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/apple.yaml
     path: ./ruleset/apple.yaml
+    interval: 86400
+  us-media:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/us-media.yaml
+    path: ./ruleset/us-media.yaml
     interval: 86400
   global-media:
     type: http
@@ -644,27 +630,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google.yaml
     path: ./ruleset/google.yaml
     interval: 86400
-  yahoo:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/yahoo.yaml
-    path: ./ruleset/yahoo.yaml
-    interval: 86400
-  academic:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/academic.yaml
-    path: ./ruleset/academic.yaml
-    interval: 86400
-  global-web:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/global-web.yaml
-    path: ./ruleset/global-web.yaml
-    interval: 86400
   china-media:
     type: http
     behavior: classical
@@ -679,15 +644,61 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-web.yaml
     path: ./ruleset/china-web.yaml
     interval: 86400
+  game-platform-late-recovery:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/game-platform-late-recovery.yaml
+    path: ./ruleset/game-platform-late-recovery.yaml
+    interval: 86400
+  bilibili-hmt-late-recovery:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/bilibili-hmt-late-recovery.yaml
+    path: ./ruleset/bilibili-hmt-late-recovery.yaml
+    interval: 86400
+  iqiyi-late-recovery:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/iqiyi-late-recovery.yaml
+    path: ./ruleset/iqiyi-late-recovery.yaml
+    interval: 86400
+  microsoft-late-recovery:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/microsoft-late-recovery.yaml
+    path: ./ruleset/microsoft-late-recovery.yaml
+    interval: 86400
+  apple-late-recovery:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/apple-late-recovery.yaml
+    path: ./ruleset/apple-late-recovery.yaml
+    interval: 86400
+  china-media-late-recovery:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-media-late-recovery.yaml
+    path: ./ruleset/china-media-late-recovery.yaml
+    interval: 86400
 rules:
 - RULE-SET,direct-override,DIRECT
 - RULE-SET,private,DIRECT
 - RULE-SET,openai,🧲 OpenAI
 - RULE-SET,claude,🧲 Claude
-- RULE-SET,ai-platforms,🧠 AI 服务
-- RULE-SET,onedrive,🔖 OneDrive
+- RULE-SET,google-ai,🌐 海外 AI
+- RULE-SET,xai,🌐 海外 AI
+- RULE-SET,microsoft-ai,🌐 海外 AI
+- RULE-SET,ai-developer,🌐 海外 AI
+- RULE-SET,ai-platforms,🌐 海外 AI
+- RULE-SET,onedrive,☁️ 云盘服务
 - RULE-SET,discord,🎙 Discord
-- RULE-SET,instagram,📲 Instagram
+- RULE-SET,instagram,🗣 社交媒体
 - RULE-SET,mail,📪 邮件服务
 - RULE-SET,line,📲 聊天软件
 - RULE-SET,kakao-talk,📲 聊天软件
@@ -697,12 +708,13 @@ rules:
 - RULE-SET,developer-platforms,🧑‍💻 开发服务
 - RULE-SET,game-download,🎮 游戏下载
 - RULE-SET,game-platform,🎮 游戏平台
+- RULE-SET,nsfw,🔞 NSFW
 - RULE-SET,media-korea,🎬 韩国媒体
-- RULE-SET,media-taiwan,🎬 台湾媒体
+- RULE-SET,media-taiwan,🎬 港澳台媒体
 - RULE-SET,prime-video,🎬 PrimeVideo
-- RULE-SET,viutv,🎬 viuTV
-- RULE-SET,kktv,🎬 KKTV
-- RULE-SET,bahamut,🎬 巴哈姆特
+- RULE-SET,viutv,🎬 港澳台媒体
+- RULE-SET,kktv,🎬 港澳台媒体
+- RULE-SET,bahamut,🎬 港澳台媒体
 - RULE-SET,media-japan,🎬 日本媒体
 - RULE-SET,youtube,🎬 YouTube
 - RULE-SET,tidal,🎵 音乐平台
@@ -711,7 +723,7 @@ rules:
 - RULE-SET,hbo-max,🎬 HBOMAX
 - RULE-SET,dazn,🎬 Dazn
 - RULE-SET,apple-tv-plus,🎬 AppleTV+
-- RULE-SET,bilibili-sea,🎬 B站东南亚
+- RULE-SET,bilibili-sea,🎬 东南亚媒体
 - RULE-SET,bilibili-hmt,🎬 B站港澳台
 - RULE-SET,iqiyi,🎬 爱奇艺
 - RULE-SET,spotify,🎵 音乐平台
@@ -720,15 +732,18 @@ rules:
 - RULE-SET,apple-music,🎵 音乐平台
 - RULE-SET,tiktok,🎶 TikTok
 - RULE-SET,netflix,🎬 Netflix
-- RULE-SET,icloud,☁️ iCloud
-- RULE-SET,bing,🔎 Bing
+- RULE-SET,icloud,☁️ 云盘服务
 - RULE-SET,microsoft,🧩 微软服务
 - RULE-SET,apple,🍎 苹果服务
+- RULE-SET,us-media,🇺🇸 美国流媒体
 - RULE-SET,global-media,🌏 国外流媒体
 - RULE-SET,google,🔎 Google
-- RULE-SET,yahoo,🔎 Yahoo
-- RULE-SET,academic,🌏 学术网站
-- RULE-SET,global-web,🌏 国外网站
 - RULE-SET,china-media,🌏 国内流媒体
 - RULE-SET,china-web,🌏 国内网站
+- RULE-SET,game-platform-late-recovery,🎮 游戏平台
+- RULE-SET,bilibili-hmt-late-recovery,🎬 B站港澳台
+- RULE-SET,iqiyi-late-recovery,🎬 爱奇艺
+- RULE-SET,microsoft-late-recovery,🧩 微软服务
+- RULE-SET,apple-late-recovery,🍎 苹果服务
+- RULE-SET,china-media-late-recovery,🌏 国内流媒体
 - MATCH,🐟 漏网之鱼

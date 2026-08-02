@@ -144,6 +144,27 @@ class ProxyGroup:
 
 
 @dataclass(frozen=True)
+class HistoricalRule:
+    slug: str
+    target: str
+    rule: str
+
+
+@dataclass(frozen=True)
+class RecoverySelection:
+    historical_direct_default: tuple[HistoricalRule, ...]
+    explicitly_covered: tuple[HistoricalRule, ...]
+    raw_residual: tuple[HistoricalRule, ...]
+    historical_shadowed: tuple[HistoricalRule, ...]
+    selected: tuple[HistoricalRule, ...]
+    security_excluded: tuple[HistoricalRule, ...]
+    security_replacements: tuple[HistoricalRule, ...]
+    emitted: tuple[HistoricalRule, ...]
+    proxy_residual: tuple[HistoricalRule, ...]
+    proxy_capture_violations: tuple[HistoricalRule, ...]
+
+
+@dataclass(frozen=True)
 class ProfileSources:
     root: Path
     manifest: dict[str, Any]
@@ -620,6 +641,60 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
             f"Quality baseline {product} cross-segment coverage differs",
         )
 
+    next_gate = quality["next_gate"]
+    require(
+        isinstance(next_gate, dict),
+        "quality baseline next_gate must be a mapping",
+    )
+    common_gate = {
+        "exact_duplicate_occurrences_beyond_first",
+        "non_strict_cidr_entries",
+        "semantic_coverage_must_not_increase",
+        "cross_segment_dependencies_must_not_increase",
+    }
+    phase = quality["phase"]
+    if phase == "phase-3-direct-recovery":
+        require_keys(
+            next_gate,
+            required=common_gate
+            | {"direct_default_to_final_violations", "recovery_ledger"},
+            context="quality baseline next_gate",
+        )
+        require(
+            next_gate
+            == {
+                "exact_duplicate_occurrences_beyond_first": 0,
+                "non_strict_cidr_entries": 0,
+                "semantic_coverage_must_not_increase": True,
+                "cross_segment_dependencies_must_not_increase": True,
+                "direct_default_to_final_violations": 0,
+                "recovery_ledger": "tests/fixtures/phase-3-recovery-ledger.json",
+            },
+            "Unsupported Phase 3 recovery next_gate",
+        )
+    elif phase == "legacy-import-candidate":
+        require_keys(
+            next_gate,
+            required=common_gate,
+            context="quality baseline next_gate",
+        )
+        require(
+            next_gate
+            == {
+                "exact_duplicate_occurrences_beyond_first": quality[
+                    "exact_duplicates_within_segment"
+                ]["occurrences_beyond_first"],
+                "non_strict_cidr_entries": len(
+                    quality["known_non_strict_cidrs"]["entries"]
+                ),
+                "semantic_coverage_must_not_increase": True,
+                "cross_segment_dependencies_must_not_increase": True,
+            },
+            "Unsupported legacy-import next_gate",
+        )
+    else:
+        raise ProfileError(f"Unsupported quality baseline phase: {phase!r}")
+
 
 def scope_metrics(sources: ProfileSources, *, product: str) -> dict[str, int]:
     rule_segments = sources.rule_segments_for(product)
@@ -695,6 +770,13 @@ def _validate_rules(
         entries = read_rule_lines(source_path)
         for entry in entries:
             rule_type, value, _ = parse_rule(entry, context=source)
+            require(
+                not (
+                    segment.slug.endswith("-late-recovery")
+                    and rule_type == "DOMAIN-KEYWORD"
+                ),
+                f"Late recovery rules must use anchored domain matchers: {segment.slug}: {entry}",
+            )
             if rule_type in {"IP-CIDR", "IP-CIDR6"}:
                 try:
                     network = ip_network(value, strict=True)
@@ -1101,7 +1183,7 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 - `config/ekko-rules.ini`：默认 Core 在线预设，不覆盖 Subconverter 服务端的 Clash 基础配置。
 - `config/ekko-rules-full.ini`：Core + 脱敏基础配置；不暗含 optional 规则。
 - `config/ekko-rules-local.ini`：本地 Core 预设，基础配置默认注释。
-- `config/ekko-rules-extended.ini`：Core + legacy/品牌防御/社区 optional 规则，不覆盖基础配置。
+- `config/ekko-rules-extended.ini`：Core + EMBY 社区、Spotify legacy 与 Qobuz 品牌防御 optional 规则，不覆盖基础配置。
 - `config/ekko-rules-extended-local.ini`：本地 Extended 预设。
 - `base/GeneralClashConfig.yml`：可选且脱敏的 Clash 基础配置。
 - `Ruleset/*.list`：供 Subconverter 使用的经典规则集。
@@ -1122,11 +1204,13 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 
 - Core 为 {len(sources.rule_segments_for(CORE_PRODUCT))} 个 ruleset、{len(sources.segments_for(CORE_PRODUCT))} 个区段、{len(sources.proxy_groups_for(CORE_PRODUCT))} 个策略组。
 - Extended 为 {len(sources.rule_segments_for(EXTENDED_PRODUCT))} 个 ruleset、{len(sources.segments_for(EXTENDED_PRODUCT))} 个区段、{len(sources.proxy_groups_for(EXTENDED_PRODUCT))} 个策略组。
-- Messaging 与音乐按服务拆分；同类服务仍可共用原策略组。
-- AI、社交和开发服务拥有最小独立策略组；Private 基础层直接指向 `DIRECT`。
-- 所有目标 IP 规则统一带 `no-resolve`。
+- OpenAI、Claude 与海外 AI 独立；海外 AI 按 Google、xAI、Microsoft 与开发工具拆分 ruleset 后共用策略组。
+- 重点流媒体保持独立；美国长尾、港澳台、东南亚和其他国外媒体按地区合并，B站港澳台继续独立。
+- NSFW 只包含 38 条高置信域名，不使用宽 keyword、公共后缀或共享云/CDN 根域。
+- 泛网站、学术、Yahoo、个人社区和历史流媒体规则已删除，原 proxy/manual-first 普通流量交给 `🐟 漏网之鱼`。
+- `china-web/GEOIP,CN` 之后、FINAL 之前的六个 late recovery ruleset 只恢复历史 DIRECT-default 路由；当前细分规则和国内 GEOIP 继续优先。
+- 所有目标 IP 规则统一带 `no-resolve`；Private 基础层直接指向 `DIRECT`。
 - 同一区段 exact 重复已清零；5 条非 strict CIDR 已删除而未猜测改写前缀。
-- 过宽地区 TLD、共享云网段和共享基础设施已从前置专用策略移除或迁到综合策略。
 - DNS、TUN、Hosts 和节点凭据不属于核心规则职责。
 """
     english = f"""# Ekko Rules
@@ -1140,7 +1224,7 @@ Reusable routing rules and subscription templates for Subconverter and Mihomo. T
 - `config/ekko-rules.ini`: Default Core online preset without a Clash base override.
 - `config/ekko-rules-full.ini`: Core plus the sanitized base; it does not silently enable optional rules.
 - `config/ekko-rules-local.ini`: Local Core preset with its base disabled by default.
-- `config/ekko-rules-extended.ini`: Core plus optional legacy, brand-defense, and community rules without a base override.
+- `config/ekko-rules-extended.ini`: Core plus optional EMBY community, Spotify legacy, and Qobuz brand-defense rules without a base override.
 - `config/ekko-rules-extended-local.ini`: Local Extended preset.
 - `base/GeneralClashConfig.yml`: Optional sanitized Clash base.
 - `Ruleset/*.list`: Classical Subconverter rules.
@@ -1161,11 +1245,13 @@ Reusable routing rules and subscription templates for Subconverter and Mihomo. T
 
 - Core contains {len(sources.rule_segments_for(CORE_PRODUCT))} rulesets, {len(sources.segments_for(CORE_PRODUCT))} segments, and {len(sources.proxy_groups_for(CORE_PRODUCT))} proxy groups.
 - Extended contains {len(sources.rule_segments_for(EXTENDED_PRODUCT))} rulesets, {len(sources.segments_for(EXTENDED_PRODUCT))} segments, and {len(sources.proxy_groups_for(EXTENDED_PRODUCT))} proxy groups.
-- Messaging and music are split by service while related services may still share an existing policy group.
-- AI, social, and developer services have minimal independent groups; the Private layer targets `DIRECT`.
-- Every destination-IP rule carries `no-resolve`.
+- OpenAI, Claude, and Overseas AI remain independent; Google, xAI, Microsoft, and developer-tool rulesets share the Overseas AI group.
+- Major streaming services remain independent; US long-tail, HMT, Southeast Asian, and other global media are regionally grouped while Bilibili HMT remains independent.
+- NSFW contains only 38 high-confidence domains without broad keywords, public suffixes, or shared cloud/CDN roots.
+- Generic web, academic, Yahoo, personal-community, and historical-streaming rules were deleted so historical proxy/manual-first ordinary traffic reaches `🐟 漏网之鱼`.
+- Six late-recovery rulesets after `china-web/GEOIP,CN` and before FINAL restore only historical DIRECT-default routing; current specialization and CN GeoIP remain earlier.
+- Every destination-IP rule carries `no-resolve`; the Private layer targets `DIRECT`.
 - Same-segment exact duplicates are zero; five non-strict CIDRs were deleted without guessing corrected prefixes.
-- Broad regional TLDs, shared cloud ranges, and shared infrastructure were removed from early service-specific policies or moved to general routing.
 - DNS, TUN, Hosts, and proxy credentials are outside the core ruleset scope.
 """
     write_text(output / "README.md", chinese)
@@ -1453,6 +1539,87 @@ def _add_to_coverage_index(entry: str, index: dict[str, Any]) -> None:
         index[key].append(network)
     elif rule_type == "IP-SUFFIX":
         index["ip_suffixes"].add(value)
+
+
+def _is_covered(entry: str, index: dict[str, Any]) -> bool:
+    return entry in index["exact"] or _is_broadly_covered(entry, index)
+
+
+def select_late_recovery(
+    historical_rules: Iterable[HistoricalRule],
+    *,
+    direct_default_targets: AbstractSet[str],
+    current_rules: Iterable[str],
+) -> RecoverySelection:
+    current_index = _new_coverage_index()
+    for entry in current_rules:
+        _add_to_coverage_index(entry, current_index)
+
+    historical_index = _new_coverage_index()
+    historical_direct_default: list[HistoricalRule] = []
+    explicitly_covered: list[HistoricalRule] = []
+    raw_residual: list[HistoricalRule] = []
+    historical_shadowed: list[HistoricalRule] = []
+    selected: list[HistoricalRule] = []
+    proxy_residual: list[HistoricalRule] = []
+
+    for item in historical_rules:
+        current_covered = _is_covered(item.rule, current_index)
+        historically_covered = _is_covered(item.rule, historical_index)
+        if item.target in direct_default_targets:
+            historical_direct_default.append(item)
+            if current_covered:
+                explicitly_covered.append(item)
+            else:
+                raw_residual.append(item)
+                if historically_covered:
+                    historical_shadowed.append(item)
+                else:
+                    selected.append(item)
+        elif not current_covered and not historically_covered:
+            proxy_residual.append(item)
+        _add_to_coverage_index(item.rule, historical_index)
+
+    security_excluded = [
+        item
+        for item in selected
+        if parse_rule(item.rule, context="recovery security filter")[0]
+        == "DOMAIN-KEYWORD"
+    ]
+    emitted = [item for item in selected if item not in security_excluded]
+    security_replacements: list[HistoricalRule] = []
+    if any(item.rule == "DOMAIN-KEYWORD,roblox" for item in security_excluded):
+        roblox_owner = next(
+            item for item in security_excluded if item.rule == "DOMAIN-KEYWORD,roblox"
+        )
+        security_replacements.extend(
+            HistoricalRule(roblox_owner.slug, roblox_owner.target, rule)
+            for rule in (
+                "DOMAIN-SUFFIX,roblox.com",
+                "DOMAIN-SUFFIX,rbxcdn.com",
+            )
+        )
+    emitted.extend(security_replacements)
+
+    recovery_index = _new_coverage_index()
+    for item in emitted:
+        _add_to_coverage_index(item.rule, recovery_index)
+    proxy_capture_violations = [
+        item for item in proxy_residual if _is_covered(item.rule, recovery_index)
+    ]
+
+    return RecoverySelection(
+        historical_direct_default=tuple(historical_direct_default),
+        explicitly_covered=tuple(explicitly_covered),
+        raw_residual=tuple(raw_residual),
+        historical_shadowed=tuple(historical_shadowed),
+        selected=tuple(selected),
+        security_excluded=tuple(security_excluded),
+        security_replacements=tuple(security_replacements),
+        emitted=tuple(emitted),
+        proxy_residual=tuple(proxy_residual),
+        proxy_capture_violations=tuple(proxy_capture_violations),
+    )
 
 
 def coverage_metrics(

@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "baseline_head": "8dbf3e6f7c2aedfa0fd9c485f63d76c1ace31faf",
+  "phase_3_after_sha256": "856f4e3623f487107837eb27943ea772c408b4b13c5baed0d48b347e81cf1584",
+  "historical_manifest_sha256": "70312cc0059bbf986103e6ec51fd35089b1fee876769c51f312c2d925e461eb6",
+  "historical_proxy_groups_sha256": "b862c2220d940b0e10f41d805727e436064fe6dda43bcb56f9c104e95d2f443b",
+  "counts": {
+    "historical_direct_default": 3472,
+    "explicitly_covered": 638,
+    "raw_residual": 2834,
+    "historical_shadowed": 97,
+    "selected": 2737,
+    "proxy_residual": 8765,
+    "proxy_capture_violations": 0,
+    "security_excluded": 7,
+    "security_replacements": 2,
+    "emitted": 2732
+  },
+  "digests": {
+    "historical_direct_default": "317fdab0572345757bb38a6b53165b4c4ca971b6ebe8b37e55b203923f11696b",
+    "explicitly_covered": "0c47c961f967dc09e78989a0638dacff94e4c9b2cbd32f511a5eb9f1709fe9e1",
+    "raw_residual": "3d36daf78134e357658a61c6ecc80baeeba82064ab585b2b299e23680b061a99",
+    "historical_shadowed": "cee68756c70f6b719986f21261d534a98659fe5580b1e7d0247e0e881dbb664f",
+    "selected": "9a984859e6a4b06aab598fa7a56ae55e1371349add7fb0af1c9f9f2be7a05f78",
+    "proxy_residual": "090599ea6c16e63a792911e1221d399717188187d3c5709fe4c1f50edc17aca1",
+    "security_excluded": "e660a9dbb00bdb370c070aa38db9e04242b46456ca9a68e4135bf144e5a2f4b1",
+    "security_replacements": "139095893c972c7d434504589b9f3ac9e1c6cf7a37e34f3ba8a931d5d4a1babc",
+    "emitted": "c777cfd20115d344815d7418f16d6eac4d978b40a4b65e44d767d34b91686960"
+  },
+  "equations": [
+    "3472 = 638 + 2834",
+    "2834 = 2737 + 97",
+    "2732 = 2737 - 7 + 2"
+  ],
+  "owners": {
+    "game-platform": {
+      "recovery_slug": "game-platform-late-recovery",
+      "target": "🎮 游戏平台",
+      "rules": 592,
+      "rules_digest": "6f643e2a5d473d0e866ae843dfe809cc055d575379f1c9767e02bbecdc4dd7bb",
+      "file_sha256": "6f643e2a5d473d0e866ae843dfe809cc055d575379f1c9767e02bbecdc4dd7bb"
+    },
+    "bilibili-hmt": {
+      "recovery_slug": "bilibili-hmt-late-recovery",
+      "target": "🎬 B站港澳台",
+      "rules": 108,
+      "rules_digest": "eff859235d09e9c3e4ff10e09765be69cc2993b69fbf506c9dbbfea30b3cdb87",
+      "file_sha256": "eff859235d09e9c3e4ff10e09765be69cc2993b69fbf506c9dbbfea30b3cdb87"
+    },
+    "iqiyi": {
+      "recovery_slug": "iqiyi-late-recovery",
+      "target": "🎬 爱奇艺",
+      "rules": 36,
+      "rules_digest": "407322aa98e651e5b38cb7c3e515d1a81e42646f6a0b6ef8fb6fddf6c990be62",
+      "file_sha256": "407322aa98e651e5b38cb7c3e515d1a81e42646f6a0b6ef8fb6fddf6c990be62"
+    },
+    "microsoft": {
+      "recovery_slug": "microsoft-late-recovery",
+      "target": "🧩 微软服务",
+      "rules": 433,
+      "rules_digest": "e8ff32e12d36388f30fb2a45d590e51e3af24091161f14e3c63d1f657e3a0455",
+      "file_sha256": "e8ff32e12d36388f30fb2a45d590e51e3af24091161f14e3c63d1f657e3a0455"
+    },
+    "apple": {
+      "recovery_slug": "apple-late-recovery",
+      "target": "🍎 苹果服务",
+      "rules": 1470,
+      "rules_digest": "06ffba73b98ab48cf657c6d2592d6be3e06db9e281f06ab6931d4bd29aa9b822",
+      "file_sha256": "06ffba73b98ab48cf657c6d2592d6be3e06db9e281f06ab6931d4bd29aa9b822"
+    },
+    "china-media": {
+      "recovery_slug": "china-media-late-recovery",
+      "target": "🌏 国内流媒体",
+      "rules": 93,
+      "rules_digest": "62bd0b2fd47fc40b1b860318edd12845ce6a7fc15a55ae3efa4b77f6b9a6980a",
+      "file_sha256": "62bd0b2fd47fc40b1b860318edd12845ce6a7fc15a55ae3efa4b77f6b9a6980a"
+    }
+  },
+  "destination_ip_rules": {
+    "count": 101,
+    "without_no_resolve": 0,
+    "non_strict_cidrs": 0
+  },
+  "tail_order": [
+    "china-web",
+    "game-platform-late-recovery",
+    "bilibili-hmt-late-recovery",
+    "iqiyi-late-recovery",
+    "microsoft-late-recovery",
+    "apple-late-recovery",
+    "china-media-late-recovery",
+    "final"
+  ],
+  "products": {
+    "core": {
+      "rule_files": 59,
+      "segments": 60,
+      "proxy_groups": 37
+    },
+    "extended": {
+      "rule_files": 63,
+      "segments": 64,
+      "proxy_groups": 38
+    }
+  },
+  "policy": {
+    "direct_default_residual": "late recovery before FINAL",
+    "proxy_manual_first_residual": "may continue to FINAL",
+    "geoip_cn": "remains before every recovery segment",
+    "domain_keyword": "forbidden in late recovery; seven historical keywords are excluded and Roblox is replaced by anchored roblox.com/rbxcdn.com suffixes"
+  }
+}
