@@ -20,13 +20,13 @@ The repository now has an MIT license, a closed single-product layout, determini
 
 ## Required before merging this preparation branch
 
-- [ ] Run the complete Python test suite on Windows and Linux CI.
+- [x] Run the complete Python test suite on Windows and Linux CI.
 - [x] Confirm `python scripts/validate_generated.py` passes with zero sensitive findings.
 - [x] Confirm `python scripts/generate_profile.py --check` reports no differences.
 - [x] Verify the sole Subconverter artifact with `subconverter.exe -g --artifact`.
 - [x] Verify the sole Mihomo template with an isolated local-file Provider configuration and `verge-mihomo.exe -t` only.
 - [x] Confirm no validation process or port 25500 listener remains.
-- [ ] Review the final PR diff and merge only after required CI succeeds.
+- [x] Review the final PR diff and merge only after required CI succeeds.
 
 ## Separate public-visibility operation
 
