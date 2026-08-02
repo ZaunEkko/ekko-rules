@@ -12,7 +12,6 @@ from typing import Any
 from profile_model import (
     CORE_PRODUCT,
     DESTINATION_IP_RULE_TYPES,
-    EXTENDED_PRODUCT,
     NODE_PLACEHOLDER,
     POSIX_ABSOLUTE_PATH,
     ProfileError,
@@ -42,7 +41,6 @@ ALLOWED_GENERATED_ROOTS = {
     "README_EN.md",
     "Ruleset",
     "analysis.json",
-    "base",
     "config",
     "manifest.json",
 }
@@ -74,7 +72,7 @@ def check(condition: bool, message: str) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Validate Ekko Rules products against canonical sources."
+        description="Validate the Ekko Rules standard product against canonical sources."
     )
     parser.add_argument(
         "--sources",
@@ -115,13 +113,7 @@ def read_json(path: Path) -> Any:
 def expected_generated_files(sources: ProfileSources) -> set[str]:
     files = {
         "config/ekko-rules.ini",
-        "config/ekko-rules-full.ini",
-        "config/ekko-rules-local.ini",
-        "config/ekko-rules-extended.ini",
-        "config/ekko-rules-extended-local.ini",
         "Mihomo/reversed-template.yaml",
-        "Mihomo/reversed-template-extended.yaml",
-        "base/GeneralClashConfig.yml",
         "analysis.json",
         "README.md",
         "README_EN.md",
@@ -152,7 +144,7 @@ def validate_file_set(generated: Path, sources: ProfileSources) -> dict[str, Any
     check(actual_files == expected_files, "Generated file collection differs from sources")
     check(
         directory_snapshot(generated)
-        == {"Mihomo", "Providers", "Providers/Ruleset", "Ruleset", "base", "config"},
+        == {"Mihomo", "Providers", "Providers/Ruleset", "Ruleset", "config"},
         "Generated directory collection differs from sources",
     )
 
@@ -238,48 +230,25 @@ def expected_ini_groups(sources: ProfileSources, *, product: str) -> list[str]:
 
 
 def validate_ini_presets(generated: Path, sources: ProfileSources) -> None:
-    base_url = sources.manifest["urls"]["base_config"]
-    presets = [
-        ("ekko-rules.ini", CORE_PRODUCT, False, [f";clash_rule_base={base_url}"]),
-        ("ekko-rules-full.ini", CORE_PRODUCT, False, [f"clash_rule_base={base_url}"]),
-        (
-            "ekko-rules-local.ini",
-            CORE_PRODUCT,
-            True,
-            [";clash_rule_base=base/GeneralClashConfig.yml"],
-        ),
-        (
-            "ekko-rules-extended.ini",
-            EXTENDED_PRODUCT,
-            False,
-            [f";clash_rule_base={base_url}"],
-        ),
-        (
-            "ekko-rules-extended-local.ini",
-            EXTENDED_PRODUCT,
-            True,
-            [";clash_rule_base=base/GeneralClashConfig.yml"],
-        ),
-    ]
-    for filename, product, local, expected_base in presets:
-        expected_rules = expected_ini_rules(
-            sources, product=product, local=local
-        )
-        expected_groups = expected_ini_groups(sources, product=product)
-        actual_rules, actual_groups, actual_base, actual_controls = parse_ini(
-            generated / "config" / filename
-        )
-        check(actual_rules == expected_rules, f"Ordered ruleset entries differ in {filename}")
-        check(actual_groups == expected_groups, f"Ordered proxy groups differ in {filename}")
-        check(actual_base == expected_base, f"clash_rule_base state differs in {filename}")
-        check(
-            actual_controls
-            == [
-                "enable_rule_generator=true",
-                "overwrite_original_rules=true",
-            ],
-            f"Rule-generator controls differ in {filename}",
-        )
+    filename = "ekko-rules.ini"
+    expected_rules = expected_ini_rules(
+        sources, product=CORE_PRODUCT, local=False
+    )
+    expected_groups = expected_ini_groups(sources, product=CORE_PRODUCT)
+    actual_rules, actual_groups, actual_base, actual_controls = parse_ini(
+        generated / "config" / filename
+    )
+    check(actual_rules == expected_rules, f"Ordered ruleset entries differ in {filename}")
+    check(actual_groups == expected_groups, f"Ordered proxy groups differ in {filename}")
+    check(actual_base == [], f"clash_rule_base must be absent in {filename}")
+    check(
+        actual_controls
+        == [
+            "enable_rule_generator=true",
+            "overwrite_original_rules=true",
+        ],
+        f"Rule-generator controls differ in {filename}",
+    )
 
 
 def validate_rulesets(generated: Path, sources: ProfileSources) -> tuple[int, int]:
@@ -330,16 +299,12 @@ def validate_mihomo_product(
     config = read_yaml(generated / "Mihomo" / filename)
     check(isinstance(config, dict), "Mihomo template must contain a mapping")
     expected_keys = [
-        *[key for key in sources.base if key not in {"proxies", "proxy-groups", "rules"}],
         "proxy-providers",
         "proxy-groups",
         "rule-providers",
         "rules",
     ]
     check(list(config) == expected_keys, "Mihomo top-level fields or order differ")
-    for key, value in sources.base.items():
-        if key not in {"proxies", "proxy-groups", "rules"}:
-            check(config[key] == value, f"Mihomo base field differs: {key}")
 
     proxy_provider_source = sources.proxy_groups_document["proxy_provider"]
     expected_proxy_provider = {
@@ -348,7 +313,6 @@ def validate_mihomo_product(
             "url": "PUT_YOUR_SUBSCRIPTION_URL_HERE",
             "path": proxy_provider_source["path"],
             "interval": proxy_provider_source["interval"],
-            "health-check": proxy_provider_source["health_check"],
         }
     }
     check(config["proxy-providers"] == expected_proxy_provider, "Mihomo proxy provider differs")
@@ -387,21 +351,20 @@ def validate_analysis(generated: Path, sources: ProfileSources, total_rules: int
     expected = build_analysis(sources)
     check(analysis == expected, "analysis.json differs from canonical computed analysis")
     check(
-        expected["products"][EXTENDED_PRODUCT]["summary"]["rule_count"]
+        expected["products"][CORE_PRODUCT]["summary"]["rule_count"]
         == total_rules + 1,
-        "Computed extended rule count differs from generated rules",
+        "Computed rule count differs from generated rules",
     )
-    baselines = sources.quality_baseline["products"]
-    for product in (CORE_PRODUCT, EXTENDED_PRODUCT):
-        check(
-            scope_metrics(sources, product=product) == baselines[product]["scope"],
-            f"Canonical {product} scope differs from the quality baseline",
-        )
-        check(
-            coverage_metrics(sources, product=product)
-            == baselines[product]["first_match_unreachable"],
-            f"Canonical {product} coverage differs from the quality baseline",
-        )
+    baseline = sources.quality_baseline["products"][CORE_PRODUCT]
+    check(
+        scope_metrics(sources, product=CORE_PRODUCT) == baseline["scope"],
+        "Canonical scope differs from the quality baseline",
+    )
+    check(
+        coverage_metrics(sources, product=CORE_PRODUCT)
+        == baseline["first_match_unreachable"],
+        "Canonical coverage differs from the quality baseline",
+    )
 
 
 def collect_sensitive_keys(value: Any, *, path: str = "") -> list[str]:
@@ -515,12 +478,6 @@ def main() -> int:
         product=CORE_PRODUCT,
         filename="reversed-template.yaml",
     )
-    validate_mihomo_product(
-        generated,
-        sources,
-        product=EXTENDED_PRODUCT,
-        filename="reversed-template-extended.yaml",
-    )
     validate_analysis(generated, sources, total_rules)
     validate_sensitive_content(generated)
     if not args.skip_generation_check:
@@ -530,16 +487,13 @@ def main() -> int:
         json.dumps(
             {
                 "status": "passed",
-                "products": {
-                    product: {
-                        "segments": len(sources.segments_for(product)),
-                        "rule_files": len(sources.rule_segments_for(product)),
-                        "proxy_groups": len(sources.proxy_groups_for(product)),
-                        "rules": build_analysis(sources)["products"][product][
-                            "summary"
-                        ]["rule_count"],
-                    }
-                    for product in (CORE_PRODUCT, EXTENDED_PRODUCT)
+                "product": {
+                    "segments": len(sources.segments_for(CORE_PRODUCT)),
+                    "rule_files": len(sources.rule_segments_for(CORE_PRODUCT)),
+                    "proxy_groups": len(sources.proxy_groups_for(CORE_PRODUCT)),
+                    "rules": build_analysis(sources)["products"][CORE_PRODUCT][
+                        "summary"
+                    ]["rule_count"],
                 },
                 "provider_files": len(sources.rule_segments),
                 "destination_ip_rules": destination_ip_rules,

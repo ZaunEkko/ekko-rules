@@ -2,47 +2,46 @@
 
 [中文](README.md)
 
-Reusable routing rules and subscription templates for Subconverter and Mihomo.
+A single standard routing-rules product for Subconverter and Mihomo.
 
 ## Scope
 
-Ekko Rules follows the ACL4SSR online-preset responsibility boundary: it stores no nodes or subscription credentials, does not own ports, DNS, TUN, or controller settings above `proxies`, and only maintains policy groups, rulesets, order, and mappings. `sources/` is canonical; `generated/reversed-profile/` is generator-owned.
+Ekko Rules follows the ACL4SSR online-preset responsibility boundary: it stores no nodes or subscription credentials, does not own ports, DNS, TUN, controller settings, or other client configuration above `proxies`, and only maintains policy groups, rulesets, order, and mappings. `sources/` is canonical; `generated/reversed-profile/` is generator-owned.
 
-## Core and Extended
+## Sole product
 
-| Product | Rulesets / Segments / Groups | Contents | Base |
-|---|---:|---|---:|
-| Core | 59 / 60 / 37 | Default AI, entertainment, NSFW, communications, vendor, and DIRECT compatibility rules | No |
-| Core Full | 59 / 60 / 37 | Core plus the sanitized repository base | Yes |
-| Extended | 63 / 64 / 38 | Core plus EMBY community, Spotify legacy, and Qobuz brand defense | No |
+The repository publishes one logical product through two entry points backed by the same 59 rulesets:
 
-Subconverter:
+- Subconverter: `generated/reversed-profile/config/ekko-rules.ini`;
+- Mihomo: `generated/reversed-profile/Mihomo/reversed-template.yaml`.
 
-- `config/ekko-rules.ini`: online Core;
-- `config/ekko-rules-full.ini`: Core plus base;
-- `config/ekko-rules-local.ini`: local Core;
-- `config/ekko-rules-extended.ini`: online Extended;
-- `config/ekko-rules-extended-local.ini`: local Extended.
+No automatic latency selection, provider health probing, Full, local, or Extended variant is published, and the repository does not provide a Clash base configuration. Subconverter receives nodes from a dynamic subscription; Mihomo users must replace `PUT_YOUR_SUBSCRIPTION_URL_HERE`.
 
-Mihomo:
+Current computed result:
 
-- `Mihomo/reversed-template.yaml`: Core;
-- `Mihomo/reversed-template-extended.yaml`: Extended.
+| Rulesets | Segments | Groups | Rules incl. FINAL | Destination-IP rules | Missing `no-resolve` |
+|---:|---:|---:|---:|---:|---:|
+| 59 | 60 | 37 | 4,247 | 206 | 0 |
 
-## Phase 3 specialization and reduction
+## AI, entertainment, and NSFW specialization
 
 - OpenAI, Claude, and Overseas AI remain separate. Overseas AI includes Google AI, xAI, Microsoft AI, Cursor, Hugging Face, Perplexity, Poe, OpenRouter, Mistral, Groq, and similar non-Chinese services.
 - Netflix, Disney+, YouTube, Max, HBO GO, Prime Video, Apple TV+, DAZN, TikTok, and other major entertainment services remain independent.
-- US long-tail services share `🇺🇸 美国流媒体`; ordinary HMT media is grouped, Bilibili HMT stays independent, and Bilibili SEA becomes Southeast Asian media.
-- OneDrive and iCloud share `☁️ 云盘服务`; Instagram moves into Social Media and Bing into Microsoft Services.
-- `🔞 NSFW` contains only 38 high-confidence `DOMAIN-SUFFIX` rules without broad keywords, public suffixes, or shared cloud/CDN roots.
-- `global-web`, `academic`, `yahoo`, `community-overrides`, and `streaming-legacy` were removed entirely rather than moved into another catch-all. Ordinary traffic reaches `🐟 漏网之鱼`.
-- Apple, Google, Microsoft, Netflix, global media, game platform, China media, YouTube, Bilibili HMT, iQIYI, and Japan/HMT media were rebuilt around official roots, dedicated CDN hosts, processes, and clearly owned IP space.
-- Six late-recovery rulesets sit after `china-web/GEOIP,CN` and before FINAL. They restore only Phase 2 first-effective matchers whose original policy was DIRECT-default and whose Phase 3 reduction would otherwise reach proxy FINAL. Historical proxy/manual-first rules may still reach FINAL, and current specialized rules remain earlier.
+- US long-tail services share `🇺🇸 美国流媒体`; ordinary HMT media is grouped, Bilibili HMT stays independent, and Bilibili SEA belongs to Southeast Asian media.
+- OneDrive and iCloud share `☁️ 云盘服务`; Instagram belongs to Social Media and Bing to Microsoft Services.
+- `🔞 NSFW` uses high-confidence anchored domains without broad keywords, public suffixes, or shared cloud/CDN roots.
+- Game platforms remain separate from game downloads, while music services share `🎵 音乐平台`.
+- `global-web`, `academic`, `yahoo`, `community-overrides`, and `streaming-legacy` were removed. Ordinary proxy/manual-first traffic reaches `🐟 漏网之鱼`.
 
-Core contains 4,250 rules and Extended contains 4,348, each including one FINAL. Both contain 206 destination-IP rules, all with `no-resolve`. The Phase 3 reduction Counter remains historically closed: old Extended 15,517 = 1,549 common rules + 13,968 removals; reduced Extended 1,615 = 1,549 common rules + 66 additions. The recovery ledger then proves: 3,472 historical DIRECT-default occurrences = 638 already covered by Phase 3 + 2,834 residual; 2,834 = 2,737 first-effective candidates + 97 historical-shadow/proxy-owner exclusions; actual output 2,732 = 2,737 - 7 unsafe `DOMAIN-KEYWORD` entries + 2 Roblox suffixes anchored by official documentation. Late recovery forbids `DOMAIN-KEYWORD`, so brand-string lookalike domains continue to FINAL. Recovery preserves default routing compatibility; it does not claim that every historical domain or IP remains exclusively owned by the original vendor.
+## Routing safety and compatibility
 
-Phase 2 history remains immutable: 15,540 old file rules = Phase 2 Extended 15,517 + 23 explicit removals; Phase 2 Extended = Phase 2 Core 15,411 + 106 optional.
+- Every destination-IP matcher, including `IP-CIDR`, `IP-CIDR6`, `IP-SUFFIX`, `IP-ASN`, and `GEOIP`, must carry `no-resolve`.
+- `DOMAIN-KEYWORD` is forbidden under every DIRECT-default policy so brand-string lookalike domains cannot bypass proxy FINAL.
+- Six late-recovery rulesets sit after `china-web/GEOIP,CN,no-resolve` and before the sole FINAL. They restore only Phase 2 first-effective matchers whose original action was DIRECT-default and would otherwise reach proxy FINAL.
+- Historical proxy/manual-first rules may still reach FINAL, while current specialized rules and China GEOIP stay earlier.
+- Recovery preserves historical default routing; it does not assert that every recovered domain or IP remains exclusively owned by the mapped vendor.
+
+The immutable Phase 3 ledger remains historically closed: 3,472 DIRECT-default occurrences = 638 already covered + 2,834 residual; 2,834 = 2,737 first-effective candidates + 97 historical-shadow/non-DIRECT-owner exclusions; 2,732 emitted = 2,737 - 7 unsafe `DOMAIN-KEYWORD` entries + 2 anchored Roblox suffixes.
 
 ## Generate and validate
 
@@ -51,15 +50,15 @@ Python 3.12 is required:
 ```bash
 python -m pip install -r requirements.txt
 python scripts/generate_profile.py
-python scripts/generate_profile.py --check
 python scripts/validate_generated.py
+python scripts/generate_profile.py --check
 python -m unittest discover -s tests -v
 ```
 
-Generation uses same-volume staging and atomic replacement. Gates validate Core/Extended order, one FINAL, providers, SHA-256, sensitive content, strict CIDRs, `no-resolve`, migration and recovery Counter closure, and that historical DIRECT-default matchers no longer fall into proxy FINAL.
+Generation uses same-volume staging and atomic replacement, preserving the previous output on failure. Gates validate the closed single-product layout, order, one FINAL, providers, SHA-256, sensitive content, strict CIDRs, `no-resolve`, anchored DIRECT-default rules, and the Phase 2/3 migration and recovery ledgers.
 
-## Private repository and publication gate
+## Publication and license
 
-The repository remains private. External clients normally cannot anonymously fetch private GitHub Raw files. No unified redistribution license is granted, and nothing automatically commits, pushes, publishes, or changes visibility. Human provenance and license review remains mandatory: [`NOTICE.md`](NOTICE.md), [`docs/PROVENANCE.md`](docs/PROVENANCE.md), and [`docs/PUBLICATION-GATE.md`](docs/PUBLICATION-GATE.md).
+The repository is licensed under the [MIT License](LICENSE). See [`NOTICE.md`](NOTICE.md) and [`docs/PROVENANCE.md`](docs/PROVENANCE.md) for source-overlap facts, trademarks, and disclaimers. External clients can anonymously fetch GitHub Raw entry points only after the repository becomes public. Visibility changes require a separate explicit human action; no repository script publishes the repository automatically.
 
 DNS and TUN remain client responsibilities. `no-resolve` prevents destination-IP rules from actively resolving a domain for matching, but it does not replace DNS hijacking, encrypted DNS, or `strict-route`.

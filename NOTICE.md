@@ -1,45 +1,32 @@
 # Ekko Rules Notice
 
-Ekko Rules is currently maintained as a **private research and rules-maintenance repository**.
-No repository-wide redistribution license is granted at this stage, and this notice is not a
-substitute for the licenses of upstream projects or individual data sources.
+Ekko Rules is distributed under the repository's [MIT License](LICENSE). This notice records factual source-overlap, trademark, and disclaimer information; it does not replace the license or constitute legal advice.
 
-## Upstream lineage and comparison material
+## Rule-data context
 
-The current rules were reconstructed from an expanded profile whose original per-rule source
-boundaries are not recoverable. Audit evidence shows substantial shared lineage with these
-projects, pinned in `sources/upstreams.yaml`:
+The current rules were reconstructed from an expanded routing profile whose original per-rule source boundaries are not recoverable. Domains, IP ranges, ASNs, process names, and service names are factual routing indicators that may also appear in many public rule collections. Similarity or overlap by itself does not establish copying from a particular project or revision.
+
+Historical audit and comparison contexts are pinned in `sources/upstreams.yaml`:
 
 | Project | Pinned context | License reported by upstream | Use in this repository |
 |---|---|---|---|
-| ACL4SSR | current and 2023 historical snapshots | CC-BY-SA-4.0 | responsibility model, comparison, and historical lineage evidence for the Phase 3-removed `global-web` segment |
+| ACL4SSR | current and 2023 historical snapshots | CC-BY-SA-4.0 | responsibility model, comparison, and historical lineage evidence for the removed `global-web` segment |
 | blackmatrix7/ios_rule_script | fixed Clash corpus | GPL-2.0 | broad shared-content lineage evidence and comparison |
 | Loyalsoldier/clash-rules | fixed master/release context | GPL-3.0 | comparison |
 | MetaCubeX/meta-rules-dat | fixed master/meta context | GPL-3.0 | Mihomo-format and category comparison |
 
-Content similarity does not by itself prove direct copying from a particular revision. Several
-upstreams are aggregators themselves. The exact revisions, reviewed paths, license URLs, and
-SHA-256 evidence hashes are recorded in `sources/upstreams.yaml` and explained in
-`docs/PROVENANCE.md`.
+These projects are not runtime or build dependencies. Normal generation reads only canonical repository sources and does not fetch them. Exact revisions, reviewed paths, URLs, and SHA-256 evidence hashes are documented in `sources/upstreams.yaml` and [`docs/PROVENANCE.md`](docs/PROVENANCE.md).
 
-The six late recovery rulesets add no new external source lineage. They are deterministically
-selected from the repository's frozen Phase 2 evidence to preserve historical DIRECT-default
-routing after the Phase 3 reduction. Their placement under Apple, Microsoft, Game Platform, China
-Media, Bilibili HMT, or iQIYI policies is a compatibility mapping, not a renewed claim that every
-historical domain or IP is currently or exclusively owned by that vendor. The same unresolved
-upstream license and provenance obligations therefore continue to block public redistribution.
+The six late-recovery rulesets add no new external input. They are deterministically selected from frozen Phase 2 repository evidence to preserve historical DIRECT-default routing after Phase 3 reduction. Mapping a recovered matcher to Apple, Microsoft, Game Platform, China Media, Bilibili HMT, or iQIYI is a compatibility decision, not a renewed claim that every historical domain or IP is currently or exclusively owned by that vendor.
 
-Unlicensed gists or mirrors may be cited only as historical evidence. They are not canonical
-inputs, are not fetched by the build, and must not be copied into a release.
+Unlicensed gists or mirrors may be retained as historical evidence only. They are not canonical generator inputs and are not fetched by the build.
 
-## Private-state restriction
+## Trademarks and service names
 
-Until `docs/PUBLICATION-GATE.md` is completed and manually approved:
+Apple, Microsoft, Google, OpenAI, Claude, Netflix, Disney+, YouTube, HBO, Roblox, Bilibili, iQIYI, and all other company, product, and service names are trademarks or identifiers of their respective owners. Their appearance describes routing categories and does not imply affiliation, endorsement, or sponsorship.
 
-- keep the GitHub repository private;
-- do not advertise the generated Raw URLs as publicly consumable endpoints;
-- do not add a repository-wide `LICENSE` that implies unresolved upstream compatibility;
-- do not publish, redistribute, mirror, or package the rules as a public release;
-- do not automatically change repository visibility, commit, or push.
+## Operational disclaimer
 
-This is a factual project notice, not legal advice.
+Rules and network ownership can become outdated. Users must review the generated configuration for their jurisdiction, subscriptions, privacy requirements, and network environment. The project does not provide nodes, subscriptions, DNS, TUN, system-proxy, or routing-service operation. The software and data are provided without warranty under the MIT License.
+
+Repository publication, tagging, or release remains a separate explicit operation; no project script changes GitHub visibility or publishes content automatically.

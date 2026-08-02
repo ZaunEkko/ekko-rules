@@ -50,14 +50,18 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 64)
-        self.assertEqual(len(self.sources.rule_segments), 63)
-        self.assertEqual(len(self.sources.proxy_groups), 38)
+        self.assertEqual(len(self.sources.segments), 60)
+        self.assertEqual(len(self.sources.rule_segments), 59)
+        self.assertEqual(len(self.sources.proxy_groups), 37)
         self.assertEqual(len(self.sources.segments_for("core")), 60)
         self.assertEqual(len(self.sources.rule_segments_for("core")), 59)
         self.assertEqual(len(self.sources.proxy_groups_for("core")), 37)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
+        self.assertNotIn(
+            "health_check",
+            self.sources.proxy_groups_document["proxy_provider"],
+        )
         design = json.loads(PHASE_3_DESIGN.read_text(encoding="utf-8"))
         self.assertEqual(
             [group.name for group in self.sources.proxy_groups_for("core")],
@@ -76,23 +80,19 @@ class CanonicalSourceTests(unittest.TestCase):
             [
                 "tidal",
                 "spotify",
-                "spotify-legacy",
                 "spotify-2",
-                "qobuz-brand-defense",
                 "qobuz",
-                "qobuz-brand-defense-2",
                 "apple-music",
             ],
         )
 
     def test_no_resolve_and_strict_cidr_gate(self) -> None:
-        for product in ("core", "extended"):
-            self.assertEqual(
-                self.sources.quality_baseline["products"][product]["scope"][
-                    "destination_ip_rules_without_no_resolve"
-                ],
-                0,
-            )
+        self.assertEqual(
+            self.sources.quality_baseline["products"]["core"]["scope"][
+                "destination_ip_rules_without_no_resolve"
+            ],
+            0,
+        )
         strict_cidr = self.sources.quality_baseline["known_non_strict_cidrs"]
         self.assertEqual(strict_cidr["entries"], [])
         self.assertEqual(strict_cidr["previous_bootstrap_entries_removed"], 5)
@@ -106,40 +106,39 @@ class CanonicalSourceTests(unittest.TestCase):
 
     def test_first_match_coverage_metrics_are_frozen(self) -> None:
         before = json.loads(PHASE_2_BEFORE.read_text(encoding="utf-8"))
-        for product in ("core", "extended"):
-            baseline = self.sources.quality_baseline["products"][product][
-                "first_match_unreachable"
-            ]
-            current = coverage_metrics(self.sources, product=product)
-            self.assertEqual(current, baseline)
-            self.assertLess(
-                current["global"]["union"],
-                before["summary"]["coverage"]["global"]["union"],
-            )
-            self.assertLess(
-                current["within_same_segment"]["union"],
-                before["summary"]["coverage"]["within_same_segment"]["union"],
-            )
-            self.assertLessEqual(
-                current["cross_segment_only"]["union"],
-                before["summary"]["coverage"]["cross_segment_only"]["union"],
-            )
+        baseline = self.sources.quality_baseline["products"]["core"][
+            "first_match_unreachable"
+        ]
+        current = coverage_metrics(self.sources, product="core")
+        self.assertEqual(current, baseline)
+        self.assertLess(
+            current["global"]["union"],
+            before["summary"]["coverage"]["global"]["union"],
+        )
+        self.assertLess(
+            current["within_same_segment"]["union"],
+            before["summary"]["coverage"]["within_same_segment"]["union"],
+        )
+        self.assertLessEqual(
+            current["cross_segment_only"]["union"],
+            before["summary"]["coverage"]["cross_segment_only"]["union"],
+        )
 
-    def test_scope_drift_is_rejected_by_frozen_baseline(self) -> None:
+    def test_direct_default_domain_keyword_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             source_copy = Path(temporary) / "sources"
             shutil.copytree(SOURCES, source_copy)
-            manifest = source_copy / "manifest.yaml"
-            manifest.write_text(
-                manifest.read_text(encoding="utf-8").replace(
-                    "slug: spotify-legacy\n  target: 🎵 音乐平台\n  source: rules/spotify-legacy.list\n  scope: optional",
-                    "slug: spotify-legacy\n  target: 🎵 音乐平台\n  source: rules/spotify-legacy.list\n  scope: core",
-                    1,
-                ),
+            microsoft = source_copy / "rules" / "microsoft.list"
+            microsoft.write_text(
+                microsoft.read_text(encoding="utf-8")
+                + "DOMAIN-KEYWORD,microsoft\n",
                 encoding="utf-8",
                 newline="\n",
             )
-            with self.assertRaisesRegex(ProfileError, "scope differs"):
+            with self.assertRaisesRegex(
+                ProfileError,
+                "DIRECT-default rules must use anchored domain matchers",
+            ):
                 load_profile_sources(source_copy)
 
     def test_sensitive_or_nonportable_source_fields_are_rejected(self) -> None:
@@ -147,10 +146,7 @@ class CanonicalSourceTests(unittest.TestCase):
             ("manifest.yaml", "https://raw.githubusercontent.com/", "https://user:secret@raw.githubusercontent.com/"),
             ("manifest.yaml", "/Ruleset", "/Ruleset?X-Amz-Signature=secret"),
             ("proxy-groups.yaml", "path: ./proxy_provider/subscription.yaml", "path: /home/alice/private-subscription.yaml"),
-            ("proxy-groups.yaml", "https://www.gstatic.com/generate_204", "https://example.com/check?X-Amz-Signature=secret"),
-            ("base.yaml", "mixed-port: 7890", "mixed-port: true"),
-            ("base.yaml", "log-level: warning", "log-level: ghp_" + "a" * 36),
-            ("base.yaml", "external-controller: 127.0.0.1:9090", "external-controller: /mnt/alice/private.sock"),
+            ("proxy-groups.yaml", "url: PUT_YOUR_SUBSCRIPTION_URL_HERE", "url: https://example.com/subscription?X-Amz-Signature=secret"),
         ]
         for filename, old, new in mutations:
             with self.subTest(filename=filename), tempfile.TemporaryDirectory() as temporary:
@@ -1089,7 +1085,6 @@ class LegacyImporterTests(unittest.TestCase):
         *,
         group_members: list[str],
         rules: list[str],
-        include_external_controller: bool = True,
     ) -> None:
         profile = {
             "mixed-port": 7890,
@@ -1105,8 +1100,6 @@ class LegacyImporterTests(unittest.TestCase):
             ],
             "rules": rules,
         }
-        if include_external_controller:
-            profile["external-controller"] = "127.0.0.1:9090"
         path.write_text(
             yaml.safe_dump(profile, allow_unicode=True, sort_keys=False),
             encoding="utf-8",
@@ -1165,8 +1158,7 @@ class LegacyImporterTests(unittest.TestCase):
             self.write_profile(
                 profile,
                 group_members=["n1", "n2"],
-                rules=["DOMAIN,example.org,DIRECT", "MATCH,🐟 漏网之鱼"],
-                include_external_controller=False,
+                rules=["DOMAIN-KEYWORD,example,DIRECT", "MATCH,🐟 漏网之鱼"],
             )
             completed = self.run_importer(profile, output)
             self.assertEqual(completed.returncode, 2)

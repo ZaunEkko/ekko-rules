@@ -17,10 +17,8 @@ import yaml
 FINAL_TARGET = "🐟 漏网之鱼"
 NODE_PLACEHOLDER = "__ALL_SUBSCRIPTION_NODES__"
 CORE_PRODUCT = "core"
-EXTENDED_PRODUCT = "extended"
-PRODUCTS = (CORE_PRODUCT, EXTENDED_PRODUCT)
+PRODUCTS = (CORE_PRODUCT,)
 CORE_SCOPE = "core"
-OPTIONAL_SCOPE = "optional"
 DESTINATION_IP_RULE_TYPES = {
     "IP-CIDR",
     "IP-CIDR6",
@@ -49,7 +47,6 @@ KNOWN_CREDENTIAL_PATTERN = re.compile(
     r"(?:AKIA|ASIA)[A-Z0-9]{16}"
     r")(?![A-Za-z0-9])"
 )
-LOG_LEVELS = {"silent", "error", "warning", "info", "debug"}
 SCOPE_METRIC_KEYS = {
     "rule_files",
     "rule_segments",
@@ -169,7 +166,6 @@ class ProfileSources:
     root: Path
     manifest: dict[str, Any]
     proxy_groups_document: dict[str, Any]
-    base: dict[str, Any]
     quality_baseline: dict[str, Any]
     upstreams: dict[str, Any]
     review: dict[str, Any]
@@ -186,10 +182,8 @@ class ProfileSources:
         return self.segments[-1]
 
     def segments_for(self, product: str) -> tuple[Segment, ...]:
-        require(product in PRODUCTS, f"Unknown product: {product}")
-        if product == EXTENDED_PRODUCT:
-            return self.segments
-        return tuple(segment for segment in self.segments if segment.scope == CORE_SCOPE)
+        require(product == CORE_PRODUCT, f"Unknown product: {product}")
+        return self.segments
 
     def rule_segments_for(self, product: str) -> tuple[Segment, ...]:
         return tuple(
@@ -199,10 +193,8 @@ class ProfileSources:
         )
 
     def proxy_groups_for(self, product: str) -> tuple[ProxyGroup, ...]:
-        require(product in PRODUCTS, f"Unknown product: {product}")
-        if product == EXTENDED_PRODUCT:
-            return self.proxy_groups
-        return tuple(group for group in self.proxy_groups if group.scope == CORE_SCOPE)
+        require(product == CORE_PRODUCT, f"Unknown product: {product}")
+        return self.proxy_groups
 
 
 @dataclass(frozen=True)
@@ -335,7 +327,7 @@ def _validate_manifest(data: dict[str, Any]) -> tuple[Segment, ...]:
     require(isinstance(urls, dict), "manifest.urls must be a mapping")
     require_keys(
         urls,
-        required={"rules_base", "providers_base", "base_config"},
+        required={"rules_base", "providers_base"},
         context="manifest.urls",
     )
     for key, value in urls.items():
@@ -349,7 +341,6 @@ def _validate_manifest(data: dict[str, Any]) -> tuple[Segment, ...]:
         == {
             "rules_base": f"{raw_root}/Ruleset",
             "providers_base": f"{raw_root}/Providers/Ruleset",
-            "base_config": f"{raw_root}/base/GeneralClashConfig.yml",
         },
         "Published URLs must match the configured GitHub repository and generated root",
     )
@@ -403,7 +394,7 @@ def _validate_manifest(data: dict[str, Any]) -> tuple[Segment, ...]:
             f"Invalid segment target at {expected_order}",
         )
         require(
-            record["scope"] in {CORE_SCOPE, OPTIONAL_SCOPE},
+            record["scope"] == CORE_SCOPE,
             f"Invalid segment scope at {expected_order}",
         )
         if kind == "terminal":
@@ -455,7 +446,6 @@ def _validate_proxy_groups(data: dict[str, Any]) -> tuple[ProxyGroup, ...]:
             "url",
             "path",
             "interval",
-            "health_check",
             "subconverter_filter",
         },
         context="proxy_provider",
@@ -468,17 +458,8 @@ def _validate_proxy_groups(data: dict[str, Any]) -> tuple[ProxyGroup, ...]:
         expected="./proxy_provider/subscription.yaml",
         context="proxy_provider.path",
     )
+    require(proxy_provider["interval"] == 3600, "Unexpected proxy-provider refresh interval")
     require(proxy_provider["subconverter_filter"] == ".*", "Unexpected Subconverter node filter")
-    health_check = proxy_provider["health_check"]
-    require(isinstance(health_check, dict), "health_check must be a mapping")
-    require_keys(
-        health_check,
-        required={"enable", "url", "interval"},
-        context="proxy_provider.health_check",
-    )
-    validate_https_url(
-        health_check["url"], context="proxy_provider.health_check.url"
-    )
 
     records = data["groups"]
     require(isinstance(records, list) and records, "groups must be a non-empty list")
@@ -494,7 +475,7 @@ def _validate_proxy_groups(data: dict[str, Any]) -> tuple[ProxyGroup, ...]:
         require(isinstance(record["name"], str) and record["name"], f"Invalid group name at {expected_order}")
         require(record["type"] == "select", f"Unsupported group type for {record['name']}")
         require(
-            record["scope"] in {CORE_SCOPE, OPTIONAL_SCOPE},
+            record["scope"] == CORE_SCOPE,
             f"Invalid proxy-group scope for {record['name']}",
         )
         members = record["members"]
@@ -519,58 +500,13 @@ def _validate_proxy_groups(data: dict[str, Any]) -> tuple[ProxyGroup, ...]:
     names = [group.name for group in groups]
     require(len(names) == len(set(names)), "Proxy-group names must be unique")
     name_set = set(names)
-    scope_by_name = {group.name: group.scope for group in groups}
     for group in groups:
         for member in group.members[:-1]:
             require(
                 member == "DIRECT" or member in name_set,
                 f"Proxy group {group.name} references unknown member {member}",
             )
-            require(
-                group.scope == OPTIONAL_SCOPE
-                or member == "DIRECT"
-                or scope_by_name[member] == CORE_SCOPE,
-                f"Core proxy group {group.name} references optional member {member}",
-            )
     return tuple(groups)
-
-
-def _validate_base(data: dict[str, Any]) -> None:
-    require_keys(
-        data,
-        required={
-            "mixed-port",
-            "allow-lan",
-            "mode",
-            "log-level",
-            "external-controller",
-            "proxies",
-            "proxy-groups",
-            "rules",
-        },
-        context="sources/base.yaml",
-    )
-    require(
-        isinstance(data["mixed-port"], int)
-        and not isinstance(data["mixed-port"], bool)
-        and 1 <= data["mixed-port"] <= 65535,
-        "mixed-port must be an integer from 1 through 65535",
-    )
-    require(isinstance(data["allow-lan"], bool), "allow-lan must be boolean")
-    require(data["mode"] == "rule", "Base mode must be rule")
-    require(data["log-level"] in LOG_LEVELS, "Base log-level is unsupported")
-    controller = data["external-controller"]
-    require(
-        isinstance(controller, str)
-        and re.fullmatch(r"(?:127\.0\.0\.1|localhost):(?:[1-9]\d{0,4})", controller)
-        is not None
-        and 1 <= int(controller.rsplit(":", 1)[1]) <= 65535,
-        "external-controller must be a local host:port endpoint",
-    )
-    require(
-        data["proxies"] == [] and data["proxy-groups"] == [] and data["rules"] == [],
-        "Generated base slots must remain empty",
-    )
 
 
 def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
@@ -591,7 +527,7 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
     products = quality["products"]
     require(
         isinstance(products, dict) and set(products) == set(PRODUCTS),
-        "Quality baseline must define Core and Extended",
+        "Quality baseline must define exactly the standard product",
     )
     for product in PRODUCTS:
         section = products[product]
@@ -653,7 +589,7 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
         "cross_segment_dependencies_must_not_increase",
     }
     phase = quality["phase"]
-    if phase == "phase-3-direct-recovery":
+    if phase in {"phase-3-direct-recovery", "public-single-product"}:
         require_keys(
             next_gate,
             required=common_gate
@@ -749,6 +685,8 @@ def _validate_rules(
     root: Path,
     segments: tuple[Segment, ...],
     quality: dict[str, Any],
+    *,
+    direct_default_targets: AbstractSet[str],
 ) -> dict[str, tuple[str, ...]]:
     rules_dir = (root / "rules").resolve()
     rules: dict[str, tuple[str, ...]] = {}
@@ -772,10 +710,10 @@ def _validate_rules(
             rule_type, value, _ = parse_rule(entry, context=source)
             require(
                 not (
-                    segment.slug.endswith("-late-recovery")
+                    segment.target in direct_default_targets
                     and rule_type == "DOMAIN-KEYWORD"
                 ),
-                f"Late recovery rules must use anchored domain matchers: {segment.slug}: {entry}",
+                f"DIRECT-default rules must use anchored domain matchers: {segment.slug}: {entry}",
             )
             if rule_type in {"IP-CIDR", "IP-CIDR6"}:
                 try:
@@ -823,7 +761,6 @@ def load_profile_sources(root: Path) -> ProfileSources:
     expected_root_files = {
         "manifest.yaml",
         "proxy-groups.yaml",
-        "base.yaml",
         "upstreams.yaml",
         "quality-baseline.yaml",
         "review.yaml",
@@ -837,32 +774,28 @@ def load_profile_sources(root: Path) -> ProfileSources:
 
     manifest = load_yaml_mapping(root / "manifest.yaml")
     proxy_groups_document = load_yaml_mapping(root / "proxy-groups.yaml")
-    base = load_yaml_mapping(root / "base.yaml")
     quality = load_yaml_mapping(root / "quality-baseline.yaml")
     upstreams = load_yaml_mapping(root / "upstreams.yaml")
     review = load_yaml_mapping(root / "review.yaml")
 
     segments = _validate_manifest(manifest)
     proxy_groups = _validate_proxy_groups(proxy_groups_document)
-    _validate_base(base)
     _validate_quality_baseline_schema(quality)
-    rules = _validate_rules(root, segments, quality)
-
     group_names = {group.name for group in proxy_groups}
-    core_group_names = {
-        group.name for group in proxy_groups if group.scope == CORE_SCOPE
+    direct_default_targets = {"DIRECT"} | {
+        group.name for group in proxy_groups if group.members[0] == "DIRECT"
     }
+    rules = _validate_rules(
+        root,
+        segments,
+        quality,
+        direct_default_targets=direct_default_targets,
+    )
     for segment in segments:
         if segment.kind == "ruleset":
             require(
                 segment.target == "DIRECT" or segment.target in group_names,
                 f"Ruleset {segment.slug} targets unknown policy {segment.target}",
-            )
-            require(
-                segment.scope == OPTIONAL_SCOPE
-                or segment.target == "DIRECT"
-                or segment.target in core_group_names,
-                f"Core ruleset {segment.slug} targets an optional policy",
             )
     require(
         segments[-1].kind == "terminal" and segments[-1].scope == CORE_SCOPE,
@@ -886,7 +819,6 @@ def load_profile_sources(root: Path) -> ProfileSources:
         root=root,
         manifest=manifest,
         proxy_groups_document=proxy_groups_document,
-        base=base,
         quality_baseline=quality,
         upstreams=upstreams,
         review=review,
@@ -938,21 +870,9 @@ def _subconverter_lines(
     *,
     product: str,
     local: bool,
-    include_base: bool,
 ) -> list[str]:
     urls = sources.manifest["urls"]
-    base_path = (
-        "base/GeneralClashConfig.yml" if local else urls["base_config"]
-    )
-    lines = [
-        "[custom]",
-        "",
-        (
-            f"clash_rule_base={base_path}"
-            if include_base
-            else f";clash_rule_base={base_path}"
-        ),
-    ]
+    lines = ["[custom]", ""]
     for segment in sources.segments_for(product):
         if segment.kind == "terminal":
             lines.append(f"ruleset={segment.target},[]FINAL")
@@ -983,25 +903,16 @@ def _subconverter_lines(
 
 
 def _write_subconverter(output: Path, sources: ProfileSources) -> None:
-    presets = (
-        ("ekko-rules.ini", CORE_PRODUCT, False, False),
-        ("ekko-rules-full.ini", CORE_PRODUCT, False, True),
-        ("ekko-rules-local.ini", CORE_PRODUCT, True, False),
-        ("ekko-rules-extended.ini", EXTENDED_PRODUCT, False, False),
-        ("ekko-rules-extended-local.ini", EXTENDED_PRODUCT, True, False),
+    write_text(
+        output / "config" / "ekko-rules.ini",
+        "\n".join(
+            _subconverter_lines(
+                sources,
+                product=CORE_PRODUCT,
+                local=False,
+            )
+        ),
     )
-    for filename, product, local, include_base in presets:
-        write_text(
-            output / "config" / filename,
-            "\n".join(
-                _subconverter_lines(
-                    sources,
-                    product=product,
-                    local=local,
-                    include_base=include_base,
-                )
-            ),
-        )
 
 
 def _mihomo_config(sources: ProfileSources, *, product: str) -> dict[str, Any]:
@@ -1024,18 +935,13 @@ def _mihomo_config(sources: ProfileSources, *, product: str) -> dict[str, Any]:
         rules.append(f"RULE-SET,{segment.slug},{segment.target}")
 
     proxy_provider = sources.proxy_groups_document["proxy_provider"]
-    config: dict[str, Any] = {
-        key: value
-        for key, value in sources.base.items()
-        if key not in {"proxies", "proxy-groups", "rules"}
-    }
+    config: dict[str, Any] = {}
     config["proxy-providers"] = {
         proxy_provider["name"]: {
             "type": proxy_provider["type"],
             "url": proxy_provider["url"],
             "path": proxy_provider["path"],
             "interval": proxy_provider["interval"],
-            "health-check": proxy_provider["health_check"],
         }
     }
     config["proxy-groups"] = [
@@ -1058,10 +964,6 @@ def _write_mihomo(output: Path, sources: ProfileSources) -> None:
     write_yaml(
         output / "Mihomo" / "reversed-template.yaml",
         _mihomo_config(sources, product=CORE_PRODUCT),
-    )
-    write_yaml(
-        output / "Mihomo" / "reversed-template-extended.yaml",
-        _mihomo_config(sources, product=EXTENDED_PRODUCT),
     )
 
 
@@ -1172,87 +1074,52 @@ def build_analysis(sources: ProfileSources) -> dict[str, Any]:
 
 def _write_readmes(output: Path, sources: ProfileSources) -> None:
     rules_base = sources.manifest["urls"]["rules_base"]
+    rulesets = len(sources.rule_segments_for(CORE_PRODUCT))
+    segments = len(sources.segments_for(CORE_PRODUCT))
+    groups = len(sources.proxy_groups_for(CORE_PRODUCT))
     chinese = f"""# Ekko Rules
 
 [English](README_EN.md)
 
-面向 Subconverter 与 Mihomo 的可复用分流规则和订阅模板。本目录由仓库内脱敏规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
+面向 Subconverter 与 Mihomo 的单一标准分流规则产品。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
 
-## 产物
+## 入口
 
-- `config/ekko-rules.ini`：默认 Core 在线预设，不覆盖 Subconverter 服务端的 Clash 基础配置。
-- `config/ekko-rules-full.ini`：Core + 脱敏基础配置；不暗含 optional 规则。
-- `config/ekko-rules-local.ini`：本地 Core 预设，基础配置默认注释。
-- `config/ekko-rules-extended.ini`：Core + EMBY 社区、Spotify legacy 与 Qobuz 品牌防御 optional 规则，不覆盖基础配置。
-- `config/ekko-rules-extended-local.ini`：本地 Extended 预设。
-- `base/GeneralClashConfig.yml`：可选且脱敏的 Clash 基础配置。
-- `Ruleset/*.list`：供 Subconverter 使用的经典规则集。
-- `Providers/Ruleset/*.yaml`：供 Mihomo 使用的 classical Rule Provider。
-- `Mihomo/reversed-template.yaml`：默认 Core Mihomo 模板。
-- `Mihomo/reversed-template-extended.yaml`：Extended Mihomo 模板。
-- `analysis.json`：由当前规范源计算的结构与质量统计。
-- `manifest.json`：生成文件清单和 SHA-256；清单不递归哈希自身。
+- `config/ekko-rules.ini`：Subconverter 在线预设，不接管 Clash 基础配置。
+- `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
+- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则。
+- `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单。
 
-## 使用
+Ruleset 地址前缀：`{rules_base}`。
 
-1. 发布后，Ruleset 地址前缀为 `{rules_base}`。
-2. Subconverter 推荐使用 `config/ekko-rules.ini`；端口、DNS、TUN 等由服务端或客户端负责。
-3. Mihomo 用户需要将模板中的 `PUT_YOUR_SUBSCRIPTION_URL_HERE` 替换为自己的订阅地址。
-4. 仓库保持私有时，外部客户端通常无法匿名读取 GitHub Raw 地址。
+## 行为
 
-## 行为说明
-
-- Core 为 {len(sources.rule_segments_for(CORE_PRODUCT))} 个 ruleset、{len(sources.segments_for(CORE_PRODUCT))} 个区段、{len(sources.proxy_groups_for(CORE_PRODUCT))} 个策略组。
-- Extended 为 {len(sources.rule_segments_for(EXTENDED_PRODUCT))} 个 ruleset、{len(sources.segments_for(EXTENDED_PRODUCT))} 个区段、{len(sources.proxy_groups_for(EXTENDED_PRODUCT))} 个策略组。
-- OpenAI、Claude 与海外 AI 独立；海外 AI 按 Google、xAI、Microsoft 与开发工具拆分 ruleset 后共用策略组。
-- 重点流媒体保持独立；美国长尾、港澳台、东南亚和其他国外媒体按地区合并，B站港澳台继续独立。
-- NSFW 只包含 38 条高置信域名，不使用宽 keyword、公共后缀或共享云/CDN 根域。
-- 泛网站、学术、Yahoo、个人社区和历史流媒体规则已删除，原 proxy/manual-first 普通流量交给 `🐟 漏网之鱼`。
-- `china-web/GEOIP,CN` 之后、FINAL 之前的六个 late recovery ruleset 只恢复历史 DIRECT-default 路由；当前细分规则和国内 GEOIP 继续优先。
-- 所有目标 IP 规则统一带 `no-resolve`；Private 基础层直接指向 `DIRECT`。
-- 同一区段 exact 重复已清零；5 条非 strict CIDR 已删除而未猜测改写前缀。
-- DNS、TUN、Hosts 和节点凭据不属于核心规则职责。
+- 唯一产品包含 {rulesets} 个 ruleset、{segments} 个区段、{groups} 个策略组，不提供自动测速、Full、local 或 Extended 变体。
+- OpenAI、Claude、海外 AI、重点流媒体、游戏与 NSFW 保持特化。
+- 六个 late recovery 只恢复历史 DIRECT-default 路由；所有 DIRECT-default 域名规则必须使用锚定 matcher。
+- 所有目标 IP 规则带 `no-resolve`；DNS、TUN、Hosts 和节点凭据由客户端负责。
 """
     english = f"""# Ekko Rules
 
 [中文](README.md)
 
-Reusable routing rules and subscription templates for Subconverter and Mihomo. This directory is generated deterministically from sanitized in-repository canonical sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
+A single standard routing-rules product for Subconverter and Mihomo. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
 
-## Outputs
+## Entry points
 
-- `config/ekko-rules.ini`: Default Core online preset without a Clash base override.
-- `config/ekko-rules-full.ini`: Core plus the sanitized base; it does not silently enable optional rules.
-- `config/ekko-rules-local.ini`: Local Core preset with its base disabled by default.
-- `config/ekko-rules-extended.ini`: Core plus optional EMBY community, Spotify legacy, and Qobuz brand-defense rules without a base override.
-- `config/ekko-rules-extended-local.ini`: Local Extended preset.
-- `base/GeneralClashConfig.yml`: Optional sanitized Clash base.
-- `Ruleset/*.list`: Classical Subconverter rules.
-- `Providers/Ruleset/*.yaml`: Classical Mihomo Rule Providers.
-- `Mihomo/reversed-template.yaml`: Default Core Mihomo template.
-- `Mihomo/reversed-template-extended.yaml`: Extended Mihomo template.
-- `analysis.json`: Structure and quality metrics computed from canonical sources.
-- `manifest.json`: Generated-file SHA-256 inventory; it does not recursively hash itself.
+- `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
+- `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
+- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points.
+- `analysis.json` and `manifest.json`: Quality metrics and the SHA-256 file inventory.
 
-## Usage
-
-1. After publication, the Ruleset URL prefix is `{rules_base}`.
-2. Use `config/ekko-rules.ini` for Subconverter. Ports, DNS, TUN, and similar client settings remain externally owned.
-3. Mihomo users must replace `PUT_YOUR_SUBSCRIPTION_URL_HERE` in the native template.
-4. External clients normally cannot fetch GitHub Raw files anonymously while the repository is private.
+Ruleset URL prefix: `{rules_base}`.
 
 ## Behavior
 
-- Core contains {len(sources.rule_segments_for(CORE_PRODUCT))} rulesets, {len(sources.segments_for(CORE_PRODUCT))} segments, and {len(sources.proxy_groups_for(CORE_PRODUCT))} proxy groups.
-- Extended contains {len(sources.rule_segments_for(EXTENDED_PRODUCT))} rulesets, {len(sources.segments_for(EXTENDED_PRODUCT))} segments, and {len(sources.proxy_groups_for(EXTENDED_PRODUCT))} proxy groups.
-- OpenAI, Claude, and Overseas AI remain independent; Google, xAI, Microsoft, and developer-tool rulesets share the Overseas AI group.
-- Major streaming services remain independent; US long-tail, HMT, Southeast Asian, and other global media are regionally grouped while Bilibili HMT remains independent.
-- NSFW contains only 38 high-confidence domains without broad keywords, public suffixes, or shared cloud/CDN roots.
-- Generic web, academic, Yahoo, personal-community, and historical-streaming rules were deleted so historical proxy/manual-first ordinary traffic reaches `🐟 漏网之鱼`.
-- Six late-recovery rulesets after `china-web/GEOIP,CN` and before FINAL restore only historical DIRECT-default routing; current specialization and CN GeoIP remain earlier.
-- Every destination-IP rule carries `no-resolve`; the Private layer targets `DIRECT`.
-- Same-segment exact duplicates are zero; five non-strict CIDRs were deleted without guessing corrected prefixes.
-- DNS, TUN, Hosts, and proxy credentials are outside the core ruleset scope.
+- The sole product contains {rulesets} rulesets, {segments} segments, and {groups} proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+- OpenAI, Claude, Overseas AI, major streaming, games, and NSFW remain specialized.
+- Six late-recovery rulesets restore only historical DIRECT-default routing; every DIRECT-default domain rule must use an anchored matcher.
+- Every destination-IP rule carries `no-resolve`; DNS, TUN, Hosts, and credentials remain client-owned.
 """
     write_text(output / "README.md", chinese)
     write_text(output / "README_EN.md", english)
@@ -1261,13 +1128,7 @@ Reusable routing rules and subscription templates for Subconverter and Mihomo. T
 def expected_generated_files(sources: ProfileSources) -> set[str]:
     files = {
         "config/ekko-rules.ini",
-        "config/ekko-rules-full.ini",
-        "config/ekko-rules-local.ini",
-        "config/ekko-rules-extended.ini",
-        "config/ekko-rules-extended-local.ini",
         "Mihomo/reversed-template.yaml",
-        "Mihomo/reversed-template-extended.yaml",
-        "base/GeneralClashConfig.yml",
         "analysis.json",
         "README.md",
         "README_EN.md",
@@ -1300,7 +1161,6 @@ def write_generated_manifest(output: Path, sources: ProfileSources) -> None:
         "Providers",
         "Providers/Ruleset",
         "Ruleset",
-        "base",
         "config",
     }
     actual_directories = {
@@ -1350,7 +1210,7 @@ def validate_generated_manifest(output: Path, sources: ProfileSources) -> None:
     require(actual_files == expected_files, "Generated file set is not closed")
     require(
         directory_snapshot(output)
-        == {"Mihomo", "Providers", "Providers/Ruleset", "Ruleset", "base", "config"},
+        == {"Mihomo", "Providers", "Providers/Ruleset", "Ruleset", "config"},
         "Generated directory set is not closed",
     )
     hashes = manifest.get("files")
@@ -1370,7 +1230,6 @@ def render_profile(sources: ProfileSources, output: Path) -> None:
     _write_rulesets(output, sources)
     _write_subconverter(output, sources)
     _write_mihomo(output, sources)
-    write_yaml(output / "base" / "GeneralClashConfig.yml", sources.base)
     write_text(
         output / "analysis.json",
         json.dumps(build_analysis(sources), ensure_ascii=False, indent=2),
@@ -1623,7 +1482,7 @@ def select_late_recovery(
 
 
 def coverage_metrics(
-    sources: ProfileSources, *, product: str = EXTENDED_PRODUCT
+    sources: ProfileSources, *, product: str = CORE_PRODUCT
 ) -> dict[str, Any]:
     totals = {
         "global_exact": 0,
@@ -1717,7 +1576,7 @@ def rule_matches(
 def first_match(
     sources: ProfileSources,
     *,
-    product: str = EXTENDED_PRODUCT,
+    product: str = CORE_PRODUCT,
     domain: str | None = None,
     ip: str | None = None,
     process_name: str | None = None,
