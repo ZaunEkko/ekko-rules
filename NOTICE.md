@@ -1,6 +1,6 @@
 # Ekko Rules Notice
 
-Ekko Rules is distributed under the repository's [MIT License](LICENSE). This notice records the current rule-data boundary, attribution, historical comparison context, trademarks, and disclaimers. It does not replace the license or constitute legal advice.
+Ekko Rules is distributed under the repository's [MIT License](LICENSE). This notice records the current rule-data boundary, direct attribution, trademarks, and disclaimers. It does not replace the license or constitute legal advice.
 
 ## Current product identity
 
@@ -20,16 +20,16 @@ Current file-rule accounting is explicit:
 | Classic mainland-domain pinned import | 1,482 | `china-domain-import-ledger.json` |
 | Advertising pinned import | 849 | `advertising-import-ledger.json` |
 | Filtered historical DIRECT-default recovery | 2,721 | immutable recovery ledger minus `public-rule-exclusions.json` |
-| Current specialized, private/local, and service corpus | 1,528 | canonical rules plus migration/review history |
-| **Total file rules** | **6,580** | `sources/quality-baseline.yaml` |
+| Current specialized, private/local, and service corpus | 1,640 | canonical rules plus migration/review history |
+| **Total file rules** | **6,692** | `sources/quality-baseline.yaml` |
 
-The 1,528-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
+The 1,640-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
 
 ## Current canonical rule-data inputs
 
 ### Repository-maintained curation
 
-Most current service rules, group mappings, ordering decisions, and security filters are maintained directly in this repository. They have been split, reduced, retargeted, merged, or newly added based on product requirements and review. Similar factual indicators—domains, IP ranges, ASNs, process names, and service identifiers—may independently appear in multiple routing projects.
+Most current service rules, group mappings, ordering decisions, and security filters are maintained directly in this repository. They have been split, reduced, retargeted, merged, or newly added based on product requirements and review. Similar factual indicators—domains, IP ranges, ASNs, process names, and service identifiers—may independently appear in multiple routing projects. The globally first `author-domain` entry for `zaunekko.com` is an explicit repository-authorship display exception mapped to the default-direct mainland group, not an imported or general-service rule.
 
 Six late-recovery rulesets are selected from frozen repository history to preserve only historical DIRECT-default behavior that would otherwise reach proxy FINAL. Recovery is a compatibility mechanism, not renewed proof that every historical domain or IP is currently owned by the mapped vendor. A separate public-product exclusion ledger removes provider-specific, local-institution, personal, scripting, mirror, and unofficial-content entries from current publication while leaving immutable historical evidence intact.
 
@@ -44,22 +44,7 @@ Two one-time deterministic imports use the same pinned revision of [`v2fly/domai
 
 `category-ads-all` is intentionally not imported because it also includes advertising providers, analytics, messaging, and other broader service roots with a larger false-positive boundary. Normal generation reads only committed canonical files and performs no upstream fetch or GEOSITE compilation.
 
-ACL4SSR's CC-BY-SA ChinaDomain data was evaluated but not imported, avoiding a separate ShareAlike component and mixed-license publication boundary.
-
-## Historical comparison and lineage evidence
-
-The following pinned projects are retained for audit, comparison, format context, or historical lineage only unless explicitly identified above as a canonical input:
-
-| Project | Reported upstream license | Current use |
-|---|---|---|
-| ACL4SSR | CC-BY-SA-4.0 | Historical comparison, removed `global-web` lineage evidence, and online-preset responsibility-model context |
-| blackmatrix7/ios_rule_script | GPL-2.0 | Broad historical content-overlap evidence and comparison |
-| Loyalsoldier/clash-rules | GPL-3.0 | Aggregate-rule convention and content comparison |
-| MetaCubeX/meta-rules-dat | GPL-3.0 | Mihomo format/category comparison |
-
-These comparison projects are not runtime or normal-build dependencies. Their reported licenses do not describe the independently maintained repository as a whole. Exact revisions, paths, hashes, and usage classifications are recorded in `sources/upstreams.yaml` and [`docs/PROVENANCE.md`](docs/PROVENANCE.md).
-
-Unlicensed gists or mirrors may be retained as historical evidence only. They are not canonical generator inputs and are not fetched by the build.
+Only sources that directly contribute to the current canonical product are attributed above. Earlier reconstruction comparisons remain internal audit evidence and are not presented as current product inputs or dependencies.
 
 ## Trademarks and service names
 

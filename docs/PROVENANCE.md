@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 61 rule files, 62 ordered segments including FINAL, 37 proxy groups, and 6,581 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 38 proxy groups, and 6,693 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -17,26 +17,26 @@ The expanded source profile used for initial reconstruction was evidence for rec
 - new anchored rules for current services such as overseas AI, Node.js/npm, US media, and user-confirmed NSFW services;
 - removal of the private `huaikhwang.central-world.org` provider override and 11 high-confidence local, personal, scripting, mirror, or unofficial-content recovery entries.
 
-Accordingly, neither the historical expanded profile nor any comparison project should be described as the current product's complete rule source. Current publication is the committed and reviewed canonical tree, constrained by tests, ledgers, and generation gates.
+Accordingly, the historical expanded profile should not be described as the current product's complete rule source. Current publication is the committed and reviewed canonical tree, constrained by tests, ledgers, and generation gates.
 
 ## Current rule accounting
 
-The 6,580 file rules are partitioned by evidence boundary:
+The 6,692 file rules are partitioned by evidence boundary:
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
 | Classic mainland-domain import | 1,482 | Direct pinned MIT input with immutable selection ledger |
 | Advertising import | 849 | Direct pinned MIT input with immutable selection and capture ledgers |
 | Current late recovery | 2,721 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
-| Specialized, private/local, and service corpus | 1,528 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
+| Specialized, private/local, and service corpus | 1,640 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
-The final 1,528-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
+The final 1,640-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
 
 ## Direct canonical inputs
 
 ### Repository-maintained rules and policy
 
-Most current rules, targets, group structure, ordering, and filters are maintained directly by Ekko Rules. Factual indicators may overlap other public corpora without proving direct copying. Product decisions—including group boundaries, rule placement, first-match priority, default `REJECT` behavior, and removals—are local work.
+Most current rules, targets, group structure, ordering, and filters are maintained directly by Ekko Rules. Factual indicators may overlap other public corpora without proving direct copying. Product decisions—including group boundaries, rule placement, first-match priority, default `REJECT` behavior, and removals—are local work. The one-rule `author-domain` segment is an explicit user-requested authorship-display exception: `zaunekko.com` is first globally and maps to the default-direct mainland group; it is not presented as an upstream import or general service corpus.
 
 Six late-recovery rulesets derive from frozen Phase 2 repository evidence. They restore historical DIRECT-default behavior after the Phase 3 reduction, but do not reassert current vendor ownership. `tests/fixtures/public-rule-exclusions.json` further removes non-general entries from the public product while immutable Phase 2/3 fixtures and `phase-3-recovery-ledger.json` remain unchanged as historical evidence.
 
@@ -58,8 +58,6 @@ The upstream category resolves to 850 entries: 677 domain roots, 172 exact full 
 
 Advertising precedes specialized service segments, so 40 later telemetry/advertising matchers intentionally become unreachable. That exact capture set is frozen in `tests/fixtures/advertising-routing-ledger.json`; any additional capture requires review. The independent `🛑 广告拦截` group defaults to `REJECT` but remains manually switchable.
 
-ACL4SSR's pinned ChinaDomain corpus was evaluated as a mainland-domain alternative but not imported because its CC-BY-SA-4.0 license would create a separate ShareAlike component and mixed-license publication boundary.
-
 ## Immutable reconstruction and compatibility evidence
 
 The one-time reconstruction was cross-checked against original Subconverter presets, Mihomo providers, rule order, and `.list` files before `sources/` became canonical. The Phase 2 before/after fixtures and migration ledger preserve that state without treating current generated products as source evidence.
@@ -74,16 +72,6 @@ Phase 3 evidence remains layered and immutable:
 
 Recovery is compatibility evidence, not renewed evidence that each recovered domain or IP remains current, official, or exclusively owned by its mapped vendor.
 
-## Historical comparison results
-
-Retained audit facts include:
-
-- 13,591 of 13,919 unique local historical matchers appeared in the pinned blackmatrix7 Clash corpus (97.64%), establishing broad shared lineage rather than a unique direct source.
-- Approximately 6,233 of 6,242 historical `global-web` entries matched ACL4SSR's 2023-06-04 `Clash/ProxyGFWlist.list` in original order (about 99.86%). Phase 3 removed that generic segment; the comparison remains historical evidence only.
-- The online-preset responsibility model informed the boundary that Ekko Rules does not own ports, DNS, TUN, controller settings, nodes, or subscription credentials.
-
-These comparison records do not make ACL4SSR, blackmatrix7, Loyalsoldier, or MetaCubeX normal generation inputs. Exact usage classifications are in `sources/upstreams.yaml`.
-
 ## Limits of historical evidence
 
 The original expanded profile did not preserve:
@@ -95,8 +83,8 @@ The original expanded profile did not preserve:
 - provider-specific DNS, TUN, Hosts, or other client settings;
 - proof that one aggregate upstream, rather than a common ancestor or independently compiled factual list, supplied every overlapping indicator.
 
-For this reason, historical overlap is recorded as lineage or comparison—not claimed as current direct inclusion. Current direct imports are identified explicitly with pinned revisions, licenses, selection policies, and output hashes.
+For this reason, the reconstruction record does not claim one complete external source for the current corpus. Current direct imports are identified explicitly with pinned revisions, licenses, selection policies, and output hashes.
 
 ## License and attribution boundary
 
-The repository as a whole is released under the [MIT License](../LICENSE). [`NOTICE.md`](../NOTICE.md) records current direct inputs, historical comparison contexts, trademarks, and disclaimers. Company and product names remain trademarks or identifiers of their respective owners.
+The repository as a whole is released under the [MIT License](../LICENSE). [`NOTICE.md`](../NOTICE.md) records current direct inputs, trademarks, and disclaimers. Company and product names remain trademarks or identifiers of their respective owners.

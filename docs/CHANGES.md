@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-019 use **2026-08-03**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-020 use **2026-08-03**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -406,7 +406,7 @@ The repository now provides three structured GitHub Issue Forms for domain/servi
 
 Subconverter guidance now recommends `https://sub.v1.mk/` for subscriptions that use newer protocols such as AnyTLS. `https://acl4ssr-sub.github.io/` remains documented as a popular alternative with older protocol support that may not convert newer protocols. Both paths retain the full-URL candidate selection and final `config=https%3A...` versus `config=%20https%3A...` checks.
 
-The user-facing project-boundary section now describes only Ekko Rules itself. Historical comparison projects and licensing evidence remain confined to `NOTICE.md` and `docs/PROVENANCE.md`.
+The user-facing project-boundary section now describes only Ekko Rules itself. Public attribution focuses on sources that directly contribute to the current canonical product; early reconstruction comparisons remain internal audit evidence.
 
 ## ER-019 — Advertising block policy and public-rule provenance cleanup
 
@@ -422,8 +422,8 @@ The one-entry `direct-override` ruleset and `DOMAIN,huaikhwang.central-world.org
 
 - independently maintained current rules, group design, defaults, and removals;
 - explicit pinned MIT canonical imports for mainland domains and advertising;
-- historical recovery evidence;
-- comparison/lineage projects that are not normal generation inputs.
+- historical recovery evidence retained for compatibility verification;
+- early comparison records kept only as internal audit evidence rather than current-product attribution.
 
 Current verified canonical target:
 
@@ -432,3 +432,21 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 93; same-segment: 13; cross-segment-only: 80, including the frozen 40-rule advertising capture set.
+
+## ER-020 — Developer experience, remote streaming, and mainland/global AI split
+
+**Type:** policy specialization, anchored service expansion, and first-match correction
+
+The `🧑‍💻 开发服务` group continues to list `♻️ 手动切换` first, followed by `DIRECT` and subscription nodes. Its anchored corpus now covers mainstream developer control planes, registries, and downloads across GitHub/GitLab, Docker/GHCR, Maven/Gradle, Node.js/npm, Python/PyPI, Rust/Cargo, Go, NuGet, RubyGems, Composer, Homebrew, CocoaPods, Yarn, and pnpm. This prioritizes official-source availability and speed while preserving an immediate manual `DIRECT` override. Generic cloud, object-storage, CDN, and public relay roots are still excluded; established mainland mirrors continue to use mainland DIRECT routing.
+
+A new `🖥️ 远程串流` group defaults to `DIRECT` and sits immediately after private routing. Its 53-rule corpus covers verified process or anchored control/signal/relay paths for Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP. The user-required `ts.net` suffix deliberately covers tailnet user namespaces, while the TeamViewer suffix deliberately covers dynamic master/router relay hosts. Generic CGNAT ranges, public STUN/TURN namespaces, browser-wide or Steam-wide processes, user-defined server domains, and shared cloud/CDN roots remain excluded.
+
+The user-requested `author-domain` segment places `DOMAIN-SUFFIX,zaunekko.com` first globally and maps it to `🌏 国内网站` as an explicit authorship-display exception. DeepSeek, Xiaohongshu, and verified Chinese AI mainland roots are merged into the ordinary `china-web` segment so they remain after advertising; no separate mainland-fix segment is published. Distinct international domains—including `kimi.com`, `z.ai`, `qwen.ai`, `qwenlm.ai`, `minimax.io`, ByteDance global AI roots, `figma.com`, and `figma.site`—enter `🧲 海外 AI`. Existing Baidu Wenxin, Tencent Yuanbao/Hunyuan, iFlytek Spark, Taobao, and mainland mirrors remain owned by the classic mainland-domain layer. Kimi legacy mainland URLs now redirect to `kimi.com`; because routing is hostname-based, the shared final hostname follows the international policy.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 38 proxy groups;
+- 6,693 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 94; same-segment: 13; cross-segment-only: 81.

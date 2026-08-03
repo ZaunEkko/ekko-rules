@@ -70,6 +70,7 @@ def slugify(name: str) -> str:
     aliases = {
         "DIRECT": "direct-override",
         "🛑 广告拦截": "advertising",
+        "🖥️ 远程串流": "remote-streaming",
         "🧲 OpenAI": "openai",
         "🧲 Claude": "claude",
         "🧲 海外 AI": "ai-platforms",

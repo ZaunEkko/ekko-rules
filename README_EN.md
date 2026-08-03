@@ -15,6 +15,16 @@ Open a Subconverter frontend that supports custom remote configurations:
 | [`https://sub.v1.mk/`](https://sub.v1.mk/) | **Recommended.** Supports newer protocols such as AnyTLS; prefer it when the subscription contains newer-protocol nodes. |
 | [`https://acl4ssr-sub.github.io/`](https://acl4ssr-sub.github.io/) | A popular alternative with older protocol support; it may not convert AnyTLS and other newer protocols. |
 
+Subscription conversion combines three separate parts:
+
+| Part | Role and trust boundary |
+|---|---|
+| Conversion frontend | Provides the web form for the subscription URL, target format, and remote configuration, then submits the conversion request to a backend. |
+| Conversion backend | Fetches the real subscription and the Ekko Rules remote configuration, then generates the result; **its operator can know the complete real subscription URL, including its token.** |
+| Ekko Rules | Provides only public rules, order, policy groups, and mappings; it neither receives nor stores the subscription URL submitted to the conversion backend. |
+
+Self-hosting only the frontend while continuing to call a public conversion backend does not hide the real subscription URL. Protecting it requires a trusted or self-hosted conversion backend as well.
+
 Fill in the form as follows:
 
 | Field | Value |
@@ -27,9 +37,9 @@ Fill in the form as follows:
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-After pasting the complete URL into the remote-configuration field, the dropdown shows a candidate containing that same full URL. **Click that URL candidate to select it**; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default", then generate the subscription. **Do not rely only on whether the input field visibly contains a space; inspect the final generated custom subscription URL.** Some frontends insert a leading space while submitting the remote configuration. A correct result contains `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`, with `https` immediately after `config=`. If it contains `config=%20https...`, `%20` is that leading space. Delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone. If `config=` is missing or still begins with `config=%20https...`, the converter may fail to load Ekko Rules and fall back to its default preset instead of the 37 policy groups.
+After pasting the complete URL into the remote-configuration field, the dropdown shows a candidate containing that same full URL. **Click that URL candidate to select it**; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default", then generate the subscription. **Do not rely only on whether the input field visibly contains a space; inspect the final generated custom subscription URL.** Some frontends insert a leading space while submitting the remote configuration. A correct result contains `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`, with `https` immediately after `config=`. If it contains `config=%20https...`, `%20` is that leading space. Delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone. If `config=` is missing or still begins with `config=%20https...`, the converter may fail to load Ekko Rules and fall back to its default preset instead of the 38 policy groups.
 
-> A third-party conversion backend can normally see the original subscription URL submitted to it. Use a trusted backend or deploy Subconverter yourself. Never paste a token-bearing subscription URL into issues, pull requests, logs, or public chats.
+> The conversion backend needs the complete subscription URL to fetch nodes and perform the conversion, so it is not an anonymous relay. Use a trusted backend or self-host the conversion backend. Never paste a token-bearing subscription URL into issues, pull requests, logs, or public chats.
 
 ### Native Mihomo template
 
@@ -52,12 +62,13 @@ with your own subscription URL, then load it in a Mihomo client such as Clash Ve
 Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 
 - **Ad blocking**: `🛑 广告拦截` uses pinned anchored domain rules and defaults to `REJECT`, while remaining manually switchable to a node or `DIRECT`;
-- **AI**: separate OpenAI and Claude groups, plus one Overseas AI group for Gemini, Grok, Microsoft AI, Cursor, Hugging Face, Perplexity, Poe, OpenRouter, Mistral, Groq, and similar services;
+- **AI and design tools**: separate OpenAI and Claude groups; Gemini, Grok, Microsoft AI, Cursor, Hugging Face, Perplexity, Poe, OpenRouter, Mistral, Groq, Figma, and international Kimi, Z.ai, Qwen, and MiniMax sites use `🧲 海外 AI`; DeepSeek, Xiaohongshu, and mainland Chinese AI sites use the default-direct `🌏 国内网站` group;
 - **Major streaming**: YouTube, Netflix, Disney+, Apple TV+, `🎬 HBO GO/MAX`, Prime Video, DAZN, and TikTok are handled separately; HBO GO and Max share one group, while DAZN remains independent;
 - **Regional media**: US long-tail services use `🎬 美国流媒体`, with separate handling for HMT, Bilibili HMT, Southeast Asia, Japan, Korea, iQIYI, and mainland Chinese media;
 - **Gaming**: game platforms and game downloads use separate groups;
 - **Social and communication**: separate groups for social media, messaging, Discord, and email;
-- **Developer services**: `🧑‍💻 开发服务` covers GitHub, GitLab, Docker, Maven, the Node.js website/docs/downloads, and the npm website, public registry, and package downloads;
+- **Remote streaming**: `🖥️ 远程串流` defaults to `DIRECT` for high-volume remote-access paths including Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP, preventing remote desktop, game streaming, or virtual-LAN traffic from unnecessarily traversing a proxy;
+- **Developer services**: `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers GitHub, GitLab, Docker/GHCR, Maven/Gradle, Node.js/npm, Python/PyPI, Rust/Cargo, Go, NuGet, RubyGems, Composer, Homebrew, CocoaPods, and their websites, APIs, registries, and downloads; switch it temporarily to `DIRECT` when proxy traffic matters;
 - **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
 
