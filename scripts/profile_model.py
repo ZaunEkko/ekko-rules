@@ -1074,6 +1074,12 @@ def build_analysis(sources: ProfileSources) -> dict[str, Any]:
 
 def _write_readmes(output: Path, sources: ProfileSources) -> None:
     rules_base = sources.manifest["urls"]["rules_base"]
+    profile = sources.manifest["profile"]
+    raw_root = (
+        f"https://raw.githubusercontent.com/{profile['repository']}/"
+        f"{profile['branch']}/{profile['generated_root']}"
+    )
+    subconverter_config_url = f"{raw_root}/config/ekko-rules.ini"
     rulesets = len(sources.rule_segments_for(CORE_PRODUCT))
     segments = len(sources.segments_for(CORE_PRODUCT))
     groups = len(sources.proxy_groups_for(CORE_PRODUCT))
@@ -1089,6 +1095,16 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 - `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
 - `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则。
 - `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单。
+
+## 在线订阅转换
+
+打开支持自定义远程配置的 Subconverter 前端，例如 `https://sub.v1.mk/`。订阅链接填写自己的节点订阅，生成类型选择 `Clash`，远程配置填写：
+
+```text
+{subconverter_config_url}
+```
+
+粘贴完整地址并按 Enter 选中，然后生成订阅链接。请仅使用可信转换后端，因为它通常能够看到提交给它的原始订阅地址。
 
 Ruleset 地址前缀：`{rules_base}`。
 
@@ -1111,6 +1127,16 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 - `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
 - `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points.
 - `analysis.json` and `manifest.json`: Quality metrics and the SHA-256 file inventory.
+
+## Online subscription conversion
+
+Open a Subconverter frontend that accepts custom remote configurations, such as `https://sub.v1.mk/`. Supply your own node subscription, choose `Clash` as the target, and enter:
+
+```text
+{subconverter_config_url}
+```
+
+Paste the complete URL, press Enter to select it, and generate the subscription. Use only a trusted conversion backend because it can normally see the original subscription URL submitted to it.
 
 Ruleset URL prefix: `{rules_base}`.
 
