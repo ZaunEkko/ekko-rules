@@ -588,6 +588,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/apple-music.yaml
     path: ./ruleset/apple-music.yaml
     interval: 86400
+  china-media:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-media.yaml
+    path: ./ruleset/china-media.yaml
+    interval: 86400
   tiktok:
     type: http
     behavior: classical
@@ -643,13 +650,6 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google.yaml
     path: ./ruleset/google.yaml
-    interval: 86400
-  china-media:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-media.yaml
-    path: ./ruleset/china-media.yaml
     interval: 86400
   china-web:
     type: http
@@ -760,6 +760,7 @@ rules:
 - RULE-SET,spotify-2,🎵 音乐平台
 - RULE-SET,qobuz,🎵 音乐平台
 - RULE-SET,apple-music,🎵 音乐平台
+- RULE-SET,china-media,🌏 国内流媒体
 - RULE-SET,tiktok,🎶 TikTok
 - RULE-SET,netflix,🎬 Netflix
 - RULE-SET,icloud,☁️ 云盘服务
@@ -768,7 +769,6 @@ rules:
 - RULE-SET,us-media,🎬 美国流媒体
 - RULE-SET,global-media,🌏 国外流媒体
 - RULE-SET,google,🔎 Google
-- RULE-SET,china-media,🌏 国内流媒体
 - RULE-SET,china-web,🌏 国内网站
 - RULE-SET,game-platform-late-recovery,🎮 游戏平台
 - RULE-SET,bilibili-hmt-late-recovery,🎬 B站港澳台

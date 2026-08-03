@@ -6,7 +6,7 @@
         "proxy_group_count": 38,
         "ruleset_count": 63,
         "segment_count": 64,
-        "rule_count": 6967,
+        "rule_count": 6968,
         "destination_ip_rule_count": 206
       },
       "quality": {
@@ -674,23 +674,37 @@
           "index": 46,
           "manifest_order": 46,
           "start": 2126,
-          "end": 2147,
-          "count": 22,
-          "target": "🎶 TikTok",
-          "slug": "tiktok",
+          "end": 2221,
+          "count": 96,
+          "target": "🌏 国内流媒体",
+          "slug": "china-media",
           "scope": "core",
           "rule_types": {
-            "DOMAIN": 1,
-            "DOMAIN-SUFFIX": 18,
-            "DOMAIN-KEYWORD": 2,
-            "PROCESS-NAME": 1
+            "DOMAIN-SUFFIX": 95,
+            "DOMAIN": 1
           }
         },
         {
           "index": 47,
           "manifest_order": 47,
-          "start": 2148,
-          "end": 2200,
+          "start": 2222,
+          "end": 2244,
+          "count": 23,
+          "target": "🎶 TikTok",
+          "slug": "tiktok",
+          "scope": "core",
+          "rule_types": {
+            "DOMAIN": 1,
+            "DOMAIN-SUFFIX": 19,
+            "DOMAIN-KEYWORD": 2,
+            "PROCESS-NAME": 1
+          }
+        },
+        {
+          "index": 48,
+          "manifest_order": 48,
+          "start": 2245,
+          "end": 2297,
           "count": 53,
           "target": "🎬 Netflix",
           "slug": "netflix",
@@ -705,10 +719,10 @@
           }
         },
         {
-          "index": 48,
-          "manifest_order": 48,
-          "start": 2201,
-          "end": 2258,
+          "index": 49,
+          "manifest_order": 49,
+          "start": 2298,
+          "end": 2355,
           "count": 58,
           "target": "☁️ 云盘服务",
           "slug": "icloud",
@@ -719,10 +733,10 @@
           }
         },
         {
-          "index": 49,
-          "manifest_order": 49,
-          "start": 2259,
-          "end": 2313,
+          "index": 50,
+          "manifest_order": 50,
+          "start": 2356,
+          "end": 2410,
           "count": 55,
           "target": "🧩 微软服务",
           "slug": "microsoft",
@@ -732,10 +746,10 @@
           }
         },
         {
-          "index": 50,
-          "manifest_order": 50,
-          "start": 2314,
-          "end": 2353,
+          "index": 51,
+          "manifest_order": 51,
+          "start": 2411,
+          "end": 2450,
           "count": 40,
           "target": "🍎 苹果服务",
           "slug": "apple",
@@ -748,10 +762,10 @@
           }
         },
         {
-          "index": 51,
-          "manifest_order": 51,
-          "start": 2354,
-          "end": 2408,
+          "index": 52,
+          "manifest_order": 52,
+          "start": 2451,
+          "end": 2505,
           "count": 55,
           "target": "🎬 美国流媒体",
           "slug": "us-media",
@@ -761,10 +775,10 @@
           }
         },
         {
-          "index": 52,
-          "manifest_order": 52,
-          "start": 2409,
-          "end": 2438,
+          "index": 53,
+          "manifest_order": 53,
+          "start": 2506,
+          "end": 2535,
           "count": 30,
           "target": "🌏 国外流媒体",
           "slug": "global-media",
@@ -774,10 +788,10 @@
           }
         },
         {
-          "index": 53,
-          "manifest_order": 53,
-          "start": 2439,
-          "end": 2479,
+          "index": 54,
+          "manifest_order": 54,
+          "start": 2536,
+          "end": 2576,
           "count": 41,
           "target": "🔎 Google",
           "slug": "google",
@@ -790,23 +804,10 @@
           }
         },
         {
-          "index": 54,
-          "manifest_order": 54,
-          "start": 2480,
-          "end": 2575,
-          "count": 96,
-          "target": "🌏 国内流媒体",
-          "slug": "china-media",
-          "scope": "core",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 96
-          }
-        },
-        {
           "index": 55,
           "manifest_order": 55,
-          "start": 2576,
-          "end": 2762,
+          "start": 2577,
+          "end": 2763,
           "count": 187,
           "target": "🌏 国内网站",
           "slug": "china-web",
@@ -819,8 +820,8 @@
         {
           "index": 56,
           "manifest_order": 56,
-          "start": 2763,
-          "end": 3349,
+          "start": 2764,
+          "end": 3350,
           "count": 587,
           "target": "🎮 游戏平台",
           "slug": "game-platform-late-recovery",
@@ -834,8 +835,8 @@
         {
           "index": 57,
           "manifest_order": 57,
-          "start": 3350,
-          "end": 3457,
+          "start": 3351,
+          "end": 3458,
           "count": 108,
           "target": "🎬 B站港澳台",
           "slug": "bilibili-hmt-late-recovery",
@@ -849,8 +850,8 @@
         {
           "index": 58,
           "manifest_order": 58,
-          "start": 3458,
-          "end": 3493,
+          "start": 3459,
+          "end": 3494,
           "count": 36,
           "target": "🎬 爱奇艺",
           "slug": "iqiyi-late-recovery",
@@ -863,8 +864,8 @@
         {
           "index": 59,
           "manifest_order": 59,
-          "start": 3494,
-          "end": 3926,
+          "start": 3495,
+          "end": 3927,
           "count": 433,
           "target": "🧩 微软服务",
           "slug": "microsoft-late-recovery",
@@ -877,8 +878,8 @@
         {
           "index": 60,
           "manifest_order": 60,
-          "start": 3927,
-          "end": 5390,
+          "start": 3928,
+          "end": 5391,
           "count": 1464,
           "target": "🍎 苹果服务",
           "slug": "apple-late-recovery",
@@ -891,8 +892,8 @@
         {
           "index": 61,
           "manifest_order": 61,
-          "start": 5391,
-          "end": 5483,
+          "start": 5392,
+          "end": 5484,
           "count": 93,
           "target": "🌏 国内流媒体",
           "slug": "china-media-late-recovery",
@@ -906,8 +907,8 @@
         {
           "index": 62,
           "manifest_order": 62,
-          "start": 5484,
-          "end": 6965,
+          "start": 5485,
+          "end": 6966,
           "count": 1482,
           "target": "🌏 国内网站",
           "slug": "china-domains-direct",
@@ -920,8 +921,8 @@
         {
           "index": 63,
           "manifest_order": 63,
-          "start": 6966,
-          "end": 6966,
+          "start": 6967,
+          "end": 6967,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -933,8 +934,8 @@
         {
           "index": 64,
           "manifest_order": 64,
-          "start": 6967,
-          "end": 6967,
+          "start": 6968,
+          "end": 6968,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",

@@ -1547,7 +1547,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         media_cases = {
             "www.douyin.com": "DOMAIN-SUFFIX,douyin.com",
             "api.amemv.com": "DOMAIN-SUFFIX,amemv.com",
-            "aweme.snssdk.com": "DOMAIN-SUFFIX,snssdk.com",
+            "aweme.snssdk.com": "DOMAIN,aweme.snssdk.com",
             "www.huya.com": "DOMAIN-SUFFIX,huya.com",
             "www.yy.com": "DOMAIN-SUFFIX,yy.com",
         }
@@ -1595,6 +1595,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 )
 
         international_cases = {
+            "api.snssdk.com": "DOMAIN-SUFFIX,snssdk.com",
             "www.tiktok.com": "DOMAIN-SUFFIX,tiktok.com",
             "api.tiktokv.com": "DOMAIN-SUFFIX,tiktokv.com",
         }
@@ -1618,7 +1619,9 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 )
 
         tiktok_rules = self.sources.rules["tiktok"]
-        self.assertNotIn("DOMAIN-SUFFIX,snssdk.com", tiktok_rules)
+        self.assertIn("DOMAIN-SUFFIX,snssdk.com", tiktok_rules)
+        segments = [segment.slug for segment in self.sources.segments]
+        self.assertLess(segments.index("china-media"), segments.index("tiktok"))
         published_rules = {
             rule
             for entries in self.sources.rules.values()

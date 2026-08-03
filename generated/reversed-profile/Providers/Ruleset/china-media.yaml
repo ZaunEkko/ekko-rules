@@ -88,7 +88,7 @@ payload:
 - DOMAIN-SUFFIX,qishui.com.cn
 - DOMAIN-SUFFIX,qishuimusic.cn
 - DOMAIN-SUFFIX,qishuimusic.com.cn
-- DOMAIN-SUFFIX,snssdk.com
+- DOMAIN,aweme.snssdk.com
 - DOMAIN-SUFFIX,huya.com
 - DOMAIN-SUFFIX,msstatic.com
 - DOMAIN-SUFFIX,duowan.com

@@ -304,7 +304,7 @@ items:
   phase_2_candidate: none
   recommended_action: keep-precise
   current_product: standard
-  resolution: The shared snssdk.com root moves from TikTok to mainland media because it is used by Douyin mainland, while explicitly international TikTok roots remain in the TikTok group. Tencent Native GVoice/GME service roots and documented exact qcloud configuration, RTC, and speech hosts are routed through game-platform; generic qcloud.com, myqcloud.com, cloud/CDN roots, dynamic service IPs, and a WeGame process-wide rule remain excluded. Advertising stays first and continues to capture Amap, MiHoYo, and Zuoyebang telemetry. TapTap international taptap.io and other international storefronts remain outside mainland rules.
+  resolution: The official Douyin-only aweme.snssdk.com host enters mainland media, which is ordered before TikTok, while the shared snssdk.com suffix remains in TikTok so unclassified international traffic keeps the user's selector. Tencent Native GVoice/GME service roots and documented exact qcloud configuration, RTC, and speech hosts are routed through game-platform; generic qcloud.com, myqcloud.com, cloud/CDN roots, dynamic service IPs, and a WeGame process-wide rule remain excluded. Advertising stays first and continues to capture Amap, MiHoYo, and Zuoyebang telemetry. TapTap international taptap.io and other international storefronts remain outside mainland rules.
 - id: transient-resolution-failures
   status: observe
   scope: all

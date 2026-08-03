@@ -286,57 +286,57 @@ segments:
   scope: core
 - order: 46
   kind: ruleset
+  slug: china-media
+  target: 🌏 国内流媒体
+  source: rules/china-media.list
+  scope: core
+- order: 47
+  kind: ruleset
   slug: tiktok
   target: 🎶 TikTok
   source: rules/tiktok.list
   scope: core
-- order: 47
+- order: 48
   kind: ruleset
   slug: netflix
   target: 🎬 Netflix
   source: rules/netflix.list
   scope: core
-- order: 48
+- order: 49
   kind: ruleset
   slug: icloud
   target: ☁️ 云盘服务
   source: rules/icloud.list
   scope: core
-- order: 49
+- order: 50
   kind: ruleset
   slug: microsoft
   target: 🧩 微软服务
   source: rules/microsoft.list
   scope: core
-- order: 50
+- order: 51
   kind: ruleset
   slug: apple
   target: 🍎 苹果服务
   source: rules/apple.list
   scope: core
-- order: 51
+- order: 52
   kind: ruleset
   slug: us-media
   target: 🎬 美国流媒体
   source: rules/us-media.list
   scope: core
-- order: 52
+- order: 53
   kind: ruleset
   slug: global-media
   target: 🌏 国外流媒体
   source: rules/global-media.list
   scope: core
-- order: 53
+- order: 54
   kind: ruleset
   slug: google
   target: 🔎 Google
   source: rules/google.list
-  scope: core
-- order: 54
-  kind: ruleset
-  slug: china-media
-  target: 🌏 国内流媒体
-  source: rules/china-media.list
   scope: core
 - order: 55
   kind: ruleset

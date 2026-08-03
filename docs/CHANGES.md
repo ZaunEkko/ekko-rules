@@ -475,12 +475,12 @@ The existing 38 policy groups remain unchanged. `china-web` gains reviewed offic
 
 `game-platform` gains mainland Xiaoheihe, 5EPlay, Perfect World esports, TapTap, MiHoYo, major gaming communities, WeGame, mainland League of Legends and Valorant, plus Tencent GVoice/GME service roots and documented exact configuration, RTC, and speech hosts used for in-game voice. Shared `qcloud.com`, `myqcloud.com`, general cloud/CDN roots, dynamic voice IPs, and a process-wide WeGame rule remain excluded. The more specific historical `csgo.wmsj.cn` and `dota2.wmsj.cn` late-recovery entries remain authoritative instead of adding a broad duplicate parent that would increase cross-segment unreachability.
 
-`china-media` gains Douyin mainland, Huya, and YY. `snssdk.com` moves from TikTok to mainland media because current mainland Douyin uses it; explicitly international TikTok roots remain in the TikTok group. Advertising still precedes all three mainland segments and continues to capture reviewed Amap, MiHoYo, and Zuoyebang telemetry. TapTap international and shared cloud/storefront roots remain outside mainland routing.
+`china-media` gains Douyin mainland, Huya, and YY and now precedes TikTok so the official Douyin-only `aweme.snssdk.com` host can be routed directly. The shared `snssdk.com` suffix remains in TikTok, preserving the user's selector for unclassified international traffic; explicitly international TikTok roots remain in that group. Advertising still precedes all three mainland segments and continues to capture reviewed Amap, MiHoYo, and Zuoyebang telemetry. TapTap international and shared cloud/storefront roots remain outside mainland routing.
 
 Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 38 proxy groups;
-- 6,967 rules including the unique FINAL;
+- 6,968 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 94; same-segment: 13; cross-segment-only: 81.

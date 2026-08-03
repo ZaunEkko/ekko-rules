@@ -5,7 +5,7 @@
   "self": "manifest.json",
   "self_hash_included": false,
   "files": {
-    "Mihomo/reversed-template.yaml": "69cc7047e27729d13958ad8b8dc156f653d30fe382cfb0abca7b830c2a3af5e4",
+    "Mihomo/reversed-template.yaml": "3066f8fe584a15ba71cb8e307a3dfee0fb829cd778af3a9ae0e77ec878a72776",
     "Providers/Ruleset/advertising.yaml": "2e32375b3f86af8e09771785c0e145a0371839a7fb5c128a0371fd6c83a858c3",
     "Providers/Ruleset/ai-developer.yaml": "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
     "Providers/Ruleset/ai-platforms.yaml": "2af6df159b121a558ddf74cfcb0321646d3388d0d2153c34d2c6e61fc50b1d6d",
@@ -21,7 +21,7 @@
     "Providers/Ruleset/china-domains-direct.yaml": "2def072dca84035c8d31880781de52cf7b4f46f0205e7c876a7313358c2c572e",
     "Providers/Ruleset/china-geoip-direct.yaml": "09e1eded090516a2b76d42d89721996b6eb1854895d11122af8bdf2ff12c536c",
     "Providers/Ruleset/china-media-late-recovery.yaml": "dc5f0d045b12e93c1a81ade4cdba7d875a4521437ba4c943b625d87d9f5b809e",
-    "Providers/Ruleset/china-media.yaml": "16ccbf6d6f8f0f8ba2ee0f0194a8cd18629c4fd99d47bf75b2d3195277a25503",
+    "Providers/Ruleset/china-media.yaml": "d04dd97c1cf54b2613e3652a175bbb4615d46998fd5fd548a5b991dde13a7e46",
     "Providers/Ruleset/china-web.yaml": "2ec18bb3ce91eca664a1666c6d2cd4172ddbe60a5d558e857e69627982ffc9ee",
     "Providers/Ruleset/claude.yaml": "03d1c1da8af1d036d17387011d23f8aa69f1290f7d09ea5f4e76df73cbf94137",
     "Providers/Ruleset/dazn.yaml": "c7ccfc4109357213bce831b93025ede9f322f9fccee0e7aca39150748d16d11b",
@@ -63,7 +63,7 @@
     "Providers/Ruleset/spotify.yaml": "3a6d8e7ffc3aa79a6fff728ae96f779d27461015e3756c9ca7dae996e520e626",
     "Providers/Ruleset/telegram.yaml": "8b82042a532564ab726ad30e9bbc5ca2f13cbbf71cae39111f62027719dd711c",
     "Providers/Ruleset/tidal.yaml": "16c661e0f17e17efc077f0792cd60e542fd21a1dc3193a827a55a7103fc4e24e",
-    "Providers/Ruleset/tiktok.yaml": "6386db26a647b418f716f10746c0d94d1dcc932af0c60bf7107dee418eeb22fb",
+    "Providers/Ruleset/tiktok.yaml": "a5a6969c46d0ec7bebdd0ec4d561b2d53c86f23bc95c93751a56ffc71bcb7d4b",
     "Providers/Ruleset/us-media.yaml": "d72af0e0e18a45c376e2606c87460615c3bc657b73702bd4248eca4b8b2291c4",
     "Providers/Ruleset/viutv.yaml": "9bcac0c7e4fc97e9d030994c8e3c9bcbb9542674d4c031dc5955b1b609f35f38",
     "Providers/Ruleset/whatsapp.yaml": "7aa985f3782ac4ab18537800e2856bd9d0e598d7b7a43df07a202e3f59aa857f",
@@ -86,7 +86,7 @@
     "Ruleset/china-domains-direct.list": "4c216dd6f73c4ed3324522f5cbee50f01057cd78cefa0495e2fbd790b81ad622",
     "Ruleset/china-geoip-direct.list": "17b98929dcf837281a498702a4723b323be1b206f9563c9f6cf9d4e3db9a02df",
     "Ruleset/china-media-late-recovery.list": "62bd0b2fd47fc40b1b860318edd12845ce6a7fc15a55ae3efa4b77f6b9a6980a",
-    "Ruleset/china-media.list": "5500d6f84b568fe84a33c3b1755681dac5ca7be4cd2555625aa772bae74e576b",
+    "Ruleset/china-media.list": "c4c944e56bbf68c803c91011100a163746d7f5be5fd58dfa939fe42094b26406",
     "Ruleset/china-web.list": "44669c451269e63936bcbc6602d4ae54f30560434d402f6e2e8202a04eed2553",
     "Ruleset/claude.list": "d7773fec75adf789cfea2a8d533bcdf658a865b550624f6e8e055084de87598a",
     "Ruleset/dazn.list": "82da3ade078dd16fec09f3305316fed2e134bf9ebc4783046f19da3cd499f8a4",
@@ -128,13 +128,13 @@
     "Ruleset/spotify.list": "fdcb49caabf05bc7ae52337c716ed083321c629d45fb6d4e085328643e193450",
     "Ruleset/telegram.list": "554877570fcd1b181d04a9c9be3a5ee3f24e595249106c91ee06c1a5551cc0ac",
     "Ruleset/tidal.list": "d0acd90412c681d3e8a325a1630c05471495ebc855c3c74a7a8f97d4364cfd1f",
-    "Ruleset/tiktok.list": "4e11dc6c39a939488103ade86a4a2c9fde48cc06c13502cb58cf35f9d76b0fa0",
+    "Ruleset/tiktok.list": "70ab7aa87682d8d54a45fa3f368b121d273042bb570451fb68207edbc92c1490",
     "Ruleset/us-media.list": "afdb4a51d63c457fd2f580d350adf41274204c5b60ad543ecb743ced7ecb31de",
     "Ruleset/viutv.list": "1cf8c23c5ec95daf721e7a6726347c947973a7d55b203244f9a18546cb12c423",
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "2f17d7c67654ea313c21f7e4ce2b2d21c127caa0fde5a2c4a96ae5ff2a8cc802",
-    "config/ekko-rules.ini": "032cdcab0de8fcf4955aa181ac1d4e1d03133944d16d56e95356c7aa887e00fb"
+    "analysis.json": "9946c9b64357fba4e332f65760d5ca6ed483e18347a590258276545f0608b885",
+    "config/ekko-rules.ini": "958fce03ac47b265f039c410b2513fd8449bb094afda6a56b1ba964b6009e408"
   }
 }
