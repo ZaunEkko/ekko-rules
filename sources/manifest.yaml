@@ -16,15 +16,15 @@ rule_provider:
 segments:
 - order: 1
   kind: ruleset
-  slug: direct-override
-  target: DIRECT
-  source: rules/direct-override.list
-  scope: core
-- order: 2
-  kind: ruleset
   slug: private
   target: DIRECT
   source: rules/private.list
+  scope: core
+- order: 2
+  kind: ruleset
+  slug: advertising
+  target: 🛑 广告拦截
+  source: rules/advertising.list
   scope: core
 - order: 3
   kind: ruleset

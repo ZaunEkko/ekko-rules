@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "https://github.com/v2fly/domain-list-community",
+    "revision": "660198a50bac2ab10c567d95a472a7b33915d1b0",
+    "license": "MIT",
+    "license_sha256": "b9d84a22870d3f21c91a4c6e410c9cc51d00902f5233ad0c84011479244bf7d2",
+    "category": "category-ads",
+    "category_file_sha256": "d864e2e121fc563b1b1ac7c0f80ffa5b435144e328ad52b2a7462476fb07efd1",
+    "dependency_file_count": 195,
+    "dependency_files_sha256": "b953e76fe73e745551cadab8f6337edc51963e02e02c9f792418f043194206ca",
+    "parser": "main.go",
+    "parser_sha256": "52d5acff0cc0f77529dd86f536cfaf6abae09c022208d11b7635d4894cfe817a"
+  },
+  "selection": {
+    "policy": "resolve category-ads with pinned upstream include/attribute semantics; keep only anchored domain/full entries; exclude regexp, keyword, single-label, deattributed duplicates, local broad coverage, and rules covered by earlier private routing",
+    "resolved_entries": 850,
+    "resolved_rule_types": {
+      "domain": 677,
+      "full": 172,
+      "regexp": 1
+    },
+    "excluded": {
+      "regexp": 1,
+      "keyword": 0,
+      "single_label": 0,
+      "deattributed_duplicate": 0,
+      "covered_within_bundle": 0,
+      "covered_by_private": 0
+    },
+    "emitted": 849,
+    "emitted_rule_types": {
+      "DOMAIN": 172,
+      "DOMAIN-SUFFIX": 677
+    },
+    "emitted_sha256": "fc65062129d120ee2921b78b9ffd95444b694662192c05541e68bc28d559f900"
+  },
+  "required_cases": {
+    "google_ads": "googleads.g.doubleclick.net",
+    "railway_ads": "ad.12306.cn",
+    "xiaomi_ads": "a.market.xiaomi.com",
+    "tencent_ads": "ad.qq.com",
+    "adult_ads": "ads.trafficjunky.net"
+  }
+}

@@ -5,6 +5,7 @@ import json
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from datetime import date
 from ipaddress import IPv4Network, IPv6Network, ip_network
 from collections.abc import Set as AbstractSet
 from pathlib import Path, PurePosixPath
@@ -305,6 +306,92 @@ def parse_rule(entry: str, *, context: str) -> tuple[str, str, bool]:
     return rule_type, value_parts[0], has_no_resolve
 
 
+def _validate_review_schema(review: dict[str, Any], *, phase: str) -> None:
+    require_keys(
+        review,
+        required={
+            "schema_version",
+            "reviewed_on",
+            "purpose",
+            "allowed_statuses",
+            "items",
+        },
+        context="sources/review.yaml",
+    )
+    require(review["schema_version"] == 1, "Unsupported review schema_version")
+    unreviewed_legacy_candidate = (
+        phase == "legacy-import-candidate"
+        and review["reviewed_on"] is None
+        and review["items"] == []
+    )
+    require(
+        isinstance(review["reviewed_on"], (str, date))
+        or unreviewed_legacy_candidate,
+        "review.reviewed_on must be a date",
+    )
+    require(isinstance(review["purpose"], str) and review["purpose"], "review.purpose must be text")
+    allowed = review["allowed_statuses"]
+    require(
+        isinstance(allowed, list)
+        and allowed
+        and all(isinstance(status, str) and status for status in allowed),
+        "review.allowed_statuses must be a non-empty string list",
+    )
+    require(len(allowed) == len(set(allowed)), "review.allowed_statuses must be unique")
+    items = review["items"]
+    require(isinstance(items, list), "review.items must be a list")
+    item_ids: list[str] = []
+    required_item_keys = {
+        "id",
+        "status",
+        "scope",
+        "summary",
+        "evidence",
+        "first_observed",
+        "last_verified",
+        "phase_2_candidate",
+        "recommended_action",
+        "current_product",
+        "resolution",
+    }
+    for index, item in enumerate(items, start=1):
+        require(isinstance(item, dict), f"review item {index} must be a mapping")
+        require_keys(
+            item,
+            required=required_item_keys,
+            context=f"review item {index}",
+        )
+        require(isinstance(item["id"], str) and item["id"], f"review item {index} has invalid id")
+        item_ids.append(item["id"])
+        require(
+            item["status"] in allowed,
+            f"review item {item['id']} uses undeclared status {item['status']}",
+        )
+        for key in {
+            "scope",
+            "summary",
+            "phase_2_candidate",
+            "recommended_action",
+            "current_product",
+            "resolution",
+        }:
+            require(
+                isinstance(item[key], str) and item[key],
+                f"review item {item['id']} has invalid {key}",
+            )
+        require(
+            isinstance(item["evidence"], list)
+            and all(isinstance(value, str) and value for value in item["evidence"]),
+            f"review item {item['id']} has invalid evidence",
+        )
+        for key in {"first_observed", "last_verified"}:
+            require(
+                isinstance(item[key], (str, date)),
+                f"review item {item['id']} has invalid {key}",
+            )
+    require(len(item_ids) == len(set(item_ids)), "review item ids must be unique")
+
+
 def _validate_manifest(data: dict[str, Any]) -> tuple[Segment, ...]:
     require_keys(
         data,
@@ -593,7 +680,12 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
         require_keys(
             next_gate,
             required=common_gate
-            | {"direct_default_to_final_violations", "recovery_ledger"},
+            | {
+                "direct_default_to_final_violations",
+                "recovery_ledger",
+                "intentional_advertising_capture_count",
+                "advertising_routing_ledger",
+            },
             context="quality baseline next_gate",
         )
         require(
@@ -605,6 +697,8 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
                 "cross_segment_dependencies_must_not_increase": True,
                 "direct_default_to_final_violations": 0,
                 "recovery_ledger": "tests/fixtures/phase-3-recovery-ledger.json",
+                "intentional_advertising_capture_count": 40,
+                "advertising_routing_ledger": "tests/fixtures/advertising-routing-ledger.json",
             },
             "Unsupported Phase 3 recovery next_gate",
         )
@@ -781,6 +875,7 @@ def load_profile_sources(root: Path) -> ProfileSources:
     segments = _validate_manifest(manifest)
     proxy_groups = _validate_proxy_groups(proxy_groups_document)
     _validate_quality_baseline_schema(quality)
+    _validate_review_schema(review, phase=quality["phase"])
     group_names = {group.name for group in proxy_groups}
     direct_default_targets = {"DIRECT"} | {
         group.name for group in proxy_groups if group.members[0] == "DIRECT"
@@ -1110,6 +1205,7 @@ Ruleset 地址前缀：`{rules_base}`。
 
 ## 重点分流
 
+- `🛑 广告拦截` 使用固定版本锚定域名规则并默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - OpenAI、Claude 独立，Gemini、Grok、Microsoft AI、Cursor 等归入海外 AI；
 - YouTube、Netflix、Disney+、Apple TV+、HBO GO/MAX、Prime Video、DAZN 等重点流媒体单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
 - 美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国和国内流媒体分别处理；
@@ -1118,7 +1214,7 @@ Ruleset 地址前缀：`{rules_base}`。
 - 音乐、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
-除 `🔞 NSFW` 默认选择 `REJECT` 外，其余策略组保持手动选择；所有组均可自行切换，不启用自动测速。
+`🛑 广告拦截` 与 `🔞 NSFW` 默认选择 `REJECT`；所有策略组均可自行切换，不启用自动测速。若拦截影响个别应用功能，可临时把广告组改为 `DIRECT` 或其他策略。
 
 ## 中国大陆域名、IP 与 DNS
 
@@ -1165,6 +1261,7 @@ Ruleset URL prefix: `{rules_base}`.
 
 ## Key routing groups
 
+- `🛑 广告拦截` uses pinned anchored domain rules and defaults to `REJECT`, while remaining manually switchable to a node or `DIRECT`;
 - OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, and similar services use Overseas AI;
 - YouTube, Netflix, Disney+, Apple TV+, HBO GO/MAX, Prime Video, and DAZN are handled separately; HBO GO and Max share one group, while DAZN remains independent;
 - US long-tail services use `🎬 美国流媒体`; HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
@@ -1173,7 +1270,7 @@ Ruleset URL prefix: `{rules_base}`.
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
-All {groups} policy groups remain manually switchable and automatic latency testing is disabled; `🔞 NSFW` is the only group whose default selection is `REJECT`.
+All {groups} policy groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects an app feature, temporarily switch the advertising group to `DIRECT` or another policy.
 
 ## Mainland domains, IPs, and DNS
 

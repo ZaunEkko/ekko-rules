@@ -16,6 +16,15 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 2
+  name: 🛑 广告拦截
+  type: select
+  scope: core
+  members:
+  - REJECT
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 3
   name: 🧲 OpenAI
   type: select
   scope: core
@@ -23,7 +32,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 3
+- order: 4
   name: 🧲 Claude
   type: select
   scope: core
@@ -31,7 +40,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 4
+- order: 5
   name: 🧲 海外 AI
   type: select
   scope: core
@@ -39,7 +48,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 5
+- order: 6
   name: 🔎 Google
   type: select
   scope: core
@@ -47,7 +56,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 6
+- order: 7
   name: 🗣 社交媒体
   type: select
   scope: core
@@ -55,7 +64,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 7
+- order: 8
   name: 📲 聊天软件
   type: select
   scope: core
@@ -63,7 +72,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 8
+- order: 9
   name: 🎙 Discord
   type: select
   scope: core
@@ -71,7 +80,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 9
+- order: 10
   name: 🧑‍💻 开发服务
   type: select
   scope: core
@@ -79,7 +88,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 10
+- order: 11
   name: 🎬 YouTube
   type: select
   scope: core
@@ -87,7 +96,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 11
+- order: 12
   name: 🎬 Netflix
   type: select
   scope: core
@@ -95,7 +104,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 12
+- order: 13
   name: 🎬 DisneyPlus
   type: select
   scope: core
@@ -103,7 +112,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 13
+- order: 14
   name: 🎬 港澳台媒体
   type: select
   scope: core
@@ -111,7 +120,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 14
+- order: 15
   name: 🎬 日本媒体
   type: select
   scope: core
@@ -119,7 +128,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 15
+- order: 16
   name: 🎬 韩国媒体
   type: select
   scope: core
@@ -127,7 +136,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 16
+- order: 17
   name: 🎬 AppleTV+
   type: select
   scope: core
@@ -135,7 +144,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 17
+- order: 18
   name: 🎬 HBO GO/MAX
   type: select
   scope: core
@@ -143,7 +152,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 18
+- order: 19
   name: 🎬 PrimeVideo
   type: select
   scope: core
@@ -151,7 +160,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 19
+- order: 20
   name: 🎬 Dazn
   type: select
   scope: core
@@ -159,7 +168,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 20
+- order: 21
   name: 🎶 TikTok
   type: select
   scope: core
@@ -167,7 +176,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 21
+- order: 22
   name: 🎵 音乐平台
   type: select
   scope: core
@@ -175,7 +184,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 22
+- order: 23
   name: 🎬 爱奇艺
   type: select
   scope: core
@@ -183,7 +192,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 23
+- order: 24
   name: 🎬 B站港澳台
   type: select
   scope: core
@@ -191,7 +200,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 24
+- order: 25
   name: 🎬 东南亚媒体
   type: select
   scope: core
@@ -199,7 +208,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 25
+- order: 26
   name: 🎬 美国流媒体
   type: select
   scope: core
@@ -207,7 +216,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 26
+- order: 27
   name: 🌏 国外流媒体
   type: select
   scope: core
@@ -215,7 +224,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 27
+- order: 28
   name: 🌏 国内流媒体
   type: select
   scope: core
@@ -223,7 +232,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 28
+- order: 29
   name: ☁️ 云盘服务
   type: select
   scope: core
@@ -231,7 +240,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 29
+- order: 30
   name: 🧩 微软服务
   type: select
   scope: core
@@ -239,7 +248,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 30
+- order: 31
   name: 🍎 苹果服务
   type: select
   scope: core
@@ -247,7 +256,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 31
+- order: 32
   name: 🎮 游戏平台
   type: select
   scope: core
@@ -255,7 +264,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 32
+- order: 33
   name: 🎮 游戏下载
   type: select
   scope: core
@@ -263,7 +272,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 33
+- order: 34
   name: 📪 邮件服务
   type: select
   scope: core
@@ -271,7 +280,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 34
+- order: 35
   name: 🔞 NSFW
   type: select
   scope: core
@@ -280,7 +289,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 35
+- order: 36
   name: 🌏 国内网站
   type: select
   scope: core
@@ -288,7 +297,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 36
+- order: 37
   name: 🐟 漏网之鱼
   type: select
   scope: core

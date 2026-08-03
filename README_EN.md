@@ -27,7 +27,7 @@ Fill in the form as follows:
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-After pasting the complete URL into the remote-configuration field, the dropdown shows a candidate containing that same full URL. **Click that URL candidate to select it**; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default", then generate the subscription. **Do not rely only on whether the input field visibly contains a space; inspect the final generated custom subscription URL.** Some frontends insert a leading space while submitting the remote configuration. A correct result contains `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`, with `https` immediately after `config=`. If it contains `config=%20https...`, `%20` is that leading space. Delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone. If `config=` is missing or still begins with `config=%20https...`, the converter may fail to load Ekko Rules and fall back to its default preset instead of the 36 policy groups.
+After pasting the complete URL into the remote-configuration field, the dropdown shows a candidate containing that same full URL. **Click that URL candidate to select it**; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default", then generate the subscription. **Do not rely only on whether the input field visibly contains a space; inspect the final generated custom subscription URL.** Some frontends insert a leading space while submitting the remote configuration. A correct result contains `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`, with `https` immediately after `config=`. If it contains `config=%20https...`, `%20` is that leading space. Delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone. If `config=` is missing or still begins with `config=%20https...`, the converter may fail to load Ekko Rules and fall back to its default preset instead of the 37 policy groups.
 
 > A third-party conversion backend can normally see the original subscription URL submitted to it. Use a trusted backend or deploy Subconverter yourself. Never paste a token-bearing subscription URL into issues, pull requests, logs, or public chats.
 
@@ -51,6 +51,7 @@ with your own subscription URL, then load it in a Mihomo client such as Clash Ve
 
 Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 
+- **Ad blocking**: `🛑 广告拦截` uses pinned anchored domain rules and defaults to `REJECT`, while remaining manually switchable to a node or `DIRECT`;
 - **AI**: separate OpenAI and Claude groups, plus one Overseas AI group for Gemini, Grok, Microsoft AI, Cursor, Hugging Face, Perplexity, Poe, OpenRouter, Mistral, Groq, and similar services;
 - **Major streaming**: YouTube, Netflix, Disney+, Apple TV+, `🎬 HBO GO/MAX`, Prime Video, DAZN, and TikTok are handled separately; HBO GO and Max share one group, while DAZN remains independent;
 - **Regional media**: US long-tail services use `🎬 美国流媒体`, with separate handling for HMT, Bilibili HMT, Southeast Asia, Japan, Korea, iQIYI, and mainland Chinese media;
@@ -60,7 +61,7 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
 
-All groups remain manually switchable and automatic latency testing is disabled; `🔞 NSFW` is the only group whose default selection is `REJECT`.
+All groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects login, playback, purchases, notifications, or telemetry in a particular app, temporarily switch `🛑 广告拦截` to `DIRECT` or another policy.
 
 ## Mainland domains, IPs, and DNS
 

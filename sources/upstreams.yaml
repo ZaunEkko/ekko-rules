@@ -41,6 +41,22 @@ upstreams:
       - Include expansion, non-CN attributes, keywords, regexes, single-label suffixes, local broad coverage, and rules already covered by earlier canonical segments are excluded.
       - Normal generation remains offline and does not require geosite data or fetch this upstream.
 
+  - id: v2fly-domain-list-community-advertising
+    repository: https://github.com/v2fly/domain-list-community
+    revision: 660198a50bac2ab10c567d95a472a7b33915d1b0
+    license: MIT
+    license_url: https://github.com/v2fly/domain-list-community/blob/660198a50bac2ab10c567d95a472a7b33915d1b0/LICENSE
+    license_sha256: b9d84a22870d3f21c91a4c6e410c9cc51d00902f5233ad0c84011479244bf7d2
+    usage: canonical-input
+    category: category-ads
+    output_path: rules/advertising.list
+    ledger: tests/fixtures/advertising-import-ledger.json
+    notes:
+      - The pinned one-time import resolves category-ads with upstream include and attribute filtering semantics.
+      - Only anchored domain and full entries are emitted; regexp, keyword, single-label, duplicate, covered, and non-domain entries are excluded.
+      - category-ads-all is intentionally not imported because it also includes provider, analytics, and messaging services with a broader false-positive boundary.
+      - Normal generation is offline and does not fetch this upstream or require geosite data.
+
   - id: blackmatrix7-ios-rule-script
     repository: https://github.com/blackmatrix7/ios_rule_script
     revision: 011471410d3fcc3301c168ee91eb92bc74ebded6

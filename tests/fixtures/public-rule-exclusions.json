@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "policy": "Exclude provider-specific overrides, local institutions, personal sites, third-party scripts, mirrors, and unofficial content services from the reusable public product while preserving immutable historical fixtures and recovery evidence.",
+  "removed": {
+    "provider_override": [
+      {
+        "slug": "direct-override",
+        "target": "DIRECT",
+        "rule": "DOMAIN,huaikhwang.central-world.org",
+        "reason": "Provider-specific website override from the original private profile; not a reusable public routing rule."
+      }
+    ],
+    "late_recovery": [
+      {
+        "historical_owner": "apple",
+        "recovery_slug": "apple-late-recovery",
+        "target": "🍎 苹果服务",
+        "rule": "DOMAIN-SUFFIX,illianacomputerrecycling.com",
+        "reason": "Local computer-recycling organization; not an Apple service endpoint."
+      },
+      {
+        "historical_owner": "apple",
+        "recovery_slug": "apple-late-recovery",
+        "target": "🍎 苹果服务",
+        "rule": "DOMAIN-SUFFIX,islamiccenterofnewlondon.com",
+        "reason": "Local religious institution; not an Apple service endpoint."
+      },
+      {
+        "historical_owner": "apple",
+        "recovery_slug": "apple-late-recovery",
+        "target": "🍎 苹果服务",
+        "rule": "DOMAIN-SUFFIX,leecountytimes.com",
+        "reason": "Local publication-style domain; not an Apple service endpoint."
+      },
+      {
+        "historical_owner": "apple",
+        "recovery_slug": "apple-late-recovery",
+        "target": "🍎 苹果服务",
+        "rule": "DOMAIN-SUFFIX,ogameblog.com",
+        "reason": "Third-party game blog; not an Apple service endpoint."
+      },
+      {
+        "historical_owner": "apple",
+        "recovery_slug": "apple-late-recovery",
+        "target": "🍎 苹果服务",
+        "rule": "DOMAIN-SUFFIX,paulsimon-music.com",
+        "reason": "Artist/personal music site; not an Apple Music service endpoint."
+      },
+      {
+        "historical_owner": "apple",
+        "recovery_slug": "apple-late-recovery",
+        "target": "🍎 苹果服务",
+        "rule": "DOMAIN-SUFFIX,sulwerphoto.com",
+        "reason": "Personal photography-style domain; not an Apple Photos service endpoint."
+      },
+      {
+        "historical_owner": "game-platform",
+        "recovery_slug": "game-platform-late-recovery",
+        "target": "🎮 游戏平台",
+        "rule": "DOMAIN-SUFFIX,leagueoflegendsscripts.com",
+        "reason": "Third-party game scripting site; not an official platform endpoint."
+      },
+      {
+        "historical_owner": "game-platform",
+        "recovery_slug": "game-platform-late-recovery",
+        "target": "🎮 游戏平台",
+        "rule": "DOMAIN-SUFFIX,leaguesharp.info",
+        "reason": "Third-party game scripting/tool site; not an official platform endpoint."
+      },
+      {
+        "historical_owner": "game-platform",
+        "recovery_slug": "game-platform-late-recovery",
+        "target": "🎮 游戏平台",
+        "rule": "DOMAIN-SUFFIX,steampowered.com.8686c.com",
+        "reason": "Third-party mirror or reverse-proxy hostname under 8686c.com; not Valve-owned steampowered.com."
+      },
+      {
+        "historical_owner": "game-platform",
+        "recovery_slug": "game-platform-late-recovery",
+        "target": "🎮 游戏平台",
+        "rule": "DOMAIN-SUFFIX,steamstatic.com.8686c.com",
+        "reason": "Third-party mirror or reverse-proxy hostname under 8686c.com; not Valve-owned steamstatic.com."
+      },
+      {
+        "historical_owner": "game-platform",
+        "recovery_slug": "game-platform-late-recovery",
+        "target": "🎮 游戏平台",
+        "rule": "DOMAIN-SUFFIX,steamunlocked.net",
+        "reason": "Unofficial third-party content site; not an official Steam platform endpoint."
+      }
+    ]
+  },
+  "counts": {
+    "provider_override": 1,
+    "late_recovery": 11,
+    "total": 12
+  },
+  "current_recovery_files": {
+    "apple-late-recovery": {
+      "rules": 1464,
+      "sha256": "552d015eac6c29a97f2bea97b9af08bad35da1b856ae31e595fed3d9c5fd7637"
+    },
+    "game-platform-late-recovery": {
+      "rules": 587,
+      "sha256": "9dd59bde3849aee8e2f636035e54ac58898d1a605ef571969ded0bba7c10bae3"
+    }
+  }
+}

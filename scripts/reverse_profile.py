@@ -69,6 +69,7 @@ def rule_provider_entry(rule: str) -> str:
 def slugify(name: str) -> str:
     aliases = {
         "DIRECT": "direct-override",
+        "🛑 广告拦截": "advertising",
         "🧲 OpenAI": "openai",
         "🧲 Claude": "claude",
         "🧲 海外 AI": "ai-platforms",

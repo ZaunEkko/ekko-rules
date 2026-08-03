@@ -1,35 +1,74 @@
 # Ekko Rules Notice
 
-Ekko Rules is distributed under the repository's [MIT License](LICENSE). This notice records factual source-overlap, trademark, and disclaimer information; it does not replace the license or constitute legal advice.
+Ekko Rules is distributed under the repository's [MIT License](LICENSE). This notice records the current rule-data boundary, attribution, historical comparison context, trademarks, and disclaimers. It does not replace the license or constitute legal advice.
 
-## Rule-data context
+## Current product identity
 
-The current rules were reconstructed from an expanded routing profile whose original per-rule source boundaries are not recoverable. Domains, IP ranges, ASNs, process names, and service names are factual routing indicators that may also appear in many public rule collections. Similarity or overlap by itself does not establish copying from a particular project or revision.
+Ekko Rules is an independently maintained routing product, not a mirror or repackaging of another preset. The current canonical `sources/` tree has been substantially rebuilt around one public product with its own:
 
-Historical audit and comparison contexts are pinned in `sources/upstreams.yaml`:
+- AI, development, entertainment, gaming, NSFW, advertising, mainland-domain, and fallback policy design;
+- policy-group names, order, defaults, and rule-to-policy mappings;
+- anchored-domain, strict-CIDR, `no-resolve`, first-match, deterministic-generation, and sensitive-content gates;
+- explicit removal of generic proxy buckets, private provider overrides, unsafe keywords, shared-cloud ranges, stale rules, and non-public historical customizations.
 
-| Project | Pinned context | License reported by upstream | Use in this repository |
-|---|---|---|---|
-| ACL4SSR | current and 2023 historical snapshots | CC-BY-SA-4.0 | responsibility model, comparison, and historical lineage evidence for the removed `global-web` segment; its ChinaDomain data was evaluated but not imported |
-| v2fly/domain-list-community | `660198a50bac2ab10c567d95a472a7b33915d1b0` | MIT | pinned one-time canonical import for the classic mainland-domain layer |
-| blackmatrix7/ios_rule_script | fixed Clash corpus | GPL-2.0 | broad shared-content lineage evidence and comparison |
-| Loyalsoldier/clash-rules | fixed master/release context | GPL-3.0 | comparison |
-| MetaCubeX/meta-rules-dat | fixed master/meta context | GPL-3.0 | Mihomo-format and category comparison |
+The current product deliberately differs from the expanded profile used during initial reconstruction. Historical fixtures prove past state; they are not regenerated into the product wholesale.
 
-These projects are not runtime or build dependencies. Normal generation reads only canonical repository sources and does not fetch them. Exact revisions, reviewed paths, URLs, and SHA-256 evidence hashes are documented in `sources/upstreams.yaml` and [`docs/PROVENANCE.md`](docs/PROVENANCE.md).
+Current file-rule accounting is explicit:
 
-The six late-recovery rulesets add no new external input. They are deterministically selected from frozen Phase 2 repository evidence to preserve historical DIRECT-default routing after Phase 3 reduction. Mapping a recovered matcher to Apple, Microsoft, Game Platform, China Media, Bilibili HMT, or iQIYI is a compatibility decision, not a renewed claim that every historical domain or IP is currently or exclusively owned by that vendor.
+| Current component | Rules | Evidence boundary |
+|---|---:|---|
+| Classic mainland-domain pinned import | 1,482 | `china-domain-import-ledger.json` |
+| Advertising pinned import | 849 | `advertising-import-ledger.json` |
+| Filtered historical DIRECT-default recovery | 2,721 | immutable recovery ledger minus `public-rule-exclusions.json` |
+| Current specialized, private/local, and service corpus | 1,528 | canonical rules plus migration/review history |
+| **Total file rules** | **6,580** | `sources/quality-baseline.yaml` |
 
-The classic mainland-domain layer is a deterministic filtered import from the pinned `v2fly/domain-list-community` revision. It contains only anchored `DOMAIN` and `DOMAIN-SUFFIX` entries selected from 31 named mainland service categories; includes, `!cn` entries, keywords, regular expressions, single-label suffixes, and entries covered by earlier canonical rules are excluded. The upstream MIT notice states `Copyright (c) 2018-2019 V2Ray`. The import evidence is frozen in `tests/fixtures/china-domain-import-ledger.json`; normal generation does not fetch the upstream. ACL4SSR's CC-BY-SA ChinaDomain corpus was evaluated but not imported, avoiding a mixed-license ShareAlike component.
+The 1,528-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
+
+## Current canonical rule-data inputs
+
+### Repository-maintained curation
+
+Most current service rules, group mappings, ordering decisions, and security filters are maintained directly in this repository. They have been split, reduced, retargeted, merged, or newly added based on product requirements and review. Similar factual indicators—domains, IP ranges, ASNs, process names, and service identifiers—may independently appear in multiple routing projects.
+
+Six late-recovery rulesets are selected from frozen repository history to preserve only historical DIRECT-default behavior that would otherwise reach proxy FINAL. Recovery is a compatibility mechanism, not renewed proof that every historical domain or IP is currently owned by the mapped vendor. A separate public-product exclusion ledger removes provider-specific, local-institution, personal, scripting, mirror, and unofficial-content entries from current publication while leaving immutable historical evidence intact.
+
+### Pinned MIT imports
+
+Two one-time deterministic imports use the same pinned revision of [`v2fly/domain-list-community`](https://github.com/v2fly/domain-list-community/tree/660198a50bac2ab10c567d95a472a7b33915d1b0), licensed under MIT (`Copyright (c) 2018-2019 V2Ray`):
+
+| Canonical output | Selection boundary | Frozen evidence |
+|---|---|---|
+| `sources/rules/china-domains-direct.list` | 1,482 anchored `DOMAIN`/`DOMAIN-SUFFIX` entries selected from 31 named mainland service categories; includes, `!cn`, keyword, regexp, single-label, and earlier-covered entries excluded | `tests/fixtures/china-domain-import-ledger.json` |
+| `sources/rules/advertising.list` | 849 anchored entries resolved from `category-ads` using pinned include/attribute semantics; the sole regexp and all non-anchored forms excluded | `tests/fixtures/advertising-import-ledger.json` |
+
+`category-ads-all` is intentionally not imported because it also includes advertising providers, analytics, messaging, and other broader service roots with a larger false-positive boundary. Normal generation reads only committed canonical files and performs no upstream fetch or GEOSITE compilation.
+
+ACL4SSR's CC-BY-SA ChinaDomain data was evaluated but not imported, avoiding a separate ShareAlike component and mixed-license publication boundary.
+
+## Historical comparison and lineage evidence
+
+The following pinned projects are retained for audit, comparison, format context, or historical lineage only unless explicitly identified above as a canonical input:
+
+| Project | Reported upstream license | Current use |
+|---|---|---|
+| ACL4SSR | CC-BY-SA-4.0 | Historical comparison, removed `global-web` lineage evidence, and online-preset responsibility-model context |
+| blackmatrix7/ios_rule_script | GPL-2.0 | Broad historical content-overlap evidence and comparison |
+| Loyalsoldier/clash-rules | GPL-3.0 | Aggregate-rule convention and content comparison |
+| MetaCubeX/meta-rules-dat | GPL-3.0 | Mihomo format/category comparison |
+
+These comparison projects are not runtime or normal-build dependencies. Their reported licenses do not describe the independently maintained repository as a whole. Exact revisions, paths, hashes, and usage classifications are recorded in `sources/upstreams.yaml` and [`docs/PROVENANCE.md`](docs/PROVENANCE.md).
 
 Unlicensed gists or mirrors may be retained as historical evidence only. They are not canonical generator inputs and are not fetched by the build.
 
 ## Trademarks and service names
 
-Apple, Microsoft, Google, OpenAI, Claude, Netflix, Disney+, YouTube, HBO, Roblox, Bilibili, iQIYI, and all other company, product, and service names are trademarks or identifiers of their respective owners. Their appearance describes routing categories and does not imply affiliation, endorsement, or sponsorship.
+Apple, Microsoft, Google, OpenAI, Claude, Netflix, Disney+, YouTube, HBO, Roblox, Bilibili, iQIYI, npm, Node.js, and all other company, product, and service names are trademarks or identifiers of their respective owners. Their appearance describes routing categories and does not imply affiliation, endorsement, or sponsorship.
 
 ## Operational disclaimer
 
-Rules and network ownership can become outdated. Users must review the generated configuration for their jurisdiction, subscriptions, privacy requirements, and network environment. The project does not provide nodes, subscriptions, DNS, TUN, system-proxy, or routing-service operation. The software and data are provided without warranty under the MIT License.
+Rules, network ownership, advertising infrastructure, and service domains can change. Advertising blocking may affect telemetry, attribution, login, playback, purchases, notifications, or other application behavior; users can manually change the advertising policy from `REJECT` when necessary. Users must review generated configurations for their jurisdiction, subscriptions, privacy requirements, and network environment.
+
+The project does not provide nodes, subscriptions, DNS, TUN, system-proxy, or routing-service operation. The software and data are provided without warranty under the MIT License.
 
 Repository publication, tagging, or release remains a separate explicit operation; no project script changes GitHub visibility or publishes content automatically.

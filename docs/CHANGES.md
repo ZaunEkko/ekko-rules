@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-018 use **2026-08-03**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-019 use **2026-08-03**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -407,3 +407,28 @@ The repository now provides three structured GitHub Issue Forms for domain/servi
 Subconverter guidance now recommends `https://sub.v1.mk/` for subscriptions that use newer protocols such as AnyTLS. `https://acl4ssr-sub.github.io/` remains documented as a popular alternative with older protocol support that may not convert newer protocols. Both paths retain the full-URL candidate selection and final `config=https%3A...` versus `config=%20https%3A...` checks.
 
 The user-facing project-boundary section now describes only Ekko Rules itself. Historical comparison projects and licensing evidence remain confined to `NOTICE.md` and `docs/PROVENANCE.md`.
+
+## ER-019 — Advertising block policy and public-rule provenance cleanup
+
+**Type:** new blocking capability, public-product cleanup, and provenance restructuring
+
+A new `🛑 广告拦截` group defaults to `REJECT` and remains manually switchable. Its ruleset sits after private/local routing and before all specialized services. A pinned, one-time MIT import from `v2fly/domain-list-community` `category-ads` resolves upstream include and `@ads` filtering semantics, then emits 849 anchored rules: 677 `DOMAIN-SUFFIX` and 172 `DOMAIN`. The sole regexp is excluded; `category-ads-all` is not imported because its provider, analytics, and messaging scope has a broader false-positive boundary.
+
+Advertising intentionally captures 40 later telemetry/advertising rules that were previously owned by service segments. The exact cross-segment set is frozen in `advertising-routing-ledger.json`; any additional capture requires review.
+
+The one-entry `direct-override` ruleset and `DOMAIN,huaikhwang.central-world.org` were removed because they belonged to a provider-specific website rather than a general public product. Eleven additional high-confidence local institution, personal site, third-party script, mirror, or unofficial-content entries were removed from Apple and Game Platform recovery. Immutable historical fixtures and the original recovery ledger remain unchanged; `public-rule-exclusions.json` records the current publication filter.
+
+`NOTICE.md` and `docs/PROVENANCE.md` were restructured to distinguish:
+
+- independently maintained current rules, group design, defaults, and removals;
+- explicit pinned MIT canonical imports for mainland domains and advertising;
+- historical recovery evidence;
+- comparison/lineage projects that are not normal generation inputs.
+
+Current verified canonical target:
+
+- 61 rule files, 62 ordered segments, 37 proxy groups;
+- 6,581 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 93; same-segment: 13; cross-segment-only: 80, including the frozen 40-rule advertising capture set.

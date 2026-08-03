@@ -31,6 +31,15 @@ PHASE_3_RECOVERY_LEDGER = (
 CHINA_DOMAIN_IMPORT_LEDGER = (
     ROOT / "tests" / "fixtures" / "china-domain-import-ledger.json"
 )
+ADVERTISING_IMPORT_LEDGER = (
+    ROOT / "tests" / "fixtures" / "advertising-import-ledger.json"
+)
+ADVERTISING_ROUTING_LEDGER = (
+    ROOT / "tests" / "fixtures" / "advertising-routing-ledger.json"
+)
+PUBLIC_RULE_EXCLUSIONS = (
+    ROOT / "tests" / "fixtures" / "public-rule-exclusions.json"
+)
 ISSUE_TEMPLATES = ROOT / ".github" / "ISSUE_TEMPLATE"
 sys.path.insert(0, str(ROOT))
 
@@ -44,6 +53,7 @@ from scripts.profile_model import (  # noqa: E402
     parse_json_document,
     parse_rule,
     render_profile,
+    rule_covers,
     select_late_recovery,
 )
 
@@ -112,10 +122,10 @@ class CanonicalSourceTests(unittest.TestCase):
     def test_shape_and_order_snapshot(self) -> None:
         self.assertEqual(len(self.sources.segments), 62)
         self.assertEqual(len(self.sources.rule_segments), 61)
-        self.assertEqual(len(self.sources.proxy_groups), 36)
+        self.assertEqual(len(self.sources.proxy_groups), 37)
         self.assertEqual(len(self.sources.segments_for("core")), 62)
         self.assertEqual(len(self.sources.rule_segments_for("core")), 61)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 36)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 37)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -126,6 +136,7 @@ class CanonicalSourceTests(unittest.TestCase):
             [group.name for group in self.sources.proxy_groups_for("core")],
             [
                 "♻️ 手动切换",
+                "🛑 广告拦截",
                 "🧲 OpenAI",
                 "🧲 Claude",
                 "🧲 海外 AI",
@@ -167,13 +178,19 @@ class CanonicalSourceTests(unittest.TestCase):
             list(self.sources.proxy_groups[-1].members),
             ["♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
         )
-        nsfw_group = next(
-            group for group in self.sources.proxy_groups if group.name == "🔞 NSFW"
-        )
+        for group_name in ["🛑 广告拦截", "🔞 NSFW"]:
+            group = next(
+                group for group in self.sources.proxy_groups if group.name == group_name
+            )
+            self.assertEqual(
+                list(group.members),
+                ["REJECT", "♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
+            )
         self.assertEqual(
-            list(nsfw_group.members),
-            ["REJECT", "♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
+            [segment.slug for segment in self.sources.segments[:3]],
+            ["private", "advertising", "openai"],
         )
+        self.assertFalse((SOURCES / "rules" / "direct-override.list").exists())
         self.assertEqual(
             [
                 segment.slug
@@ -238,7 +255,10 @@ class CanonicalSourceTests(unittest.TestCase):
             current["within_same_segment"]["union"],
             before["summary"]["coverage"]["within_same_segment"]["union"],
         )
-        self.assertLessEqual(
+        self.assertEqual(current["global"]["union"], 93)
+        self.assertEqual(current["within_same_segment"]["union"], 13)
+        self.assertEqual(current["cross_segment_only"]["union"], 80)
+        self.assertLess(
             current["cross_segment_only"]["union"],
             before["summary"]["coverage"]["cross_segment_only"]["union"],
         )
@@ -258,6 +278,36 @@ class CanonicalSourceTests(unittest.TestCase):
                 ProfileError,
                 "DIRECT-default rules must use anchored domain matchers",
             ):
+                load_profile_sources(source_copy)
+
+    def test_public_review_date_is_required(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source_copy = Path(temporary) / "sources"
+            shutil.copytree(SOURCES, source_copy)
+            review = source_copy / "review.yaml"
+            review.write_text(
+                review.read_text(encoding="utf-8").replace(
+                    "reviewed_on: 2026-08-03", "reviewed_on: null", 1
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            with self.assertRaisesRegex(ProfileError, "reviewed_on must be a date"):
+                load_profile_sources(source_copy)
+
+    def test_undeclared_review_status_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source_copy = Path(temporary) / "sources"
+            shutil.copytree(SOURCES, source_copy)
+            review = source_copy / "review.yaml"
+            review.write_text(
+                review.read_text(encoding="utf-8").replace(
+                    "status: accepted", "status: undeclared", 1
+                ),
+                encoding="utf-8",
+                newline="\n",
+            )
+            with self.assertRaisesRegex(ProfileError, "uses undeclared status"):
                 load_profile_sources(source_copy)
 
     def test_sensitive_or_nonportable_source_fields_are_rejected(self) -> None:
@@ -691,14 +741,28 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         emitted_by_owner: dict[str, list[str]] = {}
         for item in self.selection.emitted:
             emitted_by_owner.setdefault(item.slug, []).append(item.rule)
+        public_exclusions = json.loads(
+            PUBLIC_RULE_EXCLUSIONS.read_text(encoding="utf-8")
+        )
+        excluded_by_slug: dict[str, set[str]] = {}
+        for item in public_exclusions["removed"]["late_recovery"]:
+            excluded_by_slug.setdefault(item["recovery_slug"], set()).add(item["rule"])
+
         for owner, record in self.ledger["owners"].items():
-            rules = emitted_by_owner[owner]
+            rules = [
+                rule
+                for rule in emitted_by_owner[owner]
+                if rule not in excluded_by_slug.get(record["recovery_slug"], set())
+            ]
             path = SOURCES / "rules" / f"{record['recovery_slug']}.list"
             self.assertEqual(path.read_text(encoding="utf-8").splitlines(), rules)
-            self.assertEqual(len(rules), record["rules"])
+            current = public_exclusions["current_recovery_files"].get(
+                record["recovery_slug"], record
+            )
+            self.assertEqual(len(rules), current["rules"])
             self.assertEqual(
                 hashlib.sha256(path.read_bytes()).hexdigest(),
-                record["file_sha256"],
+                current["sha256"] if "sha256" in current else current["file_sha256"],
             )
 
         destination_rules = [
@@ -766,17 +830,20 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         mihomo_groups = {
             group["name"]: group["proxies"] for group in mihomo["proxy-groups"]
         }
-        self.assertEqual(
-            mihomo_groups["🔞 NSFW"][:3],
-            ["REJECT", "♻️ 手动切换", "DIRECT"],
-        )
+        for group_name in ["🛑 广告拦截", "🔞 NSFW"]:
+            self.assertEqual(
+                mihomo_groups[group_name][:3],
+                ["REJECT", "♻️ 手动切换", "DIRECT"],
+            )
         subconverter = (
             GENERATED / "config" / "ekko-rules.ini"
         ).read_text(encoding="utf-8")
-        self.assertIn(
-            "custom_proxy_group=🔞 NSFW`select`[]REJECT`[]♻️ 手动切换`[]DIRECT`",
-            subconverter,
-        )
+        for group_name in ["🛑 广告拦截", "🔞 NSFW"]:
+            self.assertIn(
+                f"custom_proxy_group={group_name}`select`[]REJECT`"
+                "[]♻️ 手动切换`[]DIRECT`",
+                subconverter,
+            )
         self.assertEqual(
             mihomo["rules"][-3:],
             [
@@ -785,6 +852,153 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
                 "MATCH,🐟 漏网之鱼",
             ],
         )
+
+
+class AdvertisingImportTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sources = load_profile_sources(SOURCES)
+        cls.ledger = json.loads(ADVERTISING_IMPORT_LEDGER.read_text(encoding="utf-8"))
+        cls.rules_path = SOURCES / "rules" / "advertising.list"
+        cls.rules = cls.rules_path.read_text(encoding="utf-8").splitlines()
+
+    def test_import_ledger_and_output_are_immutable(self) -> None:
+        self.assertEqual(
+            hashlib.sha256(ADVERTISING_IMPORT_LEDGER.read_bytes()).hexdigest(),
+            "2072cbc7408a435d572d23e116e817a3ed4f5704cbac0e04efcb4f14eab809ff",
+        )
+        selection = self.ledger["selection"]
+        self.assertEqual(selection["resolved_entries"], 850)
+        self.assertEqual(selection["excluded"]["regexp"], 1)
+        self.assertEqual(selection["emitted"], 849)
+        self.assertEqual(
+            selection["emitted_rule_types"],
+            {"DOMAIN": 172, "DOMAIN-SUFFIX": 677},
+        )
+        self.assertEqual(
+            hashlib.sha256(self.rules_path.read_bytes()).hexdigest(),
+            selection["emitted_sha256"],
+        )
+        self.assertEqual(len(self.rules), selection["emitted"])
+        upstream = next(
+            item
+            for item in self.sources.upstreams["upstreams"]
+            if item["id"] == "v2fly-domain-list-community-advertising"
+        )
+        self.assertEqual(upstream["revision"], self.ledger["source"]["revision"])
+        self.assertEqual(
+            upstream["license_sha256"], self.ledger["source"]["license_sha256"]
+        )
+        self.assertEqual(upstream["category"], self.ledger["source"]["category"])
+        self.assertEqual(upstream["output_path"], "rules/advertising.list")
+        self.assertEqual(
+            upstream["ledger"], "tests/fixtures/advertising-import-ledger.json"
+        )
+
+    def test_import_is_anchored_and_defaults_to_reject(self) -> None:
+        for rule in self.rules:
+            rule_type, value, has_no_resolve = parse_rule(
+                rule, context="Advertising import"
+            )
+            self.assertIn(rule_type, {"DOMAIN", "DOMAIN-SUFFIX"})
+            self.assertIn(".", value)
+            self.assertFalse(has_no_resolve)
+        group = next(
+            group for group in self.sources.proxy_groups if group.name == "🛑 广告拦截"
+        )
+        self.assertEqual(group.members[0], "REJECT")
+
+    def test_required_advertising_cases_match_before_services(self) -> None:
+        for domain in self.ledger["required_cases"].values():
+            with self.subTest(domain=domain):
+                result = first_match(self.sources, domain=domain)
+                self.assertEqual(result["slug"], "advertising")
+                self.assertEqual(result["target"], "🛑 广告拦截")
+
+    def test_intentional_cross_segment_captures_are_frozen(self) -> None:
+        self.assertEqual(
+            hashlib.sha256(ADVERTISING_ROUTING_LEDGER.read_bytes()).hexdigest(),
+            "91dba828281abdf706baaf1cf7c55c0db757758e735ddb5727ef395cfefc7262",
+        )
+        ledger = json.loads(
+            ADVERTISING_ROUTING_LEDGER.read_text(encoding="utf-8")
+        )
+        advertising = self.sources.rules["advertising"]
+        segments = self.sources.rule_segments_for("core")
+        start = next(
+            index for index, segment in enumerate(segments) if segment.slug == "advertising"
+        )
+        rows = []
+        for segment in segments[start + 1 :]:
+            for rule in self.sources.rules[segment.slug]:
+                covering = next(
+                    (
+                        candidate
+                        for candidate in advertising
+                        if rule_covers(candidate, rule)
+                    ),
+                    None,
+                )
+                if covering:
+                    rows.append(
+                        {
+                            "later_slug": segment.slug,
+                            "later_target": segment.target,
+                            "later_rule": rule,
+                            "advertising_rule": covering,
+                        }
+                    )
+        content = "".join(
+            f"{row['later_slug']}\t{row['later_target']}\t{row['later_rule']}\t"
+            f"{row['advertising_rule']}\n"
+            for row in rows
+        )
+        self.assertEqual(rows, ledger["rows"])
+        self.assertEqual(len(rows), ledger["count"])
+        self.assertEqual(hashlib.sha256(content.encode()).hexdigest(), ledger["rows_sha256"])
+
+
+class PublicRuleExclusionTests(unittest.TestCase):
+    def test_exclusion_ledger_is_immutable_and_closed(self) -> None:
+        self.assertEqual(
+            hashlib.sha256(PUBLIC_RULE_EXCLUSIONS.read_bytes()).hexdigest(),
+            "b7a78bb1879a8294fb665538cacfad7b69eca531b7092efc1da635e3f289a404",
+        )
+        ledger = json.loads(PUBLIC_RULE_EXCLUSIONS.read_text(encoding="utf-8"))
+        removed = [
+            *ledger["removed"]["provider_override"],
+            *ledger["removed"]["late_recovery"],
+        ]
+        self.assertEqual(len(removed), ledger["counts"]["total"])
+        current_text = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in (SOURCES / "rules").glob("*.list")
+        )
+        sources = load_profile_sources(SOURCES)
+        for record in removed:
+            with self.subTest(rule=record["rule"]):
+                self.assertNotIn(record["rule"], current_text)
+                domain = record["rule"].split(",", 1)[1]
+                self.assertEqual(
+                    first_match(sources, domain=domain),
+                    {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"},
+                )
+
+        for slug, expected in ledger["current_recovery_files"].items():
+            path = SOURCES / "rules" / f"{slug}.list"
+            self.assertEqual(
+                len(path.read_text(encoding="utf-8").splitlines()),
+                expected["rules"],
+            )
+            self.assertEqual(
+                hashlib.sha256(path.read_bytes()).hexdigest(),
+                expected["sha256"],
+            )
+
+    def test_provider_override_now_falls_to_final(self) -> None:
+        sources = load_profile_sources(SOURCES)
+        result = first_match(sources, domain="huaikhwang.central-world.org")
+        self.assertEqual(result, {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"})
 
 
 class ChinaDomainDirectImportTests(unittest.TestCase):

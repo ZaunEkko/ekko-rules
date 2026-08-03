@@ -8,6 +8,7 @@ allowed_statuses:
 - personal-community
 - candidate-remove
 - candidate-move
+- accepted
 items:
 - id: apple-brand-defense
   status: brand-defense
@@ -168,6 +169,35 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: A pinned MIT-licensed import emits only DOMAIN and DOMAIN-SUFFIX rules from 31 named mainland service categories. It excludes includes, !cn entries, keywords, regexes, single-label suffixes, local broad coverage, and matchers already covered by earlier specialized rules. The segment stays after late recovery and before terminal China GEOIP and FINAL.
+- id: advertising-import
+  status: accepted
+  scope: routing-policy
+  summary: A pinned anchored advertising list restores opt-out blocking without importing broad provider or analytics categories.
+  evidence:
+  - https://github.com/v2fly/domain-list-community/tree/660198a50bac2ab10c567d95a472a7b33915d1b0
+  - tests/fixtures/advertising-import-ledger.json
+  - tests/fixtures/advertising-routing-ledger.json
+  - sources/rules/advertising.list
+  first_observed: 2026-08-03
+  last_verified: '2026-08-03'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The category-ads import resolves pinned include and @ads filtering semantics, emits 849 DOMAIN/DOMAIN-SUFFIX rules, excludes the sole regexp, and stays after private routing but before specialized services. The independent advertising group defaults to REJECT and remains manually switchable. category-ads-all is deliberately not imported.
+- id: private-provider-override-removal
+  status: accepted
+  scope: product-boundary
+  summary: A provider-specific website override is not part of a reusable public routing product.
+  evidence:
+  - tests/fixtures/phase-3-after.json
+  - tests/fixtures/public-rule-exclusions.json
+  - sources/manifest.yaml
+  first_observed: 2026-08-03
+  last_verified: '2026-08-03'
+  phase_2_candidate: none
+  recommended_action: remove
+  current_product: removed
+  resolution: DOMAIN,huaikhwang.central-world.org and its one-entry direct-override ruleset were removed. The immutable historical fixture retains evidence that the private override existed, but current canonical and generated products do not publish it.
 - id: transient-resolution-failures
   status: observe
   scope: all

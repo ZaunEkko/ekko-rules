@@ -11,6 +11,14 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
+- name: 🛑 广告拦截
+  type: select
+  proxies:
+  - REJECT
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
 - name: 🧲 OpenAI
   type: select
   proxies:
@@ -258,19 +266,19 @@ proxy-groups:
   use:
   - subscription
 rule-providers:
-  direct-override:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/direct-override.yaml
-    path: ./ruleset/direct-override.yaml
-    interval: 86400
   private:
     type: http
     behavior: classical
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/private.yaml
     path: ./ruleset/private.yaml
+    interval: 86400
+  advertising:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/advertising.yaml
+    path: ./ruleset/advertising.yaml
     interval: 86400
   openai:
     type: http
@@ -686,8 +694,8 @@ rule-providers:
     path: ./ruleset/china-geoip-direct.yaml
     interval: 86400
 rules:
-- RULE-SET,direct-override,DIRECT
 - RULE-SET,private,DIRECT
+- RULE-SET,advertising,🛑 广告拦截
 - RULE-SET,openai,🧲 OpenAI
 - RULE-SET,claude,🧲 Claude
 - RULE-SET,google-ai,🧲 海外 AI
