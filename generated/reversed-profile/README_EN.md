@@ -11,6 +11,16 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 - `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points.
 - `analysis.json` and `manifest.json`: Quality metrics and the SHA-256 file inventory.
 
+## Online subscription conversion
+
+Open a Subconverter frontend that accepts custom remote configurations, such as `https://sub.v1.mk/`. Supply your own node subscription, choose `Clash` as the target, and enter:
+
+```text
+https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
+```
+
+Paste the complete URL, press Enter to select it, and generate the subscription. Use only a trusted conversion backend because it can normally see the original subscription URL submitted to it.
+
 Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Ruleset`.
 
 ## Behavior
