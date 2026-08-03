@@ -1,5 +1,5 @@
 schema_version: 1
-reviewed_on: 2026-08-03
+reviewed_on: 2026-08-04
 purpose: Non-generating review queue for historical, uncertain, legacy, brand-defense, personal/community, or relocation evidence. Entries never change generated routing by themselves; phase_2_candidate records are historical labels, not current products.
 allowed_statuses:
 - observe
@@ -244,6 +244,67 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The author-domain ruleset is the user-requested global first segment so zaunekko.com appears first while still using the default-direct mainland group. DeepSeek, Xiaohongshu, and verified Chinese AI mainland roots remain in china-web after advertising. Distinct international roots including kimi.com, z.ai, qwen.ai, qwenlm.ai, minimax.io, ByteDance global AI domains, and the anchored Figma roots use Overseas AI. When a legacy mainland URL redirects to the same final international hostname, first-match routing follows that final hostname because domain rules cannot distinguish URL paths or branding regions on one host.
+- id: steam-mainland-download-hosts
+  status: accepted
+  scope: game-download
+  summary: Two observed mainland Steam content hosts require exact routing without promoting shared CDN parent domains.
+  evidence:
+  - https://github.com/v2fly/domain-list-community/blob/master/data/steam
+  - sources/rules/game-download.list
+  - User-confirmed live Steam download session on 2026-08-03; no subscription, node, or endpoint credentials retained
+  first_observed: 2026-08-03
+  last_verified: '2026-08-03'
+  phase_2_candidate: none
+  recommended_action: keep-exact-only
+  current_product: standard
+  resolution: DOMAIN,gstore.val.manlaxy.com is corroborated as a mainland Steam content host, and DOMAIN,xz.sycontroller.com repeatedly matched the user's live Steam download after a temporary manual rule was applied. Only those exact hosts enter game-download. The manlaxy.com, sycontroller.com, and gdtstream.com parent suffixes remain excluded as shared or weakly evidenced infrastructure; yif.gdtstream.com remains unaccepted; dl.steam.cygnaa.com remains excluded as an unresolving likely confusion with the already-published dl.steam.clngaa.com; and ZeroTier address 103.195.103.66 and its surrounding ranges remain dynamic remote-streaming infrastructure rather than Steam rules.
+- id: mainland-consumer-service-gaps
+  status: accepted
+  scope: routing-compatibility
+  summary: Official Ele.me service roots and Alibaba mainland platform roots need anchored DIRECT routing without duplicating existing imports.
+  evidence:
+  - https://www.ele.me/
+  - https://www.1688.com/
+  - https://github.com/v2fly/domain-list-community/blob/master/data/eleme
+  - sources/rules/china-web.list
+  first_observed: 2026-08-03
+  last_verified: '2026-08-03'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Anchored ele.me, eleme.cn, elemecdn.com, alibaba.cn, and alibaba.com.cn suffixes close observed mainland service gaps in china-web. Advertising stays earlier and continues to capture the three adashx.ut.ele.me variants. Taobao, mainland Tmall, 1688, JD, Meituan, and Dianping remain owned by the existing classic mainland import, while international storefronts and shared alicdn.com infrastructure remain excluded.
+- id: mainland-high-frequency-app-coverage
+  status: accepted
+  scope: routing-compatibility
+  summary: High-frequency mainland apps use existing DIRECT-first groups through anchored official service domains rather than new policy groups.
+  evidence:
+  - https://github.com/v2fly/domain-list-community/tree/master/data
+  - https://developer.amap.com/api/
+  - https://www.12306.cn/
+  - sources/rules/china-web.list
+  - sources/rules/china-media.list
+  - sources/rules/game-platform.list
+  first_observed: 2026-08-03
+  last_verified: '2026-08-04'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Anchored official roots add mainland coverage for Amap, Railway 12306, DingTalk, Feishu, WPS and KDocs, Aliyun Drive, major logistics, recruitment, housing, UnionPay and representative mainland banks, education, healthcare, and automotive services through the existing default-DIRECT mainland website group. Douyin mainland, Huya, and YY use the existing mainland media group. Xiaoheihe, 5EPlay, Perfect World esports, TapTap mainland, MiHoYo mainland, major gaming communities, WeGame, mainland League of Legends and Valorant, and evidenced Tencent GVoice/GME endpoints use the existing default-DIRECT game platform group. No policy group is added.
+- id: mainland-game-voice-and-international-boundaries
+  status: accepted
+  scope: routing-security
+  summary: Mainland game voice and content routing require precise first-match separation from international TikTok and shared cloud infrastructure.
+  evidence:
+  - https://intl.cloud.tencent.com/document/product/607/35232
+  - https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/tencent-games
+  - https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/tiktok
+  - tests/test_profile.py
+  first_observed: 2026-08-04
+  last_verified: '2026-08-04'
+  phase_2_candidate: none
+  recommended_action: keep-precise
+  current_product: standard
+  resolution: The official Douyin-only aweme.snssdk.com host enters mainland media, which is ordered before TikTok, while the shared snssdk.com suffix remains in TikTok so unclassified international traffic keeps the user's selector. Tencent Native GVoice/GME service roots and documented exact qcloud configuration, RTC, and speech hosts are routed through game-platform; generic qcloud.com, myqcloud.com, cloud/CDN roots, dynamic service IPs, and a WeGame process-wide rule remain excluded. Advertising stays first and continues to capture Amap, MiHoYo, and Zuoyebang telemetry. TapTap international taptap.io and other international storefronts remain outside mainland rules.
 - id: transient-resolution-failures
   status: observe
   scope: all

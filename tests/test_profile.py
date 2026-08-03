@@ -319,9 +319,12 @@ class CanonicalSourceTests(unittest.TestCase):
             source_copy = Path(temporary) / "sources"
             shutil.copytree(SOURCES, source_copy)
             review = source_copy / "review.yaml"
+            review_document = yaml.safe_load(review.read_text(encoding="utf-8"))
             review.write_text(
                 review.read_text(encoding="utf-8").replace(
-                    "reviewed_on: 2026-08-03", "reviewed_on: null", 1
+                    f"reviewed_on: {review_document['reviewed_on'].isoformat()}",
+                    "reviewed_on: null",
+                    1,
                 ),
                 encoding="utf-8",
                 newline="\n",
@@ -1411,6 +1414,227 @@ class FirstMatchBaselineTests(unittest.TestCase):
                     ),
                     process_name=process_name,
                 )
+
+    def test_steam_and_mainland_consumer_routing_are_precise(self) -> None:
+        steam_cases = {
+            "gstore.val.manlaxy.com": "DOMAIN,gstore.val.manlaxy.com",
+            "xz.sycontroller.com": "DOMAIN,xz.sycontroller.com",
+            "dl.steam.clngaa.com": "DOMAIN,dl.steam.clngaa.com",
+        }
+        for domain, rule in steam_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("game-download", "🎮 游戏下载", rule),
+                    domain=domain,
+                )
+
+        mainland_cases = {
+            "www.ele.me": "DOMAIN-SUFFIX,ele.me",
+            "api.eleme.cn": "DOMAIN-SUFFIX,eleme.cn",
+            "fuss10.elemecdn.com": "DOMAIN-SUFFIX,elemecdn.com",
+            "www.alibaba.cn": "DOMAIN-SUFFIX,alibaba.cn",
+            "www.alibaba.com.cn": "DOMAIN-SUFFIX,alibaba.com.cn",
+        }
+        for domain, rule in mainland_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-web", "🌏 国内网站", rule),
+                    domain=domain,
+                )
+
+        for domain in [
+            "adashx.ut.ele.me",
+            "h-adashx.ut.ele.me",
+            "v6-adashx.ut.ele.me",
+        ]:
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    (
+                        "advertising",
+                        "🛑 广告拦截",
+                        f"DOMAIN-SUFFIX,{domain}",
+                    ),
+                    domain=domain,
+                )
+
+        existing_mainland_cases = {
+            "www.taobao.com": "DOMAIN-SUFFIX,taobao.com",
+            "www.tmall.com": "DOMAIN-SUFFIX,tmall.com",
+            "www.1688.com": "DOMAIN-SUFFIX,1688.com",
+            "www.jd.com": "DOMAIN-SUFFIX,jd.com",
+            "www.meituan.com": "DOMAIN-SUFFIX,meituan.com",
+            "www.dianping.com": "DOMAIN-SUFFIX,dianping.com",
+        }
+        for domain, rule in existing_mainland_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-domains-direct", "🌏 国内网站", rule),
+                    domain=domain,
+                )
+
+        for domain in [
+            "other.manlaxy.com",
+            "other.sycontroller.com",
+            "yif.gdtstream.com",
+            "dl.steam.cygnaa.com",
+            "shared-assets.alicdn.com",
+            "www.tmall.hk",
+            "www.jd.hk",
+        ]:
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("final", "🐟 漏网之鱼", "MATCH"),
+                    domain=domain,
+                )
+
+        self.assert_match(
+            (
+                "remote-streaming",
+                "🖥️ 远程串流",
+                "DOMAIN,root-mia-01.zerotier.com",
+            ),
+            domain="root-mia-01.zerotier.com",
+        )
+        self.assert_match(
+            ("final", "🐟 漏网之鱼", "MATCH"),
+            ip="103.195.103.66",
+        )
+
+        published_rules = {
+            rule
+            for entries in self.sources.rules.values()
+            for rule in entries
+        }
+        for forbidden in [
+            "DOMAIN-SUFFIX,manlaxy.com",
+            "DOMAIN-SUFFIX,sycontroller.com",
+            "DOMAIN-SUFFIX,alicdn.com",
+            "DOMAIN,yif.gdtstream.com",
+            "DOMAIN,dl.steam.cygnaa.com",
+            "IP-CIDR,103.195.103.66/32,no-resolve",
+            "IP-CIDR,103.195.103.0/24,no-resolve",
+            "IP-CIDR,103.195.100.0/22,no-resolve",
+        ]:
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden, published_rules)
+
+    def test_mainland_apps_use_existing_direct_first_groups(self) -> None:
+        game_cases = {
+            "api.xiaoheihe.cn": "DOMAIN-SUFFIX,xiaoheihe.cn",
+            "camp.5eplaycdn.com": "DOMAIN-SUFFIX,5eplaycdn.com",
+            "app.pwesports.cn": "DOMAIN-SUFFIX,pwesports.cn",
+            "pvp.wanmei.com": "DOMAIN-SUFFIX,wanmei.com",
+            "www.taptap.cn": "DOMAIN-SUFFIX,taptap.cn",
+            "www.miyoushe.com": "DOMAIN-SUFFIX,miyoushe.com",
+            "bbs.nga.cn": "DOMAIN-SUFFIX,nga.cn",
+            "www.4399.com": "DOMAIN-SUFFIX,4399.com",
+            "www.gamersky.com": "DOMAIN-SUFFIX,gamersky.com",
+            "www.hupu.com": "DOMAIN-SUFFIX,hupu.com",
+            "www.wegame.com.cn": "DOMAIN-SUFFIX,wegame.com.cn",
+            "lol.qq.com": "DOMAIN-SUFFIX,lol.qq.com",
+            "down.val.qq.com": "DOMAIN-SUFFIX,val.qq.com",
+            "cn.voice.gcloudcs.com": "DOMAIN-SUFFIX,gcloudcs.com",
+            "gmeconf.qcloud.com": "DOMAIN,gmeconf.qcloud.com",
+            "qcloud.rtc.qq.com": "DOMAIN,qcloud.rtc.qq.com",
+        }
+        for domain, rule in game_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("game-platform", "🎮 游戏平台", rule),
+                    domain=domain,
+                )
+
+        media_cases = {
+            "www.douyin.com": "DOMAIN-SUFFIX,douyin.com",
+            "api.amemv.com": "DOMAIN-SUFFIX,amemv.com",
+            "aweme.snssdk.com": "DOMAIN,aweme.snssdk.com",
+            "www.huya.com": "DOMAIN-SUFFIX,huya.com",
+            "www.yy.com": "DOMAIN-SUFFIX,yy.com",
+        }
+        for domain, rule in media_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-media", "🌏 国内流媒体", rule),
+                    domain=domain,
+                )
+
+        web_cases = {
+            "restapi.amap.com": "DOMAIN-SUFFIX,amap.com",
+            "kyfw.12306.cn": "DOMAIN-SUFFIX,12306.cn",
+            "www.dingtalk.com": "DOMAIN-SUFFIX,dingtalk.com",
+            "www.feishu.cn": "DOMAIN-SUFFIX,feishu.cn",
+            "www.wps.cn": "DOMAIN-SUFFIX,wps.cn",
+            "www.aliyundrive.com": "DOMAIN-SUFFIX,aliyundrive.com",
+            "www.sf-express.com": "DOMAIN-SUFFIX,sf-express.com",
+            "www.zhipin.com": "DOMAIN-SUFFIX,zhipin.com",
+            "www.unionpay.com": "DOMAIN-SUFFIX,unionpay.com",
+            "www.icbc.com.cn": "DOMAIN-SUFFIX,icbc.com.cn",
+            "www.abchina.com": "DOMAIN-SUFFIX,abchina.com",
+            "www.bankcomm.com": "DOMAIN-SUFFIX,bankcomm.com",
+            "www.psbc.com": "DOMAIN-SUFFIX,psbc.com",
+            "www.zuoyebang.com": "DOMAIN-SUFFIX,zuoyebang.com",
+            "www.dongchedi.com": "DOMAIN-SUFFIX,dongchedi.com",
+        }
+        for domain, rule in web_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-web", "🌏 国内网站", rule),
+                    domain=domain,
+                )
+
+        advertising_cases = {
+            "adashx.ut.amap.com": "DOMAIN-SUFFIX,adashx.ut.amap.com",
+            "log-upload.mihoyo.com": "DOMAIN-SUFFIX,log-upload.mihoyo.com",
+            "syh.zybang.com": "DOMAIN-SUFFIX,syh.zybang.com",
+        }
+        for domain, rule in advertising_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("advertising", "🛑 广告拦截", rule),
+                    domain=domain,
+                )
+
+        international_cases = {
+            "api.snssdk.com": "DOMAIN-SUFFIX,snssdk.com",
+            "www.tiktok.com": "DOMAIN-SUFFIX,tiktok.com",
+            "api.tiktokv.com": "DOMAIN-SUFFIX,tiktokv.com",
+        }
+        for domain, rule in international_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("tiktok", "🎶 TikTok", rule),
+                    domain=domain,
+                )
+
+        for domain in [
+            "www.taptap.io",
+            "other.qcloud.com",
+            "other.myqcloud.com",
+            "other.alicdn.com",
+        ]:
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("final", "🐟 漏网之鱼", "MATCH"),
+                    domain=domain,
+                )
+
+        tiktok_rules = self.sources.rules["tiktok"]
+        self.assertIn("DOMAIN-SUFFIX,snssdk.com", tiktok_rules)
+        segments = [segment.slug for segment in self.sources.segments]
+        self.assertLess(segments.index("china-media"), segments.index("tiktok"))
+        published_rules = {
+            rule
+            for entries in self.sources.rules.values()
+            for rule in entries
+        }
+        for forbidden in [
+            "PROCESS-NAME,WeGame.exe",
+            "DOMAIN-SUFFIX,qcloud.com",
+            "DOMAIN-SUFFIX,myqcloud.com",
+            "DOMAIN-SUFFIX,alicdn.com",
+        ]:
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden, published_rules)
 
     def test_mainland_and_global_ai_sites_are_separated(self) -> None:
         mainland_cases = {

@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-020 use **2026-08-03**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 uses **2026-08-04**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -447,6 +447,40 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 38 proxy groups;
 - 6,693 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 94; same-segment: 13; cross-segment-only: 81.
+
+## ER-021 — Steam mainland downloads and consumer-service routing gaps
+
+**Type:** exact-host recovery, mainland service compatibility, and first-match boundary hardening
+
+Two exact mainland Steam content hosts now enter `🎮 游戏下载`: `gstore.val.manlaxy.com`, corroborated by Steam content evidence, and `xz.sycontroller.com`, confirmed during a live Steam download after a temporary manual rule repeatedly matched it. Both remain exact `DOMAIN` entries. Shared `manlaxy.com`, `sycontroller.com`, and `gdtstream.com` suffixes are excluded; `yif.gdtstream.com` remains unaccepted; the unresolving likely typo `dl.steam.cygnaa.com` is not added because the existing `dl.steam.clngaa.com` rule is preserved; and the observed ZeroTier address and surrounding ranges are not converted into Steam IP rules.
+
+`china-web` adds anchored `ele.me`, `eleme.cn`, `elemecdn.com`, `alibaba.cn`, and `alibaba.com.cn` suffixes for observed mainland service gaps. Advertising remains earlier and continues to capture `adashx.ut.ele.me`, `h-adashx.ut.ele.me`, and `v6-adashx.ut.ele.me`. Existing Taobao, mainland Tmall, 1688, JD, Meituan, and Dianping coverage remains in the pinned classic mainland-domain layer instead of being duplicated. International storefronts and shared `alicdn.com` infrastructure remain outside this patch.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 38 proxy groups;
+- 6,700 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 94; same-segment: 13; cross-segment-only: 81.
+
+## ER-022 — Mainland high-frequency apps, game launchers, and in-game voice
+
+**Type:** anchored mainland application expansion, existing-group reuse, and international first-match correction
+
+The existing 38 policy groups remain unchanged. `china-web` gains reviewed official roots for Amap, Railway 12306, DingTalk, Feishu, WPS/KDocs, Aliyun Drive, major logistics, recruitment, housing, UnionPay and representative mainland banks, education, healthcare, and automotive services. These services enter the existing default-DIRECT `🌏 国内网站` group rather than creating category-specific groups or relying on terminal GEOIP.
+
+`game-platform` gains mainland Xiaoheihe, 5EPlay, Perfect World esports, TapTap, MiHoYo, major gaming communities, WeGame, mainland League of Legends and Valorant, plus Tencent GVoice/GME service roots and documented exact configuration, RTC, and speech hosts used for in-game voice. Shared `qcloud.com`, `myqcloud.com`, general cloud/CDN roots, dynamic voice IPs, and a process-wide WeGame rule remain excluded. The more specific historical `csgo.wmsj.cn` and `dota2.wmsj.cn` late-recovery entries remain authoritative instead of adding a broad duplicate parent that would increase cross-segment unreachability.
+
+`china-media` gains Douyin mainland, Huya, and YY and now precedes TikTok so the official Douyin-only `aweme.snssdk.com` host can be routed directly. The shared `snssdk.com` suffix remains in TikTok, preserving the user's selector for unclassified international traffic; explicitly international TikTok roots remain in that group. Advertising still precedes all three mainland segments and continues to capture reviewed Amap, MiHoYo, and Zuoyebang telemetry. TapTap international and shared cloud/storefront roots remain outside mainland routing.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 38 proxy groups;
+- 6,968 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 94; same-segment: 13; cross-segment-only: 81.

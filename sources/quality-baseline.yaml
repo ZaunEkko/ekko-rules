@@ -1,6 +1,6 @@
 schema_version: 1
 phase: public-single-product
-measured_on: '2026-08-03'
+measured_on: '2026-08-04'
 products:
   core:
     scope:
@@ -8,8 +8,8 @@ products:
       rule_segments: 63
       terminal_segments: 1
       proxy_groups: 38
-      rules_in_files: 6692
-      rules_with_terminal: 6693
+      rules_in_files: 6967
+      rules_with_terminal: 6968
       destination_ip_rules: 206
       destination_ip_rules_without_no_resolve: 0
     first_match_unreachable:
