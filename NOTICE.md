@@ -20,16 +20,16 @@ Current file-rule accounting is explicit:
 | Classic mainland-domain pinned import | 1,482 | `china-domain-import-ledger.json` |
 | Advertising pinned import | 849 | `advertising-import-ledger.json` |
 | Filtered historical DIRECT-default recovery | 2,721 | immutable recovery ledger minus `public-rule-exclusions.json` |
-| Current specialized, private/local, and service corpus | 1,640 | canonical rules plus migration/review history |
-| **Total file rules** | **6,692** | `sources/quality-baseline.yaml` |
+| Current specialized, private/local, and service corpus | 1,914 | canonical rules plus migration/review history |
+| **Total file rules** | **6,966** | `sources/quality-baseline.yaml` |
 
-The 1,640-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
+The 1,914-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
 
 ## Current canonical rule-data inputs
 
 ### Repository-maintained curation
 
-Most current service rules, group mappings, ordering decisions, and security filters are maintained directly in this repository. They have been split, reduced, retargeted, merged, or newly added based on product requirements and review. Similar factual indicators—domains, IP ranges, ASNs, process names, and service identifiers—may independently appear in multiple routing projects. The globally first `author-domain` entry for `zaunekko.com` is an explicit repository-authorship display exception mapped to the default-direct mainland group, not an imported or general-service rule.
+Most current service rules, group mappings, ordering decisions, and security filters are maintained directly in this repository. They have been split, reduced, retargeted, merged, or newly added based on product requirements and review. Similar factual indicators—domains, IP ranges, ASNs, process names, and service identifiers—may independently appear in multiple routing projects. The globally first `author-domain` entry for `zaunekko.com` is an explicit repository-authorship display exception mapped to the default-direct mainland group, not an imported or general-service rule. The exact Steam mainland download hosts and anchored Ele.me/Alibaba mainland service roots added in ER-021, together with ER-022's reviewed mainland app, game-platform, and game-voice expansion, are likewise repository-maintained curation rather than new mechanical imports.
 
 Six late-recovery rulesets are selected from frozen repository history to preserve only historical DIRECT-default behavior that would otherwise reach proxy FINAL. Recovery is a compatibility mechanism, not renewed proof that every historical domain or IP is currently owned by the mapped vendor. A separate public-product exclusion ledger removes provider-specific, local-institution, personal, scripting, mirror, and unofficial-content entries from current publication while leaving immutable historical evidence intact.
 
