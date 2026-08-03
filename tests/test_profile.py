@@ -50,11 +50,11 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 60)
-        self.assertEqual(len(self.sources.rule_segments), 59)
+        self.assertEqual(len(self.sources.segments), 61)
+        self.assertEqual(len(self.sources.rule_segments), 60)
         self.assertEqual(len(self.sources.proxy_groups), 37)
-        self.assertEqual(len(self.sources.segments_for("core")), 60)
-        self.assertEqual(len(self.sources.rule_segments_for("core")), 59)
+        self.assertEqual(len(self.sources.segments_for("core")), 61)
+        self.assertEqual(len(self.sources.rule_segments_for("core")), 60)
         self.assertEqual(len(self.sources.proxy_groups_for("core")), 37)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
@@ -602,8 +602,12 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
     def test_recovery_tail_and_default_groups_are_frozen(self) -> None:
         sources = load_profile_sources(SOURCES)
         self.assertEqual(
-            [segment.slug for segment in sources.segments[-8:]],
-            self.ledger["tail_order"],
+            [segment.slug for segment in sources.segments[-9:]],
+            [
+                "china-web",
+                "china-geoip-direct",
+                *self.ledger["tail_order"][1:],
+            ],
         )
         group_members = {
             group.name: list(group.members) for group in sources.proxy_groups
@@ -617,7 +621,29 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         china_web = next(
             segment for segment in sources.segments if segment.slug == "china-web"
         )
-        self.assertIn("GEOIP,CN,no-resolve", sources.rules[china_web.slug])
+        china_geoip = next(
+            segment
+            for segment in sources.segments
+            if segment.slug == "china-geoip-direct"
+        )
+        self.assertNotIn("GEOIP,CN,no-resolve", sources.rules[china_web.slug])
+        self.assertEqual(china_geoip.target, "DIRECT")
+        self.assertEqual(sources.rules[china_geoip.slug], ("GEOIP,CN,no-resolve",))
+        self.assertEqual(
+            f"GEOIP,CN,{china_geoip.target},no-resolve",
+            "GEOIP,CN,DIRECT,no-resolve",
+        )
+        self.assertIn(
+            "ruleset=DIRECT,https://raw.githubusercontent.com/ZaunEkko/ekko-rules/"
+            "main/generated/reversed-profile/Ruleset/china-geoip-direct.list",
+            (GENERATED / "config" / "ekko-rules.ini").read_text(encoding="utf-8"),
+        )
+        mihomo = yaml.safe_load(
+            (GENERATED / "Mihomo" / "reversed-template.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertIn("RULE-SET,china-geoip-direct,DIRECT", mihomo["rules"])
 
 
 class FirstMatchBaselineTests(unittest.TestCase):

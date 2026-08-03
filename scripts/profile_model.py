@@ -1108,12 +1108,28 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 
 Ruleset 地址前缀：`{rules_base}`。
 
-## 行为
+## 重点分流
 
-- 唯一产品包含 {rulesets} 个 ruleset、{segments} 个区段、{groups} 个策略组，不提供自动测速、Full、local 或 Extended 变体。
-- OpenAI、Claude、海外 AI、重点流媒体、游戏与 NSFW 保持特化。
-- 六个 late recovery 只恢复历史 DIRECT-default 路由；所有 DIRECT-default 域名规则必须使用锚定 matcher。
-- 所有目标 IP 规则带 `no-resolve`；DNS、TUN、Hosts 和节点凭据由客户端负责。
+- OpenAI、Claude 独立，Gemini、Grok、Microsoft AI、Cursor 等归入海外 AI；
+- YouTube、Netflix、Disney+、Apple TV+、Max、Prime Video 等重点流媒体独立；
+- 美国长尾、港澳台、B站港澳台、东南亚、日本、韩国和国内流媒体分别处理；
+- 游戏平台与游戏下载分开；社交、聊天、Discord、邮件和开发服务分别处理；
+- 音乐、云盘、Microsoft、Apple、Google、NSFW 和国内网站均有对应分组；
+- 未命中规则的流量交给 `🐟 漏网之鱼`。
+
+全部 {groups} 个策略组均为手动选择，不启用自动测速。
+
+## 中国 IP 与 DNS 取舍
+
+默认生成：
+
+```text
+GEOIP,CN,DIRECT,no-resolve
+```
+
+`no-resolve` 可降低 GEOIP 匹配额外触发 DNS 查询所带来的泄露风险，但部分国内域名可能无法在这一规则命中，访问可能绕远或变慢。若对此不敏感，可在自己的配置中删除 `no-resolve`，改为 `GEOIP,CN,DIRECT`。是否实际发生 DNS 泄露取决于客户端的 DNS、TUN、路由和加密 DNS 设置。
+
+唯一产品包含 {rulesets} 个 ruleset、{segments} 个区段和 {groups} 个策略组，不提供自动测速、Full、local 或 Extended 变体。
 """
     english = f"""# Ekko Rules
 
@@ -1140,12 +1156,28 @@ Paste the complete URL, press Enter to select it, and generate the subscription.
 
 Ruleset URL prefix: `{rules_base}`.
 
-## Behavior
+## Key routing groups
 
-- The sole product contains {rulesets} rulesets, {segments} segments, and {groups} proxy groups. No automatic-latency, Full, local, or Extended variant is published.
-- OpenAI, Claude, Overseas AI, major streaming, games, and NSFW remain specialized.
-- Six late-recovery rulesets restore only historical DIRECT-default routing; every DIRECT-default domain rule must use an anchored matcher.
-- Every destination-IP rule carries `no-resolve`; DNS, TUN, Hosts, and credentials remain client-owned.
+- OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, and similar services use Overseas AI;
+- YouTube, Netflix, Disney+, Apple TV+, Max, Prime Video, and other major streaming services are independent;
+- US long-tail, HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
+- game platforms are separate from game downloads; social, messaging, Discord, email, and developer services are separated;
+- music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
+- unmatched traffic reaches `🐟 漏网之鱼`.
+
+All {groups} policy groups use manual selection. Automatic latency testing is disabled.
+
+## China IP and DNS trade-off
+
+The generated rule is:
+
+```text
+GEOIP,CN,DIRECT,no-resolve
+```
+
+`no-resolve` reduces DNS-leak risk from extra lookups triggered by GEOIP matching, but some mainland domains may not match this rule and can take a slower route. Users who are less concerned about this risk may remove `no-resolve`, producing `GEOIP,CN,DIRECT`. Actual DNS leakage depends on the client's DNS, TUN, routing, and encrypted-DNS settings.
+
+The sole product contains {rulesets} rulesets, {segments} segments, and {groups} proxy groups. No automatic-latency, Full, local, or Extended variant is published.
 """
     write_text(output / "README.md", chinese)
     write_text(output / "README_EN.md", english)

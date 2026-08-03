@@ -4,8 +4,8 @@
     "core": {
       "summary": {
         "proxy_group_count": 37,
-        "ruleset_count": 59,
-        "segment_count": 60,
+        "ruleset_count": 60,
+        "segment_count": 61,
         "rule_count": 4247,
         "destination_ip_rule_count": 206
       },
@@ -776,20 +776,32 @@
           "index": 53,
           "manifest_order": 53,
           "start": 1472,
-          "end": 1514,
-          "count": 43,
+          "end": 1513,
+          "count": 42,
           "target": "🌏 国内网站",
           "slug": "china-web",
           "scope": "core",
           "rule_types": {
             "DOMAIN-SUFFIX": 29,
-            "PROCESS-NAME": 13,
-            "GEOIP": 1
+            "PROCESS-NAME": 13
           }
         },
         {
           "index": 54,
           "manifest_order": 54,
+          "start": 1514,
+          "end": 1514,
+          "count": 1,
+          "target": "DIRECT",
+          "slug": "china-geoip-direct",
+          "scope": "core",
+          "rule_types": {
+            "GEOIP": 1
+          }
+        },
+        {
+          "index": 55,
+          "manifest_order": 55,
           "start": 1515,
           "end": 2106,
           "count": 592,
@@ -803,8 +815,8 @@
           }
         },
         {
-          "index": 55,
-          "manifest_order": 55,
+          "index": 56,
+          "manifest_order": 56,
           "start": 2107,
           "end": 2214,
           "count": 108,
@@ -818,8 +830,8 @@
           }
         },
         {
-          "index": 56,
-          "manifest_order": 56,
+          "index": 57,
+          "manifest_order": 57,
           "start": 2215,
           "end": 2250,
           "count": 36,
@@ -832,8 +844,8 @@
           }
         },
         {
-          "index": 57,
-          "manifest_order": 57,
+          "index": 58,
+          "manifest_order": 58,
           "start": 2251,
           "end": 2683,
           "count": 433,
@@ -846,8 +858,8 @@
           }
         },
         {
-          "index": 58,
-          "manifest_order": 58,
+          "index": 59,
+          "manifest_order": 59,
           "start": 2684,
           "end": 4153,
           "count": 1470,
@@ -860,8 +872,8 @@
           }
         },
         {
-          "index": 59,
-          "manifest_order": 59,
+          "index": 60,
+          "manifest_order": 60,
           "start": 4154,
           "end": 4246,
           "count": 93,
@@ -875,8 +887,8 @@
           }
         },
         {
-          "index": 60,
-          "manifest_order": 60,
+          "index": 61,
+          "manifest_order": 61,
           "start": 4247,
           "end": 4247,
           "count": 1,

@@ -5,7 +5,7 @@
   "self": "manifest.json",
   "self_hash_included": false,
   "files": {
-    "Mihomo/reversed-template.yaml": "ab519490e0bb50adf3aa7fe02182c6f2b16e73750c24675d91ec7961ad6b4bac",
+    "Mihomo/reversed-template.yaml": "0cbf95ef131a64a3b677994bd1c1beb258851322480db54dc0876529d8cea093",
     "Providers/Ruleset/ai-developer.yaml": "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
     "Providers/Ruleset/ai-platforms.yaml": "7aef4e4d5bd8f47beca55f822433749d263c632e6525f01be4bd974b1729ff9c",
     "Providers/Ruleset/apple-late-recovery.yaml": "70c57c4e2ecbcb1432ce97bfaf29bee146150d38b4971f2418e3beaf6b1561f1",
@@ -16,9 +16,10 @@
     "Providers/Ruleset/bilibili-hmt-late-recovery.yaml": "a5e98020f876ac31f51f9099670fb0e9cbfb78ed592ad6cf18ad6294e0ab0a02",
     "Providers/Ruleset/bilibili-hmt.yaml": "bb7182ffda04655b893fcf1520cacadc9a5fbfe1bf45a02f3c48b6f0cd0340e1",
     "Providers/Ruleset/bilibili-sea.yaml": "758e2bf197c917c895396f9c35f31580fe724cceb994e0f2d8fc97dac7cd04cb",
+    "Providers/Ruleset/china-geoip-direct.yaml": "09e1eded090516a2b76d42d89721996b6eb1854895d11122af8bdf2ff12c536c",
     "Providers/Ruleset/china-media-late-recovery.yaml": "dc5f0d045b12e93c1a81ade4cdba7d875a4521437ba4c943b625d87d9f5b809e",
     "Providers/Ruleset/china-media.yaml": "fca35446d5d965b9b3cdd51cef99f9e21b36761d931d4425082bf4d2f6d246b2",
-    "Providers/Ruleset/china-web.yaml": "9203c24fa534327ea81fba7c6c4430a83d88538e7e3ae934a452462ea1fc434e",
+    "Providers/Ruleset/china-web.yaml": "6fdca9c133b234986b306980f9bfcb8e126677e122963e1b637cc7a873069df3",
     "Providers/Ruleset/claude.yaml": "03d1c1da8af1d036d17387011d23f8aa69f1290f7d09ea5f4e76df73cbf94137",
     "Providers/Ruleset/dazn.yaml": "c7ccfc4109357213bce831b93025ede9f322f9fccee0e7aca39150748d16d11b",
     "Providers/Ruleset/developer-platforms.yaml": "e4d3e62b204a899606d1e7b1becff822d07e77f6c1b8141cc467bdacbc7c3830",
@@ -65,8 +66,8 @@
     "Providers/Ruleset/whatsapp.yaml": "7aa985f3782ac4ab18537800e2856bd9d0e598d7b7a43df07a202e3f59aa857f",
     "Providers/Ruleset/xai.yaml": "c528ddafca25108e32bca53a4de650b0ba9a96b20667ab02fc5b95a774cf3eb6",
     "Providers/Ruleset/youtube.yaml": "d214401b85f98da6f5168ca1f16420c9c0a753f4538b109a4ff844d5e8b38e90",
-    "README.md": "f1992ec2f9f0594c8cc26f92be2dd784015832685acfb909cfca11c910147f4d",
-    "README_EN.md": "e045e41c7a9e0b939f7d86b0987119d5c08fb18a0a26f1f221e58b63cead7154",
+    "README.md": "9d5b49c4ef566fe7c3a83da485bd3962fbd5f8516cbc38ef3b28023ca0ede35e",
+    "README_EN.md": "a92b9525c77d54a2ea972ce46fa003f7bb4bd3a7787c0cc943ac3e80383b6a3c",
     "Ruleset/ai-developer.list": "064c45c6b25dfd29ce123eb9147f4e46466e355462f34dde01fcec98ce5e7934",
     "Ruleset/ai-platforms.list": "0964ee2323cf7a480d2b129caed5297ab64f673d31f376f7b10bff3f132492da",
     "Ruleset/apple-late-recovery.list": "06ffba73b98ab48cf657c6d2592d6be3e06db9e281f06ab6931d4bd29aa9b822",
@@ -77,9 +78,10 @@
     "Ruleset/bilibili-hmt-late-recovery.list": "eff859235d09e9c3e4ff10e09765be69cc2993b69fbf506c9dbbfea30b3cdb87",
     "Ruleset/bilibili-hmt.list": "fd0e7dc9068c229278fd8892546bb8621de0759378a1f25fe6d2ae79e674cc1b",
     "Ruleset/bilibili-sea.list": "bbd4a36d157f46e3cfdf3bcdb710b25bed11376b1d7538332ea761902b3e3ea7",
+    "Ruleset/china-geoip-direct.list": "17b98929dcf837281a498702a4723b323be1b206f9563c9f6cf9d4e3db9a02df",
     "Ruleset/china-media-late-recovery.list": "62bd0b2fd47fc40b1b860318edd12845ce6a7fc15a55ae3efa4b77f6b9a6980a",
     "Ruleset/china-media.list": "1892703cf496a7ed7c826a86512337be94db0a6301e40677c68f4d2703d16445",
-    "Ruleset/china-web.list": "8ad6cc67d9830a19a4bf03e7922e9b963337c2c84c8cd05c09847ad3a6c86098",
+    "Ruleset/china-web.list": "b6c465ab8827ed6988d18dcda01bad48ba18c3e1098e85ec0a2b76a548daca1a",
     "Ruleset/claude.list": "d7773fec75adf789cfea2a8d533bcdf658a865b550624f6e8e055084de87598a",
     "Ruleset/dazn.list": "82da3ade078dd16fec09f3305316fed2e134bf9ebc4783046f19da3cd499f8a4",
     "Ruleset/developer-platforms.list": "8325dff2868295eeb4a7c1aaa4ed77d58263d82d8561a7db7a67e4d5eea26325",
@@ -126,7 +128,7 @@
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "7fc084d83022fca2b12b2023820c394f8f61fe328ec88100d6c45a68d383d3d0",
-    "config/ekko-rules.ini": "a39bafe78642b595366fe6251fb6396d265c5b0f42980296687430b097ec4338"
+    "analysis.json": "22d0b8776317ef5c25f22b9f429f9f0a3bfaedb875fe44980038ffd2f5a8de2f",
+    "config/ekko-rules.ini": "1648c77deacc8843ff0fafaba5fecb665445325205a5fefad48935ee9767e26c"
   }
 }

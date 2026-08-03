@@ -8,7 +8,7 @@ The repository now has an MIT license, a closed single-product layout, determini
 
 - [x] Add a repository-wide MIT `LICENSE`.
 - [x] Update `NOTICE.md` and `docs/PROVENANCE.md` with factual source-overlap, trademark, and disclaimer language.
-- [x] Reduce the live product to one Subconverter entry and one Mihomo template backed by the same 59 rulesets.
+- [x] Reduce the live product to one Subconverter entry and one Mihomo template backed by the same 60 rulesets.
 - [x] Remove Full, local, Extended, EMBY community, Spotify legacy, Qobuz brand-defense, and repository base-config products.
 - [x] Remove automatic-latency groups and Mihomo proxy-provider health probing.
 - [x] Pin GitHub Actions to immutable full commit SHAs.

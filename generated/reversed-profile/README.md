@@ -23,9 +23,25 @@ https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-pr
 
 Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Ruleset`。
 
-## 行为
+## 重点分流
 
-- 唯一产品包含 59 个 ruleset、60 个区段、37 个策略组，不提供自动测速、Full、local 或 Extended 变体。
-- OpenAI、Claude、海外 AI、重点流媒体、游戏与 NSFW 保持特化。
-- 六个 late recovery 只恢复历史 DIRECT-default 路由；所有 DIRECT-default 域名规则必须使用锚定 matcher。
-- 所有目标 IP 规则带 `no-resolve`；DNS、TUN、Hosts 和节点凭据由客户端负责。
+- OpenAI、Claude 独立，Gemini、Grok、Microsoft AI、Cursor 等归入海外 AI；
+- YouTube、Netflix、Disney+、Apple TV+、Max、Prime Video 等重点流媒体独立；
+- 美国长尾、港澳台、B站港澳台、东南亚、日本、韩国和国内流媒体分别处理；
+- 游戏平台与游戏下载分开；社交、聊天、Discord、邮件和开发服务分别处理；
+- 音乐、云盘、Microsoft、Apple、Google、NSFW 和国内网站均有对应分组；
+- 未命中规则的流量交给 `🐟 漏网之鱼`。
+
+全部 37 个策略组均为手动选择，不启用自动测速。
+
+## 中国 IP 与 DNS 取舍
+
+默认生成：
+
+```text
+GEOIP,CN,DIRECT,no-resolve
+```
+
+`no-resolve` 可降低 GEOIP 匹配额外触发 DNS 查询所带来的泄露风险，但部分国内域名可能无法在这一规则命中，访问可能绕远或变慢。若对此不敏感，可在自己的配置中删除 `no-resolve`，改为 `GEOIP,CN,DIRECT`。是否实际发生 DNS 泄露取决于客户端的 DNS、TUN、路由和加密 DNS 设置。
+
+唯一产品包含 60 个 ruleset、61 个区段和 37 个策略组，不提供自动测速、Full、local 或 Extended 变体。
