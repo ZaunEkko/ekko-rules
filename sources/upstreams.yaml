@@ -1,5 +1,5 @@
 schema_version: 1
-reviewed_on: 2026-07-30
+reviewed_on: 2026-08-03
 scope_note: >-
   These records preserve audit and lineage evidence. Content similarity does not by
   itself prove direct copying, and no upstream is fetched during normal generation.
@@ -26,6 +26,20 @@ upstreams:
     notes:
       - 6233 of 6242 historical global-web rules matched this file in original order during the audit.
       - Phase 3 removed that generic ruleset; the record remains lineage evidence, not a current build input or a claim of direct copying.
+
+  - id: v2fly-domain-list-community-china-direct
+    repository: https://github.com/v2fly/domain-list-community
+    revision: 660198a50bac2ab10c567d95a472a7b33915d1b0
+    license: MIT
+    license_url: https://github.com/v2fly/domain-list-community/blob/660198a50bac2ab10c567d95a472a7b33915d1b0/LICENSE
+    license_sha256: b9d84a22870d3f21c91a4c6e410c9cc51d00902f5233ad0c84011479244bf7d2
+    usage: canonical-input
+    output_path: rules/china-domains-direct.list
+    ledger: tests/fixtures/china-domain-import-ledger.json
+    notes:
+      - A pinned one-time import selects direct domain/full entries from 31 named mainland service categories.
+      - Include expansion, non-CN attributes, keywords, regexes, single-label suffixes, local broad coverage, and rules already covered by earlier canonical segments are excluded.
+      - Normal generation remains offline and does not require geosite data or fetch this upstream.
 
   - id: blackmatrix7-ios-rule-script
     repository: https://github.com/blackmatrix7/ios_rule_script

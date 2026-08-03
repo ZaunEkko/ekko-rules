@@ -155,6 +155,19 @@ items:
   recommended_action: removed-or-anchored
   current_product: standard-anchored-only
   resolution: Microsoft and aria2 keywords were removed; Apple CDN entries use anchored suffixes; TestFlight remains covered by apple.com. The canonical loader rejects future DIRECT-default DOMAIN-KEYWORD entries.
+- id: china-domain-direct-import
+  status: accepted
+  scope: routing-compatibility
+  summary: Anchored mainland service domains restore DIRECT classification without relying on implicit DNS resolution before GEOIP.
+  evidence:
+  - https://github.com/v2fly/domain-list-community/tree/660198a50bac2ab10c567d95a472a7b33915d1b0
+  - tests/fixtures/china-domain-import-ledger.json
+  first_observed: 2026-08-03
+  last_verified: '2026-08-03'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: A pinned MIT-licensed import emits only DOMAIN and DOMAIN-SUFFIX rules from 31 named mainland service categories. It excludes includes, !cn entries, keywords, regexes, single-label suffixes, local broad coverage, and matchers already covered by earlier specialized rules. The segment stays after late recovery and before terminal China GEOIP and FINAL.
 - id: transient-resolution-failures
   status: observe
   scope: all

@@ -26,7 +26,7 @@ Fill in the form as follows:
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-Paste the complete URL into the remote-configuration field, press Enter to select it, and generate the subscription. The conversion backend combines your subscription nodes with the Ekko Rules policy groups and rules to produce a complete Clash configuration.
+After pasting the complete URL into the remote-configuration field, the dropdown shows a candidate containing that same full URL. **Click that URL candidate to select it**; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default", then generate the subscription. **Do not rely only on whether the input field visibly contains a space; inspect the final generated custom subscription URL.** Some frontends insert a leading space while submitting the remote configuration. A correct result contains `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`, with `https` immediately after `config=`. If it contains `config=%20https...`, `%20` is that leading space. Delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone. If `config=` is missing or still begins with `config=%20https...`, the converter may fail to load Ekko Rules and fall back to its default preset instead of the 36 policy groups.
 
 > A third-party conversion backend can normally see the original subscription URL submitted to it. Use a trusted backend or deploy Subconverter yourself. Never paste a token-bearing subscription URL into issues, pull requests, logs, or public chats.
 
@@ -51,8 +51,8 @@ with your own subscription URL, then load it in a Mihomo client such as Clash Ve
 Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 
 - **AI**: separate OpenAI and Claude groups, plus one Overseas AI group for Gemini, Grok, Microsoft AI, Cursor, Hugging Face, Perplexity, Poe, OpenRouter, Mistral, Groq, and similar services;
-- **Major streaming**: dedicated groups for YouTube, Netflix, Disney+, Apple TV+, Max, HBO GO, Prime Video, DAZN, and TikTok;
-- **Regional media**: separate handling for US long-tail, HMT, Bilibili HMT, Southeast Asia, Japan, Korea, iQIYI, and mainland Chinese media;
+- **Major streaming**: YouTube, Netflix, Disney+, Apple TV+, `🎬 HBO GO/MAX`, Prime Video, DAZN, and TikTok are handled separately; HBO GO and Max share one group, while DAZN remains independent;
+- **Regional media**: US long-tail services use `🎬 美国流媒体`, with separate handling for HMT, Bilibili HMT, Southeast Asia, Japan, Korea, iQIYI, and mainland Chinese media;
 - **Gaming**: game platforms and game downloads use separate groups;
 - **Social and communication**: separate groups for social media, messaging, Discord, email, and developer services;
 - **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
@@ -60,26 +60,27 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 
 All policy groups use manual node selection. Automatic latency testing is not enabled.
 
-## China IP and DNS trade-off
+## Mainland domains, IPs, and DNS
 
-The generated Clash rule is:
+The terminal routing order is fixed as:
 
 ```text
-GEOIP,CN,DIRECT,no-resolve
+all specialized rules
+→ six late-recovery rulesets
+→ classic mainland-domain rules
+→ GEOIP,CN,DIRECT,no-resolve
+→ MATCH,🐟 漏网之鱼
 ```
 
-- `DIRECT` sends matched mainland Chinese IP traffic directly;
-- `no-resolve` stops the GEOIP matcher from initiating an extra DNS lookup for a domain, reducing DNS-leak risk from that matching step;
-- the trade-off is that some domain requests may not be identified as Chinese by GEOIP and can continue to later routing rules, so some mainland sites may take a slower route;
-- users who are less concerned about this DNS-leak risk and prefer more domains to be classified after resolution may remove `no-resolve`, producing `GEOIP,CN,DIRECT`.
+The classic domain layer uses `DOMAIN` and `DOMAIN-SUFFIX` entries selected from a pinned source revision to cover common mainland services without an extra DNS lookup. It uses no deprecated `GEOSITE`, `DOMAIN-KEYWORD`, regular expression, or single-label/public-suffix catchall. Matches go to `🌏 国内网站`, whose default action is `DIRECT`.
 
-Without `no-resolve`, GEOIP matching may resolve domains through the client's active DNS path. Whether that lookup leaks depends on the client's DNS, TUN, routing, and encrypted-DNS configuration. Ekko Rules keeps `no-resolve` by default and publishes no alternate variant.
+The terminal `GEOIP,CN,DIRECT,no-resolve` rule supplements this with mainland destination-IP classification. `no-resolve` prevents that matcher from initiating a DNS lookup for a domain; if the client already knows the destination IP, GEOIP can still evaluate it. A domain not covered by the classic layer, with no destination IP available at matching time, continues to `🐟 漏网之鱼`. Ekko Rules keeps `no-resolve` on every destination-IP rule and publishes no actively resolving variant.
 
 ## Routing safety
 
-- all destination-IP rules carry `no-resolve` by default;
+- every destination-IP rule carries `no-resolve`;
 - broad `DOMAIN-KEYWORD` rules are forbidden under default-direct policies;
-- specialized rules and China GEOIP remain before the final fallback;
+- the mainland-domain layer contains only anchored `DOMAIN` / `DOMAIN-SUFFIX` entries and sits after late recovery but before China GEOIP and FINAL;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
 ## Project boundary

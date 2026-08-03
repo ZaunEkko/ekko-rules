@@ -1104,30 +1104,36 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 {subconverter_config_url}
 ```
 
-粘贴完整地址并按 Enter 选中，然后生成订阅链接。请仅使用可信转换后端，因为它通常能够看到提交给它的原始订阅地址。
+粘贴完整地址后，下拉列表会出现相同的完整 URL；必须点击该 URL 候选项完成选择，不能只粘贴或只按 Enter。成功后输入框会变回只读状态并完整显示该 URL。确认不再显示“默认”后再生成订阅链接。不要只看输入框是否有空格：部分前端会在提交时自动插入前导空格，必须检查最终生成地址是 `config=https%3A...` 而不是 `config=%20https%3A...`。若出现 `%20`，请删除远程配置、重新粘贴并点击完整 URL 候选，再生成并复查，直到 `%20` 消失；否则转换器可能读取失败并回退到网站默认预设。请仅使用可信转换后端，因为它通常能够看到提交给它的原始订阅地址。
 
 Ruleset 地址前缀：`{rules_base}`。
 
 ## 重点分流
 
 - OpenAI、Claude 独立，Gemini、Grok、Microsoft AI、Cursor 等归入海外 AI；
-- YouTube、Netflix、Disney+、Apple TV+、Max、Prime Video 等重点流媒体独立；
-- 美国长尾、港澳台、B站港澳台、东南亚、日本、韩国和国内流媒体分别处理；
+- YouTube、Netflix、Disney+、Apple TV+、HBO GO/MAX、Prime Video、DAZN 等重点流媒体单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
+- 美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国和国内流媒体分别处理；
 - 游戏平台与游戏下载分开；社交、聊天、Discord、邮件和开发服务分别处理；
 - 音乐、云盘、Microsoft、Apple、Google、NSFW 和国内网站均有对应分组；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
 全部 {groups} 个策略组均为手动选择，不启用自动测速。
 
-## 中国 IP 与 DNS 取舍
+## 中国大陆域名、IP 与 DNS
 
-默认生成：
+末尾路由顺序固定为：
 
 ```text
-GEOIP,CN,DIRECT,no-resolve
+全部细分规则
+→ 六个 late-recovery ruleset
+→ 经典中国大陆域名规则
+→ GEOIP,CN,DIRECT,no-resolve
+→ MATCH,🐟 漏网之鱼
 ```
 
-`no-resolve` 可降低 GEOIP 匹配额外触发 DNS 查询所带来的泄露风险，但部分国内域名可能无法在这一规则命中，访问可能绕远或变慢。若对此不敏感，可在自己的配置中删除 `no-resolve`，改为 `GEOIP,CN,DIRECT`。是否实际发生 DNS 泄露取决于客户端的 DNS、TUN、路由和加密 DNS 设置。
+经典域名层仅使用固定版本来源筛选出的 `DOMAIN` 与 `DOMAIN-SUFFIX`，不使用 `GEOSITE`、`DOMAIN-KEYWORD`、正则或单标签/公共后缀兜底。命中后进入默认 `DIRECT` 的 `🌏 国内网站`。
+
+末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
 唯一产品包含 {rulesets} 个 ruleset、{segments} 个区段和 {groups} 个策略组，不提供自动测速、Full、local 或 Extended 变体。
 """
@@ -1152,30 +1158,36 @@ Open a Subconverter frontend that accepts custom remote configurations, such as 
 {subconverter_config_url}
 ```
 
-Paste the complete URL, press Enter to select it, and generate the subscription. Use only a trusted conversion backend because it can normally see the original subscription URL submitted to it.
+After pasting the complete URL, click the identical full-URL candidate shown in the dropdown; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default" before generating the subscription. Do not rely only on the visible input: some frontends insert a leading space during submission, so inspect the final generated URL and require `config=https%3A...`, not `config=%20https%3A...`. If `%20` appears, delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone; otherwise the converter may fail to load Ekko Rules and fall back to its default preset. Use only a trusted conversion backend because it can normally see the original subscription URL submitted to it.
 
 Ruleset URL prefix: `{rules_base}`.
 
 ## Key routing groups
 
 - OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, and similar services use Overseas AI;
-- YouTube, Netflix, Disney+, Apple TV+, Max, Prime Video, and other major streaming services are independent;
-- US long-tail, HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
+- YouTube, Netflix, Disney+, Apple TV+, HBO GO/MAX, Prime Video, and DAZN are handled separately; HBO GO and Max share one group, while DAZN remains independent;
+- US long-tail services use `🎬 美国流媒体`; HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
 - game platforms are separate from game downloads; social, messaging, Discord, email, and developer services are separated;
 - music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
 All {groups} policy groups use manual selection. Automatic latency testing is disabled.
 
-## China IP and DNS trade-off
+## Mainland domains, IPs, and DNS
 
-The generated rule is:
+The terminal routing order is fixed as:
 
 ```text
-GEOIP,CN,DIRECT,no-resolve
+all specialized rules
+→ six late-recovery rulesets
+→ classic mainland-domain rules
+→ GEOIP,CN,DIRECT,no-resolve
+→ MATCH,🐟 漏网之鱼
 ```
 
-`no-resolve` reduces DNS-leak risk from extra lookups triggered by GEOIP matching, but some mainland domains may not match this rule and can take a slower route. Users who are less concerned about this risk may remove `no-resolve`, producing `GEOIP,CN,DIRECT`. Actual DNS leakage depends on the client's DNS, TUN, routing, and encrypted-DNS settings.
+The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected from a pinned source revision. It uses no `GEOSITE`, `DOMAIN-KEYWORD`, regular expression, or single-label/public-suffix catchall. Matches use `🌏 国内网站`, whose default action is `DIRECT`.
+
+The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
 The sole product contains {rulesets} rulesets, {segments} segments, and {groups} proxy groups. No automatic-latency, Full, local, or Extended variant is published.
 """

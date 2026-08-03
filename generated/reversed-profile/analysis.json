@@ -3,10 +3,10 @@
   "products": {
     "core": {
       "summary": {
-        "proxy_group_count": 37,
-        "ruleset_count": 60,
-        "segment_count": 61,
-        "rule_count": 4247,
+        "proxy_group_count": 36,
+        "ruleset_count": 61,
+        "segment_count": 62,
+        "rule_count": 5729,
         "destination_ip_rule_count": 206
       },
       "quality": {
@@ -94,7 +94,7 @@
           "start": 69,
           "end": 80,
           "count": 12,
-          "target": "🌐 海外 AI",
+          "target": "🧲 海外 AI",
           "slug": "google-ai",
           "scope": "core",
           "rule_types": {
@@ -109,7 +109,7 @@
           "start": 81,
           "end": 83,
           "count": 3,
-          "target": "🌐 海外 AI",
+          "target": "🧲 海外 AI",
           "slug": "xai",
           "scope": "core",
           "rule_types": {
@@ -122,7 +122,7 @@
           "start": 84,
           "end": 91,
           "count": 8,
-          "target": "🌐 海外 AI",
+          "target": "🧲 海外 AI",
           "slug": "microsoft-ai",
           "scope": "core",
           "rule_types": {
@@ -136,7 +136,7 @@
           "start": 92,
           "end": 102,
           "count": 11,
-          "target": "🌐 海外 AI",
+          "target": "🧲 海外 AI",
           "slug": "ai-developer",
           "scope": "core",
           "rule_types": {
@@ -149,7 +149,7 @@
           "start": 103,
           "end": 110,
           "count": 8,
-          "target": "🌐 海外 AI",
+          "target": "🧲 海外 AI",
           "slug": "ai-platforms",
           "scope": "core",
           "rule_types": {
@@ -489,7 +489,7 @@
           "start": 914,
           "end": 940,
           "count": 27,
-          "target": "🎬 HBOGO",
+          "target": "🎬 HBO GO/MAX",
           "slug": "hbo-go",
           "scope": "core",
           "rule_types": {
@@ -504,7 +504,7 @@
           "start": 941,
           "end": 956,
           "count": 16,
-          "target": "🎬 HBOMAX",
+          "target": "🎬 HBO GO/MAX",
           "slug": "hbo-max",
           "scope": "core",
           "rule_types": {
@@ -723,7 +723,7 @@
           "start": 1307,
           "end": 1361,
           "count": 55,
-          "target": "🇺🇸 美国流媒体",
+          "target": "🎬 美国流媒体",
           "slug": "us-media",
           "scope": "core",
           "rule_types": {
@@ -790,20 +790,7 @@
           "index": 54,
           "manifest_order": 54,
           "start": 1514,
-          "end": 1514,
-          "count": 1,
-          "target": "DIRECT",
-          "slug": "china-geoip-direct",
-          "scope": "core",
-          "rule_types": {
-            "GEOIP": 1
-          }
-        },
-        {
-          "index": 55,
-          "manifest_order": 55,
-          "start": 1515,
-          "end": 2106,
+          "end": 2105,
           "count": 592,
           "target": "🎮 游戏平台",
           "slug": "game-platform-late-recovery",
@@ -815,10 +802,10 @@
           }
         },
         {
-          "index": 56,
-          "manifest_order": 56,
-          "start": 2107,
-          "end": 2214,
+          "index": 55,
+          "manifest_order": 55,
+          "start": 2106,
+          "end": 2213,
           "count": 108,
           "target": "🎬 B站港澳台",
           "slug": "bilibili-hmt-late-recovery",
@@ -830,10 +817,10 @@
           }
         },
         {
-          "index": 57,
-          "manifest_order": 57,
-          "start": 2215,
-          "end": 2250,
+          "index": 56,
+          "manifest_order": 56,
+          "start": 2214,
+          "end": 2249,
           "count": 36,
           "target": "🎬 爱奇艺",
           "slug": "iqiyi-late-recovery",
@@ -844,10 +831,10 @@
           }
         },
         {
-          "index": 58,
-          "manifest_order": 58,
-          "start": 2251,
-          "end": 2683,
+          "index": 57,
+          "manifest_order": 57,
+          "start": 2250,
+          "end": 2682,
           "count": 433,
           "target": "🧩 微软服务",
           "slug": "microsoft-late-recovery",
@@ -858,10 +845,10 @@
           }
         },
         {
-          "index": 59,
-          "manifest_order": 59,
-          "start": 2684,
-          "end": 4153,
+          "index": 58,
+          "manifest_order": 58,
+          "start": 2683,
+          "end": 4152,
           "count": 1470,
           "target": "🍎 苹果服务",
           "slug": "apple-late-recovery",
@@ -872,10 +859,10 @@
           }
         },
         {
-          "index": 60,
-          "manifest_order": 60,
-          "start": 4154,
-          "end": 4246,
+          "index": 59,
+          "manifest_order": 59,
+          "start": 4153,
+          "end": 4245,
           "count": 93,
           "target": "🌏 国内流媒体",
           "slug": "china-media-late-recovery",
@@ -887,10 +874,37 @@
           }
         },
         {
+          "index": 60,
+          "manifest_order": 60,
+          "start": 4246,
+          "end": 5727,
+          "count": 1482,
+          "target": "🌏 国内网站",
+          "slug": "china-domains-direct",
+          "scope": "core",
+          "rule_types": {
+            "DOMAIN-SUFFIX": 1481,
+            "DOMAIN": 1
+          }
+        },
+        {
           "index": 61,
           "manifest_order": 61,
-          "start": 4247,
-          "end": 4247,
+          "start": 5728,
+          "end": 5728,
+          "count": 1,
+          "target": "DIRECT",
+          "slug": "china-geoip-direct",
+          "scope": "core",
+          "rule_types": {
+            "GEOIP": 1
+          }
+        },
+        {
+          "index": 62,
+          "manifest_order": 62,
+          "start": 5729,
+          "end": 5729,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",

@@ -28,6 +28,9 @@ PHASE_3_LEDGER = ROOT / "tests" / "fixtures" / "phase-3-migration-ledger.json"
 PHASE_3_RECOVERY_LEDGER = (
     ROOT / "tests" / "fixtures" / "phase-3-recovery-ledger.json"
 )
+CHINA_DOMAIN_IMPORT_LEDGER = (
+    ROOT / "tests" / "fixtures" / "china-domain-import-ledger.json"
+)
 sys.path.insert(0, str(ROOT))
 
 from scripts.profile_model import (  # noqa: E402
@@ -50,26 +53,62 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 61)
-        self.assertEqual(len(self.sources.rule_segments), 60)
-        self.assertEqual(len(self.sources.proxy_groups), 37)
-        self.assertEqual(len(self.sources.segments_for("core")), 61)
-        self.assertEqual(len(self.sources.rule_segments_for("core")), 60)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 37)
+        self.assertEqual(len(self.sources.segments), 62)
+        self.assertEqual(len(self.sources.rule_segments), 61)
+        self.assertEqual(len(self.sources.proxy_groups), 36)
+        self.assertEqual(len(self.sources.segments_for("core")), 62)
+        self.assertEqual(len(self.sources.rule_segments_for("core")), 61)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 36)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
             "health_check",
             self.sources.proxy_groups_document["proxy_provider"],
         )
-        design = json.loads(PHASE_3_DESIGN.read_text(encoding="utf-8"))
         self.assertEqual(
             [group.name for group in self.sources.proxy_groups_for("core")],
-            design["core_group_order"],
+            [
+                "♻️ 手动切换",
+                "🧲 OpenAI",
+                "🧲 Claude",
+                "🧲 海外 AI",
+                "🔎 Google",
+                "🗣 社交媒体",
+                "📲 聊天软件",
+                "🎙 Discord",
+                "🧑‍💻 开发服务",
+                "🎬 YouTube",
+                "🎬 Netflix",
+                "🎬 DisneyPlus",
+                "🎬 港澳台媒体",
+                "🎬 日本媒体",
+                "🎬 韩国媒体",
+                "🎬 AppleTV+",
+                "🎬 HBO GO/MAX",
+                "🎬 PrimeVideo",
+                "🎬 Dazn",
+                "🎶 TikTok",
+                "🎵 音乐平台",
+                "🎬 爱奇艺",
+                "🎬 B站港澳台",
+                "🎬 东南亚媒体",
+                "🎬 美国流媒体",
+                "🌏 国外流媒体",
+                "🌏 国内流媒体",
+                "☁️ 云盘服务",
+                "🧩 微软服务",
+                "🍎 苹果服务",
+                "🎮 游戏平台",
+                "🎮 游戏下载",
+                "📪 邮件服务",
+                "🔞 NSFW",
+                "🌏 国内网站",
+                "🐟 漏网之鱼",
+            ],
         )
         self.assertEqual(
             list(self.sources.proxy_groups[-1].members),
-            design["final_group_members"],
+            ["♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
         )
         self.assertEqual(
             [
@@ -84,6 +123,22 @@ class CanonicalSourceTests(unittest.TestCase):
                 "qobuz",
                 "apple-music",
             ],
+        )
+        self.assertEqual(
+            [
+                segment.slug
+                for segment in self.sources.segments
+                if segment.target == "🎬 HBO GO/MAX"
+            ],
+            ["hbo-go", "hbo-max"],
+        )
+        self.assertEqual(
+            [
+                segment.slug
+                for segment in self.sources.segments
+                if segment.target == "🎬 Dazn"
+            ],
+            ["dazn"],
         )
 
     def test_no_resolve_and_strict_cidr_gate(self) -> None:
@@ -602,11 +657,12 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
     def test_recovery_tail_and_default_groups_are_frozen(self) -> None:
         sources = load_profile_sources(SOURCES)
         self.assertEqual(
-            [segment.slug for segment in sources.segments[-9:]],
+            [segment.slug for segment in sources.segments[-10:]],
             [
-                "china-web",
+                *self.ledger["tail_order"][:-1],
+                "china-domains-direct",
                 "china-geoip-direct",
-                *self.ledger["tail_order"][1:],
+                "final",
             ],
         )
         group_members = {
@@ -643,7 +699,55 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        self.assertIn("RULE-SET,china-geoip-direct,DIRECT", mihomo["rules"])
+        self.assertEqual(
+            mihomo["rules"][-3:],
+            [
+                "RULE-SET,china-domains-direct,🌏 国内网站",
+                "RULE-SET,china-geoip-direct,DIRECT",
+                "MATCH,🐟 漏网之鱼",
+            ],
+        )
+
+
+class ChinaDomainDirectImportTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sources = load_profile_sources(SOURCES)
+        cls.ledger = json.loads(CHINA_DOMAIN_IMPORT_LEDGER.read_text(encoding="utf-8"))
+        cls.rules_path = SOURCES / "rules" / "china-domains-direct.list"
+        cls.rules = cls.rules_path.read_text(encoding="utf-8").splitlines()
+
+    def test_import_ledger_and_output_are_immutable(self) -> None:
+        self.assertEqual(
+            hashlib.sha256(CHINA_DOMAIN_IMPORT_LEDGER.read_bytes()).hexdigest(),
+            "7de6a96aa36ea4b3db92899843f19419609edb11dc484879621e4f58f9a3af6b",
+        )
+        selection = self.ledger["selection"]
+        self.assertEqual(selection["emitted"], 1482)
+        self.assertEqual(selection["emitted_rule_types"], {"DOMAIN-SUFFIX": 1481, "DOMAIN": 1})
+        self.assertEqual(
+            hashlib.sha256(self.rules_path.read_bytes()).hexdigest(),
+            selection["emitted_sha256"],
+        )
+        self.assertEqual(len(self.rules), selection["emitted"])
+
+    def test_import_is_anchored_and_contains_no_geosite(self) -> None:
+        for rule in self.rules:
+            rule_type, value, has_no_resolve = parse_rule(
+                rule, context="China domain import"
+            )
+            self.assertIn(rule_type, {"DOMAIN", "DOMAIN-SUFFIX"})
+            self.assertIn(".", value)
+            self.assertFalse(has_no_resolve)
+            self.assertNotEqual(rule_type, "DOMAIN-KEYWORD")
+        self.assertFalse(any("GEOSITE" in rule for rule in self.rules))
+
+    def test_required_mainland_service_cases_match_before_final(self) -> None:
+        for domain in self.ledger["required_cases"].values():
+            with self.subTest(domain=domain):
+                result = first_match(self.sources, domain=domain)
+                self.assertEqual(result["slug"], "china-domains-direct")
+                self.assertEqual(result["target"], "🌏 国内网站")
 
 
 class FirstMatchBaselineTests(unittest.TestCase):
@@ -718,15 +822,15 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 "www.netflix.com",
             ),
             (
-                ("google-ai", "🌐 海外 AI", "DOMAIN-SUFFIX,gemini.google"),
+                ("google-ai", "🧲 海外 AI", "DOMAIN-SUFFIX,gemini.google"),
                 "gemini.google",
             ),
             (
-                ("xai", "🌐 海外 AI", "DOMAIN-SUFFIX,x.ai"),
+                ("xai", "🧲 海外 AI", "DOMAIN-SUFFIX,x.ai"),
                 "api.x.ai",
             ),
             (
-                ("ai-platforms", "🌐 海外 AI", "DOMAIN-SUFFIX,openrouter.ai"),
+                ("ai-platforms", "🧲 海外 AI", "DOMAIN-SUFFIX,openrouter.ai"),
                 "openrouter.ai",
             ),
             (
@@ -734,17 +838,17 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 "e-hentai.org",
             ),
             (
-                ("us-media", "🇺🇸 美国流媒体", "DOMAIN-SUFFIX,hulu.com"),
+                ("us-media", "🎬 美国流媒体", "DOMAIN-SUFFIX,hulu.com"),
                 "www.hulu.com",
             ),
             (
-                ("us-media", "🇺🇸 美国流媒体", "DOMAIN-SUFFIX,espn.com"),
+                ("us-media", "🎬 美国流媒体", "DOMAIN-SUFFIX,espn.com"),
                 "www.espn.com",
             ),
             (
                 (
                     "us-media",
-                    "🇺🇸 美国流媒体",
+                    "🎬 美国流媒体",
                     "DOMAIN-SUFFIX,espn.hb.omtrdc.net",
                 ),
                 "espn.hb.omtrdc.net",

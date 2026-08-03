@@ -2,9 +2,17 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole canonical input. Normal generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 60 rule files, 61 ordered segments including FINAL, 37 proxy groups, and 4,247 rules including FINAL. Subconverter and Mihomo consume the same ordered rule corpus through one entry point each.
+The sanitized `sources/` tree is the sole canonical input. Normal generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 61 rule files, 62 ordered segments including FINAL, 36 proxy groups, and 5,729 rules including FINAL. Subconverter and Mihomo consume the same ordered rule corpus through one entry point each.
 
-The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
+The product contains 206 destination-IP matchers, all with `no-resolve`. Its terminal order is all specialized rules, six late-recovery rulesets, the classic mainland-domain layer, `GEOIP,CN,DIRECT,no-resolve`, and the unique FINAL. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
+
+## Classic mainland-domain import
+
+`sources/rules/china-domains-direct.list` is a one-time deterministic import from `v2fly/domain-list-community` revision `660198a50bac2ab10c567d95a472a7b33915d1b0`, licensed under MIT (`Copyright (c) 2018-2019 V2Ray`). The selection reads direct `domain` and `full` entries from 31 named mainland service categories without recursively expanding includes. It excludes `!cn` entries, keywords, regular expressions, single-label suffixes, coverage within the selected bundle, and matchers already covered by earlier canonical rules.
+
+The emitted file contains 1,482 anchored matchers: 1,481 `DOMAIN-SUFFIX` entries and one `DOMAIN` entry. The source revision, category list, selection counts, output digest, and license digest are frozen in `tests/fixtures/china-domain-import-ledger.json`. Normal generation reads only the emitted canonical file and never fetches v2fly data or requires GEOSITE support.
+
+ACL4SSR's pinned ChinaDomain corpus was evaluated as an alternative but not imported because its CC-BY-SA-4.0 license would create a separate ShareAlike component and mixed-license publication boundary.
 
 ## Reconstruction and immutable evidence
 
@@ -15,7 +23,7 @@ Phase 3 evidence remains layered and immutable:
 - `phase-3-after.json` preserves the 1,615-rule historical Extended reduction before compatibility recovery;
 - `phase-3-migration-ledger.json` proves that reduction against the frozen Phase 2 state;
 - `phase-3-recovery-ledger.json` derives 2,737 first-effective DIRECT-default candidates from frozen Phase 2 history at `8dbf3e6f7c2aedfa0fd9c485f63d76c1ace31faf`;
-- the security filter excludes seven historical `DOMAIN-KEYWORD` candidates and adds the anchored `roblox.com` and `rbxcdn.com` suffixes, leaving 2,732 matchers in six late-recovery rulesets after the explicit `GEOIP,CN,DIRECT,no-resolve` segment and before FINAL.
+- the security filter excludes seven historical `DOMAIN-KEYWORD` candidates and adds the anchored `roblox.com` and `rbxcdn.com` suffixes, leaving 2,732 matchers in six late-recovery rulesets. Their current placement is before the classic mainland-domain layer, terminal `GEOIP,CN,DIRECT,no-resolve`, and FINAL.
 
 The Roblox replacement is supported by Roblox's official education-network allowlist. Normal generation still performs no fetch. Recovery is historical default-routing evidence, not renewed evidence that every recovered domain or IP is currently or exclusively owned by the mapped vendor.
 

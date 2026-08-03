@@ -4,12 +4,12 @@ measured_on: '2026-08-03'
 products:
   core:
     scope:
-      rule_files: 60
-      rule_segments: 60
+      rule_files: 61
+      rule_segments: 61
       terminal_segments: 1
-      proxy_groups: 37
-      rules_in_files: 4246
-      rules_with_terminal: 4247
+      proxy_groups: 36
+      rules_in_files: 5728
+      rules_with_terminal: 5729
       destination_ip_rules: 206
       destination_ip_rules_without_no_resolve: 0
     first_match_unreachable:

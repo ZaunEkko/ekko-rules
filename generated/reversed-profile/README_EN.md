@@ -19,29 +19,35 @@ Open a Subconverter frontend that accepts custom remote configurations, such as 
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-Paste the complete URL, press Enter to select it, and generate the subscription. Use only a trusted conversion backend because it can normally see the original subscription URL submitted to it.
+After pasting the complete URL, click the identical full-URL candidate shown in the dropdown; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default" before generating the subscription. Do not rely only on the visible input: some frontends insert a leading space during submission, so inspect the final generated URL and require `config=https%3A...`, not `config=%20https%3A...`. If `%20` appears, delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone; otherwise the converter may fail to load Ekko Rules and fall back to its default preset. Use only a trusted conversion backend because it can normally see the original subscription URL submitted to it.
 
 Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Ruleset`.
 
 ## Key routing groups
 
 - OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, and similar services use Overseas AI;
-- YouTube, Netflix, Disney+, Apple TV+, Max, Prime Video, and other major streaming services are independent;
-- US long-tail, HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
+- YouTube, Netflix, Disney+, Apple TV+, HBO GO/MAX, Prime Video, and DAZN are handled separately; HBO GO and Max share one group, while DAZN remains independent;
+- US long-tail services use `🎬 美国流媒体`; HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
 - game platforms are separate from game downloads; social, messaging, Discord, email, and developer services are separated;
 - music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
-All 37 policy groups use manual selection. Automatic latency testing is disabled.
+All 36 policy groups use manual selection. Automatic latency testing is disabled.
 
-## China IP and DNS trade-off
+## Mainland domains, IPs, and DNS
 
-The generated rule is:
+The terminal routing order is fixed as:
 
 ```text
-GEOIP,CN,DIRECT,no-resolve
+all specialized rules
+→ six late-recovery rulesets
+→ classic mainland-domain rules
+→ GEOIP,CN,DIRECT,no-resolve
+→ MATCH,🐟 漏网之鱼
 ```
 
-`no-resolve` reduces DNS-leak risk from extra lookups triggered by GEOIP matching, but some mainland domains may not match this rule and can take a slower route. Users who are less concerned about this risk may remove `no-resolve`, producing `GEOIP,CN,DIRECT`. Actual DNS leakage depends on the client's DNS, TUN, routing, and encrypted-DNS settings.
+The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected from a pinned source revision. It uses no `GEOSITE`, `DOMAIN-KEYWORD`, regular expression, or single-label/public-suffix catchall. Matches use `🌏 国内网站`, whose default action is `DIRECT`.
 
-The sole product contains 60 rulesets, 61 segments, and 37 proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
+
+The sole product contains 61 rulesets, 62 segments, and 36 proxy groups. No automatic-latency, Full, local, or Extended variant is published.
