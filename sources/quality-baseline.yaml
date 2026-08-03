@@ -4,8 +4,8 @@ measured_on: '2026-08-03'
 products:
   core:
     scope:
-      rule_files: 59
-      rule_segments: 59
+      rule_files: 60
+      rule_segments: 60
       terminal_segments: 1
       proxy_groups: 37
       rules_in_files: 4246

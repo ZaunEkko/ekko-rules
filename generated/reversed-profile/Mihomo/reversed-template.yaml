@@ -635,6 +635,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-web.yaml
     path: ./ruleset/china-web.yaml
     interval: 86400
+  china-geoip-direct:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-geoip-direct.yaml
+    path: ./ruleset/china-geoip-direct.yaml
+    interval: 86400
   game-platform-late-recovery:
     type: http
     behavior: classical
@@ -731,6 +738,7 @@ rules:
 - RULE-SET,google,🔎 Google
 - RULE-SET,china-media,🌏 国内流媒体
 - RULE-SET,china-web,🌏 国内网站
+- RULE-SET,china-geoip-direct,DIRECT
 - RULE-SET,game-platform-late-recovery,🎮 游戏平台
 - RULE-SET,bilibili-hmt-late-recovery,🎬 B站港澳台
 - RULE-SET,iqiyi-late-recovery,🎬 爱奇艺

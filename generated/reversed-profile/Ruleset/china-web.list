@@ -40,4 +40,3 @@ PROCESS-NAME,qbittorrent.exe
 PROCESS-NAME,DownloadService.exe
 PROCESS-NAME,Weiyun.exe
 PROCESS-NAME,baidunetdisk.exe
-GEOIP,CN,no-resolve

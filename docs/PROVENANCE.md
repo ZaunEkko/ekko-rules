@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole canonical input. Normal generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 59 rule files, 60 ordered segments including FINAL, 37 proxy groups, and 4,247 rules including FINAL. Subconverter and Mihomo consume the same ordered rule corpus through one entry point each.
+The sanitized `sources/` tree is the sole canonical input. Normal generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 60 rule files, 61 ordered segments including FINAL, 37 proxy groups, and 4,247 rules including FINAL. Subconverter and Mihomo consume the same ordered rule corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -15,7 +15,7 @@ Phase 3 evidence remains layered and immutable:
 - `phase-3-after.json` preserves the 1,615-rule historical Extended reduction before compatibility recovery;
 - `phase-3-migration-ledger.json` proves that reduction against the frozen Phase 2 state;
 - `phase-3-recovery-ledger.json` derives 2,737 first-effective DIRECT-default candidates from frozen Phase 2 history at `8dbf3e6f7c2aedfa0fd9c485f63d76c1ace31faf`;
-- the security filter excludes seven historical `DOMAIN-KEYWORD` candidates and adds the anchored `roblox.com` and `rbxcdn.com` suffixes, leaving 2,732 matchers in six late-recovery rulesets after `china-web/GEOIP,CN` and before FINAL.
+- the security filter excludes seven historical `DOMAIN-KEYWORD` candidates and adds the anchored `roblox.com` and `rbxcdn.com` suffixes, leaving 2,732 matchers in six late-recovery rulesets after the explicit `GEOIP,CN,DIRECT,no-resolve` segment and before FINAL.
 
 The Roblox replacement is supported by Roblox's official education-network allowlist. Normal generation still performs no fetch. Recovery is historical default-routing evidence, not renewed evidence that every recovered domain or IP is currently or exclusively owned by the mapped vendor.
 

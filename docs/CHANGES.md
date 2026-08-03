@@ -306,7 +306,7 @@ These figures remain historical ledger context rather than current published-pro
 
 **Type:** product-surface reduction, license finalization, and DIRECT-default safety correction
 
-The live product is reduced to one standard configuration backed by 59 shared rulesets:
+The live product was reduced to one standard configuration backed by 59 shared rulesets at ER-014:
 
 - Subconverter: `config/ekko-rules.ini`
 - Mihomo: `Mihomo/reversed-template.yaml`
@@ -322,3 +322,24 @@ Current verified canonical result:
 - 206 destination-IP rules, all with `no-resolve`
 - zero same-segment exact duplicates and zero non-strict CIDRs
 - first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40
+
+## ER-015 — Explicit China GEOIP DIRECT routing
+
+**Type:** routing-target clarification and user-facing DNS trade-off documentation
+
+The terminal China GEOIP matcher was split from `china-web` into its own canonical ruleset targeting `DIRECT`. The classical ruleset still stores `GEOIP,CN,no-resolve`, while generated products now bind it explicitly:
+
+- Subconverter expands it as `GEOIP,CN,DIRECT,no-resolve`;
+- Mihomo emits `RULE-SET,china-geoip-direct,DIRECT`.
+
+The new segment remains after detailed China website rules and before all six late-recovery segments. Rule count, destination-IP count, policy-group count, and first-match coverage remain unchanged; only the physical ruleset/segment count increases.
+
+Current verified canonical result:
+
+- 60 rule files, 61 ordered segments, 37 proxy groups
+- 4,247 rules including the unique FINAL
+- 206 destination-IP rules, all with `no-resolve`
+- zero same-segment exact duplicates and zero non-strict CIDRs
+- first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40
+
+`no-resolve` remains the default because it prevents GEOIP matching from initiating an extra DNS lookup. Users who prefer post-resolution China-IP classification may remove it locally and use `GEOIP,CN,DIRECT`; actual DNS exposure then depends on the client's DNS, TUN, routing, and encrypted-DNS configuration.

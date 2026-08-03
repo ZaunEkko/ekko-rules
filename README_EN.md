@@ -46,35 +46,41 @@ PUT_YOUR_SUBSCRIPTION_URL_HERE
 
 with your own subscription URL, then load it in a Mihomo client such as Clash Verge Rev. The template provides only the proxy provider, policy groups, rule providers, and rules. Ports, DNS, TUN, controller settings, and other client configuration remain client-owned.
 
-## Product size
+## Key routing groups
 
-Ekko Rules publishes one standard product. Subconverter and Mihomo share the same canonical rules:
+Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 
-| Rulesets | Segments | Groups | Rules incl. FINAL | Destination-IP rules | Missing `no-resolve` |
-|---:|---:|---:|---:|---:|---:|
-| 59 | 60 | 37 | 4,247 | 206 | 0 |
+- **AI**: separate OpenAI and Claude groups, plus one Overseas AI group for Gemini, Grok, Microsoft AI, Cursor, Hugging Face, Perplexity, Poe, OpenRouter, Mistral, Groq, and similar services;
+- **Major streaming**: dedicated groups for YouTube, Netflix, Disney+, Apple TV+, Max, HBO GO, Prime Video, DAZN, and TikTok;
+- **Regional media**: separate handling for US long-tail, HMT, Bilibili HMT, Southeast Asia, Japan, Korea, iQIYI, and mainland Chinese media;
+- **Gaming**: game platforms and game downloads use separate groups;
+- **Social and communication**: separate groups for social media, messaging, Discord, email, and developer services;
+- **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
+- **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
 
-No automatic latency selection, provider health probe, Full, local, or Extended variant is published, and the repository provides no Clash base configuration.
+All policy groups use manual node selection. Automatic latency testing is not enabled.
 
-## Rule specialization
+## China IP and DNS trade-off
 
-- OpenAI, Claude, and Overseas AI remain separate. Overseas AI includes Google AI, xAI, Microsoft AI, Cursor, Hugging Face, Perplexity, Poe, OpenRouter, Mistral, Groq, and similar non-Chinese services.
-- Netflix, Disney+, YouTube, Max, HBO GO, Prime Video, Apple TV+, DAZN, TikTok, and other major entertainment services remain independent.
-- US long-tail streaming is grouped, ordinary HMT media is grouped, Bilibili HMT remains independent, and Bilibili SEA belongs to Southeast Asian media.
-- OneDrive and iCloud share Cloud Storage; Instagram belongs to Social Media and Bing to Microsoft Services.
-- Game platforms remain separate from game downloads, while music services share `🎵 音乐平台`.
-- `🔞 NSFW` uses high-confidence anchored domains without broad keywords, public suffixes, or shared cloud/CDN roots.
-- `global-web`, `academic`, `yahoo`, `community-overrides`, and `streaming-legacy` were removed. Ordinary proxy/manual-first traffic reaches `🐟 漏网之鱼`.
+The generated Clash rule is:
+
+```text
+GEOIP,CN,DIRECT,no-resolve
+```
+
+- `DIRECT` sends matched mainland Chinese IP traffic directly;
+- `no-resolve` stops the GEOIP matcher from initiating an extra DNS lookup for a domain, reducing DNS-leak risk from that matching step;
+- the trade-off is that some domain requests may not be identified as Chinese by GEOIP and can continue to later routing rules, so some mainland sites may take a slower route;
+- users who are less concerned about this DNS-leak risk and prefer more domains to be classified after resolution may remove `no-resolve`, producing `GEOIP,CN,DIRECT`.
+
+Without `no-resolve`, GEOIP matching may resolve domains through the client's active DNS path. Whether that lookup leaks depends on the client's DNS, TUN, routing, and encrypted-DNS configuration. Ekko Rules keeps `no-resolve` by default and publishes no alternate variant.
 
 ## Routing safety
 
-- Every destination-IP matcher, including `IP-CIDR`, `IP-CIDR6`, `IP-SUFFIX`, `IP-ASN`, and `GEOIP`, must carry `no-resolve`.
-- `DOMAIN-KEYWORD` is forbidden under every DIRECT-default policy so brand-string lookalike domains cannot bypass proxy FINAL.
-- Six late-recovery rulesets sit after `china-web/GEOIP,CN,no-resolve` and before the sole FINAL. They restore only historical first-effective DIRECT-default matchers that would otherwise reach proxy FINAL.
-- Historical proxy/manual-first rules may still reach FINAL, while current specialized rules and China GEOIP remain earlier.
-- Recovery preserves historical default routing and does not assert current ownership of every recovered domain or IP.
-
-`no-resolve` prevents destination-IP rules from actively resolving a domain for matching, but it does not replace client-side DNS hijacking, encrypted DNS, TUN, or `strict-route` configuration.
+- all destination-IP rules carry `no-resolve` by default;
+- broad `DOMAIN-KEYWORD` rules are forbidden under default-direct policies;
+- specialized rules and China GEOIP remain before the final fallback;
+- unmatched traffic reaches `🐟 漏网之鱼`.
 
 ## Project boundary
 

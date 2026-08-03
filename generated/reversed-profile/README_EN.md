@@ -23,9 +23,25 @@ Paste the complete URL, press Enter to select it, and generate the subscription.
 
 Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Ruleset`.
 
-## Behavior
+## Key routing groups
 
-- The sole product contains 59 rulesets, 60 segments, and 37 proxy groups. No automatic-latency, Full, local, or Extended variant is published.
-- OpenAI, Claude, Overseas AI, major streaming, games, and NSFW remain specialized.
-- Six late-recovery rulesets restore only historical DIRECT-default routing; every DIRECT-default domain rule must use an anchored matcher.
-- Every destination-IP rule carries `no-resolve`; DNS, TUN, Hosts, and credentials remain client-owned.
+- OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, and similar services use Overseas AI;
+- YouTube, Netflix, Disney+, Apple TV+, Max, Prime Video, and other major streaming services are independent;
+- US long-tail, HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
+- game platforms are separate from game downloads; social, messaging, Discord, email, and developer services are separated;
+- music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
+- unmatched traffic reaches `🐟 漏网之鱼`.
+
+All 37 policy groups use manual selection. Automatic latency testing is disabled.
+
+## China IP and DNS trade-off
+
+The generated rule is:
+
+```text
+GEOIP,CN,DIRECT,no-resolve
+```
+
+`no-resolve` reduces DNS-leak risk from extra lookups triggered by GEOIP matching, but some mainland domains may not match this rule and can take a slower route. Users who are less concerned about this risk may remove `no-resolve`, producing `GEOIP,CN,DIRECT`. Actual DNS leakage depends on the client's DNS, TUN, routing, and encrypted-DNS settings.
+
+The sole product contains 60 rulesets, 61 segments, and 37 proxy groups. No automatic-latency, Full, local, or Extended variant is published.

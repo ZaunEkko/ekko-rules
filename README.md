@@ -46,35 +46,41 @@ PUT_YOUR_SUBSCRIPTION_URL_HERE
 
 替换为自己的订阅地址，再由 Clash Verge Rev 等 Mihomo 客户端加载。模板只提供代理 Provider、策略组、Rule Provider 和规则，不接管端口、DNS、TUN、控制器或其他客户端设置。
 
-## 产品规模
+## 重点分流
 
-Ekko Rules 只发布一套标准产品，Subconverter 与 Mihomo 共用同一套规范源：
+Ekko Rules 主要面向需要单独选择节点或地区的场景：
 
-| Rulesets | Segments | Groups | 含 FINAL 规则 | 目标 IP 规则 | 缺失 `no-resolve` |
-|---:|---:|---:|---:|---:|---:|
-| 59 | 60 | 37 | 4,247 | 206 | 0 |
+- **AI 分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq 等统一归入 `🌐 海外 AI`；
+- **主流流媒体**：YouTube、Netflix、Disney+、Apple TV+、Max、HBO GO、Prime Video、DAZN、TikTok 等重点服务独立分组；
+- **区域媒体**：美国长尾、港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；
+- **游戏分流**：`🎮 游戏平台` 与 `🎮 游戏下载` 分开，方便平台访问和大流量下载选择不同线路；
+- **社交与通信**：社交媒体、聊天软件、Discord、邮件和开发服务分别处理；
+- **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google、NSFW 和国内网站均有对应分组；
+- **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。
 
-不提供自动测速、Provider 健康探测、Full、local 或 Extended 变体，也不提供仓库托管的 Clash 基础配置。
+所有策略组都由用户手动选择节点，不启用自动测速。
 
-## 规则定位
+## 中国 IP 与 DNS 取舍
 
-- OpenAI、Claude、海外 AI 分开；海外 AI 包含 Google AI、xAI、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq 等，不含国产 AI；
-- Netflix、Disney+、YouTube、Max、HBO GO、Prime Video、Apple TV+、DAZN、TikTok 等重点娱乐服务保持独立；
-- 美国长尾流媒体统一，港澳台普通媒体统一，B站港澳台独立，B站东南亚归入东南亚媒体；
-- OneDrive 与 iCloud 共用云盘组，Instagram 并入社交媒体，Bing 并入微软服务；
-- 游戏平台与游戏下载分开，音乐服务共用 `🎵 音乐平台`；
-- `🔞 NSFW` 只使用高置信锚定域名，不使用宽关键词、公共后缀或共享云/CDN 根域；
-- `global-web`、`academic`、`yahoo`、`community-overrides`、`streaming-legacy` 已删除，普通 proxy/manual-first 流量由 `🐟 漏网之鱼` 接管。
+默认生成的完整 Clash 规则是：
+
+```text
+GEOIP,CN,DIRECT,no-resolve
+```
+
+- `DIRECT`：命中的中国大陆 IP 直接连接；
+- `no-resolve`：GEOIP 规则不会为了判断域名而额外发起 DNS 查询，可降低这一步产生 DNS 泄露的风险；
+- 代价是部分域名请求可能无法通过 GEOIP 规则识别为国内网站，继续走后续分流，个别国内网站可能绕远或访问变慢；
+- 如果你对这类 DNS 泄露风险不敏感、希望更多国内域名在解析后命中中国 IP，可以在自己的配置中删除 `no-resolve`，改为 `GEOIP,CN,DIRECT`。
+
+删除 `no-resolve` 后，GEOIP 匹配可能主动解析域名，查询会交给客户端当前使用的 DNS。是否实际泄露取决于客户端的 DNS、TUN、路由和加密 DNS 配置。Ekko Rules 默认保留 `no-resolve`，不提供另一套变体。
 
 ## 路由安全
 
-- 所有 `IP-CIDR`、`IP-CIDR6`、`IP-SUFFIX`、`IP-ASN`、`GEOIP` 等目标 IP 规则必须带 `no-resolve`；
-- 所有 DIRECT-default 策略禁止 `DOMAIN-KEYWORD`，避免品牌字符串仿冒域名绕过代理 FINAL；
-- 六个 late recovery ruleset 位于 `china-web/GEOIP,CN,no-resolve` 之后、唯一 FINAL 之前，只恢复历史 DIRECT-default、否则会落入代理 FINAL 的首有效 matcher；
-- 原 proxy/manual-first 规则仍可交给 FINAL，当前细分规则与国内 GEOIP 继续优先；
-- recovery 是历史默认路由兼容层，不代表对历史域名或 IP 当前所有权的确认。
-
-`no-resolve` 能避免目标 IP 规则为匹配域名而主动解析，但不能替代客户端侧的 DNS 劫持、加密 DNS、TUN 或 `strict-route` 配置。
+- 所有目标 IP 规则默认带 `no-resolve`；
+- 所有默认直连的域名规则禁止宽泛 `DOMAIN-KEYWORD`，避免仿冒域名被错误直连；
+- 当前细分规则和中国 GEOIP 位于最终兜底之前；
+- 没有命中规则的流量由 `🐟 漏网之鱼` 接管。
 
 ## 项目边界
 
