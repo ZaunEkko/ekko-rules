@@ -25,6 +25,7 @@ Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/
 
 ## Key routing groups
 
+- `🛑 广告拦截` uses pinned anchored domain rules and defaults to `REJECT`, while remaining manually switchable to a node or `DIRECT`;
 - OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, and similar services use Overseas AI;
 - YouTube, Netflix, Disney+, Apple TV+, HBO GO/MAX, Prime Video, and DAZN are handled separately; HBO GO and Max share one group, while DAZN remains independent;
 - US long-tail services use `🎬 美国流媒体`; HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
@@ -33,7 +34,7 @@ Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
-All 36 policy groups remain manually switchable and automatic latency testing is disabled; `🔞 NSFW` is the only group whose default selection is `REJECT`.
+All 37 policy groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects an app feature, temporarily switch the advertising group to `DIRECT` or another policy.
 
 ## Mainland domains, IPs, and DNS
 
@@ -51,4 +52,4 @@ The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
-The sole product contains 61 rulesets, 62 segments, and 36 proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+The sole product contains 61 rulesets, 62 segments, and 37 proxy groups. No automatic-latency, Full, local, or Extended variant is published.

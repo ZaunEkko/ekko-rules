@@ -25,6 +25,7 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 
 ## 重点分流
 
+- `🛑 广告拦截` 使用固定版本锚定域名规则并默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - OpenAI、Claude 独立，Gemini、Grok、Microsoft AI、Cursor 等归入海外 AI；
 - YouTube、Netflix、Disney+、Apple TV+、HBO GO/MAX、Prime Video、DAZN 等重点流媒体单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
 - 美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国和国内流媒体分别处理；
@@ -33,7 +34,7 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 - 音乐、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
-除 `🔞 NSFW` 默认选择 `REJECT` 外，其余策略组保持手动选择；所有组均可自行切换，不启用自动测速。
+`🛑 广告拦截` 与 `🔞 NSFW` 默认选择 `REJECT`；所有策略组均可自行切换，不启用自动测速。若拦截影响个别应用功能，可临时把广告组改为 `DIRECT` 或其他策略。
 
 ## 中国大陆域名、IP 与 DNS
 
@@ -51,4 +52,4 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 
 末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
-唯一产品包含 61 个 ruleset、62 个区段和 36 个策略组，不提供自动测速、Full、local 或 Extended 变体。
+唯一产品包含 61 个 ruleset、62 个区段和 37 个策略组，不提供自动测速、Full、local 或 Extended 变体。

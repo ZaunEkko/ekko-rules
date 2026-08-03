@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "policy": "Advertising intentionally precedes specialized services; only the frozen anchored advertising rules may capture the listed later matchers. Any additional capture requires review.",
+  "count": 40,
+  "rows_sha256": "f7ed27997eb13fa04355a9a5c3ed530a0c30b9808ec58c43b12f4e8d9b5a67d6",
+  "rows": [
+    {
+      "later_slug": "openai",
+      "later_target": "🧲 OpenAI",
+      "later_rule": "DOMAIN,o33249.ingest.sentry.io",
+      "advertising_rule": "DOMAIN,o33249.ingest.sentry.io"
+    },
+    {
+      "later_slug": "microsoft-ai",
+      "later_target": "🧲 海外 AI",
+      "later_rule": "DOMAIN,copilot-telemetry.githubusercontent.com",
+      "advertising_rule": "DOMAIN,copilot-telemetry.githubusercontent.com"
+    },
+    {
+      "later_slug": "instagram",
+      "later_target": "🗣 社交媒体",
+      "later_rule": "DOMAIN-SUFFIX,graph.instagram.com",
+      "advertising_rule": "DOMAIN-SUFFIX,graph.instagram.com"
+    },
+    {
+      "later_slug": "instagram",
+      "later_target": "🗣 社交媒体",
+      "later_rule": "DOMAIN-SUFFIX,graph-fallback.instagram.com",
+      "advertising_rule": "DOMAIN-SUFFIX,graph-fallback.instagram.com"
+    },
+    {
+      "later_slug": "disney-plus",
+      "later_target": "🎬 DisneyPlus",
+      "later_rule": "DOMAIN-SUFFIX,js-agent.newrelic.com",
+      "advertising_rule": "DOMAIN-SUFFIX,js-agent.newrelic.com"
+    },
+    {
+      "later_slug": "microsoft",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,bingads.com",
+      "advertising_rule": "DOMAIN-SUFFIX,bingads.com"
+    },
+    {
+      "later_slug": "china-web",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,2mdn.net",
+      "advertising_rule": "DOMAIN-SUFFIX,2mdn.net"
+    },
+    {
+      "later_slug": "china-web",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,app-measurement.com",
+      "advertising_rule": "DOMAIN-SUFFIX,app-measurement.com"
+    },
+    {
+      "later_slug": "china-web",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,googletagmanager.com",
+      "advertising_rule": "DOMAIN-SUFFIX,googletagmanager.com"
+    },
+    {
+      "later_slug": "china-web",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,googletagservices.com",
+      "advertising_rule": "DOMAIN-SUFFIX,googletagservices.com"
+    },
+    {
+      "later_slug": "game-platform-late-recovery",
+      "later_target": "🎮 游戏平台",
+      "later_rule": "DOMAIN-SUFFIX,cdp.cloud.unity3d.com",
+      "advertising_rule": "DOMAIN-SUFFIX,cdp.cloud.unity3d.com"
+    },
+    {
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,msads.net",
+      "advertising_rule": "DOMAIN-SUFFIX,msads.net"
+    },
+    {
+      "later_slug": "apple-late-recovery",
+      "later_target": "🍎 苹果服务",
+      "later_rule": "DOMAIN-SUFFIX,qwapi.com",
+      "advertising_rule": "DOMAIN-SUFFIX,qwapi.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,byteadverts.com",
+      "advertising_rule": "DOMAIN-SUFFIX,byteadverts.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,csjplatform.com",
+      "advertising_rule": "DOMAIN-SUFFIX,csjplatform.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,ctobsnssdk.com",
+      "advertising_rule": "DOMAIN-SUFFIX,ctobsnssdk.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pangle.cn",
+      "advertising_rule": "DOMAIN-SUFFIX,pangle.cn"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pangolin-dsp-toutiao-b.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pangolin-dsp-toutiao-b.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pangolin-dsp-toutiao.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pangolin-dsp-toutiao.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pangolin-sdk-toutiao.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pangolin-sdk-toutiao.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,panplayable-toutiao-b.com",
+      "advertising_rule": "DOMAIN-SUFFIX,panplayable-toutiao-b.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,panplayable-toutiao.com",
+      "advertising_rule": "DOMAIN-SUFFIX,panplayable-toutiao.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pglstatp-sdk-toutiao.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pglstatp-sdk-toutiao.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pglstatp-snssdk-toutiao.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pglstatp-snssdk-toutiao.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pglstatp-toutiao-b.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pglstatp-toutiao-b.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,pglstatp-toutiao.com",
+      "advertising_rule": "DOMAIN-SUFFIX,pglstatp-toutiao.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,shoppingads.cn",
+      "advertising_rule": "DOMAIN-SUFFIX,shoppingads.cn"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,dt.dbankcloud.ru",
+      "advertising_rule": "DOMAIN-SUFFIX,dt.dbankcloud.ru"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,adbkwai.com",
+      "advertising_rule": "DOMAIN-SUFFIX,adbkwai.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,adkwai.com",
+      "advertising_rule": "DOMAIN-SUFFIX,adkwai.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,adukwai.com",
+      "advertising_rule": "DOMAIN-SUFFIX,adukwai.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,youdaoads.com",
+      "advertising_rule": "DOMAIN-SUFFIX,youdaoads.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,fenxi.com",
+      "advertising_rule": "DOMAIN-SUFFIX,fenxi.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,mediav.com",
+      "advertising_rule": "DOMAIN-SUFFIX,mediav.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,mvad.com",
+      "advertising_rule": "DOMAIN-SUFFIX,mvad.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,qhupdate.com",
+      "advertising_rule": "DOMAIN-SUFFIX,qhupdate.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,ugdtimg.com",
+      "advertising_rule": "DOMAIN-SUFFIX,ugdtimg.com"
+    },
+    {
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,tjqonline.cn",
+      "advertising_rule": "DOMAIN-SUFFIX,tjqonline.cn"
+    }
+  ]
+}

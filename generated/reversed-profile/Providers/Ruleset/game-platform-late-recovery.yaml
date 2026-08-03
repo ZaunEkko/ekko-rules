@@ -421,8 +421,6 @@ payload:
 - DOMAIN-SUFFIX,leagueoflegends.kr
 - DOMAIN-SUFFIX,leagueoflegends.net
 - DOMAIN-SUFFIX,leagueoflegends.org
-- DOMAIN-SUFFIX,leagueoflegendsscripts.com
-- DOMAIN-SUFFIX,leaguesharp.info
 - DOMAIN-SUFFIX,leaguoflegends.com
 - DOMAIN-SUFFIX,learnwithleague.com
 - DOMAIN-SUFFIX,lol-europe.com
@@ -484,10 +482,7 @@ payload:
 - DOMAIN-SUFFIX,steamcommunity-a.akamaihd.net
 - DOMAIN-SUFFIX,steamcontent.tnkjmec.com
 - DOMAIN-SUFFIX,steampipe.akamaized.net
-- DOMAIN-SUFFIX,steampowered.com.8686c.com
-- DOMAIN-SUFFIX,steamstatic.com.8686c.com
 - DOMAIN-SUFFIX,steamstore-a.akamaihd.net
-- DOMAIN-SUFFIX,steamunlocked.net
 - DOMAIN-SUFFIX,steamusercontent-a.akamaihd.net
 - DOMAIN-SUFFIX,steamuserimages-a.akamaihd.net
 - DOMAIN-SUFFIX,steamvideo-a.akamaihd.net
