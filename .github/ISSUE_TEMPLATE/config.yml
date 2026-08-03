@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 使用与支持范围 / Usage and support scope
+    url: https://github.com/ZaunEkko/ekko-rules/blob/main/SUPPORT.md
+    about: 先确认问题是否属于规则、顺序、策略组或映射范围。
+  - name: 安全问题 / Security issue
+    url: https://github.com/ZaunEkko/ekko-rules/blob/main/SECURITY.md
+    about: 不要在公开 Issue 中提交漏洞细节、订阅链接、token、密码或节点凭据。

@@ -8,11 +8,12 @@ AI, entertainment, gaming, and NSFW-specialized routing rules for Subconverter a
 
 ### Online Subconverter conversion
 
-Open a Subconverter frontend that supports custom remote configurations, for example:
+Open a Subconverter frontend that supports custom remote configurations:
 
-```text
-https://sub.v1.mk/
-```
+| Frontend | Recommended use |
+|---|---|
+| [`https://sub.v1.mk/`](https://sub.v1.mk/) | **Recommended.** Supports newer protocols such as AnyTLS; prefer it when the subscription contains newer-protocol nodes. |
+| [`https://acl4ssr-sub.github.io/`](https://acl4ssr-sub.github.io/) | A popular alternative with older protocol support; it may not convert AnyTLS and other newer protocols. |
 
 Fill in the form as follows:
 
@@ -54,11 +55,12 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Major streaming**: YouTube, Netflix, Disney+, Apple TV+, `🎬 HBO GO/MAX`, Prime Video, DAZN, and TikTok are handled separately; HBO GO and Max share one group, while DAZN remains independent;
 - **Regional media**: US long-tail services use `🎬 美国流媒体`, with separate handling for HMT, Bilibili HMT, Southeast Asia, Japan, Korea, iQIYI, and mainland Chinese media;
 - **Gaming**: game platforms and game downloads use separate groups;
-- **Social and communication**: separate groups for social media, messaging, Discord, email, and developer services;
-- **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
+- **Social and communication**: separate groups for social media, messaging, Discord, and email;
+- **Developer services**: `🧑‍💻 开发服务` covers GitHub, GitLab, Docker, Maven, the Node.js website/docs/downloads, and the npm website, public registry, and package downloads;
+- **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
 
-All policy groups use manual node selection. Automatic latency testing is not enabled.
+All groups remain manually switchable and automatic latency testing is disabled; `🔞 NSFW` is the only group whose default selection is `REJECT`.
 
 ## Mainland domains, IPs, and DNS
 
@@ -83,9 +85,28 @@ The terminal `GEOIP,CN,DIRECT,no-resolve` rule supplements this with mainland de
 - the mainland-domain layer contains only anchored `DOMAIN` / `DOMAIN-SUFFIX` entries and sits after late recovery but before China GEOIP and FINAL;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
+## Feedback and rule proposals
+
+Use the structured issue forms:
+
+- [➕ Domain or service rule proposal](https://github.com/ZaunEkko/ekko-rules/issues/new?template=domain-addition.yml)
+- [🧭 Policy-group or mapping change](https://github.com/ZaunEkko/ekko-rules/issues/new?template=policy-group-change.yml)
+- [🐛 Misclassification or rule problem](https://github.com/ZaunEkko/ekko-rules/issues/new?template=routing-problem.yml)
+
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SUPPORT.md`](SUPPORT.md) first. You can also ask your coding agent to read the contribution guide and prepare the issue:
+
+```text
+Read https://github.com/ZaunEkko/ekko-rules/blob/main/CONTRIBUTING.md,
+then prepare an issue using the repository's issue form. Use only public domains and public evidence.
+Do not read or submit subscription URLs, tokens, node addresses/ports, passwords, UUIDs,
+private keys, or complete client configurations. Show me the final issue body before submitting it.
+```
+
+If credentials were already exposed, revoke or rotate them immediately; editing or deleting an issue does not make them safe again.
+
 ## Project boundary
 
-Ekko Rules follows the ACL4SSR online-preset responsibility boundary:
+Ekko Rules has the following responsibility boundary:
 
 - no proxy nodes or subscription credentials are stored;
 - ports, DNS, TUN, controller settings, and other client configuration remain client-owned;

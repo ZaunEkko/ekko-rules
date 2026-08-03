@@ -8,11 +8,12 @@
 
 ### Subconverter 在线转换
 
-打开支持自定义远程配置的 Subconverter 前端，例如：
+打开支持自定义远程配置的 Subconverter 前端：
 
-```text
-https://sub.v1.mk/
-```
+| 前端 | 建议用途 |
+|---|---|
+| [`https://sub.v1.mk/`](https://sub.v1.mk/) | **推荐**。支持 AnyTLS 等较新协议，订阅包含新协议节点时优先使用。 |
+| [`https://acl4ssr-sub.github.io/`](https://acl4ssr-sub.github.io/) | 常用备选，但协议支持较旧，可能无法转换 AnyTLS 等较新协议。 |
 
 按以下方式填写：
 
@@ -54,11 +55,12 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **主流流媒体**：YouTube、Netflix、Disney+、Apple TV+、`🎬 HBO GO/MAX`、Prime Video、DAZN、TikTok 等重点服务单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
 - **区域媒体**：美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；
 - **游戏分流**：`🎮 游戏平台` 与 `🎮 游戏下载` 分开，方便平台访问和大流量下载选择不同线路；
-- **社交与通信**：社交媒体、聊天软件、Discord、邮件和开发服务分别处理；
-- **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google、NSFW 和国内网站均有对应分组；
+- **社交与通信**：社交媒体、聊天软件、Discord 和邮件分别处理；
+- **开发服务**：`🧑‍💻 开发服务` 覆盖 GitHub、GitLab、Docker、Maven、Node.js 官网/文档/下载，以及 npm 官网、公共 Registry 和包下载；
+- **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认使用 `REJECT` 拦截，仍可手动改为节点或 `DIRECT`；
 - **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。
 
-所有策略组都由用户手动选择节点，不启用自动测速。
+除 `🔞 NSFW` 默认选择 `REJECT` 外，其余策略组保持手动选择；所有组都可由用户自行切换，不启用自动测速。
 
 ## 中国大陆域名、IP 与 DNS
 
@@ -83,9 +85,28 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - 大陆域名层仅使用锚定 `DOMAIN` / `DOMAIN-SUFFIX`，且位于六段恢复之后、中国 GEOIP 与最终兜底之前；
 - 没有命中规则的流量由 `🐟 漏网之鱼` 接管。
 
+## 反馈与规则建议
+
+请使用结构化 Issue Form：
+
+- [➕ 域名或服务规则建议](https://github.com/ZaunEkko/ekko-rules/issues/new?template=domain-addition.yml)
+- [🧭 策略组或映射调整](https://github.com/ZaunEkko/ekko-rules/issues/new?template=policy-group-change.yml)
+- [🐛 误分类或规则问题](https://github.com/ZaunEkko/ekko-rules/issues/new?template=routing-problem.yml)
+
+提交前请阅读 [`CONTRIBUTING.md`](CONTRIBUTING.md) 和 [`SUPPORT.md`](SUPPORT.md)。你也可以让自己的 coding agent 先阅读贡献规范，再代为整理 Issue：
+
+```text
+请阅读 https://github.com/ZaunEkko/ekko-rules/blob/main/CONTRIBUTING.md，
+再按仓库的 Issue Form 帮我整理问题。只使用公开域名和公开证据；
+不要读取或提交订阅 URL、token、节点地址/端口、密码、UUID、私钥或完整客户端配置。
+提交前先把最终正文给我确认。
+```
+
+若已经公开凭据，请立即吊销或轮换；删除或编辑 Issue 不能让凭据重新安全。
+
 ## 项目边界
 
-Ekko Rules 采用与 ACL4SSR 在线预设相同的职责边界：
+Ekko Rules 的职责边界：
 
 - 不保存代理节点或订阅凭据；
 - 不接管端口、DNS、TUN、控制器等客户端设置；

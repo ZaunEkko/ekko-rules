@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 uses **2026-08-03**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-018 use **2026-08-03**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -375,3 +375,35 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40.
+
+## ER-017 — Node.js/npm and NSFW service coverage
+
+**Type:** anchored service-domain expansion
+
+The `🧑‍💻 开发服务` ruleset adds six official Node.js and npm roots:
+
+- `nodejs.org`, covering the website, documentation, and release downloads;
+- `nodejs.dev` and `iojs.org`, the official redirect domains documented by Node.js;
+- `npmjs.com`, `npmjs.org`, and `npm.im`, covering the npm website, public registry, package tarballs, and official short domain.
+
+The `🔞 NSFW` ruleset adds nine user-confirmed service domains: `missav.ws`, `missav.ai`, `missav.live`, `hanime1.me`, `hanimeone.me`, `hanime1.com`, `javchu.com`, `av.jkforum.net`, and `javdb.com`. Existing `e-hentai.org` coverage remains unchanged. `av.jkforum.net` is intentionally anchored at the service subdomain rather than classifying the whole `jkforum.net` forum.
+
+All additions use `DOMAIN-SUFFIX`; no broad `DOMAIN-KEYWORD`, public suffix, shared infrastructure root, or destination-IP matcher is introduced. The `🔞 NSFW` select group now lists Mihomo/Clash's built-in `REJECT` action first, making rejection the default while preserving manual access to the standard selector, `DIRECT`, and subscription nodes.
+
+Current verified canonical target:
+
+- 61 rule files, 62 ordered segments, 36 proxy groups;
+- 5,744 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40.
+
+## ER-018 — Community contribution workflow and converter guidance
+
+**Type:** repository community health, support boundaries, and documentation
+
+The repository now provides three structured GitHub Issue Forms for domain/service additions, policy-group or mapping changes, and routing misclassification. Blank issues are disabled. `CONTRIBUTING.md`, `SUPPORT.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, and a pull-request template define evidence, privacy, first-match, provenance, and validation expectations. The README links directly to each form and includes a safe prompt for asking a coding agent to prepare an issue without reading or submitting subscription credentials, node data, or complete client configurations.
+
+Subconverter guidance now recommends `https://sub.v1.mk/` for subscriptions that use newer protocols such as AnyTLS. `https://acl4ssr-sub.github.io/` remains documented as a popular alternative with older protocol support that may not convert newer protocols. Both paths retain the full-URL candidate selection and final `config=https%3A...` versus `config=%20https%3A...` checks.
+
+The user-facing project-boundary section now describes only Ekko Rules itself. Historical comparison projects and licensing evidence remain confined to `NOTICE.md` and `docs/PROVENANCE.md`.

@@ -276,6 +276,7 @@ groups:
   type: select
   scope: core
   members:
+  - REJECT
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__

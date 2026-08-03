@@ -13,7 +13,7 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 
 ## Online subscription conversion
 
-Open a Subconverter frontend that accepts custom remote configurations, such as `https://sub.v1.mk/`. Supply your own node subscription, choose `Clash` as the target, and enter:
+Open a Subconverter frontend that accepts custom remote configurations. `https://sub.v1.mk/` is recommended because it supports newer protocols such as AnyTLS. `https://acl4ssr-sub.github.io/` is a popular alternative with older protocol support and may not convert AnyTLS or other newer protocols. Supply your own node subscription, choose `Clash` as the target, and enter:
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
@@ -28,11 +28,12 @@ Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/
 - OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, and similar services use Overseas AI;
 - YouTube, Netflix, Disney+, Apple TV+, HBO GO/MAX, Prime Video, and DAZN are handled separately; HBO GO and Max share one group, while DAZN remains independent;
 - US long-tail services use `🎬 美国流媒体`; HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
-- game platforms are separate from game downloads; social, messaging, Discord, email, and developer services are separated;
-- music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
+- game platforms are separate from game downloads; social, messaging, Discord, and email are separated;
+- `🧑‍💻 开发服务` covers GitHub, GitLab, Docker, Maven, the Node.js website/docs/downloads, and the npm website, public registry, and package downloads;
+- music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
-All 36 policy groups use manual selection. Automatic latency testing is disabled.
+All 36 policy groups remain manually switchable and automatic latency testing is disabled; `🔞 NSFW` is the only group whose default selection is `REJECT`.
 
 ## Mainland domains, IPs, and DNS
 
