@@ -198,6 +198,52 @@ items:
   recommended_action: remove
   current_product: removed
   resolution: DOMAIN,huaikhwang.central-world.org and its one-entry direct-override ruleset were removed. The immutable historical fixture retains evidence that the private override existed, but current canonical and generated products do not publish it.
+- id: developer-experience-expansion
+  status: accepted
+  scope: routing-policy
+  summary: Mainstream developer sites, registries, and downloads share one manually selected policy so users can prioritize official-source reliability and speed.
+  evidence:
+  - https://docs.docker.com/desktop/setup/allow-list/
+  - https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
+  - https://docs.npmjs.com/cli/v11/using-npm/registry/
+  - https://docs.pypi.org/api/index-api/
+  - https://go.dev/ref/mod
+  - sources/rules/developer-platforms.list
+  first_observed: 2026-08-03
+  last_verified: '2026-08-03'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The developer group keeps the standard manual selector first and DIRECT available as an immediate traffic-saving override. Anchored official roots cover common development control planes, registries, and downloads; mainland mirrors such as npmmirror.com still match the earlier-intended mainland DIRECT layer, while generic cloud, object-storage, and CDN roots remain excluded.
+- id: remote-streaming-direct
+  status: accepted
+  scope: routing-policy
+  summary: High-volume virtual-LAN and remote-streaming traffic should avoid the proxy by default.
+  evidence:
+  - https://tailscale.com/docs/reference/tailscale-cli
+  - https://tailscale.com/docs/features/magicdns
+  - sources/rules/remote-streaming.list
+  first_observed: 2026-08-03
+  last_verified: '2026-08-03'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: A dedicated DIRECT-first remote-streaming group is placed immediately after private routing. The canonical set covers verified outer data-path processes and anchored control, signal, relay, or update domains for Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP. The user-required ts.net suffix deliberately covers tailnet user namespaces, and the TeamViewer suffix deliberately covers dynamic master/router relay hosts. Generic CGNAT ranges, public STUN/TURN namespaces, browser-wide or Steam-wide processes, user-defined server domains, and shared cloud/CDN roots remain excluded.
+- id: mainland-global-ai-split
+  status: accepted
+  scope: routing-policy
+  summary: Chinese AI mainland sites remain DIRECT while distinct international product domains use Overseas AI.
+  evidence:
+  - https://github.com/v2fly/domain-list-community/tree/660198a50bac2ab10c567d95a472a7b33915d1b0/data
+  - sources/rules/author-domain.list
+  - sources/rules/china-web.list
+  - sources/rules/ai-platforms.list
+  first_observed: 2026-08-03
+  last_verified: '2026-08-03'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The author-domain ruleset is the user-requested global first segment so zaunekko.com appears first while still using the default-direct mainland group. DeepSeek, Xiaohongshu, and verified Chinese AI mainland roots remain in china-web after advertising. Distinct international roots including kimi.com, z.ai, qwen.ai, qwenlm.ai, minimax.io, ByteDance global AI domains, and the anchored Figma roots use Overseas AI. When a legacy mainland URL redirects to the same final international hostname, first-match routing follows that final hostname because domain rules cannot distinguish URL paths or branding regions on one host.
 - id: transient-resolution-failures
   status: observe
   scope: all

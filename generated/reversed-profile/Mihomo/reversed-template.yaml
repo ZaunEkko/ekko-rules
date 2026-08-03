@@ -68,6 +68,13 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
+- name: 🖥️ 远程串流
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
 - name: 🧑‍💻 开发服务
   type: select
   proxies:
@@ -266,12 +273,26 @@ proxy-groups:
   use:
   - subscription
 rule-providers:
+  author-domain:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/author-domain.yaml
+    path: ./ruleset/author-domain.yaml
+    interval: 86400
   private:
     type: http
     behavior: classical
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/private.yaml
     path: ./ruleset/private.yaml
+    interval: 86400
+  remote-streaming:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/remote-streaming.yaml
+    path: ./ruleset/remote-streaming.yaml
     interval: 86400
   advertising:
     type: http
@@ -694,7 +715,9 @@ rule-providers:
     path: ./ruleset/china-geoip-direct.yaml
     interval: 86400
 rules:
+- RULE-SET,author-domain,🌏 国内网站
 - RULE-SET,private,DIRECT
+- RULE-SET,remote-streaming,🖥️ 远程串流
 - RULE-SET,advertising,🛑 广告拦截
 - RULE-SET,openai,🧲 OpenAI
 - RULE-SET,claude,🧲 Claude

@@ -15,6 +15,16 @@
 | [`https://sub.v1.mk/`](https://sub.v1.mk/) | **推荐**。支持 AnyTLS 等较新协议，订阅包含新协议节点时优先使用。 |
 | [`https://acl4ssr-sub.github.io/`](https://acl4ssr-sub.github.io/) | 常用备选，但协议支持较旧，可能无法转换 AnyTLS 等较新协议。 |
 
+订阅转换由三个部分协作完成：
+
+| 部分 | 作用与信任边界 |
+|---|---|
+| 转换前端 | 提供填写订阅地址、目标格式和远程配置的网页界面，并把转换请求提交给后端。 |
+| 转换后端 | 实际拉取你的真实订阅与 Ekko Rules 远程配置，再生成转换结果；**后端运营方能够知道完整的真实订阅地址，包括其中的 token。** |
+| Ekko Rules | 仅提供公开规则、顺序、策略组和映射；不接收、不保存，也无法看到用户提交给转换后端的订阅地址。 |
+
+仅自行托管前端、但仍调用公共转换后端，不能隐藏真实订阅地址；需要保护这项信息时，应同时自托管或选择可信的转换后端。
+
 按以下方式填写：
 
 | 项目 | 填写内容 |
@@ -27,9 +37,9 @@
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-在“远程配置”输入框中粘贴完整地址后，下拉列表会出现一条相同的完整 URL。**必须点击这条 URL 候选项完成选择**，不能只粘贴或只按 Enter；成功后输入框会变回只读状态并完整显示该 URL。确认不再显示“默认”后，再点击“生成订阅链接”。**不要只看输入框中是否有空格，必须检查最终生成的定制订阅地址**：有些前端会在提交时自动在远程配置前插入空格。正确结果应包含 `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`，`config=` 后立即是 `https`；如果出现 `config=%20https...`，其中 `%20` 就是前导空格。此时应删除远程配置、重新粘贴并点击完整 URL 候选，再生成并复查，直到 `%20` 消失。若缺少 `config=` 或仍为 `config=%20https...`，转换器可能读取失败并回退到网站默认预设，而不是 Ekko Rules 的 37 个策略组。
+在“远程配置”输入框中粘贴完整地址后，下拉列表会出现一条相同的完整 URL。**必须点击这条 URL 候选项完成选择**，不能只粘贴或只按 Enter；成功后输入框会变回只读状态并完整显示该 URL。确认不再显示“默认”后，再点击“生成订阅链接”。**不要只看输入框中是否有空格，必须检查最终生成的定制订阅地址**：有些前端会在提交时自动在远程配置前插入空格。正确结果应包含 `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`，`config=` 后立即是 `https`；如果出现 `config=%20https...`，其中 `%20` 就是前导空格。此时应删除远程配置、重新粘贴并点击完整 URL 候选，再生成并复查，直到 `%20` 消失。若缺少 `config=` 或仍为 `config=%20https...`，转换器可能读取失败并回退到网站默认预设，而不是 Ekko Rules 的 38 个策略组。
 
-> 第三方转换后端通常能够看到你提交的原始订阅地址。请使用可信后端，或自行部署 Subconverter。不要在 Issue、PR、日志或公开聊天中粘贴带 token 的真实订阅链接。
+> 转换后端必须获得完整订阅地址才能拉取节点并完成转换，因此不要把它当作匿名中转。请使用可信后端或自行部署转换后端；不要在 Issue、PR、日志或公开聊天中粘贴带 token 的真实订阅链接。
 
 ### Mihomo 原生模板
 
@@ -52,12 +62,13 @@ PUT_YOUR_SUBSCRIPTION_URL_HERE
 Ekko Rules 主要面向需要单独选择节点或地区的场景：
 
 - **广告拦截**：`🛑 广告拦截` 使用固定版本、锚定域名规则并默认 `REJECT`；仍可手动改为节点或 `DIRECT`；
-- **AI 分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq 等统一归入 `🧲 海外 AI`；
+- **AI 与设计工具分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq、Figma，以及 Kimi、Z.ai、Qwen、MiniMax 等国际站统一归入 `🧲 海外 AI`；DeepSeek、小红书和国产 AI 大陆站进入默认直连的 `🌏 国内网站`；
 - **主流流媒体**：YouTube、Netflix、Disney+、Apple TV+、`🎬 HBO GO/MAX`、Prime Video、DAZN、TikTok 等重点服务单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
 - **区域媒体**：美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；
 - **游戏分流**：`🎮 游戏平台` 与 `🎮 游戏下载` 分开，方便平台访问和大流量下载选择不同线路；
 - **社交与通信**：社交媒体、聊天软件、Discord 和邮件分别处理；
-- **开发服务**：`🧑‍💻 开发服务` 覆盖 GitHub、GitLab、Docker、Maven、Node.js 官网/文档/下载，以及 npm 官网、公共 Registry 和包下载；
+- **远程串流**：`🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP 等高流量远程访问链路，避免远程桌面、游戏串流或虚拟局域网流量绕行代理；
+- **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖 GitHub、GitLab、Docker/GHCR、Maven/Gradle、Node.js/npm、Python/PyPI、Rust/Cargo、Go、NuGet、RubyGems、Composer、Homebrew、CocoaPods 等官网、API、包仓库和下载链路；用户在意代理流量时可临时切到 `DIRECT`；
 - **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认使用 `REJECT` 拦截，仍可手动改为节点或 `DIRECT`；
 - **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。
 

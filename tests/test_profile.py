@@ -120,12 +120,12 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 62)
-        self.assertEqual(len(self.sources.rule_segments), 61)
-        self.assertEqual(len(self.sources.proxy_groups), 37)
-        self.assertEqual(len(self.sources.segments_for("core")), 62)
-        self.assertEqual(len(self.sources.rule_segments_for("core")), 61)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 37)
+        self.assertEqual(len(self.sources.segments), 64)
+        self.assertEqual(len(self.sources.rule_segments), 63)
+        self.assertEqual(len(self.sources.proxy_groups), 38)
+        self.assertEqual(len(self.sources.segments_for("core")), 64)
+        self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 38)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -144,6 +144,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🗣 社交媒体",
                 "📲 聊天软件",
                 "🎙 Discord",
+                "🖥️ 远程串流",
                 "🧑‍💻 开发服务",
                 "🎬 YouTube",
                 "🎬 Netflix",
@@ -186,9 +187,42 @@ class CanonicalSourceTests(unittest.TestCase):
                 list(group.members),
                 ["REJECT", "♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
             )
+        expected_group_members = {
+            "🖥️ 远程串流": [
+                "DIRECT",
+                "♻️ 手动切换",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "🧑‍💻 开发服务": [
+                "♻️ 手动切换",
+                "DIRECT",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "🧩 微软服务": [
+                "DIRECT",
+                "♻️ 手动切换",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "🍎 苹果服务": [
+                "DIRECT",
+                "♻️ 手动切换",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+        }
+        for group_name, expected_members in expected_group_members.items():
+            group = next(
+                group for group in self.sources.proxy_groups if group.name == group_name
+            )
+            self.assertEqual(list(group.members), expected_members)
         self.assertEqual(
-            [segment.slug for segment in self.sources.segments[:3]],
-            ["private", "advertising", "openai"],
+            [segment.slug for segment in self.sources.segments[:5]],
+            [
+                "author-domain",
+                "private",
+                "remote-streaming",
+                "advertising",
+                "openai",
+            ],
         )
         self.assertFalse((SOURCES / "rules" / "direct-override.list").exists())
         self.assertEqual(
@@ -255,9 +289,9 @@ class CanonicalSourceTests(unittest.TestCase):
             current["within_same_segment"]["union"],
             before["summary"]["coverage"]["within_same_segment"]["union"],
         )
-        self.assertEqual(current["global"]["union"], 93)
+        self.assertEqual(current["global"]["union"], 94)
         self.assertEqual(current["within_same_segment"]["union"], 13)
-        self.assertEqual(current["cross_segment_only"]["union"], 80)
+        self.assertEqual(current["cross_segment_only"]["union"], 81)
         self.assertLess(
             current["cross_segment_only"]["union"],
             before["summary"]["coverage"]["cross_segment_only"]["union"],
@@ -835,6 +869,14 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
                 mihomo_groups[group_name][:3],
                 ["REJECT", "♻️ 手动切换", "DIRECT"],
             )
+        self.assertEqual(
+            mihomo_groups["🖥️ 远程串流"][:2],
+            ["DIRECT", "♻️ 手动切换"],
+        )
+        self.assertEqual(
+            mihomo_groups["🧑‍💻 开发服务"][:2],
+            ["♻️ 手动切换", "DIRECT"],
+        )
         subconverter = (
             GENERATED / "config" / "ekko-rules.ini"
         ).read_text(encoding="utf-8")
@@ -844,6 +886,22 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
                 "[]♻️ 手动切换`[]DIRECT`",
                 subconverter,
             )
+        self.assertIn(
+            "custom_proxy_group=🖥️ 远程串流`select`[]DIRECT`"
+            "[]♻️ 手动切换`",
+            subconverter,
+        )
+        self.assertIn(
+            "custom_proxy_group=🧑‍💻 开发服务`select`[]♻️ 手动切换`"
+            "[]DIRECT`",
+            subconverter,
+        )
+        self.assertIn(
+            "ruleset=🖥️ 远程串流,https://raw.githubusercontent.com/"
+            "ZaunEkko/ekko-rules/main/generated/reversed-profile/Ruleset/"
+            "remote-streaming.list",
+            subconverter,
+        )
         self.assertEqual(
             mihomo["rules"][-3:],
             [
@@ -1279,6 +1337,158 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for expected, domain in cases:
             with self.subTest(domain=domain):
                 self.assert_match(expected, domain=domain)
+
+    def test_author_domain_is_the_first_rule(self) -> None:
+        first_segment = self.sources.segments[0]
+        self.assertEqual(
+            (first_segment.slug, first_segment.target),
+            ("author-domain", "🌏 国内网站"),
+        )
+        self.assertEqual(
+            self.sources.rules["author-domain"],
+            ("DOMAIN-SUFFIX,zaunekko.com",),
+        )
+        self.assert_match(
+            (
+                "author-domain",
+                "🌏 国内网站",
+                "DOMAIN-SUFFIX,zaunekko.com",
+            ),
+            domain="zaunekko.com",
+        )
+
+    def test_remote_streaming_is_direct_first(self) -> None:
+        domain_cases = [
+            ("DOMAIN-SUFFIX,tailscale.com", "login.tailscale.com"),
+            ("DOMAIN-SUFFIX,tailscale.io", "control.tailscale.io"),
+            ("DOMAIN-SUFFIX,ts.net", "host.example.ts.net"),
+            ("DOMAIN,root-tok-01.zerotier.com", "root-tok-01.zerotier.com"),
+            ("DOMAIN-SUFFIX,teamviewer.com", "router1.teamviewer.com"),
+        ]
+        for rule, domain in domain_cases:
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("remote-streaming", "🖥️ 远程串流", rule),
+                    domain=domain,
+                )
+        for process_name in [
+            "tailscaled.exe",
+            "tailscale.exe",
+            "tailscaled",
+            "IPNExtension",
+            "zerotier-one_x64.exe",
+            "zerotier-one_x86.exe",
+            "zerotier-one_arm64.exe",
+            "zerotier-one",
+            "Moonlight.exe",
+            "Moonlight",
+            "sunshine.exe",
+            "sunshine",
+            "parsecd.exe",
+            "parsecd",
+            "rustdesk.exe",
+            "rustdesk",
+            "AnyDesk.exe",
+            "AnyDesk",
+            "TeamViewer.exe",
+            "TeamViewer",
+            "teamviewerd",
+            "netbird.exe",
+            "netbird",
+            "remoting_host.exe",
+            "remoting_me2me_host",
+            "chrome-remote-desktop-host",
+            "SteamLink.exe",
+            "steamlink",
+            "mstsc.exe",
+        ]:
+            with self.subTest(process_name=process_name):
+                self.assert_match(
+                    (
+                        "remote-streaming",
+                        "🖥️ 远程串流",
+                        f"PROCESS-NAME,{process_name}",
+                    ),
+                    process_name=process_name,
+                )
+
+    def test_mainland_and_global_ai_sites_are_separated(self) -> None:
+        mainland_cases = {
+            "deepseek.com": "deepseek.com",
+            "moonshot.cn": "moonshot.cn",
+            "bigmodel.cn": "bigmodel.cn",
+            "doubao.com": "doubao.com",
+            "qianwen.com": "qianwen.com",
+            "minimaxi.com": "minimaxi.com",
+        }
+        for domain, suffix in mainland_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    (
+                        "china-web",
+                        "🌏 国内网站",
+                        f"DOMAIN-SUFFIX,{suffix}",
+                    ),
+                    domain=domain,
+                )
+        global_cases = {
+            "kimi.com": "kimi.com",
+            "z.ai": "z.ai",
+            "qwen.ai": "qwen.ai",
+            "minimax.io": "minimax.io",
+            "dola.com": "dola.com",
+            "figma.com": "figma.com",
+            "figma.site": "figma.site",
+        }
+        for domain, suffix in global_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    (
+                        "ai-platforms",
+                        "🧲 海外 AI",
+                        f"DOMAIN-SUFFIX,{suffix}",
+                    ),
+                    domain=domain,
+                )
+        existing_mainland_cases = {
+            "yiyan.baidu.com": "DOMAIN-SUFFIX,baidu.com",
+            "yuanbao.tencent.com": "DOMAIN-SUFFIX,tencent.com",
+            "xinghuo.xfyun.cn": "DOMAIN-SUFFIX,xfyun.cn",
+            "www.taobao.com": "DOMAIN-SUFFIX,taobao.com",
+        }
+        for domain, rule in existing_mainland_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-domains-direct", "🌏 国内网站", rule),
+                    domain=domain,
+                )
+
+    def test_developer_ecosystem_routes_to_manual_selector(self) -> None:
+        cases = {
+            "registry-1.docker.io": "DOMAIN-SUFFIX,docker.io",
+            "ghcr.io": "DOMAIN-SUFFIX,ghcr.io",
+            "services.gradle.org": "DOMAIN-SUFFIX,gradle.org",
+            "registry.npmjs.org": "DOMAIN-SUFFIX,npmjs.org",
+            "pypi.org": "DOMAIN-SUFFIX,pypi.org",
+            "files.pythonhosted.org": "DOMAIN-SUFFIX,pythonhosted.org",
+            "static.crates.io": "DOMAIN-SUFFIX,crates.io",
+            "api.nuget.org": "DOMAIN-SUFFIX,nuget.org",
+            "formulae.brew.sh": "DOMAIN-SUFFIX,brew.sh",
+        }
+        for domain, rule in cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("developer-platforms", "🧑‍💻 开发服务", rule),
+                    domain=domain,
+                )
+        self.assert_match(
+            (
+                "china-domains-direct",
+                "🌏 国内网站",
+                "DOMAIN-SUFFIX,npmmirror.com",
+            ),
+            domain="registry.npmmirror.com",
+        )
 
 
 class GenerationTests(unittest.TestCase):

@@ -1,4 +1,25 @@
 payload:
+- DOMAIN-SUFFIX,deepseek.com
+- DOMAIN-SUFFIX,redelight.cn
+- DOMAIN-SUFFIX,rednotecdn.com
+- DOMAIN-SUFFIX,xhscdn.com
+- DOMAIN-SUFFIX,xhscdn.net
+- DOMAIN-SUFFIX,xhslink.com
+- DOMAIN-SUFFIX,xhsrcdn.com
+- DOMAIN-SUFFIX,xiaohongshu.com
+- DOMAIN-SUFFIX,moonshot.cn
+- DOMAIN-SUFFIX,moonshot.ai
+- DOMAIN-SUFFIX,bigmodel.cn
+- DOMAIN-SUFFIX,chatglm.cn
+- DOMAIN-SUFFIX,zhipuai.cn
+- DOMAIN-SUFFIX,zhipucn.com
+- DOMAIN-SUFFIX,doubao.com
+- DOMAIN-SUFFIX,doubaocdn.com
+- DOMAIN-SUFFIX,qianwen.com
+- DOMAIN-SUFFIX,tongyi.com
+- DOMAIN-SUFFIX,minimaxi.com
+- DOMAIN-SUFFIX,hailuoai.com
+- DOMAIN-SUFFIX,xingyeai.com
 - DOMAIN-SUFFIX,265.com
 - DOMAIN-SUFFIX,2mdn.net
 - DOMAIN-SUFFIX,alt1-mtalk.google.com
