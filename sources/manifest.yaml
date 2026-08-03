@@ -41,31 +41,31 @@ segments:
 - order: 5
   kind: ruleset
   slug: google-ai
-  target: 🌐 海外 AI
+  target: 🧲 海外 AI
   source: rules/google-ai.list
   scope: core
 - order: 6
   kind: ruleset
   slug: xai
-  target: 🌐 海外 AI
+  target: 🧲 海外 AI
   source: rules/xai.list
   scope: core
 - order: 7
   kind: ruleset
   slug: microsoft-ai
-  target: 🌐 海外 AI
+  target: 🧲 海外 AI
   source: rules/microsoft-ai.list
   scope: core
 - order: 8
   kind: ruleset
   slug: ai-developer
-  target: 🌐 海外 AI
+  target: 🧲 海外 AI
   source: rules/ai-developer.list
   scope: core
 - order: 9
   kind: ruleset
   slug: ai-platforms
-  target: 🌐 海外 AI
+  target: 🧲 海外 AI
   source: rules/ai-platforms.list
   scope: core
 - order: 10
@@ -209,13 +209,13 @@ segments:
 - order: 33
   kind: ruleset
   slug: hbo-go
-  target: 🎬 HBOGO
+  target: 🎬 HBO GO/MAX
   source: rules/hbo-go.list
   scope: core
 - order: 34
   kind: ruleset
   slug: hbo-max
-  target: 🎬 HBOMAX
+  target: 🎬 HBO GO/MAX
   source: rules/hbo-max.list
   scope: core
 - order: 35
@@ -305,7 +305,7 @@ segments:
 - order: 49
   kind: ruleset
   slug: us-media
-  target: 🇺🇸 美国流媒体
+  target: 🎬 美国流媒体
   source: rules/us-media.list
   scope: core
 - order: 50
@@ -334,47 +334,53 @@ segments:
   scope: core
 - order: 54
   kind: ruleset
-  slug: china-geoip-direct
-  target: DIRECT
-  source: rules/china-geoip-direct.list
-  scope: core
-- order: 55
-  kind: ruleset
   slug: game-platform-late-recovery
   target: 🎮 游戏平台
   source: rules/game-platform-late-recovery.list
   scope: core
-- order: 56
+- order: 55
   kind: ruleset
   slug: bilibili-hmt-late-recovery
   target: 🎬 B站港澳台
   source: rules/bilibili-hmt-late-recovery.list
   scope: core
-- order: 57
+- order: 56
   kind: ruleset
   slug: iqiyi-late-recovery
   target: 🎬 爱奇艺
   source: rules/iqiyi-late-recovery.list
   scope: core
-- order: 58
+- order: 57
   kind: ruleset
   slug: microsoft-late-recovery
   target: 🧩 微软服务
   source: rules/microsoft-late-recovery.list
   scope: core
-- order: 59
+- order: 58
   kind: ruleset
   slug: apple-late-recovery
   target: 🍎 苹果服务
   source: rules/apple-late-recovery.list
   scope: core
-- order: 60
+- order: 59
   kind: ruleset
   slug: china-media-late-recovery
   target: 🌏 国内流媒体
   source: rules/china-media-late-recovery.list
   scope: core
+- order: 60
+  kind: ruleset
+  slug: china-domains-direct
+  target: 🌏 国内网站
+  source: rules/china-domains-direct.list
+  scope: core
 - order: 61
+  kind: ruleset
+  slug: china-geoip-direct
+  target: DIRECT
+  source: rules/china-geoip-direct.list
+  scope: core
+- order: 62
   kind: terminal
   slug: final
   target: 🐟 漏网之鱼

@@ -11,20 +11,6 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
-- name: 🌐 海外 AI
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🔎 Google
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
 - name: 🧲 OpenAI
   type: select
   proxies:
@@ -33,6 +19,20 @@ proxy-groups:
   use:
   - subscription
 - name: 🧲 Claude
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🧲 海外 AI
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
+- name: 🔎 Google
   type: select
   proxies:
   - ♻️ 手动切换
@@ -116,14 +116,7 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
-- name: 🎬 HBOGO
-  type: select
-  proxies:
-  - ♻️ 手动切换
-  - DIRECT
-  use:
-  - subscription
-- name: 🎬 HBOMAX
+- name: 🎬 HBO GO/MAX
   type: select
   proxies:
   - ♻️ 手动切换
@@ -179,7 +172,7 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
-- name: 🇺🇸 美国流媒体
+- name: 🎬 美国流媒体
   type: select
   proxies:
   - ♻️ 手动切换
@@ -635,13 +628,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-web.yaml
     path: ./ruleset/china-web.yaml
     interval: 86400
-  china-geoip-direct:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-geoip-direct.yaml
-    path: ./ruleset/china-geoip-direct.yaml
-    interval: 86400
   game-platform-late-recovery:
     type: http
     behavior: classical
@@ -684,16 +670,30 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-media-late-recovery.yaml
     path: ./ruleset/china-media-late-recovery.yaml
     interval: 86400
+  china-domains-direct:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-domains-direct.yaml
+    path: ./ruleset/china-domains-direct.yaml
+    interval: 86400
+  china-geoip-direct:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-geoip-direct.yaml
+    path: ./ruleset/china-geoip-direct.yaml
+    interval: 86400
 rules:
 - RULE-SET,direct-override,DIRECT
 - RULE-SET,private,DIRECT
 - RULE-SET,openai,🧲 OpenAI
 - RULE-SET,claude,🧲 Claude
-- RULE-SET,google-ai,🌐 海外 AI
-- RULE-SET,xai,🌐 海外 AI
-- RULE-SET,microsoft-ai,🌐 海外 AI
-- RULE-SET,ai-developer,🌐 海外 AI
-- RULE-SET,ai-platforms,🌐 海外 AI
+- RULE-SET,google-ai,🧲 海外 AI
+- RULE-SET,xai,🧲 海外 AI
+- RULE-SET,microsoft-ai,🧲 海外 AI
+- RULE-SET,ai-developer,🧲 海外 AI
+- RULE-SET,ai-platforms,🧲 海外 AI
 - RULE-SET,onedrive,☁️ 云盘服务
 - RULE-SET,discord,🎙 Discord
 - RULE-SET,instagram,🗣 社交媒体
@@ -717,8 +717,8 @@ rules:
 - RULE-SET,youtube,🎬 YouTube
 - RULE-SET,tidal,🎵 音乐平台
 - RULE-SET,disney-plus,🎬 DisneyPlus
-- RULE-SET,hbo-go,🎬 HBOGO
-- RULE-SET,hbo-max,🎬 HBOMAX
+- RULE-SET,hbo-go,🎬 HBO GO/MAX
+- RULE-SET,hbo-max,🎬 HBO GO/MAX
 - RULE-SET,dazn,🎬 Dazn
 - RULE-SET,apple-tv-plus,🎬 AppleTV+
 - RULE-SET,bilibili-sea,🎬 东南亚媒体
@@ -733,16 +733,17 @@ rules:
 - RULE-SET,icloud,☁️ 云盘服务
 - RULE-SET,microsoft,🧩 微软服务
 - RULE-SET,apple,🍎 苹果服务
-- RULE-SET,us-media,🇺🇸 美国流媒体
+- RULE-SET,us-media,🎬 美国流媒体
 - RULE-SET,global-media,🌏 国外流媒体
 - RULE-SET,google,🔎 Google
 - RULE-SET,china-media,🌏 国内流媒体
 - RULE-SET,china-web,🌏 国内网站
-- RULE-SET,china-geoip-direct,DIRECT
 - RULE-SET,game-platform-late-recovery,🎮 游戏平台
 - RULE-SET,bilibili-hmt-late-recovery,🎬 B站港澳台
 - RULE-SET,iqiyi-late-recovery,🎬 爱奇艺
 - RULE-SET,microsoft-late-recovery,🧩 微软服务
 - RULE-SET,apple-late-recovery,🍎 苹果服务
 - RULE-SET,china-media-late-recovery,🌏 国内流媒体
+- RULE-SET,china-domains-direct,🌏 国内网站
+- RULE-SET,china-geoip-direct,DIRECT
 - MATCH,🐟 漏网之鱼

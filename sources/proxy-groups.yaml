@@ -16,22 +16,6 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 2
-  name: 🌐 海外 AI
-  type: select
-  scope: core
-  members:
-  - ♻️ 手动切换
-  - DIRECT
-  - __ALL_SUBSCRIPTION_NODES__
-- order: 3
-  name: 🔎 Google
-  type: select
-  scope: core
-  members:
-  - ♻️ 手动切换
-  - DIRECT
-  - __ALL_SUBSCRIPTION_NODES__
-- order: 4
   name: 🧲 OpenAI
   type: select
   scope: core
@@ -39,8 +23,24 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 5
+- order: 3
   name: 🧲 Claude
+  type: select
+  scope: core
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 4
+  name: 🧲 海外 AI
+  type: select
+  scope: core
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 5
+  name: 🔎 Google
   type: select
   scope: core
   members:
@@ -136,7 +136,7 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 17
-  name: 🎬 HBOGO
+  name: 🎬 HBO GO/MAX
   type: select
   scope: core
   members:
@@ -144,14 +144,6 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 18
-  name: 🎬 HBOMAX
-  type: select
-  scope: core
-  members:
-  - ♻️ 手动切换
-  - DIRECT
-  - __ALL_SUBSCRIPTION_NODES__
-- order: 19
   name: 🎬 PrimeVideo
   type: select
   scope: core
@@ -159,7 +151,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 20
+- order: 19
   name: 🎬 Dazn
   type: select
   scope: core
@@ -167,7 +159,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 21
+- order: 20
   name: 🎶 TikTok
   type: select
   scope: core
@@ -175,7 +167,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 22
+- order: 21
   name: 🎵 音乐平台
   type: select
   scope: core
@@ -183,7 +175,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 23
+- order: 22
   name: 🎬 爱奇艺
   type: select
   scope: core
@@ -191,7 +183,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 24
+- order: 23
   name: 🎬 B站港澳台
   type: select
   scope: core
@@ -199,7 +191,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 25
+- order: 24
   name: 🎬 东南亚媒体
   type: select
   scope: core
@@ -207,15 +199,15 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 26
-  name: 🇺🇸 美国流媒体
+- order: 25
+  name: 🎬 美国流媒体
   type: select
   scope: core
   members:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 27
+- order: 26
   name: 🌏 国外流媒体
   type: select
   scope: core
@@ -223,7 +215,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 28
+- order: 27
   name: 🌏 国内流媒体
   type: select
   scope: core
@@ -231,7 +223,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 29
+- order: 28
   name: ☁️ 云盘服务
   type: select
   scope: core
@@ -239,7 +231,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 30
+- order: 29
   name: 🧩 微软服务
   type: select
   scope: core
@@ -247,7 +239,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 31
+- order: 30
   name: 🍎 苹果服务
   type: select
   scope: core
@@ -255,7 +247,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 32
+- order: 31
   name: 🎮 游戏平台
   type: select
   scope: core
@@ -263,7 +255,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 33
+- order: 32
   name: 🎮 游戏下载
   type: select
   scope: core
@@ -271,7 +263,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 34
+- order: 33
   name: 📪 邮件服务
   type: select
   scope: core
@@ -279,7 +271,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 35
+- order: 34
   name: 🔞 NSFW
   type: select
   scope: core
@@ -287,7 +279,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 36
+- order: 35
   name: 🌏 国内网站
   type: select
   scope: core
@@ -295,7 +287,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 37
+- order: 36
   name: 🐟 漏网之鱼
   type: select
   scope: core

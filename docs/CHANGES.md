@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 uses **2026-08-03**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -342,4 +342,36 @@ Current verified canonical result:
 - zero same-segment exact duplicates and zero non-strict CIDRs
 - first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40
 
-`no-resolve` remains the default because it prevents GEOIP matching from initiating an extra DNS lookup. Users who prefer post-resolution China-IP classification may remove it locally and use `GEOIP,CN,DIRECT`; actual DNS exposure then depends on the client's DNS, TUN, routing, and encrypted-DNS configuration.
+`no-resolve` remains the default because it prevents GEOIP matching from initiating an extra DNS lookup.
+
+## ER-016 — Classic mainland-domain recovery and policy-group cleanup
+
+**Type:** domestic-routing compatibility, anchored-domain import, and policy-group presentation
+
+The standard product adds one classic mainland-domain ruleset after all six late-recovery segments and immediately before the terminal China GEOIP and FINAL. The fixed tail is now:
+
+```text
+all specialized rules
+→ six late-recovery rulesets
+→ china-domains-direct
+→ GEOIP,CN,DIRECT,no-resolve
+→ MATCH,🐟 漏网之鱼
+```
+
+`china-domains-direct` is a pinned, deterministic import from `v2fly/domain-list-community` revision `660198a50bac2ab10c567d95a472a7b33915d1b0` under MIT. It emits 1,482 anchored rules—1,481 `DOMAIN-SUFFIX` and one `DOMAIN`—from 31 named mainland service categories. Includes, `!cn` entries, keywords, regular expressions, single-label suffixes, and rules covered by earlier canonical segments are excluded. Normal generation remains offline; the import evidence is frozen in `tests/fixtures/china-domain-import-ledger.json`. ACL4SSR's CC-BY-SA ChinaDomain corpus was evaluated but not imported.
+
+Every destination-IP matcher still carries `no-resolve`. The classic domain layer restores common mainland-domain classification without relying on implicit DNS resolution, while terminal GEOIP can still evaluate an IP already known by the client.
+
+Policy-group presentation was also normalized:
+
+- `🧲 OpenAI`, `🧲 Claude`, and `🧲 海外 AI` are consecutive at the top, followed by `🔎 Google`;
+- US long-tail streaming now uses `🎬 美国流媒体`;
+- HBO GO and Max share `🎬 HBO GO/MAX`, while their two rulesets remain separate and DAZN remains independent.
+
+Current verified canonical target:
+
+- 61 rule files, 62 ordered segments, 36 proxy groups;
+- 5,729 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 53; same-segment: 13; cross-segment-only: 40.
