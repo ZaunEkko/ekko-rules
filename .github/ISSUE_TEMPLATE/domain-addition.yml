@@ -1,0 +1,92 @@
+name: ➕ 域名或服务规则建议
+description: 建议新增服务域名，或把尚未覆盖的域名加入现有策略组
+title: "[规则建议] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢补充规则。请只提交公开域名和可公开核验的证据。
+
+        **禁止粘贴真实订阅 URL、token、UUID、密码、私钥、节点服务器/端口或完整客户端配置。** 如果已经公开凭据，请立即吊销或轮换；编辑 Issue 不能让已泄露的凭据重新安全。
+  - type: input
+    id: service
+    attributes:
+      label: 服务或产品名称
+      placeholder: 例如 Node.js / npm
+    validations:
+      required: true
+  - type: input
+    id: official-url
+    attributes:
+      label: 官方主页或主要入口
+      placeholder: https://example.com
+    validations:
+      required: true
+  - type: textarea
+    id: domains
+    attributes:
+      label: 建议加入的域名
+      description: 一行一个，只写域名；优先提交可锚定的根域或明确主机名。
+      placeholder: |
+        example.com
+        registry.example.com
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: target-group
+    attributes:
+      label: 建议策略组
+      description: 请填写 README 中现有策略组的完整名称；若建议新组，请明确标注。
+      placeholder: 🧑‍💻 开发服务
+    validations:
+      required: true
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 域名用途与分组理由
+      description: 说明这些域名承载什么功能、为何应归入该组，以及适用地区或解锁需求。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 公开证据
+      description: 提供官方文档、官网链接、公开 DNS/证书信息或已完全脱敏的最小流量证据。
+      placeholder: |
+        - 官方文档：https://...
+        - 该页面说明 registry.example.com 用于包下载。
+    validations:
+      required: true
+  - type: dropdown
+    id: shared-infrastructure
+    attributes:
+      label: 是否属于共享 CDN、云平台或公共根域？
+      options:
+        - 否，服务专用域名
+        - 是，可能影响其他租户或服务
+        - 不确定，需要维护者复核
+    validations:
+      required: true
+  - type: textarea
+    id: current-coverage
+    attributes:
+      label: 当前规则为何没有覆盖？
+      description: 如已知，请填写当前命中组、规则或 ruleset slug；不知道可填写“不确定”。
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 提交确认
+      options:
+        - label: 我已阅读 README、SUPPORT.md 和 CONTRIBUTING.md，并搜索现有 Issue 和规则文件。
+          required: true
+        - label: 我已确认这不是重复建议。
+          required: true
+        - label: 我没有提交订阅 URL、token、UUID、密码、私钥、节点服务器/端口或完整客户端配置。
+          required: true
+        - label: 我理解宽泛关键词、公共后缀和共享基础设施根域可能不会被接受。
+          required: true

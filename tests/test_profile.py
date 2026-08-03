@@ -31,6 +31,7 @@ PHASE_3_RECOVERY_LEDGER = (
 CHINA_DOMAIN_IMPORT_LEDGER = (
     ROOT / "tests" / "fixtures" / "china-domain-import-ledger.json"
 )
+ISSUE_TEMPLATES = ROOT / ".github" / "ISSUE_TEMPLATE"
 sys.path.insert(0, str(ROOT))
 
 from scripts.profile_model import (  # noqa: E402
@@ -45,6 +46,62 @@ from scripts.profile_model import (  # noqa: E402
     render_profile,
     select_late_recovery,
 )
+
+
+class CommunityHealthTests(unittest.TestCase):
+    def test_issue_forms_are_structured_and_safe(self) -> None:
+        config = yaml.safe_load(
+            (ISSUE_TEMPLATES / "config.yml").read_text(encoding="utf-8")
+        )
+        self.assertFalse(config["blank_issues_enabled"])
+        self.assertEqual(len(config["contact_links"]), 2)
+
+        expected = {
+            "domain-addition.yml": "enhancement",
+            "policy-group-change.yml": "enhancement",
+            "routing-problem.yml": "bug",
+        }
+        sensitive_confirmation = (
+            "我没有提交订阅 URL、token、UUID、密码、私钥、节点服务器/端口"
+            "或完整客户端配置。"
+        )
+        for filename, label in expected.items():
+            with self.subTest(filename=filename):
+                document = yaml.safe_load(
+                    (ISSUE_TEMPLATES / filename).read_text(encoding="utf-8")
+                )
+                self.assertTrue(document["name"])
+                self.assertTrue(document["description"])
+                self.assertEqual(document["labels"], [label])
+                self.assertTrue(document["body"])
+                ids = [item["id"] for item in document["body"] if "id" in item]
+                self.assertEqual(len(ids), len(set(ids)))
+                self.assertTrue(
+                    all(
+                        value.replace("-", "").replace("_", "").isalnum()
+                        for value in ids
+                    )
+                )
+                labels = [
+                    option["label"]
+                    for item in document["body"]
+                    if item["type"] == "checkboxes"
+                    for option in item["attributes"]["options"]
+                ]
+                self.assertIn(sensitive_confirmation, labels)
+
+    def test_community_guides_and_templates_exist(self) -> None:
+        required = [
+            ROOT / "CONTRIBUTING.md",
+            ROOT / "SUPPORT.md",
+            ROOT / "SECURITY.md",
+            ROOT / "CODE_OF_CONDUCT.md",
+            ROOT / ".github" / "PULL_REQUEST_TEMPLATE.md",
+        ]
+        for path in required:
+            with self.subTest(path=path.name):
+                self.assertTrue(path.is_file())
+                self.assertTrue(path.read_text(encoding="utf-8").strip())
 
 
 class CanonicalSourceTests(unittest.TestCase):
@@ -109,6 +166,13 @@ class CanonicalSourceTests(unittest.TestCase):
         self.assertEqual(
             list(self.sources.proxy_groups[-1].members),
             ["♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
+        )
+        nsfw_group = next(
+            group for group in self.sources.proxy_groups if group.name == "🔞 NSFW"
+        )
+        self.assertEqual(
+            list(nsfw_group.members),
+            ["REJECT", "♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
         )
         self.assertEqual(
             [
@@ -699,6 +763,20 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
+        mihomo_groups = {
+            group["name"]: group["proxies"] for group in mihomo["proxy-groups"]
+        }
+        self.assertEqual(
+            mihomo_groups["🔞 NSFW"][:3],
+            ["REJECT", "♻️ 手动切换", "DIRECT"],
+        )
+        subconverter = (
+            GENERATED / "config" / "ekko-rules.ini"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "custom_proxy_group=🔞 NSFW`select`[]REJECT`[]♻️ 手动切换`[]DIRECT`",
+            subconverter,
+        )
         self.assertEqual(
             mihomo["rules"][-3:],
             [
@@ -834,8 +912,68 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 "openrouter.ai",
             ),
             (
+                ("developer-platforms", "🧑‍💻 开发服务", "DOMAIN-SUFFIX,nodejs.org"),
+                "nodejs.org",
+            ),
+            (
+                ("developer-platforms", "🧑‍💻 开发服务", "DOMAIN-SUFFIX,nodejs.dev"),
+                "nodejs.dev",
+            ),
+            (
+                ("developer-platforms", "🧑‍💻 开发服务", "DOMAIN-SUFFIX,iojs.org"),
+                "iojs.org",
+            ),
+            (
+                ("developer-platforms", "🧑‍💻 开发服务", "DOMAIN-SUFFIX,npmjs.com"),
+                "www.npmjs.com",
+            ),
+            (
+                ("developer-platforms", "🧑‍💻 开发服务", "DOMAIN-SUFFIX,npmjs.org"),
+                "registry.npmjs.org",
+            ),
+            (
+                ("developer-platforms", "🧑‍💻 开发服务", "DOMAIN-SUFFIX,npm.im"),
+                "npm.im",
+            ),
+            (
                 ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,e-hentai.org"),
                 "e-hentai.org",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,missav.ws"),
+                "missav.ws",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,missav.ai"),
+                "missav.ai",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,missav.live"),
+                "missav.live",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,hanime1.me"),
+                "hanime1.me",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,hanimeone.me"),
+                "hanimeone.me",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,hanime1.com"),
+                "hanime1.com",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,javchu.com"),
+                "javchu.com",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,av.jkforum.net"),
+                "av.jkforum.net",
+            ),
+            (
+                ("nsfw", "🔞 NSFW", "DOMAIN-SUFFIX,javdb.com"),
+                "javdb.com",
             ),
             (
                 ("us-media", "🎬 美国流媒体", "DOMAIN-SUFFIX,hulu.com"),

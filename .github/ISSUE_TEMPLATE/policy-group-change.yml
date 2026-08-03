@@ -1,0 +1,73 @@
+name: 🧭 策略组或映射调整
+description: 建议新建、合并、拆分、改名、排序、默认项或规则到策略组映射调整
+title: "[策略组] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ekko Rules 只维护规则、顺序、策略组与映射，不接管节点、DNS、TUN、端口、控制器或系统代理。
+
+        **禁止提交真实订阅 URL、token、UUID、密码、私钥、节点服务器/端口或完整客户端配置。**
+  - type: dropdown
+    id: change-type
+    attributes:
+      label: 调整类型
+      options:
+        - 新建策略组
+        - 合并策略组
+        - 拆分策略组
+        - 重命名或图标调整
+        - 调整组顺序
+        - 调整默认首选项
+        - 调整规则到策略组映射
+    validations:
+      required: true
+  - type: input
+    id: current-group
+    attributes:
+      label: 当前策略组或映射
+      placeholder: 例如 🔞 NSFW → ♻️ 手动切换
+    validations:
+      required: true
+  - type: input
+    id: proposed-group
+    attributes:
+      label: 建议结果
+      placeholder: 例如 🔞 NSFW → REJECT
+    validations:
+      required: true
+  - type: textarea
+    id: affected-rules
+    attributes:
+      label: 涉及的 ruleset、域名或服务
+      description: 一行一个；不知道 slug 时可填写服务名和代表域名。
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: 调整理由与用户场景
+      description: 说明当前设计的问题、建议的默认行为以及为何值得增加界面复杂度。
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: 对 Subconverter 与 Mihomo 的影响
+      description: 说明是否改变组数、顺序、默认选择、现有用户行为或两个入口的一致性；不确定可明确写出。
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 提交确认
+      options:
+        - label: 我已阅读 README、SUPPORT.md 和 CONTRIBUTING.md，并搜索过现有 Issue。
+          required: true
+        - label: 我没有提交订阅 URL、token、UUID、密码、私钥、节点服务器/端口或完整客户端配置。
+          required: true
+        - label: 我理解策略组顺序和成员第一项会影响默认行为。
+          required: true

@@ -238,6 +238,7 @@ proxy-groups:
 - name: 🔞 NSFW
   type: select
   proxies:
+  - REJECT
   - ♻️ 手动切换
   - DIRECT
   use:

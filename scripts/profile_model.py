@@ -503,7 +503,7 @@ def _validate_proxy_groups(data: dict[str, Any]) -> tuple[ProxyGroup, ...]:
     for group in groups:
         for member in group.members[:-1]:
             require(
-                member == "DIRECT" or member in name_set,
+                member in {"DIRECT", "REJECT"} or member in name_set,
                 f"Proxy group {group.name} references unknown member {member}",
             )
     return tuple(groups)
@@ -1098,7 +1098,7 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 
 ## 在线订阅转换
 
-打开支持自定义远程配置的 Subconverter 前端，例如 `https://sub.v1.mk/`。订阅链接填写自己的节点订阅，生成类型选择 `Clash`，远程配置填写：
+打开支持自定义远程配置的 Subconverter 前端：推荐 `https://sub.v1.mk/`，它支持 AnyTLS 等较新协议；`https://acl4ssr-sub.github.io/` 是常用备选，但协议支持较旧，可能无法转换 AnyTLS 等较新协议。订阅链接填写自己的节点订阅，生成类型选择 `Clash`，远程配置填写：
 
 ```text
 {subconverter_config_url}
@@ -1113,11 +1113,12 @@ Ruleset 地址前缀：`{rules_base}`。
 - OpenAI、Claude 独立，Gemini、Grok、Microsoft AI、Cursor 等归入海外 AI；
 - YouTube、Netflix、Disney+、Apple TV+、HBO GO/MAX、Prime Video、DAZN 等重点流媒体单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
 - 美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国和国内流媒体分别处理；
-- 游戏平台与游戏下载分开；社交、聊天、Discord、邮件和开发服务分别处理；
-- 音乐、云盘、Microsoft、Apple、Google、NSFW 和国内网站均有对应分组；
+- 游戏平台与游戏下载分开；社交、聊天、Discord 和邮件分别处理；
+- `🧑‍💻 开发服务` 覆盖 GitHub、GitLab、Docker、Maven、Node.js 官网/文档/下载，以及 npm 官网、公共 Registry 和包下载；
+- 音乐、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
-全部 {groups} 个策略组均为手动选择，不启用自动测速。
+除 `🔞 NSFW` 默认选择 `REJECT` 外，其余策略组保持手动选择；所有组均可自行切换，不启用自动测速。
 
 ## 中国大陆域名、IP 与 DNS
 
@@ -1152,7 +1153,7 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 
 ## Online subscription conversion
 
-Open a Subconverter frontend that accepts custom remote configurations, such as `https://sub.v1.mk/`. Supply your own node subscription, choose `Clash` as the target, and enter:
+Open a Subconverter frontend that accepts custom remote configurations. `https://sub.v1.mk/` is recommended because it supports newer protocols such as AnyTLS. `https://acl4ssr-sub.github.io/` is a popular alternative with older protocol support and may not convert AnyTLS or other newer protocols. Supply your own node subscription, choose `Clash` as the target, and enter:
 
 ```text
 {subconverter_config_url}
@@ -1167,11 +1168,12 @@ Ruleset URL prefix: `{rules_base}`.
 - OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, and similar services use Overseas AI;
 - YouTube, Netflix, Disney+, Apple TV+, HBO GO/MAX, Prime Video, and DAZN are handled separately; HBO GO and Max share one group, while DAZN remains independent;
 - US long-tail services use `🎬 美国流媒体`; HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
-- game platforms are separate from game downloads; social, messaging, Discord, email, and developer services are separated;
-- music, cloud storage, Microsoft, Apple, Google, NSFW, and mainland Chinese sites have dedicated groups;
+- game platforms are separate from game downloads; social, messaging, Discord, and email are separated;
+- `🧑‍💻 开发服务` covers GitHub, GitLab, Docker, Maven, the Node.js website/docs/downloads, and the npm website, public registry, and package downloads;
+- music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
-All {groups} policy groups use manual selection. Automatic latency testing is disabled.
+All {groups} policy groups remain manually switchable and automatic latency testing is disabled; `🔞 NSFW` is the only group whose default selection is `REJECT`.
 
 ## Mainland domains, IPs, and DNS
 

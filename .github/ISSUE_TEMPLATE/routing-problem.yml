@@ -1,0 +1,95 @@
+name: 🐛 误分类或规则问题
+description: 报告域名、目标 IP 或进程命中了错误策略组，或未按预期命中
+title: "[误分类] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请提供最小、可复现、已脱敏的信息。Ekko Rules 不负责订阅商节点可用性、客户端 DNS/TUN 设置、第三方转换器故障或系统代理配置。
+
+        **禁止粘贴真实订阅 URL、token、UUID、密码、私钥、节点服务器/端口或完整客户端配置。**
+  - type: dropdown
+    id: entry-point
+    attributes:
+      label: 使用入口
+      options:
+        - Subconverter 在线配置
+        - Mihomo 原生模板
+        - 两个入口均可复现
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: 客户端及版本
+      placeholder: 例如 Clash Verge Rev 2.x / Mihomo 1.x
+    validations:
+      required: true
+  - type: input
+    id: revision
+    attributes:
+      label: 使用的 Ekko Rules 提交或更新时间
+      description: 可填写生成配置中引用的 main 提交、下载日期或“不确定”。
+    validations:
+      required: true
+  - type: input
+    id: matcher-input
+    attributes:
+      label: 测试域名、目标 IP 或进程名
+      placeholder: api.example.com
+    validations:
+      required: true
+  - type: input
+    id: actual-group
+    attributes:
+      label: 实际命中的策略组
+      placeholder: 🐟 漏网之鱼
+    validations:
+      required: true
+  - type: input
+    id: expected-group
+    attributes:
+      label: 期望命中的策略组
+      placeholder: 🧑‍💻 开发服务
+    validations:
+      required: true
+  - type: textarea
+    id: suspected-rule
+    attributes:
+      label: 疑似命中规则或 ruleset
+      description: 如客户端能显示规则，请填写 matcher 和 slug；不知道可填写“不确定”。
+      placeholder: DOMAIN-SUFFIX,example.com / developer-platforms
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 最小复现步骤
+      placeholder: |
+        1. 使用 main 分支生成配置
+        2. 访问 api.example.com
+        3. 客户端显示命中 ...
+    validations:
+      required: true
+  - type: textarea
+    id: sanitized-evidence
+    attributes:
+      label: 已脱敏证据
+      description: 可附规则命中截图或最小日志。请遮盖节点、服务器、端口、订阅参数和任何凭据。
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 提交确认
+      options:
+        - label: 我已阅读 README、SUPPORT.md 和 CONTRIBUTING.md，并搜索过现有 Issue。
+          required: true
+        - label: 我已确认这不是节点故障、订阅商问题或客户端 DNS/TUN/系统代理配置问题。
+          required: true
+        - label: 我已检查最终 Subconverter URL 不含 `config=%20https...`，或本问题不使用 Subconverter。
+          required: true
+        - label: 我没有提交订阅 URL、token、UUID、密码、私钥、节点服务器/端口或完整客户端配置。
+          required: true
