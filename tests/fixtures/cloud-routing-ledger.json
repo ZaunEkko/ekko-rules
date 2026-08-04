@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "policy": "Cloud infrastructure intentionally follows advertising and concrete business rules, then precedes vendor aggregates and the classic mainland layer. Only these frozen later matchers may be captured by the two cloud rulesets; any additional capture requires review.",
-  "count": 57,
-  "rows_sha256": "f6bc94a873a63d9fe84313282740215e83dc96140b07197bce86366f02a9c7d9",
+  "count": 67,
+  "rows_sha256": "fa8012f2b3777472f5ef8845ccb8f32b5ae5d3cbbf042928eaf25d74307bec74",
   "rows": [
     {
       "cloud_slug": "overseas-cloud",
@@ -239,6 +239,14 @@
     {
       "cloud_slug": "china-cloud",
       "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflareanycast.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflareanycast.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
       "cloud_rule": "DOMAIN-SUFFIX,cloudflarechina.cn",
       "later_slug": "china-domains-direct",
       "later_target": "🌏 国内网站",
@@ -263,6 +271,14 @@
     {
       "cloud_slug": "china-cloud",
       "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflareinsights-cn.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflareinsights-cn.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
       "cloud_rule": "DOMAIN-SUFFIX,cloudflareprod.com",
       "later_slug": "china-domains-direct",
       "later_target": "🌏 国内网站",
@@ -275,6 +291,14 @@
       "later_slug": "china-domains-direct",
       "later_target": "🌏 国内网站",
       "later_rule": "DOMAIN-SUFFIX,cloudflarestaging.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflarestoragegw.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflarestoragegw.com"
     },
     {
       "cloud_slug": "china-cloud",
@@ -407,6 +431,54 @@
     {
       "cloud_slug": "china-cloud",
       "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdclouddns.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdclouddns.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdclouddns.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdclouddns.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudedge.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudedge.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudedge.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudedge.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudlb.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudlb.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudlb.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudlb.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
       "cloud_rule": "DOMAIN-SUFFIX,jdcloudstatic.com",
       "later_slug": "china-domains-direct",
       "later_target": "🌏 国内网站",
@@ -419,6 +491,14 @@
       "later_slug": "china-domains-direct",
       "later_target": "🌏 国内网站",
       "later_rule": "DOMAIN-SUFFIX,jdcloudstatic.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudwaf.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudwaf.com"
     },
     {
       "cloud_slug": "china-cloud",

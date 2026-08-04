@@ -289,7 +289,7 @@ class CanonicalSourceTests(unittest.TestCase):
     def test_cloud_capture_ledger_is_frozen_and_closed(self) -> None:
         ledger = json.loads(CLOUD_ROUTING_LEDGER.read_text(encoding="utf-8"))
         self.assertEqual(ledger["schema_version"], 1)
-        self.assertEqual(ledger["count"], 57)
+        self.assertEqual(ledger["count"], 67)
         content = "".join(
             "\t".join(
                 (
@@ -340,11 +340,11 @@ class CanonicalSourceTests(unittest.TestCase):
         self.assertEqual(actual, ledger["rows"])
         self.assertEqual(
             Counter(row["cloud_slug"] for row in actual),
-            Counter({"china-cloud": 54, "overseas-cloud": 3}),
+            Counter({"china-cloud": 64, "overseas-cloud": 3}),
         )
         self.assertEqual(
             Counter(row["later_slug"] for row in actual),
-            Counter({"china-domains-direct": 42, "microsoft-late-recovery": 15}),
+            Counter({"china-domains-direct": 52, "microsoft-late-recovery": 15}),
         )
 
     def test_no_resolve_and_strict_cidr_gate(self) -> None:
@@ -380,9 +380,9 @@ class CanonicalSourceTests(unittest.TestCase):
             current["within_same_segment"]["union"],
             before["summary"]["coverage"]["within_same_segment"]["union"],
         )
-        self.assertEqual(current["global"]["union"], 133)
+        self.assertEqual(current["global"]["union"], 143)
         self.assertEqual(current["within_same_segment"]["union"], 13)
-        self.assertEqual(current["cross_segment_only"]["union"], 120)
+        self.assertEqual(current["cross_segment_only"]["union"], 130)
         self.assertLess(
             current["cross_segment_only"]["union"],
             before["summary"]["coverage"]["cross_segment_only"]["union"],
@@ -1661,16 +1661,28 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "obs.cn-north-4.myhuaweicloud.com": "DOMAIN-SUFFIX,myhuaweicloud.com",
             "console.volcengine.com": "DOMAIN-SUFFIX,volcengine.com",
             "api.ucloud.cn": "DOMAIN-SUFFIX,ucloud.cn",
+            "bucket.cn-bj.ufileos.com": "DOMAIN-SUFFIX,ufileos.com",
+            "internal-cn-sh2-01.ufileos.com": "DOMAIN-SUFFIX,ufileos.com",
             "console.qingcloud.com": "DOMAIN-SUFFIX,qingcloud.com",
             "bucket.bcebos.com": "DOMAIN-SUFFIX,bcebos.com",
             "cloud.baidu.com": "DOMAIN,cloud.baidu.com",
             "console.bce.baidu.com": "DOMAIN,console.bce.baidu.com",
             "console.jdcloud.com": "DOMAIN-SUFFIX,jdcloud.com",
+            "dns.jdclouddns.com": "DOMAIN-SUFFIX,jdclouddns.com",
+            "edge.jdcloudedge.com": "DOMAIN-SUFFIX,jdcloudedge.com",
+            "lb.jdcloudlb.com": "DOMAIN-SUFFIX,jdcloudlb.com",
+            "waf.jdcloudwaf.com": "DOMAIN-SUFFIX,jdcloudwaf.com",
             "console.ksyun.com": "DOMAIN-SUFFIX,ksyun.com",
+            "bucket.ks3-cn-beijing.ksyuncs.com": "DOMAIN-SUFFIX,ksyuncs.com",
+            "test.clouddn.com": "DOMAIN-SUFFIX,clouddn.com",
+            "bucket.oos-cn.ctyunapi.cn": "DOMAIN-SUFFIX,ctyunapi.cn",
             "console.amazonaws.cn": "DOMAIN-SUFFIX,amazonaws.cn",
             "s3.cn-north-1.amazonaws.com.cn": "DOMAIN-SUFFIX,amazonaws.com.cn",
             "portal.azure.cn": "DOMAIN-SUFFIX,azure.cn",
             "edge.cloudflarechina.cn": "DOMAIN-SUFFIX,cloudflarechina.cn",
+            "www.example.cn.cdn.cloudflareanycast.net": "DOMAIN-SUFFIX,cloudflareanycast.net",
+            "beacon.cloudflareinsights-cn.com": "DOMAIN-SUFFIX,cloudflareinsights-cn.com",
+            "gateway.cloudflarestoragegw.com": "DOMAIN-SUFFIX,cloudflarestoragegw.com",
         }
         for domain, rule in domestic_cases.items():
             with self.subTest(domain=domain):
@@ -1696,6 +1708,11 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "bucket.cos.ap-singapore.myqcloud.com": "DOMAIN-SUFFIX,cos.ap-singapore.myqcloud.com",
             "obs.ap-southeast-3.myhuaweicloud.com": "DOMAIN-SUFFIX,ap-southeast-3.myhuaweicloud.com",
             "console-intl.huaweicloud.com": "DOMAIN,console-intl.huaweicloud.com",
+            "bucket.us-ca.ufileos.com": "DOMAIN-SUFFIX,us-ca.ufileos.com",
+            "bucket.s3-us-ca.ufileos.com": "DOMAIN-SUFFIX,s3-us-ca.ufileos.com",
+            "bucket.internal-sg-01.ufileos.com": "DOMAIN-SUFFIX,internal-sg-01.ufileos.com",
+            "bucket.ks3-sgp.ksyuncs.com": "DOMAIN-SUFFIX,ks3-sgp.ksyuncs.com",
+            "bucket.oos-cnhk-hqnet.ctyunapi.cn": "DOMAIN-SUFFIX,oos-cnhk-hqnet.ctyunapi.cn",
             "console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
             "us-east-1.console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
             "eu-west-1.console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
@@ -1704,7 +1721,12 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "us-east-1.sso.signin.aws": "DOMAIN-SUFFIX,signin.aws",
             "ec2.us-east-1.api.aws": "DOMAIN-SUFFIX,api.aws",
             "s3.us-east-1.amazonaws.com": "DOMAIN-SUFFIX,amazonaws.com",
+            "aws.amazon.com": "DOMAIN-SUFFIX,aws.amazon.com",
+            "docs.aws.amazon.com": "DOMAIN-SUFFIX,aws.amazon.com",
             "portal.azure.com": "DOMAIN-SUFFIX,azure.com",
+            "storage.file.core.windows.net": "DOMAIN-SUFFIX,core.windows.net",
+            "server.database.windows.net": "DOMAIN-SUFFIX,database.windows.net",
+            "namespace.servicebus.windows.net": "DOMAIN-SUFFIX,servicebus.windows.net",
             "console.cloud.google.com": "DOMAIN-SUFFIX,cloud.google.com",
             "cloudresourcemanager.googleapis.com": "DOMAIN,cloudresourcemanager.googleapis.com",
             "compute.googleapis.com": "DOMAIN,compute.googleapis.com",
@@ -1714,6 +1736,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "example.workers.dev": "DOMAIN-SUFFIX,workers.dev",
             "www.digitalocean.com": "DOMAIN-SUFFIX,digitalocean.com",
             "www.vultr.com": "DOMAIN-SUFFIX,vultr.com",
+            "bucket.ewr1.vultrobjects.com": "DOMAIN-SUFFIX,vultrobjects.com",
             "api.linode.com": "DOMAIN-SUFFIX,linode.com",
             "cloud.oracle.com": "DOMAIN,cloud.oracle.com",
             "objectstorage.us-ashburn-1.oraclecloud.com": "DOMAIN-SUFFIX,oraclecloud.com",

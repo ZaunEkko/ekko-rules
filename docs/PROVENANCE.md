@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 7,312 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 7,394 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,16 +21,16 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 7,311 file rules are partitioned by evidence boundary:
+The 7,393 file rules are partitioned by evidence boundary:
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
 | Classic mainland-domain import | 1,482 | Direct pinned MIT input with immutable selection ledger |
 | Advertising import | 849 | Direct pinned MIT input with immutable selection and capture ledgers |
 | Current late recovery | 2,721 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
-| Specialized, private/local, and service corpus | 2,259 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
+| Specialized, private/local, and service corpus | 2,341 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
-The final 2,259-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
+The final 2,341-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
 
 ## Direct canonical inputs
 
@@ -60,11 +60,11 @@ Advertising precedes specialized service segments, so 40 later telemetry/adverti
 
 ### Domestic and overseas cloud routing
 
-ER-023 adds repository-maintained `china-cloud` and `overseas-cloud` rulesets. Advertising, AI, development, gaming, media, cloud-storage, Apple, and concrete late-recovery service endpoints remain earlier. International Alibaba OSS, Tencent COS, and Huawei Cloud regional endpoints are listed before broad mainland vendor roots; AWS China, Azure China, and Cloudflare China use the default-DIRECT domestic cloud group. Global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud infrastructure uses the manually selected overseas cloud group; the exact unified OCI Console host `cloud.oracle.com` is included without adding the broad `oracle.com` root. AWS's canonical and regional `*.console.aws.amazon.com` hosts, sign-in flow, and `api.aws` service endpoints use overseas cloud. Shared `googleapis.com` remains under the Google policy, while explicit Compute, Cloud Resource Manager, virtual-hosted Cloud Storage, and `rep.googleapis.com` regional GCP endpoints stay in overseas cloud. Huawei's international console is separated from its domestic root, and Baidu AI Cloud's primary portal and console use domestic cloud. Reviewed non-mainland Alibaba region suffixes cover both `SERVICE.REGION.aliyuncs.com` and `SERVICE-vpc.REGION.aliyuncs.com` APIs before the domestic `aliyuncs.com` catch-all; the explicit Alibaba OSS overseas acceleration suffix remains ahead as well.
+ER-023 adds repository-maintained `china-cloud` and `overseas-cloud` rulesets. Advertising, AI, development, gaming, media, cloud-storage, Apple, and concrete late-recovery service endpoints remain earlier. International Alibaba OSS, Tencent COS, Huawei Cloud, UCloud US3, Kingsoft KS3, and China Telecom OOS regional endpoints are listed before broad mainland vendor roots; AWS China, Azure China, and Cloudflare China use the default-DIRECT domestic cloud group. Global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud infrastructure uses the manually selected overseas cloud group; the exact unified OCI Console host `cloud.oracle.com` is included without adding the broad `oracle.com` root. AWS's website and documentation under `aws.amazon.com`, canonical and regional `*.console.aws.amazon.com` hosts, sign-in flow, and `api.aws` service endpoints use overseas cloud. Azure Storage, SQL Database, and Service Bus endpoints use their official `core.windows.net`, `database.windows.net`, and `servicebus.windows.net` suffixes before the Microsoft aggregate. Vultr Object Storage uses `vultrobjects.com`. Shared `googleapis.com` remains under the Google policy, while explicit Compute, Cloud Resource Manager, virtual-hosted Cloud Storage, and `rep.googleapis.com` regional GCP endpoints stay in overseas cloud. Huawei's international console is separated from its domestic root, and Baidu AI Cloud's primary portal and console use domestic cloud. Reviewed non-mainland Alibaba region suffixes cover both `SERVICE.REGION.aliyuncs.com` and `SERVICE-vpc.REGION.aliyuncs.com` APIs before the domestic `aliyuncs.com` catch-all; the explicit Alibaba OSS overseas acceleration suffix remains ahead as well. JD Cloud DNS, edge, load-balancing, and WAF roots, Qiniu's assigned test-delivery root, and the reviewed Cloudflare China network, insights, and storage-gateway roots use domestic cloud.
 
 Generated-only `onedrive`, `icloud`, and `spotify-2` compatibility copies keep previously published Raw ruleset/provider URLs available with their original pre-merge matcher subsets and frozen list/provider hashes. They are derived deterministically from the consolidated `cloud-storage` or `spotify` source, included in the generated SHA-256 manifest, and are not canonical segments, rule-count inputs, or active Subconverter/Mihomo references.
 
-No cloud CIDR, ASN, `GEOSITE`, regular expression, or broad consumer-company root is added. The 57 intentional later-rule captures created by the cloud ownership layer are frozen in `tests/fixtures/cloud-routing-ledger.json`; concrete business rules such as Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili's Kingsoft hosts remain ahead of the cloud layer.
+No cloud CIDR, ASN, `GEOSITE`, regular expression, or broad consumer-company root is added. The 67 intentional later-rule captures created by the cloud ownership layer are frozen in `tests/fixtures/cloud-routing-ledger.json`; concrete business rules such as Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili's Kingsoft hosts remain ahead of the cloud layer.
 
 ## Immutable reconstruction and compatibility evidence
 

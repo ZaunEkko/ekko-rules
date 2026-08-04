@@ -6,16 +6,16 @@
         "proxy_group_count": 40,
         "ruleset_count": 63,
         "segment_count": 64,
-        "rule_count": 7312,
+        "rule_count": 7394,
         "destination_ip_rule_count": 206
       },
       "quality": {
         "first_match_unreachable": {
           "global": {
-            "exact_occurrences": 119,
+            "exact_occurrences": 129,
             "broad_coverage_occurrences": 15,
             "overlap_between_categories": 1,
-            "union": 133
+            "union": 143
           },
           "within_same_segment": {
             "exact_occurrences": 0,
@@ -24,12 +24,12 @@
             "union": 13
           },
           "cross_segment_only": {
-            "union": 120
+            "union": 130
           }
         },
         "exact_duplicate_occurrences_beyond_first": 2,
         "exact_duplicate_rule_keys": 2,
-        "matchers_routed_to_multiple_targets": 117
+        "matchers_routed_to_multiple_targets": 127
       },
       "segments": [
         {
@@ -838,35 +838,35 @@
           "index": 57,
           "manifest_order": 57,
           "start": 4957,
-          "end": 5164,
-          "count": 208,
+          "end": 5232,
+          "count": 276,
           "target": "☁️ 海外云服务",
           "slug": "overseas-cloud",
           "scope": "core",
           "rule_types": {
             "DOMAIN": 5,
-            "DOMAIN-SUFFIX": 203
+            "DOMAIN-SUFFIX": 271
           }
         },
         {
           "index": 58,
           "manifest_order": 58,
-          "start": 5165,
-          "end": 5310,
-          "count": 146,
+          "start": 5233,
+          "end": 5392,
+          "count": 160,
           "target": "☁️ 国内云服务",
           "slug": "china-cloud",
           "scope": "core",
           "rule_types": {
-            "DOMAIN-SUFFIX": 144,
+            "DOMAIN-SUFFIX": 158,
             "DOMAIN": 2
           }
         },
         {
           "index": 59,
           "manifest_order": 59,
-          "start": 5311,
-          "end": 5358,
+          "start": 5393,
+          "end": 5440,
           "count": 48,
           "target": "🧩 微软服务",
           "slug": "microsoft",
@@ -878,8 +878,8 @@
         {
           "index": 60,
           "manifest_order": 60,
-          "start": 5359,
-          "end": 5791,
+          "start": 5441,
+          "end": 5873,
           "count": 433,
           "target": "🧩 微软服务",
           "slug": "microsoft-late-recovery",
@@ -892,8 +892,8 @@
         {
           "index": 61,
           "manifest_order": 61,
-          "start": 5792,
-          "end": 5828,
+          "start": 5874,
+          "end": 5910,
           "count": 37,
           "target": "🔎 Google",
           "slug": "google",
@@ -908,8 +908,8 @@
         {
           "index": 62,
           "manifest_order": 62,
-          "start": 5829,
-          "end": 7310,
+          "start": 5911,
+          "end": 7392,
           "count": 1482,
           "target": "🌏 国内网站",
           "slug": "china-domains-direct",
@@ -922,8 +922,8 @@
         {
           "index": 63,
           "manifest_order": 63,
-          "start": 7311,
-          "end": 7311,
+          "start": 7393,
+          "end": 7393,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -935,8 +935,8 @@
         {
           "index": 64,
           "manifest_order": 64,
-          "start": 7312,
-          "end": 7312,
+          "start": 7394,
+          "end": 7394,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",
