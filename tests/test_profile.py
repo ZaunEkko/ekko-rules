@@ -1748,6 +1748,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "pubsub.googleapis.com": "DOMAIN,pubsub.googleapis.com",
             "secretmanager.googleapis.com": "DOMAIN,secretmanager.googleapis.com",
             "artifactregistry.googleapis.com": "DOMAIN,artifactregistry.googleapis.com",
+            "firebasestorage.googleapis.com": "DOMAIN,firebasestorage.googleapis.com",
             "storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
             "example-bucket.storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
             "compute.europe-west1.rep.googleapis.com": "DOMAIN-SUFFIX,rep.googleapis.com",

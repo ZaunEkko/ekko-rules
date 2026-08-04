@@ -298,6 +298,7 @@ payload:
 - DOMAIN,dns.googleapis.com
 - DOMAIN,eventarc.googleapis.com
 - DOMAIN,file.googleapis.com
+- DOMAIN,firebasestorage.googleapis.com
 - DOMAIN,gkehub.googleapis.com
 - DOMAIN,iam.googleapis.com
 - DOMAIN,iamcredentials.googleapis.com
