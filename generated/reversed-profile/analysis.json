@@ -6,7 +6,7 @@
         "proxy_group_count": 40,
         "ruleset_count": 63,
         "segment_count": 64,
-        "rule_count": 7282,
+        "rule_count": 7283,
         "destination_ip_rule_count": 206
       },
       "quality": {
@@ -838,21 +838,21 @@
           "index": 57,
           "manifest_order": 57,
           "start": 4957,
-          "end": 5137,
-          "count": 181,
+          "end": 5138,
+          "count": 182,
           "target": "☁️ 海外云服务",
           "slug": "overseas-cloud",
           "scope": "core",
           "rule_types": {
-            "DOMAIN": 2,
+            "DOMAIN": 3,
             "DOMAIN-SUFFIX": 179
           }
         },
         {
           "index": 58,
           "manifest_order": 58,
-          "start": 5138,
-          "end": 5281,
+          "start": 5139,
+          "end": 5282,
           "count": 144,
           "target": "☁️ 国内云服务",
           "slug": "china-cloud",
@@ -864,8 +864,8 @@
         {
           "index": 59,
           "manifest_order": 59,
-          "start": 5282,
-          "end": 5329,
+          "start": 5283,
+          "end": 5330,
           "count": 48,
           "target": "🧩 微软服务",
           "slug": "microsoft",
@@ -877,8 +877,8 @@
         {
           "index": 60,
           "manifest_order": 60,
-          "start": 5330,
-          "end": 5762,
+          "start": 5331,
+          "end": 5763,
           "count": 433,
           "target": "🧩 微软服务",
           "slug": "microsoft-late-recovery",
@@ -891,8 +891,8 @@
         {
           "index": 61,
           "manifest_order": 61,
-          "start": 5763,
-          "end": 5798,
+          "start": 5764,
+          "end": 5799,
           "count": 36,
           "target": "🔎 Google",
           "slug": "google",
@@ -907,8 +907,8 @@
         {
           "index": 62,
           "manifest_order": 62,
-          "start": 5799,
-          "end": 7280,
+          "start": 5800,
+          "end": 7281,
           "count": 1482,
           "target": "🌏 国内网站",
           "slug": "china-domains-direct",
@@ -921,8 +921,8 @@
         {
           "index": 63,
           "manifest_order": 63,
-          "start": 7281,
-          "end": 7281,
+          "start": 7282,
+          "end": 7282,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -934,8 +934,8 @@
         {
           "index": 64,
           "manifest_order": 64,
-          "start": 7282,
-          "end": 7282,
+          "start": 7283,
+          "end": 7283,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",

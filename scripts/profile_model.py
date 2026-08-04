@@ -20,6 +20,11 @@ NODE_PLACEHOLDER = "__ALL_SUBSCRIPTION_NODES__"
 CORE_PRODUCT = "core"
 PRODUCTS = (CORE_PRODUCT,)
 CORE_SCOPE = "core"
+GENERATED_RULESET_ALIASES = {
+    "onedrive": "cloud-storage",
+    "icloud": "cloud-storage",
+    "spotify-2": "spotify",
+}
 DESTINATION_IP_RULE_TYPES = {
     "IP-CIDR",
     "IP-CIDR6",
@@ -951,16 +956,36 @@ def ini_group_line(group: ProxyGroup, node_filter: str) -> str:
     return "`".join([f"custom_proxy_group={group.name}", group.type, *tokens])
 
 
+def _write_ruleset_files(
+    output: Path, *, slug: str, source_path: Path, entries: tuple[str, ...]
+) -> None:
+    destination = output / "Ruleset" / f"{slug}.list"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(source_path.read_bytes())
+    write_yaml(
+        output / "Providers" / "Ruleset" / f"{slug}.yaml",
+        {"payload": list(entries)},
+    )
+
+
 def _write_rulesets(output: Path, sources: ProfileSources) -> None:
+    segments_by_slug = {segment.slug: segment for segment in sources.rule_segments}
     for segment in sources.rule_segments:
-        entries = sources.rules[segment.slug]
-        source_path = sources.root / str(segment.source)
-        destination = output / "Ruleset" / f"{segment.slug}.list"
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(source_path.read_bytes())
-        write_yaml(
-            output / "Providers" / "Ruleset" / f"{segment.slug}.yaml",
-            {"payload": list(entries)},
+        _write_ruleset_files(
+            output,
+            slug=segment.slug,
+            source_path=sources.root / str(segment.source),
+            entries=sources.rules[segment.slug],
+        )
+    for alias, canonical_slug in GENERATED_RULESET_ALIASES.items():
+        canonical = segments_by_slug.get(canonical_slug)
+        if canonical is None:
+            continue
+        _write_ruleset_files(
+            output,
+            slug=alias,
+            source_path=sources.root / str(canonical.source),
+            entries=sources.rules[canonical_slug],
         )
 
 
@@ -1192,8 +1217,8 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 
 - `config/ekko-rules.ini`：Subconverter 在线预设，不接管 Clash 基础配置。
 - `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
-- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则。
-- `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单。
+- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留为旧 Raw URL 兼容副本，不进入活动模板或规则计数。
+- `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
 ## 在线订阅转换
 
@@ -1254,8 +1279,8 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 
 - `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
 - `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
-- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points.
-- `analysis.json` and `manifest.json`: Quality metrics and the SHA-256 file inventory.
+- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` remain only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
+- `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
 ## Online subscription conversion
 
@@ -1319,9 +1344,16 @@ def expected_generated_files(sources: ProfileSources) -> set[str]:
         "README_EN.md",
         "manifest.json",
     }
-    for segment in sources.rule_segments:
-        files.add(f"Ruleset/{segment.slug}.list")
-        files.add(f"Providers/Ruleset/{segment.slug}.yaml")
+    for slug in [
+        *(segment.slug for segment in sources.rule_segments),
+        *(
+            alias
+            for alias, canonical_slug in GENERATED_RULESET_ALIASES.items()
+            if canonical_slug in sources.rules
+        ),
+    ]:
+        files.add(f"Ruleset/{slug}.list")
+        files.add(f"Providers/Ruleset/{slug}.yaml")
     return files
 
 

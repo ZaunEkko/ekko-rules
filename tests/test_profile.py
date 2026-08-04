@@ -47,6 +47,7 @@ ISSUE_TEMPLATES = ROOT / ".github" / "ISSUE_TEMPLATE"
 sys.path.insert(0, str(ROOT))
 
 from scripts.profile_model import (  # noqa: E402
+    GENERATED_RULESET_ALIASES,
     HistoricalRule,
     ProfileError,
     compare_trees,
@@ -1693,6 +1694,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "www.digitalocean.com": "DOMAIN-SUFFIX,digitalocean.com",
             "www.vultr.com": "DOMAIN-SUFFIX,vultr.com",
             "api.linode.com": "DOMAIN-SUFFIX,linode.com",
+            "cloud.oracle.com": "DOMAIN,cloud.oracle.com",
             "objectstorage.us-ashburn-1.oraclecloud.com": "DOMAIN-SUFFIX,oraclecloud.com",
         }
         for domain, rule in overseas_cases.items():
@@ -1986,6 +1988,56 @@ class GenerationTests(unittest.TestCase):
             render_profile(self.sources, first)
             render_profile(self.sources, second)
             self.assertTrue(compare_trees(first, second).clean)
+
+    def test_retired_ruleset_urls_are_generated_only_aliases(self) -> None:
+        self.assertEqual(
+            GENERATED_RULESET_ALIASES,
+            {
+                "onedrive": "cloud-storage",
+                "icloud": "cloud-storage",
+                "spotify-2": "spotify",
+            },
+        )
+        self.assertTrue(GENERATED_RULESET_ALIASES.keys().isdisjoint(self.sources.rules))
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "generated"
+            render_profile(self.sources, output)
+            generated_manifest = json.loads(
+                (output / "manifest.json").read_text(encoding="utf-8")
+            )["files"]
+            active_text = "\n".join(
+                (output / relative).read_text(encoding="utf-8")
+                for relative in (
+                    "config/ekko-rules.ini",
+                    "Mihomo/reversed-template.yaml",
+                )
+            )
+            for alias, canonical_slug in GENERATED_RULESET_ALIASES.items():
+                with self.subTest(alias=alias):
+                    self.assertEqual(
+                        (output / "Ruleset" / f"{alias}.list").read_bytes(),
+                        (output / "Ruleset" / f"{canonical_slug}.list").read_bytes(),
+                    )
+                    self.assertEqual(
+                        (
+                            output / "Providers" / "Ruleset" / f"{alias}.yaml"
+                        ).read_bytes(),
+                        (
+                            output
+                            / "Providers"
+                            / "Ruleset"
+                            / f"{canonical_slug}.yaml"
+                        ).read_bytes(),
+                    )
+                    self.assertIn(f"Ruleset/{alias}.list", generated_manifest)
+                    self.assertIn(
+                        f"Providers/Ruleset/{alias}.yaml", generated_manifest
+                    )
+                    self.assertNotIn(f"/{alias}.list", active_text)
+                    self.assertNotIn(f"/{alias}.yaml", active_text)
+                    self.assertNotIn(f"RULE-SET,{alias},", active_text)
+        self.assertEqual(len(self.sources.rule_segments), 63)
+        self.assertEqual(len(self.sources.segments), 64)
 
     def test_stale_file_is_detected_by_check_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

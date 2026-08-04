@@ -329,6 +329,7 @@ items:
   - https://cloud.google.com/apis/design/dns_dhcp
   - https://developers.cloudflare.com/fundamentals/reference/network-ports/
   - https://techdocs.akamai.com/cloud-computing/docs/endpoint-types
+  - https://docs.oracle.com/en-us/iaas/Content/GSG/Reference/faq.htm
   - https://docs.oracle.com/en-us/iaas/api/
   - tests/fixtures/cloud-routing-ledger.json
   first_observed: 2026-08-04
@@ -336,7 +337,7 @@ items:
   phase_2_candidate: none
   recommended_action: keep-region-aware
   current_product: standard
-  resolution: Two new groups separate default-DIRECT mainland cloud operations from manually selected overseas cloud infrastructure. Advertising and concrete AI, development, gaming, media, cloud-storage, Apple, and late-recovery service rules remain earlier. Overseas Alibaba OSS, Tencent COS, and Huawei Cloud region endpoints precede their broad mainland vendor roots; AWS China, Azure China, and Cloudflare China use domestic cloud, while global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud use overseas cloud. No cloud CIDR, ASN, GEOSITE, regexp, generic consumer-company root, or broad Akamai tenant suffix is published. The two cloud segments intentionally precede Microsoft, Google, and the classic mainland aggregate; their 57 reviewed later-rule captures are frozen in the cloud routing ledger.
+  resolution: Two new groups separate default-DIRECT mainland cloud operations from manually selected overseas cloud infrastructure. Advertising and concrete AI, development, gaming, media, cloud-storage, Apple, and late-recovery service rules remain earlier. Overseas Alibaba OSS, Tencent COS, and Huawei Cloud region endpoints precede their broad mainland vendor roots; AWS China, Azure China, and Cloudflare China use domestic cloud, while global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud use overseas cloud. The exact unified OCI Console host cloud.oracle.com is included while the broad oracle.com root remains excluded. No cloud CIDR, ASN, GEOSITE, regexp, generic consumer-company root, or broad Akamai tenant suffix is published. The two cloud segments intentionally precede Microsoft, Google, and the classic mainland aggregate; their 57 reviewed later-rule captures are frozen in the cloud routing ledger.
 - id: cloud-segment-budget-consolidation
   status: accepted
   scope: product-boundary
@@ -351,4 +352,4 @@ items:
   phase_2_candidate: none
   recommended_action: keep
   current_product: standard
-  resolution: The two Spotify source segments are concatenated without reordering under their existing Music policy, and OneDrive plus iCloud are concatenated under the existing Cloud Storage policy. These are physical ruleset consolidations only; matcher order and policy targets remain unchanged. HBO GO and Max remain separate rulesets, all groups remain manually switchable, and the public product stays at 63 rulesets plus one FINAL segment.
+  resolution: The two Spotify source segments are concatenated without reordering under their existing Music policy, and OneDrive plus iCloud are concatenated under the existing Cloud Storage policy. These are physical ruleset consolidations only; matcher order and policy targets remain unchanged. Generated-only onedrive, icloud, and spotify-2 compatibility copies preserve the retired Raw URLs without re-entering the canonical source manifest, Subconverter config, Mihomo template, rule count, or coverage model. HBO GO and Max remain separate rulesets, all groups remain manually switchable, and the public product stays at 63 rulesets plus one FINAL segment.

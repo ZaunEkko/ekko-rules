@@ -12,6 +12,7 @@ from typing import Any
 from profile_model import (
     CORE_PRODUCT,
     DESTINATION_IP_RULE_TYPES,
+    GENERATED_RULESET_ALIASES,
     NODE_PLACEHOLDER,
     POSIX_ABSOLUTE_PATH,
     ProfileError,
@@ -119,9 +120,16 @@ def expected_generated_files(sources: ProfileSources) -> set[str]:
         "README_EN.md",
         "manifest.json",
     }
-    for segment in sources.rule_segments:
-        files.add(f"Ruleset/{segment.slug}.list")
-        files.add(f"Providers/Ruleset/{segment.slug}.yaml")
+    for slug in [
+        *(segment.slug for segment in sources.rule_segments),
+        *(
+            alias
+            for alias, canonical_slug in GENERATED_RULESET_ALIASES.items()
+            if canonical_slug in sources.rules
+        ),
+    ]:
+        files.add(f"Ruleset/{slug}.list")
+        files.add(f"Providers/Ruleset/{slug}.yaml")
     return files
 
 
@@ -277,6 +285,25 @@ def validate_rulesets(generated: Path, sources: ProfileSources) -> tuple[int, in
             if rule_type in DESTINATION_IP_RULE_TYPES:
                 destination_ip_rules += 1
                 check(has_no_resolve, f"Destination-IP rule lacks no-resolve: {entry}")
+    for alias, canonical_slug in GENERATED_RULESET_ALIASES.items():
+        if canonical_slug not in sources.rules:
+            continue
+        alias_list = generated / "Ruleset" / f"{alias}.list"
+        canonical_list = generated / "Ruleset" / f"{canonical_slug}.list"
+        check(
+            alias_list.read_bytes() == canonical_list.read_bytes(),
+            f"Compatibility Ruleset differs from canonical target: {alias}",
+        )
+        alias_provider = read_yaml(
+            generated / "Providers" / "Ruleset" / f"{alias}.yaml"
+        )
+        canonical_provider = read_yaml(
+            generated / "Providers" / "Ruleset" / f"{canonical_slug}.yaml"
+        )
+        check(
+            alias_provider == canonical_provider,
+            f"Compatibility provider differs from canonical target: {alias}",
+        )
     check(total_rules > 0, "Generated rules are empty")
     return total_rules, destination_ip_rules
 
@@ -495,7 +522,15 @@ def main() -> int:
                         "summary"
                     ]["rule_count"],
                 },
-                "provider_files": len(sources.rule_segments),
+                "provider_files": len(sources.rule_segments)
+                + sum(
+                    canonical_slug in sources.rules
+                    for canonical_slug in GENERATED_RULESET_ALIASES.values()
+                ),
+                "compatibility_aliases": sum(
+                    canonical_slug in sources.rules
+                    for canonical_slug in GENERATED_RULESET_ALIASES.values()
+                ),
                 "destination_ip_rules": destination_ip_rules,
                 "destination_ip_rules_without_no_resolve": 0,
                 "generated_manifest_hashes": len(generated_manifest["files"]),

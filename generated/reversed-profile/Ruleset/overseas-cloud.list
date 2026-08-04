@@ -178,4 +178,5 @@ DOMAIN-SUFFIX,vultr.com
 DOMAIN-SUFFIX,linode.com
 DOMAIN-SUFFIX,linodeobjects.com
 DOMAIN-SUFFIX,akamai.com
+DOMAIN,cloud.oracle.com
 DOMAIN-SUFFIX,oraclecloud.com

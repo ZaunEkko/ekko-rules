@@ -8,8 +8,8 @@
 
 - `config/ekko-rules.ini`：Subconverter 在线预设，不接管 Clash 基础配置。
 - `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
-- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则。
-- `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单。
+- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留为旧 Raw URL 兼容副本，不进入活动模板或规则计数。
+- `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
 ## 在线订阅转换
 
