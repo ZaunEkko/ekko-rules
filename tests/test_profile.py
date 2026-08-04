@@ -1679,7 +1679,10 @@ class FirstMatchBaselineTests(unittest.TestCase):
         overseas_cases = {
             "www.alibabacloud.com": "DOMAIN-SUFFIX,alibabacloud.com",
             "bucket.oss-ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-ap-southeast-1.aliyuncs.com",
+            "bucket.oss-me-central-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-me-central-1.aliyuncs.com",
             "intl.cloud.tencent.com": "DOMAIN,intl.cloud.tencent.com",
+            "www.tencentcloud.com": "DOMAIN-SUFFIX,tencentcloud.com",
+            "console.tencentcloud.com": "DOMAIN-SUFFIX,tencentcloud.com",
             "bucket.cos.ap-singapore.myqcloud.com": "DOMAIN-SUFFIX,cos.ap-singapore.myqcloud.com",
             "obs.ap-southeast-3.myhuaweicloud.com": "DOMAIN-SUFFIX,ap-southeast-3.myhuaweicloud.com",
             "console.aws.amazon.com": "DOMAIN,console.aws.amazon.com",

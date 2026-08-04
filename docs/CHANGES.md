@@ -485,7 +485,7 @@ The public product remains within the Subconverter 64-segment external-config ce
 Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
-- 7,280 rules including the unique FINAL;
+- 7,282 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 133; same-segment: 13; cross-segment-only: 120, with cloud captures independently frozen in the cloud routing ledger.

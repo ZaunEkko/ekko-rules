@@ -1,4 +1,5 @@
 DOMAIN,intl.cloud.tencent.com
+DOMAIN-SUFFIX,tencentcloud.com
 DOMAIN-SUFFIX,alibabacloud.co.in
 DOMAIN-SUFFIX,alibabacloud.com
 DOMAIN-SUFFIX,alibabacloud.com.au
@@ -20,6 +21,7 @@ DOMAIN-SUFFIX,oss-ap-southeast-7.aliyuncs.com
 DOMAIN-SUFFIX,oss-eu-central-1.aliyuncs.com
 DOMAIN-SUFFIX,oss-eu-west-1.aliyuncs.com
 DOMAIN-SUFFIX,oss-me-east-1.aliyuncs.com
+DOMAIN-SUFFIX,oss-me-central-1.aliyuncs.com
 DOMAIN-SUFFIX,oss-us-east-1.aliyuncs.com
 DOMAIN-SUFFIX,oss-us-west-1.aliyuncs.com
 DOMAIN-SUFFIX,intltencentcos.com
