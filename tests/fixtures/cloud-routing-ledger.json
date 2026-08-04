@@ -1,0 +1,464 @@
+{
+  "schema_version": 1,
+  "policy": "Cloud infrastructure intentionally follows advertising and concrete business rules, then precedes vendor aggregates and the classic mainland layer. Only these frozen later matchers may be captured by the two cloud rulesets; any additional capture requires review.",
+  "count": 57,
+  "rows_sha256": "f6bc94a873a63d9fe84313282740215e83dc96140b07197bce86366f02a9c7d9",
+  "rows": [
+    {
+      "cloud_slug": "overseas-cloud",
+      "cloud_target": "☁️ 海外云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,amazonaws.com",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN,github-cloud.s3.amazonaws.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azure-api.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azure-api.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azure-apihub.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azure-apihub.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azure-automation.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azure-automation.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azure-devices.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azure-devices.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azure-dns.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azure-dns.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azure.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azure.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azurecr.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azurecr.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,chinacloudapi.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,chinacloudapi.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,chinacloudapp.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,chinacloudapp.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,chinacloudsites.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,chinacloudsites.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,trafficmanager.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,trafficmanager.cn"
+    },
+    {
+      "cloud_slug": "overseas-cloud",
+      "cloud_target": "☁️ 海外云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,trafficmanager.net",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,trafficmanager.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,windowsazure.cn",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,windowsazure.cn"
+    },
+    {
+      "cloud_slug": "overseas-cloud",
+      "cloud_target": "☁️ 海外云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,windowsazure.com",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,windowsazure.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,baidubce.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,baidubce.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,baidubcr.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,baidubcr.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,baiduyuncdn.cn",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,baiduyuncdn.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,baiduyuncdn.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,baiduyuncdn.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,baiduyuncdn.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,baiduyuncdn.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,bce-cdn.cn",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,bce-cdn.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,bce-cdn.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,bce-cdn.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,bce-cdn.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,bce-cdn.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,bcebos.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,bcebos.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,bdcloudapi.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,bdcloudapi.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cf-china.info",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cf-china.info"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cf-ns.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cf-ns.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cf-ns.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cf-ns.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflare-cn.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflare-cn.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflarechina.cn",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflarechina.cn"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflarecn.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflarecn.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflareglobal.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflareglobal.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflareprod.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflareprod.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,cloudflarestaging.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,cloudflarestaging.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jcloud-cache.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jcloud-cache.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jcloud-cache.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jcloud-cache.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jcloud-cdn.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jcloud-cdn.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jcloud-oss.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jcloud-oss.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jcloud.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jcloud.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jcloudcs.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jcloudcs.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jcloudimg.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jcloudimg.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jcloudstatic.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jcloudstatic.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloud-api.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloud-api.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloud-api.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloud-api.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloud-openapi.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloud-openapi.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloud-oss.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloud-oss.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloud.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloud.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudcdn.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudcdn.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudcdn.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudcdn.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudcs.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudcs.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudstatic.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudstatic.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,jdcloudstatic.net",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,jdcloudstatic.net"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,ks-cdn.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,ks-cdn.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,ks-cdn1.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,ks-cdn1.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,ksyun.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,ksyun.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,ksyuncdn.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,ksyuncdn.com"
+    },
+    {
+      "cloud_slug": "china-cloud",
+      "cloud_target": "☁️ 国内云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,ksyungslb.com",
+      "later_slug": "china-domains-direct",
+      "later_target": "🌏 国内网站",
+      "later_rule": "DOMAIN-SUFFIX,ksyungslb.com"
+    }
+  ]
+}

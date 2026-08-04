@@ -37,6 +37,9 @@ ADVERTISING_IMPORT_LEDGER = (
 ADVERTISING_ROUTING_LEDGER = (
     ROOT / "tests" / "fixtures" / "advertising-routing-ledger.json"
 )
+CLOUD_ROUTING_LEDGER = (
+    ROOT / "tests" / "fixtures" / "cloud-routing-ledger.json"
+)
 PUBLIC_RULE_EXCLUSIONS = (
     ROOT / "tests" / "fixtures" / "public-rule-exclusions.json"
 )
@@ -122,10 +125,10 @@ class CanonicalSourceTests(unittest.TestCase):
     def test_shape_and_order_snapshot(self) -> None:
         self.assertEqual(len(self.sources.segments), 64)
         self.assertEqual(len(self.sources.rule_segments), 63)
-        self.assertEqual(len(self.sources.proxy_groups), 38)
+        self.assertEqual(len(self.sources.proxy_groups), 40)
         self.assertEqual(len(self.sources.segments_for("core")), 64)
         self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 38)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 40)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -165,6 +168,8 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🌏 国外流媒体",
                 "🌏 国内流媒体",
                 "☁️ 云盘服务",
+                "☁️ 国内云服务",
+                "☁️ 海外云服务",
                 "🧩 微软服务",
                 "🍎 苹果服务",
                 "🎮 游戏平台",
@@ -194,6 +199,16 @@ class CanonicalSourceTests(unittest.TestCase):
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🧑‍💻 开发服务": [
+                "♻️ 手动切换",
+                "DIRECT",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "☁️ 国内云服务": [
+                "DIRECT",
+                "♻️ 手动切换",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "☁️ 海外云服务": [
                 "♻️ 手动切换",
                 "DIRECT",
                 "__ALL_SUBSCRIPTION_NODES__",
@@ -234,10 +249,17 @@ class CanonicalSourceTests(unittest.TestCase):
             [
                 "tidal",
                 "spotify",
-                "spotify-2",
                 "qobuz",
                 "apple-music",
             ],
+        )
+        self.assertEqual(
+            [
+                segment.slug
+                for segment in self.sources.segments
+                if segment.target == "☁️ 云盘服务"
+            ],
+            ["cloud-storage"],
         )
         self.assertEqual(
             [
@@ -254,6 +276,74 @@ class CanonicalSourceTests(unittest.TestCase):
                 if segment.target == "🎬 Dazn"
             ],
             ["dazn"],
+        )
+        slugs = [segment.slug for segment in self.sources.segments]
+        self.assertLess(slugs.index("advertising"), slugs.index("overseas-cloud"))
+        self.assertLess(slugs.index("china-media-late-recovery"), slugs.index("overseas-cloud"))
+        self.assertLess(slugs.index("overseas-cloud"), slugs.index("china-cloud"))
+        self.assertLess(slugs.index("china-cloud"), slugs.index("microsoft"))
+        self.assertLess(slugs.index("microsoft-late-recovery"), slugs.index("google"))
+        self.assertLess(slugs.index("google"), slugs.index("china-domains-direct"))
+
+    def test_cloud_capture_ledger_is_frozen_and_closed(self) -> None:
+        ledger = json.loads(CLOUD_ROUTING_LEDGER.read_text(encoding="utf-8"))
+        self.assertEqual(ledger["schema_version"], 1)
+        self.assertEqual(ledger["count"], 57)
+        content = "".join(
+            "\t".join(
+                (
+                    row["cloud_slug"],
+                    row["cloud_target"],
+                    row["cloud_rule"],
+                    row["later_slug"],
+                    row["later_target"],
+                    row["later_rule"],
+                )
+            )
+            + "\n"
+            for row in ledger["rows"]
+        )
+        self.assertEqual(
+            hashlib.sha256(content.encode()).hexdigest(),
+            ledger["rows_sha256"],
+        )
+
+        segments = list(self.sources.rule_segments)
+        actual: list[dict[str, str]] = []
+        for later_index, later in enumerate(segments):
+            if later.slug in {"overseas-cloud", "china-cloud"}:
+                continue
+            for later_rule in self.sources.rules[later.slug]:
+                capture: tuple[Any, str] | None = None
+                for earlier in segments[:later_index]:
+                    if earlier.slug not in {"overseas-cloud", "china-cloud"}:
+                        continue
+                    for cloud_rule in self.sources.rules[earlier.slug]:
+                        if rule_covers(cloud_rule, later_rule):
+                            capture = (earlier, cloud_rule)
+                            break
+                    if capture is not None:
+                        break
+                if capture is not None:
+                    earlier, cloud_rule = capture
+                    actual.append(
+                        {
+                            "cloud_slug": earlier.slug,
+                            "cloud_target": earlier.target,
+                            "cloud_rule": cloud_rule,
+                            "later_slug": later.slug,
+                            "later_target": later.target,
+                            "later_rule": later_rule,
+                        }
+                    )
+        self.assertEqual(actual, ledger["rows"])
+        self.assertEqual(
+            Counter(row["cloud_slug"] for row in actual),
+            Counter({"china-cloud": 54, "overseas-cloud": 3}),
+        )
+        self.assertEqual(
+            Counter(row["later_slug"] for row in actual),
+            Counter({"china-domains-direct": 42, "microsoft-late-recovery": 15}),
         )
 
     def test_no_resolve_and_strict_cidr_gate(self) -> None:
@@ -289,9 +379,9 @@ class CanonicalSourceTests(unittest.TestCase):
             current["within_same_segment"]["union"],
             before["summary"]["coverage"]["within_same_segment"]["union"],
         )
-        self.assertEqual(current["global"]["union"], 94)
+        self.assertEqual(current["global"]["union"], 133)
         self.assertEqual(current["within_same_segment"]["union"], 13)
-        self.assertEqual(current["cross_segment_only"]["union"], 81)
+        self.assertEqual(current["cross_segment_only"]["union"], 120)
         self.assertLess(
             current["cross_segment_only"]["union"],
             before["summary"]["coverage"]["cross_segment_only"]["union"],
@@ -821,14 +911,31 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
 
     def test_recovery_tail_and_default_groups_are_frozen(self) -> None:
         sources = load_profile_sources(SOURCES)
+        slugs = [segment.slug for segment in sources.segments]
+        recovery_slugs = self.ledger["tail_order"][1:-1]
         self.assertEqual(
-            [segment.slug for segment in sources.segments[-10:]],
-            [
-                *self.ledger["tail_order"][:-1],
-                "china-domains-direct",
-                "china-geoip-direct",
-                "final",
-            ],
+            set(recovery_slugs),
+            {
+                "game-platform-late-recovery",
+                "bilibili-hmt-late-recovery",
+                "iqiyi-late-recovery",
+                "microsoft-late-recovery",
+                "apple-late-recovery",
+                "china-media-late-recovery",
+            },
+        )
+        self.assertTrue(all(slug in slugs for slug in recovery_slugs))
+        for slug in recovery_slugs:
+            self.assertLess(slugs.index("china-web"), slugs.index(slug))
+            self.assertLess(slugs.index(slug), slugs.index("china-domains-direct"))
+        for slug in recovery_slugs:
+            if slug != "microsoft-late-recovery":
+                self.assertLess(slugs.index(slug), slugs.index("overseas-cloud"))
+        self.assertLess(slugs.index("microsoft"), slugs.index("microsoft-late-recovery"))
+        self.assertLess(slugs.index("microsoft-late-recovery"), slugs.index("google"))
+        self.assertEqual(
+            slugs[-3:],
+            ["china-domains-direct", "china-geoip-direct", "final"],
         )
         group_members = {
             group.name: list(group.members) for group in sources.proxy_groups
@@ -1009,14 +1116,27 @@ class AdvertisingImportTests(unittest.TestCase):
                             "advertising_rule": covering,
                         }
                     )
-        content = "".join(
+        def row_key(row: dict[str, str]) -> tuple[str, str, str, str]:
+            return (
+                row["later_slug"],
+                row["later_target"],
+                row["later_rule"],
+                row["advertising_rule"],
+            )
+
+        ordered_rows = sorted(rows, key=row_key)
+        ordered_ledger_rows = sorted(ledger["rows"], key=row_key)
+        self.assertEqual(ordered_rows, ordered_ledger_rows)
+        self.assertEqual(len(rows), ledger["count"])
+        ledger_content = "".join(
             f"{row['later_slug']}\t{row['later_target']}\t{row['later_rule']}\t"
             f"{row['advertising_rule']}\n"
-            for row in rows
+            for row in ledger["rows"]
         )
-        self.assertEqual(rows, ledger["rows"])
-        self.assertEqual(len(rows), ledger["count"])
-        self.assertEqual(hashlib.sha256(content.encode()).hexdigest(), ledger["rows_sha256"])
+        self.assertEqual(
+            hashlib.sha256(ledger_content.encode()).hexdigest(),
+            ledger["rows_sha256"],
+        )
 
 
 class PublicRuleExclusionTests(unittest.TestCase):
@@ -1096,11 +1216,25 @@ class ChinaDomainDirectImportTests(unittest.TestCase):
         self.assertFalse(any("GEOSITE" in rule for rule in self.rules))
 
     def test_required_mainland_service_cases_match_before_final(self) -> None:
+        migrated_cloud_cases = {
+            "www.cloudflare-cn.com": (
+                "china-cloud",
+                "☁️ 国内云服务",
+                "DOMAIN-SUFFIX,cloudflare-cn.com",
+            ),
+        }
         for domain in self.ledger["required_cases"].values():
             with self.subTest(domain=domain):
                 result = first_match(self.sources, domain=domain)
-                self.assertEqual(result["slug"], "china-domains-direct")
-                self.assertEqual(result["target"], "🌏 国内网站")
+                expected = migrated_cloud_cases.get(domain)
+                if expected is None:
+                    self.assertEqual(result["slug"], "china-domains-direct")
+                    self.assertEqual(result["target"], "🌏 国内网站")
+                else:
+                    self.assertEqual(
+                        (result["slug"], result["target"], result["rule"]),
+                        expected,
+                    )
 
 
 class FirstMatchBaselineTests(unittest.TestCase):
@@ -1477,7 +1611,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "other.sycontroller.com",
             "yif.gdtstream.com",
             "dl.steam.cygnaa.com",
-            "shared-assets.alicdn.com",
             "www.tmall.hk",
             "www.jd.hk",
         ]:
@@ -1508,7 +1641,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for forbidden in [
             "DOMAIN-SUFFIX,manlaxy.com",
             "DOMAIN-SUFFIX,sycontroller.com",
-            "DOMAIN-SUFFIX,alicdn.com",
             "DOMAIN,yif.gdtstream.com",
             "DOMAIN,dl.steam.cygnaa.com",
             "IP-CIDR,103.195.103.66/32,no-resolve",
@@ -1517,6 +1649,135 @@ class FirstMatchBaselineTests(unittest.TestCase):
         ]:
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, published_rules)
+
+    def test_domestic_and_overseas_cloud_routing_is_region_aware(self) -> None:
+        domestic_cases = {
+            "console.aliyun.com": "DOMAIN-SUFFIX,aliyun.com",
+            "bucket.oss-cn-hangzhou.aliyuncs.com": "DOMAIN-SUFFIX,aliyuncs.com",
+            "console.cloud.tencent.com": "DOMAIN-SUFFIX,cloud.tencent.com",
+            "bucket.cos.ap-beijing.myqcloud.com": "DOMAIN-SUFFIX,myqcloud.com",
+            "console.huaweicloud.com": "DOMAIN-SUFFIX,huaweicloud.com",
+            "obs.cn-north-4.myhuaweicloud.com": "DOMAIN-SUFFIX,myhuaweicloud.com",
+            "console.volcengine.com": "DOMAIN-SUFFIX,volcengine.com",
+            "api.ucloud.cn": "DOMAIN-SUFFIX,ucloud.cn",
+            "console.qingcloud.com": "DOMAIN-SUFFIX,qingcloud.com",
+            "bucket.bcebos.com": "DOMAIN-SUFFIX,bcebos.com",
+            "console.jdcloud.com": "DOMAIN-SUFFIX,jdcloud.com",
+            "console.ksyun.com": "DOMAIN-SUFFIX,ksyun.com",
+            "console.amazonaws.cn": "DOMAIN-SUFFIX,amazonaws.cn",
+            "s3.cn-north-1.amazonaws.com.cn": "DOMAIN-SUFFIX,amazonaws.com.cn",
+            "portal.azure.cn": "DOMAIN-SUFFIX,azure.cn",
+            "edge.cloudflarechina.cn": "DOMAIN-SUFFIX,cloudflarechina.cn",
+        }
+        for domain, rule in domestic_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-cloud", "☁️ 国内云服务", rule),
+                    domain=domain,
+                )
+
+        overseas_cases = {
+            "www.alibabacloud.com": "DOMAIN-SUFFIX,alibabacloud.com",
+            "bucket.oss-ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-ap-southeast-1.aliyuncs.com",
+            "intl.cloud.tencent.com": "DOMAIN,intl.cloud.tencent.com",
+            "bucket.cos.ap-singapore.myqcloud.com": "DOMAIN-SUFFIX,cos.ap-singapore.myqcloud.com",
+            "obs.ap-southeast-3.myhuaweicloud.com": "DOMAIN-SUFFIX,ap-southeast-3.myhuaweicloud.com",
+            "console.aws.amazon.com": "DOMAIN,console.aws.amazon.com",
+            "s3.us-east-1.amazonaws.com": "DOMAIN-SUFFIX,amazonaws.com",
+            "portal.azure.com": "DOMAIN-SUFFIX,azure.com",
+            "console.cloud.google.com": "DOMAIN-SUFFIX,cloud.google.com",
+            "example.workers.dev": "DOMAIN-SUFFIX,workers.dev",
+            "www.digitalocean.com": "DOMAIN-SUFFIX,digitalocean.com",
+            "www.vultr.com": "DOMAIN-SUFFIX,vultr.com",
+            "api.linode.com": "DOMAIN-SUFFIX,linode.com",
+            "objectstorage.us-ashburn-1.oraclecloud.com": "DOMAIN-SUFFIX,oraclecloud.com",
+        }
+        for domain, rule in overseas_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("overseas-cloud", "☁️ 海外云服务", rule),
+                    domain=domain,
+                )
+
+        priority_cases = {
+            "gmeconf.qcloud.com": (
+                "game-platform",
+                "🎮 游戏平台",
+                "DOMAIN,gmeconf.qcloud.com",
+            ),
+            "epicgames-download1-1251447533.file.myqcloud.com": (
+                "game-download",
+                "🎮 游戏下载",
+                "DOMAIN,epicgames-download1-1251447533.file.myqcloud.com",
+            ),
+            "github-cloud.s3.amazonaws.com": (
+                "developer-platforms",
+                "🧑‍💻 开发服务",
+                "DOMAIN,github-cloud.s3.amazonaws.com",
+            ),
+            "113-219-145-1.ksyungslb.com": (
+                "bilibili-hmt-late-recovery",
+                "🎬 B站港澳台",
+                "DOMAIN,113-219-145-1.ksyungslb.com",
+            ),
+            "aiplatform.googleapis.com": (
+                "google-ai",
+                "🧲 海外 AI",
+                "DOMAIN,aiplatform.googleapis.com",
+            ),
+            "youtubei.googleapis.com": (
+                "youtube",
+                "🎬 YouTube",
+                "DOMAIN-SUFFIX,youtubei.googleapis.com",
+            ),
+            "openaiapi-site.azureedge.net": (
+                "openai",
+                "🧲 OpenAI",
+                "DOMAIN-SUFFIX,openaiapi-site.azureedge.net",
+            ),
+        }
+        for domain, expected in priority_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(expected, domain=domain)
+
+        advertising_cases = {
+            "acjs.aliyun.com": "DOMAIN-SUFFIX,acjs.aliyun.com",
+            "adash.man.aliyuncs.com": "DOMAIN-SUFFIX,adash.man.aliyuncs.com",
+            "mobads-pre-config.cdn.bcebos.com": "DOMAIN-SUFFIX,mobads-pre-config.cdn.bcebos.com",
+        }
+        for domain, rule in advertising_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("advertising", "🛑 广告拦截", rule),
+                    domain=domain,
+                )
+
+        published_cloud_rules = {
+            rule
+            for slug in ("china-cloud", "overseas-cloud")
+            for rule in self.sources.rules[slug]
+        }
+        self.assertTrue(
+            all(
+                parse_rule(rule, context="cloud routing test")[0]
+                in {"DOMAIN", "DOMAIN-SUFFIX"}
+                for rule in published_cloud_rules
+            )
+        )
+        for forbidden in [
+            "DOMAIN-SUFFIX,alibaba.com",
+            "DOMAIN-SUFFIX,tencent.com",
+            "DOMAIN-SUFFIX,huawei.com",
+            "DOMAIN-SUFFIX,baidu.com",
+            "DOMAIN-SUFFIX,jd.com",
+            "DOMAIN-SUFFIX,kingsoft.com",
+            "DOMAIN-SUFFIX,google.com",
+            "DOMAIN-SUFFIX,oracle.com",
+            "DOMAIN-SUFFIX,akamaihd.net",
+            "DOMAIN-SUFFIX,akamaized.net",
+        ]:
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden, published_cloud_rules)
 
     def test_mainland_apps_use_existing_direct_first_groups(self) -> None:
         game_cases = {
@@ -1608,9 +1869,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
 
         for domain in [
             "www.taptap.io",
-            "other.qcloud.com",
-            "other.myqcloud.com",
-            "other.alicdn.com",
         ]:
             with self.subTest(domain=domain):
                 self.assert_match(
@@ -1629,9 +1887,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
         }
         for forbidden in [
             "PROCESS-NAME,WeGame.exe",
-            "DOMAIN-SUFFIX,qcloud.com",
-            "DOMAIN-SUFFIX,myqcloud.com",
-            "DOMAIN-SUFFIX,alicdn.com",
         ]:
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, published_rules)

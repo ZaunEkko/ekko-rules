@@ -34,6 +34,7 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 - 游戏平台与游戏下载分开；社交、聊天、Discord 和邮件分别处理；
 - `🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP，防止远程访问大流量绕行代理；
 - `🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖主流开发官网、API、包仓库和下载链路；用户可临时改为 `DIRECT`；
+- `☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud 及国内厂商海外区域端点；广告和具体业务规则仍优先；
 - 音乐、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
@@ -44,8 +45,10 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 末尾路由顺序固定为：
 
 ```text
-全部细分规则
-→ 六个 late-recovery ruleset
+全部具体业务规则
+→ 五个非微软 late-recovery ruleset
+→ 海外云服务 → 国内云服务
+→ 微软服务及其 late-recovery → Google
 → 经典中国大陆域名规则
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
@@ -55,4 +58,4 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 
 末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
-唯一产品包含 63 个 ruleset、64 个区段和 38 个策略组，不提供自动测速、Full、local 或 Extended 变体。
+唯一产品包含 63 个 ruleset、64 个区段和 40 个策略组，不提供自动测速、Full、local 或 Extended 变体。

@@ -69,6 +69,7 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Social and communication**: separate groups for social media, messaging, Discord, and email;
 - **Remote streaming**: `🖥️ 远程串流` defaults to `DIRECT` for high-volume remote-access paths including Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP, preventing remote desktop, game streaming, or virtual-LAN traffic from unnecessarily traversing a proxy;
 - **Developer services**: `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers GitHub, GitLab, Docker/GHCR, Maven/Gradle, Node.js/npm, Python/PyPI, Rust/Cargo, Go, NuGet, RubyGems, Composer, Homebrew, CocoaPods, and their websites, APIs, registries, and downloads; switch it temporarily to `DIRECT` when proxy traffic matters;
+- **Cloud infrastructure**: `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
 
@@ -79,8 +80,10 @@ All groups remain manually switchable and automatic latency testing is disabled;
 The terminal routing order is fixed as:
 
 ```text
-all specialized rules
-→ six late-recovery rulesets
+all concrete business rules
+→ five non-Microsoft late-recovery rulesets
+→ overseas cloud → domestic cloud
+→ Microsoft and its late recovery → Google
 → classic mainland-domain rules
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼

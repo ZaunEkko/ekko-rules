@@ -249,7 +249,7 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 31
-  name: 🧩 微软服务
+  name: ☁️ 国内云服务
   type: select
   scope: core
   members:
@@ -257,15 +257,15 @@ groups:
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
 - order: 32
-  name: 🍎 苹果服务
+  name: ☁️ 海外云服务
   type: select
   scope: core
   members:
-  - DIRECT
   - ♻️ 手动切换
+  - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 33
-  name: 🎮 游戏平台
+  name: 🧩 微软服务
   type: select
   scope: core
   members:
@@ -273,7 +273,7 @@ groups:
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
 - order: 34
-  name: 🎮 游戏下载
+  name: 🍎 苹果服务
   type: select
   scope: core
   members:
@@ -281,7 +281,7 @@ groups:
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
 - order: 35
-  name: 📪 邮件服务
+  name: 🎮 游戏平台
   type: select
   scope: core
   members:
@@ -289,6 +289,22 @@ groups:
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
 - order: 36
+  name: 🎮 游戏下载
+  type: select
+  scope: core
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 37
+  name: 📪 邮件服务
+  type: select
+  scope: core
+  members:
+  - DIRECT
+  - ♻️ 手动切换
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 38
   name: 🔞 NSFW
   type: select
   scope: core
@@ -297,7 +313,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 37
+- order: 39
   name: 🌏 国内网站
   type: select
   scope: core
@@ -305,7 +321,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 38
+- order: 40
   name: 🐟 漏网之鱼
   type: select
   scope: core

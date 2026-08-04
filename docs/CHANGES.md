@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 uses **2026-08-04**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -466,6 +466,29 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 94; same-segment: 13; cross-segment-only: 81.
+
+## ER-023 — Domestic and overseas cloud routing split
+
+**Type:** cloud-infrastructure policy separation, regional endpoint precedence, and segment-budget consolidation
+
+Two independent, manually switchable groups now own cloud infrastructure:
+
+- `☁️ 国内云服务` defaults to `DIRECT` for Alibaba Cloud, Tencent Cloud, Huawei Cloud, Volcengine, UCloud, QingCloud, Baidu AI Cloud, JD Cloud, Kingsoft Cloud, Qiniu, China Telecom Cloud, AWS China, Azure China, and Cloudflare China;
+- `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud, together with international Alibaba Cloud, Tencent COS, and Huawei Cloud endpoints.
+
+First-match order is intentional: advertising and concrete AI, development, game, media, cloud-storage, Apple, and late-recovery service endpoints remain earlier; international Alibaba OSS, Tencent COS, and Huawei regional suffixes then precede their mainland vendor parent roots; cloud infrastructure next precedes Microsoft, Google, and the classic mainland aggregate. Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili Kingsoft hosts therefore retain their concrete owners. The 57 reviewed later-rule captures owned by the cloud layer are frozen in `tests/fixtures/cloud-routing-ledger.json`.
+
+No cloud CIDR, ASN, `GEOSITE`, regular expression, generic consumer-company root, or broad Akamai tenant suffix is added. All 206 destination-IP rules retain `no-resolve`; shared AWS/GCP addresses still fall through the domain-only model to FINAL.
+
+The public product remains within the Subconverter 64-segment external-config ceiling. The two Spotify source segments are physically concatenated under the unchanged Music policy, and OneDrive plus iCloud are physically concatenated as `cloud-storage` under the unchanged Cloud Storage policy. Matcher order and targets are preserved; HBO GO and Max remain separate rulesets.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,280 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 133; same-segment: 13; cross-segment-only: 120, with cloud captures independently frozen in the cloud routing ledger.
 
 ## ER-022 — Mainland high-frequency apps, game launchers, and in-game voice
 

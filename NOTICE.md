@@ -6,7 +6,7 @@ Ekko Rules is distributed under the repository's [MIT License](LICENSE). This no
 
 Ekko Rules is an independently maintained routing product, not a mirror or repackaging of another preset. The current canonical `sources/` tree has been substantially rebuilt around one public product with its own:
 
-- AI, development, entertainment, gaming, NSFW, advertising, mainland-domain, and fallback policy design;
+- AI, development, entertainment, gaming, domestic/overseas cloud, NSFW, advertising, mainland-domain, and fallback policy design;
 - policy-group names, order, defaults, and rule-to-policy mappings;
 - anchored-domain, strict-CIDR, `no-resolve`, first-match, deterministic-generation, and sensitive-content gates;
 - explicit removal of generic proxy buckets, private provider overrides, unsafe keywords, shared-cloud ranges, stale rules, and non-public historical customizations.
@@ -20,16 +20,16 @@ Current file-rule accounting is explicit:
 | Classic mainland-domain pinned import | 1,482 | `china-domain-import-ledger.json` |
 | Advertising pinned import | 849 | `advertising-import-ledger.json` |
 | Filtered historical DIRECT-default recovery | 2,721 | immutable recovery ledger minus `public-rule-exclusions.json` |
-| Current specialized, private/local, and service corpus | 1,915 | canonical rules plus migration/review history |
-| **Total file rules** | **6,967** | `sources/quality-baseline.yaml` |
+| Current specialized, private/local, and service corpus | 2,227 | canonical rules plus migration/review history |
+| **Total file rules** | **7,279** | `sources/quality-baseline.yaml` |
 
-The 1,915-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
+The 2,227-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
 
 ## Current canonical rule-data inputs
 
 ### Repository-maintained curation
 
-Most current service rules, group mappings, ordering decisions, and security filters are maintained directly in this repository. They have been split, reduced, retargeted, merged, or newly added based on product requirements and review. Similar factual indicators—domains, IP ranges, ASNs, process names, and service identifiers—may independently appear in multiple routing projects. The globally first `author-domain` entry for `zaunekko.com` is an explicit repository-authorship display exception mapped to the default-direct mainland group, not an imported or general-service rule. The exact Steam mainland download hosts and anchored Ele.me/Alibaba mainland service roots added in ER-021, together with ER-022's reviewed mainland app, game-platform, and game-voice expansion, are likewise repository-maintained curation rather than new mechanical imports.
+Most current service rules, group mappings, ordering decisions, and security filters are maintained directly in this repository. They have been split, reduced, retargeted, merged, or newly added based on product requirements and review. Similar factual indicators—domains, IP ranges, ASNs, process names, and service identifiers—may independently appear in multiple routing projects. The globally first `author-domain` entry for `zaunekko.com` is an explicit repository-authorship display exception mapped to the default-direct mainland group, not an imported or general-service rule. The exact Steam mainland download hosts and anchored Ele.me/Alibaba mainland service roots added in ER-021, ER-022's reviewed mainland app, game-platform, and game-voice expansion, and ER-023's region-aware domestic/overseas cloud routing are likewise repository-maintained curation rather than new mechanical imports.
 
 Six late-recovery rulesets are selected from frozen repository history to preserve only historical DIRECT-default behavior that would otherwise reach proxy FINAL. Recovery is a compatibility mechanism, not renewed proof that every historical domain or IP is currently owned by the mapped vendor. A separate public-product exclusion ledger removes provider-specific, local-institution, personal, scripting, mirror, and unofficial-content entries from current publication while leaving immutable historical evidence intact.
 

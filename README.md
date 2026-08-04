@@ -69,6 +69,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **社交与通信**：社交媒体、聊天软件、Discord 和邮件分别处理；
 - **远程串流**：`🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP 等高流量远程访问链路，避免远程桌面、游戏串流或虚拟局域网流量绕行代理；
 - **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖 GitHub、GitLab、Docker/GHCR、Maven/Gradle、Node.js/npm、Python/PyPI、Rust/Cargo、Go、NuGet、RubyGems、Composer、Homebrew、CocoaPods 等官网、API、包仓库和下载链路；用户在意代理流量时可临时切到 `DIRECT`；
+- **云基础设施**：`☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud，以及国内厂商的海外区域端点；广告和具体业务规则仍优先；
 - **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认使用 `REJECT` 拦截，仍可手动改为节点或 `DIRECT`；
 - **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。
 
@@ -79,8 +80,10 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 末尾路由顺序固定为：
 
 ```text
-全部细分规则
-→ 六个 late-recovery ruleset
+全部具体业务规则
+→ 五个非微软 late-recovery ruleset
+→ 海外云服务 → 国内云服务
+→ 微软服务及其 late-recovery → Google
 → 经典中国大陆域名规则
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼

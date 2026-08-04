@@ -685,6 +685,8 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
                 "recovery_ledger",
                 "intentional_advertising_capture_count",
                 "advertising_routing_ledger",
+                "intentional_cloud_capture_count",
+                "cloud_routing_ledger",
             },
             context="quality baseline next_gate",
         )
@@ -699,6 +701,8 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
                 "recovery_ledger": "tests/fixtures/phase-3-recovery-ledger.json",
                 "intentional_advertising_capture_count": 40,
                 "advertising_routing_ledger": "tests/fixtures/advertising-routing-ledger.json",
+                "intentional_cloud_capture_count": 57,
+                "cloud_routing_ledger": "tests/fixtures/cloud-routing-ledger.json",
             },
             "Unsupported Phase 3 recovery next_gate",
         )
@@ -1214,6 +1218,7 @@ Ruleset 地址前缀：`{rules_base}`。
 - 游戏平台与游戏下载分开；社交、聊天、Discord 和邮件分别处理；
 - `🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP，防止远程访问大流量绕行代理；
 - `🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖主流开发官网、API、包仓库和下载链路；用户可临时改为 `DIRECT`；
+- `☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud 及国内厂商海外区域端点；广告和具体业务规则仍优先；
 - 音乐、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
@@ -1224,8 +1229,10 @@ Ruleset 地址前缀：`{rules_base}`。
 末尾路由顺序固定为：
 
 ```text
-全部细分规则
-→ 六个 late-recovery ruleset
+全部具体业务规则
+→ 五个非微软 late-recovery ruleset
+→ 海外云服务 → 国内云服务
+→ 微软服务及其 late-recovery → Google
 → 经典中国大陆域名规则
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
@@ -1273,6 +1280,7 @@ Ruleset URL prefix: `{rules_base}`.
 - game platforms are separate from game downloads; social, messaging, Discord, and email are separated;
 - `🖥️ 远程串流` defaults to `DIRECT` for Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP so high-volume remote access does not traverse a proxy unnecessarily;
 - `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers mainstream developer sites, APIs, registries, and downloads; it can be switched temporarily to `DIRECT`;
+- `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
@@ -1283,8 +1291,10 @@ All {groups} policy groups remain manually switchable and automatic latency test
 The terminal routing order is fixed as:
 
 ```text
-all specialized rules
-→ six late-recovery rulesets
+all concrete business rules
+→ five non-Microsoft late-recovery rulesets
+→ overseas cloud → domestic cloud
+→ Microsoft and its late recovery → Google
 → classic mainland-domain rules
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼

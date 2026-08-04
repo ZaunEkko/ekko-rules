@@ -1,14 +1,10 @@
 payload:
 - DOMAIN-SUFFIX,1e100.net
 - DOMAIN-SUFFIX,android.com
-- DOMAIN-SUFFIX,appspot.com
 - DOMAIN-SUFFIX,blogger.com
 - DOMAIN-SUFFIX,blogspot.com
 - DOMAIN-SUFFIX,chrome.com
 - DOMAIN-SUFFIX,chromium.org
-- DOMAIN-SUFFIX,firebase.com
-- DOMAIN-SUFFIX,firebase.io
-- DOMAIN-SUFFIX,firebaseapp.com
 - DOMAIN-SUFFIX,g.co
 - DOMAIN-SUFFIX,gmail.com
 - DOMAIN-SUFFIX,goo.gl
@@ -16,7 +12,6 @@ payload:
 - DOMAIN-SUFFIX,google.com
 - DOMAIN-SUFFIX,google.com.cn
 - DOMAIN-SUFFIX,googleapis.cn
-- DOMAIN-SUFFIX,googleapis.com
 - DOMAIN-SUFFIX,googleusercontent.cn
 - DOMAIN-SUFFIX,googleusercontent.com
 - DOMAIN-SUFFIX,googlevideo.com
