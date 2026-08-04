@@ -213,10 +213,13 @@ DOMAIN-SUFFIX,ks3-sgp.ksyuncs.com
 DOMAIN-SUFFIX,ks3-sgp-internal.ksyuncs.com
 DOMAIN-SUFFIX,oos-cnhk-hqnet.ctyunapi.cn
 DOMAIN-SUFFIX,oos-cnhk-nqnet.ctyunapi.cn
+DOMAIN,console.byteplus.com
+DOMAIN-SUFFIX,byteplusapi.com
 DOMAIN-SUFFIX,console.aws.amazon.com
 DOMAIN-SUFFIX,signin.aws.amazon.com
 DOMAIN-SUFFIX,signin.aws
 DOMAIN-SUFFIX,api.aws
+DOMAIN-SUFFIX,on.aws
 DOMAIN-SUFFIX,amazonaws.com
 DOMAIN-SUFFIX,amazoncognito.com
 DOMAIN-SUFFIX,amazonses.com
@@ -269,7 +272,8 @@ DOMAIN-SUFFIX,googlecloud.com
 DOMAIN-SUFFIX,appspot.com
 DOMAIN-SUFFIX,cloudfunctions.net
 DOMAIN-SUFFIX,firebase.com
-DOMAIN-SUFFIX,firebase.io
+DOMAIN-SUFFIX,firebaseio.com
+DOMAIN-SUFFIX,firebasedatabase.app
 DOMAIN-SUFFIX,firebaseapp.com
 DOMAIN-SUFFIX,gcr.io
 DOMAIN,accessapproval.googleapis.com
@@ -297,6 +301,7 @@ DOMAIN,deploymentmanager.googleapis.com
 DOMAIN,dns.googleapis.com
 DOMAIN,eventarc.googleapis.com
 DOMAIN,file.googleapis.com
+DOMAIN,firebasedatabase.googleapis.com
 DOMAIN,firebasestorage.googleapis.com
 DOMAIN,gkehub.googleapis.com
 DOMAIN,iam.googleapis.com

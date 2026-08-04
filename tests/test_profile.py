@@ -1713,6 +1713,8 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "bucket.internal-sg-01.ufileos.com": "DOMAIN-SUFFIX,internal-sg-01.ufileos.com",
             "bucket.ks3-sgp.ksyuncs.com": "DOMAIN-SUFFIX,ks3-sgp.ksyuncs.com",
             "bucket.oos-cnhk-hqnet.ctyunapi.cn": "DOMAIN-SUFFIX,oos-cnhk-hqnet.ctyunapi.cn",
+            "console.byteplus.com": "DOMAIN,console.byteplus.com",
+            "open.ap-southeast-1.byteplusapi.com": "DOMAIN-SUFFIX,byteplusapi.com",
             "console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
             "us-east-1.console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
             "eu-west-1.console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
@@ -1720,6 +1722,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "us-east-1.signin.aws.amazon.com": "DOMAIN-SUFFIX,signin.aws.amazon.com",
             "us-east-1.sso.signin.aws": "DOMAIN-SUFFIX,signin.aws",
             "ec2.us-east-1.api.aws": "DOMAIN-SUFFIX,api.aws",
+            "abcdefg.lambda-url.us-east-1.on.aws": "DOMAIN-SUFFIX,on.aws",
             "s3.us-east-1.amazonaws.com": "DOMAIN-SUFFIX,amazonaws.com",
             "aws.amazon.com": "DOMAIN-SUFFIX,aws.amazon.com",
             "docs.aws.amazon.com": "DOMAIN-SUFFIX,aws.amazon.com",
@@ -1748,6 +1751,9 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "pubsub.googleapis.com": "DOMAIN,pubsub.googleapis.com",
             "secretmanager.googleapis.com": "DOMAIN,secretmanager.googleapis.com",
             "artifactregistry.googleapis.com": "DOMAIN,artifactregistry.googleapis.com",
+            "project.firebaseio.com": "DOMAIN-SUFFIX,firebaseio.com",
+            "project.europe-west1.firebasedatabase.app": "DOMAIN-SUFFIX,firebasedatabase.app",
+            "firebasedatabase.googleapis.com": "DOMAIN,firebasedatabase.googleapis.com",
             "firebasestorage.googleapis.com": "DOMAIN,firebasestorage.googleapis.com",
             "storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
             "example-bucket.storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
@@ -1853,6 +1859,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         self.assertIn("DOMAIN-SUFFIX,googleapis.com", self.sources.rules["google"])
         self.assertNotIn("DOMAIN-SUFFIX,recaptcha.net", self.sources.rules["china-web"])
         self.assertIn("DOMAIN-SUFFIX,recaptcha.net", self.sources.rules["google"])
+        self.assertNotIn("DOMAIN-SUFFIX,firebase.io", published_cloud_rules)
         for forbidden in [
             "DOMAIN-SUFFIX,alibaba.com",
             "DOMAIN-SUFFIX,tencent.com",

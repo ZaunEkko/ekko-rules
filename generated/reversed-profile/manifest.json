@@ -56,7 +56,7 @@
     "Providers/Ruleset/nsfw.yaml": "4777604d75bb599d6e653fa8c116478746f0bc16a8fd0c225be40ee3ee4ae2cc",
     "Providers/Ruleset/onedrive.yaml": "402e08c9c0bf57fa829a3ab35f90997e02d33a640b5bc53e4c26507766f0cd31",
     "Providers/Ruleset/openai.yaml": "095c66db4527b6491c3bc44d0751397d3cf9d57d0177d1f5767581930e9aaf76",
-    "Providers/Ruleset/overseas-cloud.yaml": "80eb67d7f288718c5c070191c3f8db6f0f258bca064f479fad4552ee2dd80d86",
+    "Providers/Ruleset/overseas-cloud.yaml": "659f3c04954b811f68f776a7efea3eb83849e0fb2f20aff038c7e0f89020e2c9",
     "Providers/Ruleset/prime-video.yaml": "5d85e397c9176efc22e439d1cb3dfa469c0124b878061fd3a80d2718957c89e2",
     "Providers/Ruleset/private.yaml": "345a5a85d502271b5465c995c2298cd024a9dedb18a0c9f012c5ad22c74c6220",
     "Providers/Ruleset/qobuz.yaml": "529926626d0b869314a5e706b14413615d122cc5e203970a06438b8d20860f09",
@@ -124,7 +124,7 @@
     "Ruleset/nsfw.list": "28b1197b2aa5c2eb11cf1eca2bf29a46ad67149edd5cb2ca20c214de2abe6434",
     "Ruleset/onedrive.list": "70b2124935f9ed33e71bd6b2f6ee8ebb255fc0c31e1c9daea67312f42ed2e551",
     "Ruleset/openai.list": "c9eb45d2d7db0153301e3dbebe7a971e8074fc442d2cd2686038d1dff4fb1985",
-    "Ruleset/overseas-cloud.list": "d066fc500c1035aacb2bbafba37898b81986442db479ffbb18379481432aab02",
+    "Ruleset/overseas-cloud.list": "122b3bbabd118f0bfaafbe43a942799d668d2cde52d69e2683589ad1ee2e4c78",
     "Ruleset/prime-video.list": "b47f4c0600f095cf0c022b5ee45e5b4de6e4237316a7d1e4f77afb675fd7e48e",
     "Ruleset/private.list": "35a79b8d460c669ba1426809a754d89ee6d17ca80c35ed0802c7d24990268bd2",
     "Ruleset/qobuz.list": "d52e027f2ccf3ce1e4ee0b8a35b1be5f26cd8ae0bcb5df44ca9381f9a53ab37d",
@@ -140,7 +140,7 @@
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "c92796fbb7b48aba0403f753b86134f963522068cd1136d30585171e6824d2d3",
+    "analysis.json": "c39ea91e7fe8beb54e9ecf12df03d4bc63679056a8683044cb74eaa7d9fc9ee4",
     "config/ekko-rules.ini": "1db388b10b64247aa607582cd8f8dae1a75714bab5b9ce1bd1bcc1d5d7e403b9"
   }
 }
