@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 38 proxy groups, and 6,968 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 7,473 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -11,7 +11,7 @@ The product contains 206 destination-IP matchers, all with `no-resolve`. It publ
 The expanded source profile used for initial reconstruction was evidence for recovering order and broad behavior, not a permanent product specification. Current Ekko Rules has since been materially changed through:
 
 - removal of `global-web`, `academic`, `yahoo`, community overrides, streaming legacy, optional products, broad shared-cloud ranges, unsafe keywords, stale domains, and invalid CIDRs;
-- independent AI, development, entertainment, gaming, NSFW, advertising, mainland-domain, and fallback group design;
+- independent AI, development, entertainment, gaming, domestic/overseas cloud, NSFW, advertising, mainland-domain, and fallback group design;
 - rebuilt Apple, Google, Microsoft, Netflix, media, gaming, China, and other service corpora;
 - merged, renamed, reordered, and default-adjusted policy groups;
 - new anchored rules for current services such as overseas AI, Node.js/npm, US media, and user-confirmed NSFW services;
@@ -21,22 +21,22 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 6,967 file rules are partitioned by evidence boundary:
+The 7,472 file rules are partitioned by evidence boundary:
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
 | Classic mainland-domain import | 1,482 | Direct pinned MIT input with immutable selection ledger |
 | Advertising import | 849 | Direct pinned MIT input with immutable selection and capture ledgers |
 | Current late recovery | 2,721 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
-| Specialized, private/local, and service corpus | 1,915 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
+| Specialized, private/local, and service corpus | 2,420 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
-The final 1,915-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
+The final 2,420-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
 
 ## Direct canonical inputs
 
 ### Repository-maintained rules and policy
 
-Most current rules, targets, group structure, ordering, and filters are maintained directly by Ekko Rules. Factual indicators may overlap other public corpora without proving direct copying. Product decisions—including group boundaries, rule placement, first-match priority, default `REJECT` behavior, and removals—are local work. The one-rule `author-domain` segment is an explicit user-requested authorship-display exception: `zaunekko.com` is first globally and maps to the default-direct mainland group; it is not presented as an upstream import or general service corpus. ER-021's two exact Steam mainland download hosts and five anchored Ele.me/Alibaba mainland service roots, plus ER-022's reviewed mainland app, game-platform, and game-voice expansion, are repository-maintained curation rather than additional mechanical upstream imports.
+Most current rules, targets, group structure, ordering, and filters are maintained directly by Ekko Rules. Factual indicators may overlap other public corpora without proving direct copying. Product decisions—including group boundaries, rule placement, first-match priority, default `REJECT` behavior, and removals—are local work. The one-rule `author-domain` segment is an explicit user-requested authorship-display exception: `zaunekko.com` is first globally and maps to the default-direct mainland group; it is not presented as an upstream import or general service corpus. ER-021's two exact Steam mainland download hosts and five anchored Ele.me/Alibaba mainland service roots, ER-022's reviewed mainland app, game-platform, and game-voice expansion, and ER-023's region-aware cloud corpus are repository-maintained curation rather than additional mechanical upstream imports. ER-023 uses current official endpoint documentation and community categorization as review evidence, but normal generation consumes only committed canonical rules and performs no upstream fetch.
 
 Six late-recovery rulesets derive from frozen Phase 2 repository evidence. They restore historical DIRECT-default behavior after the Phase 3 reduction, but do not reassert current vendor ownership. `tests/fixtures/public-rule-exclusions.json` further removes non-general entries from the public product while immutable Phase 2/3 fixtures and `phase-3-recovery-ledger.json` remain unchanged as historical evidence.
 
@@ -57,6 +57,14 @@ The upstream category resolves to 850 entries: 677 domain roots, 172 exact full 
 `category-ads-all` is deliberately excluded because it additionally pulls provider-company, analytics, messaging, and other broader service roots. Input/dependency hashes, parser hash, selection counts, output hash, and representative cases are frozen in `tests/fixtures/advertising-import-ledger.json`.
 
 Advertising precedes specialized service segments, so 40 later telemetry/advertising matchers intentionally become unreachable. That exact capture set is frozen in `tests/fixtures/advertising-routing-ledger.json`; any additional capture requires review. The independent `🛑 广告拦截` group defaults to `REJECT` but remains manually switchable.
+
+### Domestic and overseas cloud routing
+
+ER-023 adds repository-maintained `china-cloud` and `overseas-cloud` rulesets. Advertising, AI, development, gaming, media, cloud-storage, Apple, and concrete late-recovery service endpoints remain earlier. International Alibaba OSS, Tencent COS, Huawei Cloud, UCloud US3, Kingsoft KS3, and China Telecom OOS regional endpoints are listed before broad mainland vendor roots; AWS China, Azure China, and Cloudflare China use the default-DIRECT domestic cloud group. Global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud infrastructure uses the manually selected overseas cloud group; the exact unified OCI Console host `cloud.oracle.com` is included without adding the broad `oracle.com` root. AWS's website and documentation under `aws.amazon.com`, canonical and regional `*.console.aws.amazon.com` hosts, sign-in flow, `api.aws` service endpoints, and Lambda Function URLs under `on.aws` use overseas cloud. BytePlus's exact console and API root represent Volcengine's international cloud without broadening to the whole consumer brand domain. Azure's current public cloud service-domain inventory—including API Management, Container Registry, IoT, containers, data and analytics, Kubernetes, machine learning, Storage, SQL, Service Bus, Redis, Search, SignalR, and Static Web Apps—uses documented infrastructure suffixes before the Microsoft aggregate; retired Azure services and Microsoft business-product roots remain excluded. Vultr Object Storage uses `vultrobjects.com`. Shared `googleapis.com` remains under the Google policy, while the official Google Cloud global API endpoint inventory plus Firebase Storage and Realtime Database management APIs are represented by exact `DOMAIN` rules; Firebase's documented `firebaseio.com` and regional `firebasedatabase.app` data endpoints, virtual-hosted Cloud Storage, and `rep.googleapis.com` regional endpoints stay in overseas cloud. The duplicate mainland `recaptcha.net` entry is removed so reCAPTCHA retains its Google policy. Huawei's international console is separated from its domestic root, and Baidu AI Cloud's primary portal and console use domestic cloud. Reviewed non-mainland Alibaba region suffixes cover both `SERVICE.REGION.aliyuncs.com` and `SERVICE-vpc.REGION.aliyuncs.com` APIs before the domestic `aliyuncs.com` catch-all; the explicit Alibaba OSS overseas acceleration suffix remains ahead as well. JD Cloud DNS, edge, load-balancing, and WAF roots, Qiniu's assigned test-delivery root, and the reviewed Cloudflare China network, insights, and storage-gateway roots use domestic cloud. Qiniu Kodo's documented Southeast Asia and North America S3 endpoint forms precede the domestic `qiniucs.com` fallback. Ordinary overseas infrastructure endpoints that would use the same default proxy selector through FINAL are not added only to improve classification completeness; region-sensitive AI, streaming, and similar services remain explicitly classified because their selected proxy geography affects behavior.
+
+Generated-only `onedrive`, `icloud`, and `spotify-2` compatibility copies keep previously published Raw ruleset/provider URLs available with their original pre-merge matcher subsets and frozen list/provider hashes. They are derived deterministically from the consolidated `cloud-storage` or `spotify` source, included in the generated SHA-256 manifest, and are not canonical segments, rule-count inputs, or active Subconverter/Mihomo references.
+
+No cloud CIDR, ASN, `GEOSITE`, regular expression, or broad consumer-company root is added. The 71 intentional later-rule captures created by the cloud ownership layer are frozen in `tests/fixtures/cloud-routing-ledger.json`; concrete business rules such as Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili's Kingsoft hosts remain ahead of the cloud layer.
 
 ## Immutable reconstruction and compatibility evidence
 

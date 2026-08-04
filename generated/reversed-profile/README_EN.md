@@ -8,8 +8,8 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 
 - `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
 - `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
-- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points.
-- `analysis.json` and `manifest.json`: Quality metrics and the SHA-256 file inventory.
+- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
+- `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
 ## Online subscription conversion
 
@@ -34,18 +34,21 @@ Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/
 - game platforms are separate from game downloads; social, messaging, Discord, and email are separated;
 - `🖥️ 远程串流` defaults to `DIRECT` for Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP so high-volume remote access does not traverse a proxy unnecessarily;
 - `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers mainstream developer sites, APIs, registries, and downloads; it can be switched temporarily to `DIRECT`;
+- `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
-All 38 policy groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects an app feature, temporarily switch the advertising group to `DIRECT` or another policy.
+All 40 policy groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects an app feature, temporarily switch the advertising group to `DIRECT` or another policy.
 
 ## Mainland domains, IPs, and DNS
 
 The terminal routing order is fixed as:
 
 ```text
-all specialized rules
-→ six late-recovery rulesets
+all concrete business rules
+→ five non-Microsoft late-recovery rulesets
+→ overseas cloud → domestic cloud
+→ Microsoft and its late recovery → Google
 → classic mainland-domain rules
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
@@ -55,4 +58,4 @@ The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
-The sole product contains 63 rulesets, 64 segments, and 38 proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+The sole product contains 63 rulesets, 64 segments, and 40 proxy groups. No automatic-latency, Full, local, or Extended variant is published.

@@ -9,7 +9,7 @@ from datetime import date
 from ipaddress import IPv4Network, IPv6Network, ip_network
 from collections.abc import Set as AbstractSet
 from pathlib import Path, PurePosixPath
-from typing import Any, Iterable
+from typing import Any, Iterable, NamedTuple
 from urllib.parse import urlsplit
 
 import yaml
@@ -20,6 +20,39 @@ NODE_PLACEHOLDER = "__ALL_SUBSCRIPTION_NODES__"
 CORE_PRODUCT = "core"
 PRODUCTS = (CORE_PRODUCT,)
 CORE_SCOPE = "core"
+
+
+class GeneratedRulesetAlias(NamedTuple):
+    canonical: str
+    start: int
+    end: int
+    list_sha256: str
+    provider_sha256: str
+
+
+GENERATED_RULESET_ALIASES = {
+    "onedrive": GeneratedRulesetAlias(
+        canonical="cloud-storage",
+        start=0,
+        end=23,
+        list_sha256="70b2124935f9ed33e71bd6b2f6ee8ebb255fc0c31e1c9daea67312f42ed2e551",
+        provider_sha256="402e08c9c0bf57fa829a3ab35f90997e02d33a640b5bc53e4c26507766f0cd31",
+    ),
+    "icloud": GeneratedRulesetAlias(
+        canonical="cloud-storage",
+        start=23,
+        end=81,
+        list_sha256="a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
+        provider_sha256="b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
+    ),
+    "spotify-2": GeneratedRulesetAlias(
+        canonical="spotify",
+        start=7,
+        end=21,
+        list_sha256="1197e4bd8607004d93075d893352879fd9e45d252278b5c695dfca4115a28e81",
+        provider_sha256="06da8a204ae8ebd52082fd18c3766ee9929873b9e5b28484077cb5c662a7700d",
+    ),
+}
 DESTINATION_IP_RULE_TYPES = {
     "IP-CIDR",
     "IP-CIDR6",
@@ -685,6 +718,8 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
                 "recovery_ledger",
                 "intentional_advertising_capture_count",
                 "advertising_routing_ledger",
+                "intentional_cloud_capture_count",
+                "cloud_routing_ledger",
             },
             context="quality baseline next_gate",
         )
@@ -699,6 +734,8 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
                 "recovery_ledger": "tests/fixtures/phase-3-recovery-ledger.json",
                 "intentional_advertising_capture_count": 40,
                 "advertising_routing_ledger": "tests/fixtures/advertising-routing-ledger.json",
+                "intentional_cloud_capture_count": 71,
+                "cloud_routing_ledger": "tests/fixtures/cloud-routing-ledger.json",
             },
             "Unsupported Phase 3 recovery next_gate",
         )
@@ -947,16 +984,66 @@ def ini_group_line(group: ProxyGroup, node_filter: str) -> str:
     return "`".join([f"custom_proxy_group={group.name}", group.type, *tokens])
 
 
+def _write_ruleset_files(
+    output: Path,
+    *,
+    slug: str,
+    source_path: Path | None,
+    entries: tuple[str, ...],
+) -> None:
+    destination = output / "Ruleset" / f"{slug}.list"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if source_path is None:
+        write_text(destination, "\n".join(entries))
+    else:
+        destination.write_bytes(source_path.read_bytes())
+    write_yaml(
+        output / "Providers" / "Ruleset" / f"{slug}.yaml",
+        {"payload": list(entries)},
+    )
+
+
+def generated_ruleset_alias_entries(
+    sources: ProfileSources, alias: GeneratedRulesetAlias
+) -> tuple[str, ...] | None:
+    entries = sources.rules.get(alias.canonical)
+    if entries is None:
+        return None
+    selected = entries[alias.start : alias.end]
+    require(
+        len(selected) == alias.end - alias.start,
+        f"Generated compatibility alias range is incomplete: {alias.canonical}",
+    )
+    return selected
+
+
 def _write_rulesets(output: Path, sources: ProfileSources) -> None:
     for segment in sources.rule_segments:
-        entries = sources.rules[segment.slug]
-        source_path = sources.root / str(segment.source)
-        destination = output / "Ruleset" / f"{segment.slug}.list"
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(source_path.read_bytes())
-        write_yaml(
-            output / "Providers" / "Ruleset" / f"{segment.slug}.yaml",
-            {"payload": list(entries)},
+        _write_ruleset_files(
+            output,
+            slug=segment.slug,
+            source_path=sources.root / str(segment.source),
+            entries=sources.rules[segment.slug],
+        )
+    for alias_slug, alias in GENERATED_RULESET_ALIASES.items():
+        entries = generated_ruleset_alias_entries(sources, alias)
+        if entries is None:
+            continue
+        _write_ruleset_files(
+            output,
+            slug=alias_slug,
+            source_path=None,
+            entries=entries,
+        )
+        require(
+            file_sha256(output / "Ruleset" / f"{alias_slug}.list")
+            == alias.list_sha256,
+            f"Generated compatibility Ruleset changed: {alias_slug}",
+        )
+        require(
+            file_sha256(output / "Providers" / "Ruleset" / f"{alias_slug}.yaml")
+            == alias.provider_sha256,
+            f"Generated compatibility provider changed: {alias_slug}",
         )
 
 
@@ -1188,8 +1275,8 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 
 - `config/ekko-rules.ini`：Subconverter 在线预设，不接管 Clash 基础配置。
 - `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
-- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则。
-- `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单。
+- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留合并前原始内容的旧 Raw URL 兼容副本，不进入活动模板或规则计数。
+- `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
 ## 在线订阅转换
 
@@ -1214,6 +1301,7 @@ Ruleset 地址前缀：`{rules_base}`。
 - 游戏平台与游戏下载分开；社交、聊天、Discord 和邮件分别处理；
 - `🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP，防止远程访问大流量绕行代理；
 - `🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖主流开发官网、API、包仓库和下载链路；用户可临时改为 `DIRECT`；
+- `☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud 及国内厂商海外区域端点；广告和具体业务规则仍优先；
 - 音乐、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
@@ -1224,8 +1312,10 @@ Ruleset 地址前缀：`{rules_base}`。
 末尾路由顺序固定为：
 
 ```text
-全部细分规则
-→ 六个 late-recovery ruleset
+全部具体业务规则
+→ 五个非微软 late-recovery ruleset
+→ 海外云服务 → 国内云服务
+→ 微软服务及其 late-recovery → Google
 → 经典中国大陆域名规则
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
@@ -1247,8 +1337,8 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 
 - `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
 - `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
-- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points.
-- `analysis.json` and `manifest.json`: Quality metrics and the SHA-256 file inventory.
+- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
+- `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
 ## Online subscription conversion
 
@@ -1273,6 +1363,7 @@ Ruleset URL prefix: `{rules_base}`.
 - game platforms are separate from game downloads; social, messaging, Discord, and email are separated;
 - `🖥️ 远程串流` defaults to `DIRECT` for Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP so high-volume remote access does not traverse a proxy unnecessarily;
 - `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers mainstream developer sites, APIs, registries, and downloads; it can be switched temporarily to `DIRECT`;
+- `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
@@ -1283,8 +1374,10 @@ All {groups} policy groups remain manually switchable and automatic latency test
 The terminal routing order is fixed as:
 
 ```text
-all specialized rules
-→ six late-recovery rulesets
+all concrete business rules
+→ five non-Microsoft late-recovery rulesets
+→ overseas cloud → domestic cloud
+→ Microsoft and its late recovery → Google
 → classic mainland-domain rules
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
@@ -1309,9 +1402,16 @@ def expected_generated_files(sources: ProfileSources) -> set[str]:
         "README_EN.md",
         "manifest.json",
     }
-    for segment in sources.rule_segments:
-        files.add(f"Ruleset/{segment.slug}.list")
-        files.add(f"Providers/Ruleset/{segment.slug}.yaml")
+    for slug in [
+        *(segment.slug for segment in sources.rule_segments),
+        *(
+            alias
+            for alias, metadata in GENERATED_RULESET_ALIASES.items()
+            if metadata.canonical in sources.rules
+        ),
+    ]:
+        files.add(f"Ruleset/{slug}.list")
+        files.add(f"Providers/Ruleset/{slug}.yaml")
     return files
 
 

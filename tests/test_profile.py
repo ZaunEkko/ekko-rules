@@ -37,6 +37,9 @@ ADVERTISING_IMPORT_LEDGER = (
 ADVERTISING_ROUTING_LEDGER = (
     ROOT / "tests" / "fixtures" / "advertising-routing-ledger.json"
 )
+CLOUD_ROUTING_LEDGER = (
+    ROOT / "tests" / "fixtures" / "cloud-routing-ledger.json"
+)
 PUBLIC_RULE_EXCLUSIONS = (
     ROOT / "tests" / "fixtures" / "public-rule-exclusions.json"
 )
@@ -44,6 +47,7 @@ ISSUE_TEMPLATES = ROOT / ".github" / "ISSUE_TEMPLATE"
 sys.path.insert(0, str(ROOT))
 
 from scripts.profile_model import (  # noqa: E402
+    GENERATED_RULESET_ALIASES,
     HistoricalRule,
     ProfileError,
     compare_trees,
@@ -122,10 +126,10 @@ class CanonicalSourceTests(unittest.TestCase):
     def test_shape_and_order_snapshot(self) -> None:
         self.assertEqual(len(self.sources.segments), 64)
         self.assertEqual(len(self.sources.rule_segments), 63)
-        self.assertEqual(len(self.sources.proxy_groups), 38)
+        self.assertEqual(len(self.sources.proxy_groups), 40)
         self.assertEqual(len(self.sources.segments_for("core")), 64)
         self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 38)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 40)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -165,6 +169,8 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🌏 国外流媒体",
                 "🌏 国内流媒体",
                 "☁️ 云盘服务",
+                "☁️ 国内云服务",
+                "☁️ 海外云服务",
                 "🧩 微软服务",
                 "🍎 苹果服务",
                 "🎮 游戏平台",
@@ -194,6 +200,16 @@ class CanonicalSourceTests(unittest.TestCase):
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🧑‍💻 开发服务": [
+                "♻️ 手动切换",
+                "DIRECT",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "☁️ 国内云服务": [
+                "DIRECT",
+                "♻️ 手动切换",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "☁️ 海外云服务": [
                 "♻️ 手动切换",
                 "DIRECT",
                 "__ALL_SUBSCRIPTION_NODES__",
@@ -234,10 +250,17 @@ class CanonicalSourceTests(unittest.TestCase):
             [
                 "tidal",
                 "spotify",
-                "spotify-2",
                 "qobuz",
                 "apple-music",
             ],
+        )
+        self.assertEqual(
+            [
+                segment.slug
+                for segment in self.sources.segments
+                if segment.target == "☁️ 云盘服务"
+            ],
+            ["cloud-storage"],
         )
         self.assertEqual(
             [
@@ -254,6 +277,74 @@ class CanonicalSourceTests(unittest.TestCase):
                 if segment.target == "🎬 Dazn"
             ],
             ["dazn"],
+        )
+        slugs = [segment.slug for segment in self.sources.segments]
+        self.assertLess(slugs.index("advertising"), slugs.index("overseas-cloud"))
+        self.assertLess(slugs.index("china-media-late-recovery"), slugs.index("overseas-cloud"))
+        self.assertLess(slugs.index("overseas-cloud"), slugs.index("china-cloud"))
+        self.assertLess(slugs.index("china-cloud"), slugs.index("microsoft"))
+        self.assertLess(slugs.index("microsoft-late-recovery"), slugs.index("google"))
+        self.assertLess(slugs.index("google"), slugs.index("china-domains-direct"))
+
+    def test_cloud_capture_ledger_is_frozen_and_closed(self) -> None:
+        ledger = json.loads(CLOUD_ROUTING_LEDGER.read_text(encoding="utf-8"))
+        self.assertEqual(ledger["schema_version"], 1)
+        self.assertEqual(ledger["count"], 71)
+        content = "".join(
+            "\t".join(
+                (
+                    row["cloud_slug"],
+                    row["cloud_target"],
+                    row["cloud_rule"],
+                    row["later_slug"],
+                    row["later_target"],
+                    row["later_rule"],
+                )
+            )
+            + "\n"
+            for row in ledger["rows"]
+        )
+        self.assertEqual(
+            hashlib.sha256(content.encode()).hexdigest(),
+            ledger["rows_sha256"],
+        )
+
+        segments = list(self.sources.rule_segments)
+        actual: list[dict[str, str]] = []
+        for later_index, later in enumerate(segments):
+            if later.slug in {"overseas-cloud", "china-cloud"}:
+                continue
+            for later_rule in self.sources.rules[later.slug]:
+                capture: tuple[Any, str] | None = None
+                for earlier in segments[:later_index]:
+                    if earlier.slug not in {"overseas-cloud", "china-cloud"}:
+                        continue
+                    for cloud_rule in self.sources.rules[earlier.slug]:
+                        if rule_covers(cloud_rule, later_rule):
+                            capture = (earlier, cloud_rule)
+                            break
+                    if capture is not None:
+                        break
+                if capture is not None:
+                    earlier, cloud_rule = capture
+                    actual.append(
+                        {
+                            "cloud_slug": earlier.slug,
+                            "cloud_target": earlier.target,
+                            "cloud_rule": cloud_rule,
+                            "later_slug": later.slug,
+                            "later_target": later.target,
+                            "later_rule": later_rule,
+                        }
+                    )
+        self.assertEqual(actual, ledger["rows"])
+        self.assertEqual(
+            Counter(row["cloud_slug"] for row in actual),
+            Counter({"china-cloud": 64, "overseas-cloud": 7}),
+        )
+        self.assertEqual(
+            Counter(row["later_slug"] for row in actual),
+            Counter({"china-domains-direct": 52, "microsoft-late-recovery": 19}),
         )
 
     def test_no_resolve_and_strict_cidr_gate(self) -> None:
@@ -289,9 +380,9 @@ class CanonicalSourceTests(unittest.TestCase):
             current["within_same_segment"]["union"],
             before["summary"]["coverage"]["within_same_segment"]["union"],
         )
-        self.assertEqual(current["global"]["union"], 94)
+        self.assertEqual(current["global"]["union"], 146)
         self.assertEqual(current["within_same_segment"]["union"], 13)
-        self.assertEqual(current["cross_segment_only"]["union"], 81)
+        self.assertEqual(current["cross_segment_only"]["union"], 133)
         self.assertLess(
             current["cross_segment_only"]["union"],
             before["summary"]["coverage"]["cross_segment_only"]["union"],
@@ -821,14 +912,31 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
 
     def test_recovery_tail_and_default_groups_are_frozen(self) -> None:
         sources = load_profile_sources(SOURCES)
+        slugs = [segment.slug for segment in sources.segments]
+        recovery_slugs = self.ledger["tail_order"][1:-1]
         self.assertEqual(
-            [segment.slug for segment in sources.segments[-10:]],
-            [
-                *self.ledger["tail_order"][:-1],
-                "china-domains-direct",
-                "china-geoip-direct",
-                "final",
-            ],
+            set(recovery_slugs),
+            {
+                "game-platform-late-recovery",
+                "bilibili-hmt-late-recovery",
+                "iqiyi-late-recovery",
+                "microsoft-late-recovery",
+                "apple-late-recovery",
+                "china-media-late-recovery",
+            },
+        )
+        self.assertTrue(all(slug in slugs for slug in recovery_slugs))
+        for slug in recovery_slugs:
+            self.assertLess(slugs.index("china-web"), slugs.index(slug))
+            self.assertLess(slugs.index(slug), slugs.index("china-domains-direct"))
+        for slug in recovery_slugs:
+            if slug != "microsoft-late-recovery":
+                self.assertLess(slugs.index(slug), slugs.index("overseas-cloud"))
+        self.assertLess(slugs.index("microsoft"), slugs.index("microsoft-late-recovery"))
+        self.assertLess(slugs.index("microsoft-late-recovery"), slugs.index("google"))
+        self.assertEqual(
+            slugs[-3:],
+            ["china-domains-direct", "china-geoip-direct", "final"],
         )
         group_members = {
             group.name: list(group.members) for group in sources.proxy_groups
@@ -1009,14 +1117,27 @@ class AdvertisingImportTests(unittest.TestCase):
                             "advertising_rule": covering,
                         }
                     )
-        content = "".join(
+        def row_key(row: dict[str, str]) -> tuple[str, str, str, str]:
+            return (
+                row["later_slug"],
+                row["later_target"],
+                row["later_rule"],
+                row["advertising_rule"],
+            )
+
+        ordered_rows = sorted(rows, key=row_key)
+        ordered_ledger_rows = sorted(ledger["rows"], key=row_key)
+        self.assertEqual(ordered_rows, ordered_ledger_rows)
+        self.assertEqual(len(rows), ledger["count"])
+        ledger_content = "".join(
             f"{row['later_slug']}\t{row['later_target']}\t{row['later_rule']}\t"
             f"{row['advertising_rule']}\n"
-            for row in rows
+            for row in ledger["rows"]
         )
-        self.assertEqual(rows, ledger["rows"])
-        self.assertEqual(len(rows), ledger["count"])
-        self.assertEqual(hashlib.sha256(content.encode()).hexdigest(), ledger["rows_sha256"])
+        self.assertEqual(
+            hashlib.sha256(ledger_content.encode()).hexdigest(),
+            ledger["rows_sha256"],
+        )
 
 
 class PublicRuleExclusionTests(unittest.TestCase):
@@ -1096,11 +1217,25 @@ class ChinaDomainDirectImportTests(unittest.TestCase):
         self.assertFalse(any("GEOSITE" in rule for rule in self.rules))
 
     def test_required_mainland_service_cases_match_before_final(self) -> None:
+        migrated_cloud_cases = {
+            "www.cloudflare-cn.com": (
+                "china-cloud",
+                "☁️ 国内云服务",
+                "DOMAIN-SUFFIX,cloudflare-cn.com",
+            ),
+        }
         for domain in self.ledger["required_cases"].values():
             with self.subTest(domain=domain):
                 result = first_match(self.sources, domain=domain)
-                self.assertEqual(result["slug"], "china-domains-direct")
-                self.assertEqual(result["target"], "🌏 国内网站")
+                expected = migrated_cloud_cases.get(domain)
+                if expected is None:
+                    self.assertEqual(result["slug"], "china-domains-direct")
+                    self.assertEqual(result["target"], "🌏 国内网站")
+                else:
+                    self.assertEqual(
+                        (result["slug"], result["target"], result["rule"]),
+                        expected,
+                    )
 
 
 class FirstMatchBaselineTests(unittest.TestCase):
@@ -1477,7 +1612,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "other.sycontroller.com",
             "yif.gdtstream.com",
             "dl.steam.cygnaa.com",
-            "shared-assets.alicdn.com",
             "www.tmall.hk",
             "www.jd.hk",
         ]:
@@ -1508,7 +1642,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for forbidden in [
             "DOMAIN-SUFFIX,manlaxy.com",
             "DOMAIN-SUFFIX,sycontroller.com",
-            "DOMAIN-SUFFIX,alicdn.com",
             "DOMAIN,yif.gdtstream.com",
             "DOMAIN,dl.steam.cygnaa.com",
             "IP-CIDR,103.195.103.66/32,no-resolve",
@@ -1517,6 +1650,236 @@ class FirstMatchBaselineTests(unittest.TestCase):
         ]:
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, published_rules)
+
+    def test_domestic_and_overseas_cloud_routing_is_region_aware(self) -> None:
+        domestic_cases = {
+            "console.aliyun.com": "DOMAIN-SUFFIX,aliyun.com",
+            "bucket.oss-cn-hangzhou.aliyuncs.com": "DOMAIN-SUFFIX,aliyuncs.com",
+            "console.cloud.tencent.com": "DOMAIN-SUFFIX,cloud.tencent.com",
+            "bucket.cos.ap-beijing.myqcloud.com": "DOMAIN-SUFFIX,myqcloud.com",
+            "console.huaweicloud.com": "DOMAIN-SUFFIX,huaweicloud.com",
+            "obs.cn-north-4.myhuaweicloud.com": "DOMAIN-SUFFIX,myhuaweicloud.com",
+            "console.volcengine.com": "DOMAIN-SUFFIX,volcengine.com",
+            "api.ucloud.cn": "DOMAIN-SUFFIX,ucloud.cn",
+            "bucket.cn-bj.ufileos.com": "DOMAIN-SUFFIX,ufileos.com",
+            "internal-cn-sh2-01.ufileos.com": "DOMAIN-SUFFIX,ufileos.com",
+            "console.qingcloud.com": "DOMAIN-SUFFIX,qingcloud.com",
+            "bucket.bcebos.com": "DOMAIN-SUFFIX,bcebos.com",
+            "cloud.baidu.com": "DOMAIN,cloud.baidu.com",
+            "console.bce.baidu.com": "DOMAIN,console.bce.baidu.com",
+            "console.jdcloud.com": "DOMAIN-SUFFIX,jdcloud.com",
+            "dns.jdclouddns.com": "DOMAIN-SUFFIX,jdclouddns.com",
+            "edge.jdcloudedge.com": "DOMAIN-SUFFIX,jdcloudedge.com",
+            "lb.jdcloudlb.com": "DOMAIN-SUFFIX,jdcloudlb.com",
+            "waf.jdcloudwaf.com": "DOMAIN-SUFFIX,jdcloudwaf.com",
+            "console.ksyun.com": "DOMAIN-SUFFIX,ksyun.com",
+            "bucket.ks3-cn-beijing.ksyuncs.com": "DOMAIN-SUFFIX,ksyuncs.com",
+            "test.clouddn.com": "DOMAIN-SUFFIX,clouddn.com",
+            "bucket.s3-cn-east-1.qiniucs.com": "DOMAIN-SUFFIX,qiniucs.com",
+            "bucket.s3.cn-east-1.qiniucs.com": "DOMAIN-SUFFIX,qiniucs.com",
+            "bucket.oos-cn.ctyunapi.cn": "DOMAIN-SUFFIX,ctyunapi.cn",
+            "console.amazonaws.cn": "DOMAIN-SUFFIX,amazonaws.cn",
+            "s3.cn-north-1.amazonaws.com.cn": "DOMAIN-SUFFIX,amazonaws.com.cn",
+            "portal.azure.cn": "DOMAIN-SUFFIX,azure.cn",
+            "edge.cloudflarechina.cn": "DOMAIN-SUFFIX,cloudflarechina.cn",
+            "www.example.cn.cdn.cloudflareanycast.net": "DOMAIN-SUFFIX,cloudflareanycast.net",
+            "beacon.cloudflareinsights-cn.com": "DOMAIN-SUFFIX,cloudflareinsights-cn.com",
+            "gateway.cloudflarestoragegw.com": "DOMAIN-SUFFIX,cloudflarestoragegw.com",
+        }
+        for domain, rule in domestic_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-cloud", "☁️ 国内云服务", rule),
+                    domain=domain,
+                )
+
+        overseas_cases = {
+            "www.alibabacloud.com": "DOMAIN-SUFFIX,alibabacloud.com",
+            "bucket.oss-ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-ap-southeast-1.aliyuncs.com",
+            "bucket.oss-me-central-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-me-central-1.aliyuncs.com",
+            "ecs.ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,ap-southeast-1.aliyuncs.com",
+            "ecs-vpc.ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,ap-southeast-1.aliyuncs.com",
+            "vpc.eu-central-1.aliyuncs.com": "DOMAIN-SUFFIX,eu-central-1.aliyuncs.com",
+            "ecs.us-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,us-southeast-1.aliyuncs.com",
+            "ecs.ap-southeast-8.aliyuncs.com": "DOMAIN-SUFFIX,ap-southeast-8.aliyuncs.com",
+            "ecs.cn-hongkong.aliyuncs.com": "DOMAIN-SUFFIX,cn-hongkong.aliyuncs.com",
+            "bucket.oss-accelerate-overseas.aliyuncs.com": "DOMAIN-SUFFIX,oss-accelerate-overseas.aliyuncs.com",
+            "intl.cloud.tencent.com": "DOMAIN,intl.cloud.tencent.com",
+            "www.tencentcloud.com": "DOMAIN-SUFFIX,tencentcloud.com",
+            "console.tencentcloud.com": "DOMAIN-SUFFIX,tencentcloud.com",
+            "bucket.cos.ap-singapore.myqcloud.com": "DOMAIN-SUFFIX,cos.ap-singapore.myqcloud.com",
+            "obs.ap-southeast-3.myhuaweicloud.com": "DOMAIN-SUFFIX,ap-southeast-3.myhuaweicloud.com",
+            "console-intl.huaweicloud.com": "DOMAIN,console-intl.huaweicloud.com",
+            "bucket.us-ca.ufileos.com": "DOMAIN-SUFFIX,us-ca.ufileos.com",
+            "bucket.s3-us-ca.ufileos.com": "DOMAIN-SUFFIX,s3-us-ca.ufileos.com",
+            "bucket.internal-sg-01.ufileos.com": "DOMAIN-SUFFIX,internal-sg-01.ufileos.com",
+            "bucket.ks3-sgp.ksyuncs.com": "DOMAIN-SUFFIX,ks3-sgp.ksyuncs.com",
+            "bucket.oos-cnhk-hqnet.ctyunapi.cn": "DOMAIN-SUFFIX,oos-cnhk-hqnet.ctyunapi.cn",
+            "bucket.s3-us-north-1.qiniucs.com": "DOMAIN-SUFFIX,s3-us-north-1.qiniucs.com",
+            "bucket.s3.us-north-1.qiniucs.com": "DOMAIN-SUFFIX,s3.us-north-1.qiniucs.com",
+            "bucket.s3-ap-southeast-1.qiniucs.com": "DOMAIN-SUFFIX,s3-ap-southeast-1.qiniucs.com",
+            "bucket.s3.ap-southeast-1.qiniucs.com": "DOMAIN-SUFFIX,s3.ap-southeast-1.qiniucs.com",
+            "console.byteplus.com": "DOMAIN,console.byteplus.com",
+            "open.ap-southeast-1.byteplusapi.com": "DOMAIN-SUFFIX,byteplusapi.com",
+            "console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
+            "us-east-1.console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
+            "eu-west-1.console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
+            "signin.aws.amazon.com": "DOMAIN-SUFFIX,signin.aws.amazon.com",
+            "us-east-1.signin.aws.amazon.com": "DOMAIN-SUFFIX,signin.aws.amazon.com",
+            "us-east-1.sso.signin.aws": "DOMAIN-SUFFIX,signin.aws",
+            "ec2.us-east-1.api.aws": "DOMAIN-SUFFIX,api.aws",
+            "abcdefg.lambda-url.us-east-1.on.aws": "DOMAIN-SUFFIX,on.aws",
+            "s3.us-east-1.amazonaws.com": "DOMAIN-SUFFIX,amazonaws.com",
+            "aws.amazon.com": "DOMAIN-SUFFIX,aws.amazon.com",
+            "docs.aws.amazon.com": "DOMAIN-SUFFIX,aws.amazon.com",
+            "portal.azure.com": "DOMAIN-SUFFIX,azure.com",
+            "service.azure-api.net": "DOMAIN-SUFFIX,azure-api.net",
+            "registry.azurecr.io": "DOMAIN-SUFFIX,azurecr.io",
+            "hub.azure-devices.net": "DOMAIN-SUFFIX,azure-devices.net",
+            "container.westeurope.azurecontainer.io": "DOMAIN-SUFFIX,azurecontainer.io",
+            "app.azurecontainerapps.io": "DOMAIN-SUFFIX,azurecontainerapps.io",
+            "adb-123.1.azuredatabricks.net": "DOMAIN-SUFFIX,azuredatabricks.net",
+            "workspace.azuresynapse.net": "DOMAIN-SUFFIX,azuresynapse.net",
+            "cluster.azmk8s.io": "DOMAIN-SUFFIX,azmk8s.io",
+            "service.search.windows.net": "DOMAIN-SUFFIX,search.windows.net",
+            "app.azurestaticapps.net": "DOMAIN-SUFFIX,azurestaticapps.net",
+            "cache.redis.cache.windows.net": "DOMAIN-SUFFIX,redis.cache.windows.net",
+            "storage.file.core.windows.net": "DOMAIN-SUFFIX,core.windows.net",
+            "server.database.windows.net": "DOMAIN-SUFFIX,database.windows.net",
+            "namespace.servicebus.windows.net": "DOMAIN-SUFFIX,servicebus.windows.net",
+            "console.cloud.google.com": "DOMAIN-SUFFIX,cloud.google.com",
+            "cloudresourcemanager.googleapis.com": "DOMAIN,cloudresourcemanager.googleapis.com",
+            "compute.googleapis.com": "DOMAIN,compute.googleapis.com",
+            "bigquery.googleapis.com": "DOMAIN,bigquery.googleapis.com",
+            "container.googleapis.com": "DOMAIN,container.googleapis.com",
+            "sqladmin.googleapis.com": "DOMAIN,sqladmin.googleapis.com",
+            "iam.googleapis.com": "DOMAIN,iam.googleapis.com",
+            "pubsub.googleapis.com": "DOMAIN,pubsub.googleapis.com",
+            "secretmanager.googleapis.com": "DOMAIN,secretmanager.googleapis.com",
+            "artifactregistry.googleapis.com": "DOMAIN,artifactregistry.googleapis.com",
+            "project.firebaseio.com": "DOMAIN-SUFFIX,firebaseio.com",
+            "project.europe-west1.firebasedatabase.app": "DOMAIN-SUFFIX,firebasedatabase.app",
+            "firebasedatabase.googleapis.com": "DOMAIN,firebasedatabase.googleapis.com",
+            "firebasestorage.googleapis.com": "DOMAIN,firebasestorage.googleapis.com",
+            "storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
+            "example-bucket.storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
+            "compute.europe-west1.rep.googleapis.com": "DOMAIN-SUFFIX,rep.googleapis.com",
+            "example.workers.dev": "DOMAIN-SUFFIX,workers.dev",
+            "www.digitalocean.com": "DOMAIN-SUFFIX,digitalocean.com",
+            "www.vultr.com": "DOMAIN-SUFFIX,vultr.com",
+            "bucket.ewr1.vultrobjects.com": "DOMAIN-SUFFIX,vultrobjects.com",
+            "api.linode.com": "DOMAIN-SUFFIX,linode.com",
+            "cloud.oracle.com": "DOMAIN,cloud.oracle.com",
+            "objectstorage.us-ashburn-1.oraclecloud.com": "DOMAIN-SUFFIX,oraclecloud.com",
+        }
+        for domain, rule in overseas_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("overseas-cloud", "☁️ 海外云服务", rule),
+                    domain=domain,
+                )
+
+        self.assert_match(
+            ("china-cloud", "☁️ 国内云服务", "DOMAIN-SUFFIX,aliyuncs.com"),
+            domain="ecs.cn-hangzhou.aliyuncs.com",
+        )
+
+        shared_google_api_cases = {
+            "fonts.googleapis.com": "DOMAIN-SUFFIX,googleapis.com",
+            "people.googleapis.com": "DOMAIN-SUFFIX,googleapis.com",
+            "www.recaptcha.net": "DOMAIN-SUFFIX,recaptcha.net",
+        }
+        for domain, rule in shared_google_api_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("google", "🔎 Google", rule),
+                    domain=domain,
+                )
+
+        priority_cases = {
+            "gmeconf.qcloud.com": (
+                "game-platform",
+                "🎮 游戏平台",
+                "DOMAIN,gmeconf.qcloud.com",
+            ),
+            "epicgames-download1-1251447533.file.myqcloud.com": (
+                "game-download",
+                "🎮 游戏下载",
+                "DOMAIN,epicgames-download1-1251447533.file.myqcloud.com",
+            ),
+            "github-cloud.s3.amazonaws.com": (
+                "developer-platforms",
+                "🧑‍💻 开发服务",
+                "DOMAIN,github-cloud.s3.amazonaws.com",
+            ),
+            "113-219-145-1.ksyungslb.com": (
+                "bilibili-hmt-late-recovery",
+                "🎬 B站港澳台",
+                "DOMAIN,113-219-145-1.ksyungslb.com",
+            ),
+            "aiplatform.googleapis.com": (
+                "google-ai",
+                "🧲 海外 AI",
+                "DOMAIN,aiplatform.googleapis.com",
+            ),
+            "youtubei.googleapis.com": (
+                "youtube",
+                "🎬 YouTube",
+                "DOMAIN-SUFFIX,youtubei.googleapis.com",
+            ),
+            "openaiapi-site.azureedge.net": (
+                "openai",
+                "🧲 OpenAI",
+                "DOMAIN-SUFFIX,openaiapi-site.azureedge.net",
+            ),
+        }
+        for domain, expected in priority_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(expected, domain=domain)
+
+        advertising_cases = {
+            "acjs.aliyun.com": "DOMAIN-SUFFIX,acjs.aliyun.com",
+            "adash.man.aliyuncs.com": "DOMAIN-SUFFIX,adash.man.aliyuncs.com",
+            "mobads-pre-config.cdn.bcebos.com": "DOMAIN-SUFFIX,mobads-pre-config.cdn.bcebos.com",
+        }
+        for domain, rule in advertising_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("advertising", "🛑 广告拦截", rule),
+                    domain=domain,
+                )
+
+        published_cloud_rules = {
+            rule
+            for slug in ("china-cloud", "overseas-cloud")
+            for rule in self.sources.rules[slug]
+        }
+        self.assertTrue(
+            all(
+                parse_rule(rule, context="cloud routing test")[0]
+                in {"DOMAIN", "DOMAIN-SUFFIX"}
+                for rule in published_cloud_rules
+            )
+        )
+        self.assertNotIn("DOMAIN-SUFFIX,googleapis.com", published_cloud_rules)
+        self.assertIn("DOMAIN-SUFFIX,googleapis.com", self.sources.rules["google"])
+        self.assertNotIn("DOMAIN-SUFFIX,recaptcha.net", self.sources.rules["china-web"])
+        self.assertIn("DOMAIN-SUFFIX,recaptcha.net", self.sources.rules["google"])
+        self.assertNotIn("DOMAIN-SUFFIX,firebase.io", published_cloud_rules)
+        for forbidden in [
+            "DOMAIN-SUFFIX,alibaba.com",
+            "DOMAIN-SUFFIX,tencent.com",
+            "DOMAIN-SUFFIX,huawei.com",
+            "DOMAIN-SUFFIX,baidu.com",
+            "DOMAIN-SUFFIX,jd.com",
+            "DOMAIN-SUFFIX,kingsoft.com",
+            "DOMAIN-SUFFIX,google.com",
+            "DOMAIN-SUFFIX,oracle.com",
+            "DOMAIN-SUFFIX,akamaihd.net",
+            "DOMAIN-SUFFIX,akamaized.net",
+        ]:
+            with self.subTest(forbidden=forbidden):
+                self.assertNotIn(forbidden, published_cloud_rules)
 
     def test_mainland_apps_use_existing_direct_first_groups(self) -> None:
         game_cases = {
@@ -1608,9 +1971,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
 
         for domain in [
             "www.taptap.io",
-            "other.qcloud.com",
-            "other.myqcloud.com",
-            "other.alicdn.com",
         ]:
             with self.subTest(domain=domain):
                 self.assert_match(
@@ -1629,9 +1989,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
         }
         for forbidden in [
             "PROCESS-NAME,WeGame.exe",
-            "DOMAIN-SUFFIX,qcloud.com",
-            "DOMAIN-SUFFIX,myqcloud.com",
-            "DOMAIN-SUFFIX,alicdn.com",
         ]:
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, published_rules)
@@ -1728,6 +2085,82 @@ class GenerationTests(unittest.TestCase):
             render_profile(self.sources, first)
             render_profile(self.sources, second)
             self.assertTrue(compare_trees(first, second).clean)
+
+    def test_retired_ruleset_urls_are_generated_only_aliases(self) -> None:
+        self.assertEqual(
+            GENERATED_RULESET_ALIASES,
+            {
+                "onedrive": (
+                    "cloud-storage",
+                    0,
+                    23,
+                    "70b2124935f9ed33e71bd6b2f6ee8ebb255fc0c31e1c9daea67312f42ed2e551",
+                    "402e08c9c0bf57fa829a3ab35f90997e02d33a640b5bc53e4c26507766f0cd31",
+                ),
+                "icloud": (
+                    "cloud-storage",
+                    23,
+                    81,
+                    "a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
+                    "b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
+                ),
+                "spotify-2": (
+                    "spotify",
+                    7,
+                    21,
+                    "1197e4bd8607004d93075d893352879fd9e45d252278b5c695dfca4115a28e81",
+                    "06da8a204ae8ebd52082fd18c3766ee9929873b9e5b28484077cb5c662a7700d",
+                ),
+            },
+        )
+        self.assertTrue(GENERATED_RULESET_ALIASES.keys().isdisjoint(self.sources.rules))
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "generated"
+            render_profile(self.sources, output)
+            generated_manifest = json.loads(
+                (output / "manifest.json").read_text(encoding="utf-8")
+            )["files"]
+            active_text = "\n".join(
+                (output / relative).read_text(encoding="utf-8")
+                for relative in (
+                    "config/ekko-rules.ini",
+                    "Mihomo/reversed-template.yaml",
+                )
+            )
+            for alias_slug, alias in GENERATED_RULESET_ALIASES.items():
+                with self.subTest(alias=alias_slug):
+                    list_path = output / "Ruleset" / f"{alias_slug}.list"
+                    provider_path = (
+                        output / "Providers" / "Ruleset" / f"{alias_slug}.yaml"
+                    )
+                    expected_entries = self.sources.rules[alias.canonical][
+                        alias.start : alias.end
+                    ]
+                    self.assertEqual(
+                        list_path.read_text(encoding="utf-8").splitlines(),
+                        list(expected_entries),
+                    )
+                    self.assertEqual(
+                        hashlib.sha256(list_path.read_bytes()).hexdigest(),
+                        alias.list_sha256,
+                    )
+                    self.assertEqual(
+                        yaml.safe_load(provider_path.read_text(encoding="utf-8")),
+                        {"payload": list(expected_entries)},
+                    )
+                    self.assertEqual(
+                        hashlib.sha256(provider_path.read_bytes()).hexdigest(),
+                        alias.provider_sha256,
+                    )
+                    self.assertIn(f"Ruleset/{alias_slug}.list", generated_manifest)
+                    self.assertIn(
+                        f"Providers/Ruleset/{alias_slug}.yaml", generated_manifest
+                    )
+                    self.assertNotIn(f"/{alias_slug}.list", active_text)
+                    self.assertNotIn(f"/{alias_slug}.yaml", active_text)
+                    self.assertNotIn(f"RULE-SET,{alias_slug},", active_text)
+        self.assertEqual(len(self.sources.rule_segments), 63)
+        self.assertEqual(len(self.sources.segments), 64)
 
     def test_stale_file_is_detected_by_check_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

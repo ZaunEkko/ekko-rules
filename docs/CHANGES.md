@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 uses **2026-08-04**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -466,6 +466,31 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 94; same-segment: 13; cross-segment-only: 81.
+
+## ER-023 — Domestic and overseas cloud routing split
+
+**Type:** cloud-infrastructure policy separation, regional endpoint precedence, and segment-budget consolidation
+
+Two independent, manually switchable groups now own cloud infrastructure:
+
+- `☁️ 国内云服务` defaults to `DIRECT` for Alibaba Cloud, Tencent Cloud, Huawei Cloud, Volcengine, UCloud, QingCloud, Baidu AI Cloud, JD Cloud, Kingsoft Cloud, Qiniu, China Telecom Cloud, AWS China, Azure China, and Cloudflare China;
+- `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud, together with international Alibaba Cloud, Tencent COS, and Huawei Cloud endpoints.
+
+First-match order is intentional: advertising and concrete AI, development, game, media, cloud-storage, Apple, and late-recovery service endpoints remain earlier; international Alibaba OSS, Tencent COS, Huawei, UCloud US3, Kingsoft KS3, and China Telecom OOS regional suffixes then precede their mainland vendor parent roots; cloud infrastructure next precedes Microsoft, Google, and the classic mainland aggregate. Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili Kingsoft hosts therefore retain their concrete owners. The 71 reviewed later-rule captures owned by the cloud layer are frozen in `tests/fixtures/cloud-routing-ledger.json`.
+
+No cloud CIDR, ASN, `GEOSITE`, regular expression, generic consumer-company root, or broad Akamai tenant suffix is added. All 206 destination-IP rules retain `no-resolve`; shared AWS/GCP addresses still fall through the domain-only model to FINAL.
+
+The public product remains within the Subconverter 64-segment external-config ceiling. The two Spotify source segments are physically concatenated under the unchanged Music policy, and OneDrive plus iCloud are physically concatenated as `cloud-storage` under the unchanged Cloud Storage policy. Matcher order and targets are preserved; HBO GO and Max remain separate rulesets. Generated-only `onedrive`, `icloud`, and `spotify-2` compatibility copies preserve retired Raw ruleset/provider URLs and their original pre-merge matcher subsets through frozen list/provider hashes; no active Subconverter or Mihomo entry references those aliases, and they do not count as canonical segments or rules.
+
+The exact OCI Console host `cloud.oracle.com` is included alongside the anchored `oraclecloud.com` infrastructure suffix. The broader consumer-company root `oracle.com` remains excluded. AWS's main portal and documentation under `aws.amazon.com`, canonical and regional `*.console.aws.amazon.com` hosts, sign-in flow, `api.aws` service endpoints, and Lambda Function URLs under `on.aws` use overseas cloud. BytePlus's exact console and API root cover Volcengine's international cloud without adding a broad consumer-brand suffix. Azure's current public infrastructure-domain inventory—including API Management, Container Registry, IoT, containers, data and analytics, Kubernetes, machine learning, Storage, SQL, Service Bus, Redis, Search, SignalR, and Static Web Apps—uses documented roots while retired services and Microsoft business-product domains remain excluded; Vultr Object Storage uses `vultrobjects.com`. Shared `googleapis.com` stays under `🔎 Google`; official Google Cloud global API service endpoints plus Firebase Storage and Realtime Database management APIs enter overseas cloud only through audited exact rules; documented Firebase data endpoints, virtual-hosted Cloud Storage and official `rep.googleapis.com` regional endpoints. The duplicate mainland `recaptcha.net` matcher is removed so reCAPTCHA continues to use `🔎 Google` despite the cloud-order adjustment. Huawei's international console is separated from its domestic root, while Baidu AI Cloud's primary portal and console use domestic cloud. Reviewed non-mainland Alibaba region suffixes cover both `SERVICE.REGION.aliyuncs.com` and `SERVICE-vpc.REGION.aliyuncs.com` APIs before the domestic `aliyuncs.com` catch-all; Alibaba OSS's explicit overseas acceleration suffix remains ahead as well. The same regional-precedence pattern separates overseas UCloud US3, Kingsoft KS3, and China Telecom OOS endpoints before their domestic storage roots. JD Cloud DNS/edge/load-balancing/WAF, Qiniu `clouddn.com` test delivery, and reviewed Cloudflare China infrastructure roots now obey the domestic cloud selector. Qiniu Kodo's two documented overseas S3 regions use exact hyphenated and dotted endpoint suffixes before the domestic `qiniucs.com` fallback, so mainland buckets become `DIRECT` without pulling Southeast Asia or North America into the domestic policy. Ordinary overseas infrastructure endpoints that would use the same default proxy selector through FINAL are not added merely for classification completeness; region-sensitive AI and media services remain explicit exceptions.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,473 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133, with 71 cloud captures independently frozen in the cloud routing ledger.
 
 ## ER-022 — Mainland high-frequency apps, game launchers, and in-game voice
 

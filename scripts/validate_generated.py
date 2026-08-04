@@ -12,6 +12,8 @@ from typing import Any
 from profile_model import (
     CORE_PRODUCT,
     DESTINATION_IP_RULE_TYPES,
+    GENERATED_RULESET_ALIASES,
+    generated_ruleset_alias_entries,
     NODE_PLACEHOLDER,
     POSIX_ABSOLUTE_PATH,
     ProfileError,
@@ -119,9 +121,16 @@ def expected_generated_files(sources: ProfileSources) -> set[str]:
         "README_EN.md",
         "manifest.json",
     }
-    for segment in sources.rule_segments:
-        files.add(f"Ruleset/{segment.slug}.list")
-        files.add(f"Providers/Ruleset/{segment.slug}.yaml")
+    for slug in [
+        *(segment.slug for segment in sources.rule_segments),
+        *(
+            alias
+            for alias, metadata in GENERATED_RULESET_ALIASES.items()
+            if metadata.canonical in sources.rules
+        ),
+    ]:
+        files.add(f"Ruleset/{slug}.list")
+        files.add(f"Providers/Ruleset/{slug}.yaml")
     return files
 
 
@@ -277,6 +286,32 @@ def validate_rulesets(generated: Path, sources: ProfileSources) -> tuple[int, in
             if rule_type in DESTINATION_IP_RULE_TYPES:
                 destination_ip_rules += 1
                 check(has_no_resolve, f"Destination-IP rule lacks no-resolve: {entry}")
+    for alias_slug, alias in GENERATED_RULESET_ALIASES.items():
+        expected_entries = generated_ruleset_alias_entries(sources, alias)
+        if expected_entries is None:
+            continue
+        alias_list = generated / "Ruleset" / f"{alias_slug}.list"
+        check(
+            alias_list.read_text(encoding="utf-8").splitlines()
+            == list(expected_entries),
+            f"Compatibility Ruleset differs from frozen subset: {alias_slug}",
+        )
+        check(
+            file_sha256(alias_list) == alias.list_sha256,
+            f"Compatibility Ruleset hash differs: {alias_slug}",
+        )
+        alias_provider_path = (
+            generated / "Providers" / "Ruleset" / f"{alias_slug}.yaml"
+        )
+        alias_provider = read_yaml(alias_provider_path)
+        check(
+            alias_provider == {"payload": list(expected_entries)},
+            f"Compatibility provider differs from frozen subset: {alias_slug}",
+        )
+        check(
+            file_sha256(alias_provider_path) == alias.provider_sha256,
+            f"Compatibility provider hash differs: {alias_slug}",
+        )
     check(total_rules > 0, "Generated rules are empty")
     return total_rules, destination_ip_rules
 
@@ -495,7 +530,15 @@ def main() -> int:
                         "summary"
                     ]["rule_count"],
                 },
-                "provider_files": len(sources.rule_segments),
+                "provider_files": len(sources.rule_segments)
+                + sum(
+                    metadata.canonical in sources.rules
+                    for metadata in GENERATED_RULESET_ALIASES.values()
+                ),
+                "compatibility_aliases": sum(
+                    metadata.canonical in sources.rules
+                    for metadata in GENERATED_RULESET_ALIASES.values()
+                ),
                 "destination_ip_rules": destination_ip_rules,
                 "destination_ip_rules_without_no_resolve": 0,
                 "generated_manifest_hashes": len(generated_manifest["files"]),

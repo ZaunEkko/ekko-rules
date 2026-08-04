@@ -316,3 +316,70 @@ items:
   recommended_action: policy-split
   current_product: non-generating
   resolution: Technical failures and negative DNS/HTTP observations remain evidence policy only and map to no automatic deletion.
+- id: domestic-and-overseas-cloud-routing
+  status: accepted
+  scope: routing-policy
+  summary: Domestic and overseas cloud infrastructure needs independent manually switchable policies with region-aware first-match separation.
+  evidence:
+  - https://www.alibabacloud.com/help/en/oss/user-guide/regions-and-endpoints
+  - https://cloud.tencent.com/document/product/436/6224
+  - https://developer.huaweicloud.com/endpoint
+  - https://docs.aws.amazon.com/general/latest/gr/rande.html
+  - https://docs.aws.amazon.com/general/latest/gr/mgmt-console.html
+  - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_sign-in.html
+  - https://docs.aws.amazon.com/general/latest/gr/rande.html#dual-stack-endpoints
+  - https://docs.aws.amazon.com/
+  - https://learn.microsoft.com/azure/reliability/regions-list
+  - https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-domains
+  - https://learn.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-endpoints
+  - https://learn.microsoft.com/en-us/azure/databricks/workspace/workspace-details
+  - https://learn.microsoft.com/en-us/azure/container-instances/container-instances-quickstart-portal
+  - https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-troubleshoot-connectivity
+  - https://docs.ucloud.cn/ufile/introduction/region
+  - https://docs.ksyun.com/documents/6761
+  - https://www.ctyun.cn/document/10066310/10716876
+  - https://developer.qiniu.com/fusion/kb/1319/test-domain-access-restriction-rules
+  - https://developer.qiniu.com/kodo/12285/docking-rclone
+  - https://cloud.google.com/apis/design/dns_dhcp
+  - https://docs.cloud.google.com/docs/security/compliance/endpoints
+  - https://docs.cloud.google.com/docs/security/compliance/restrict-endpoint-usage
+  - https://docs.cloud.google.com/storage/docs/request-endpoints
+  - https://firebase.google.com/docs/reference/rest/storage/rest
+  - https://firebase.google.com/docs/database/rest/start
+  - https://firebase.google.com/docs/reference/rest/database/database-management/rest
+  - https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html
+  - https://docs.byteplus.com/api/docs/byteplus-platform/reference-request-structure
+  - https://cloud.baidu.com/
+  - https://console.bce.baidu.com/
+  - https://support.huaweicloud.com/intl/en-us/devg-oce/en-us_topic_0078452994.html
+  - https://www.alibabacloud.com/help/en/oss/user-guide/transfer-acceleration
+  - https://www.alibabacloud.com/help/en/ecs/developer-reference/api-ecs-2014-05-26-endpoint
+  - https://www.alibabacloud.com/help/en/ecs/user-guide/regions-and-zones
+  - https://developers.cloudflare.com/fundamentals/reference/network-ports/
+  - https://developers.cloudflare.com/china-network/concepts/china-dns/
+  - https://docs.vultr.com/platform/security-best-practices/vultr-object-storage
+  - https://techdocs.akamai.com/cloud-computing/docs/endpoint-types
+  - https://docs.oracle.com/en-us/iaas/Content/GSG/Reference/faq.htm
+  - https://docs.oracle.com/en-us/iaas/api/
+  - tests/fixtures/cloud-routing-ledger.json
+  first_observed: 2026-08-04
+  last_verified: '2026-08-04'
+  phase_2_candidate: none
+  recommended_action: keep-region-aware
+  current_product: standard
+  resolution: Two new groups separate default-DIRECT mainland cloud operations from manually selected overseas cloud infrastructure. Advertising and concrete AI, development, gaming, media, cloud-storage, Apple, and late-recovery service rules remain earlier. Overseas Alibaba OSS, Tencent COS, Huawei Cloud, UCloud US3, Kingsoft KS3, and China Telecom OOS region endpoints precede their broad mainland vendor roots; AWS China, Azure China, and Cloudflare China use domestic cloud, while global AWS—including aws.amazon.com, canonical and regional console hosts, sign-in, api.aws, and Lambda Function URLs—Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and BytePlus international cloud use overseas cloud. Azure's current public infrastructure-domain inventory—including API Management, Container Registry, IoT, containers, data and analytics, Kubernetes, machine learning, Storage, SQL, Service Bus, Redis, Search, SignalR, and Static Web Apps—uses documented suffixes; retired services and Microsoft business-product roots remain excluded; Vultr Object Storage uses vultrobjects.com. JD Cloud DNS, edge, load-balancing, and WAF, Qiniu test delivery, and reviewed Cloudflare China infrastructure roots use domestic cloud. Qiniu Kodo's documented Southeast Asia and North America S3 endpoint forms precede a domestic qiniucs.com fallback so mainland buckets become DIRECT without capturing overseas buckets. Ordinary overseas infrastructure endpoints that would use the same default proxy selector through FINAL are not added only for classification completeness; region-sensitive AI, streaming, and similar services remain explicit because selected proxy geography changes behavior. Huawei's international console is separated from its domestic root, Baidu AI Cloud's primary portal and console use domestic cloud, and virtual-hosted Google Cloud Storage buckets stay with explicit GCP infrastructure. The exact unified OCI Console host cloud.oracle.com is included while the broad oracle.com root remains excluded. Shared googleapis.com remains under the Google policy; audited exact endpoints from Google's current global Cloud API inventory plus Firebase Storage and Realtime Database management APIs, documented Firebase data endpoints, virtual-hosted Storage, and rep.googleapis.com regional endpoints use overseas cloud. The duplicate china-web recaptcha.net entry is removed so reCAPTCHA retains the Google policy. Reviewed non-mainland Alibaba region suffixes cover both SERVICE.REGION.aliyuncs.com and SERVICE-vpc.REGION.aliyuncs.com APIs before the domestic aliyuncs.com catch-all; the explicit OSS overseas acceleration suffix remains ahead as well. No cloud CIDR, ASN, GEOSITE, regexp, generic consumer-company root, or broad Akamai tenant suffix is published. The two cloud segments intentionally precede Microsoft, Google, and the classic mainland aggregate; their 71 reviewed later-rule captures are frozen in the cloud routing ledger.
+- id: cloud-segment-budget-consolidation
+  status: accepted
+  scope: product-boundary
+  summary: Two same-policy physical merges preserve the Subconverter 64-segment ceiling while adding two cloud rulesets.
+  evidence:
+  - sources/manifest.yaml
+  - sources/rules/cloud-storage.list
+  - sources/rules/spotify.list
+  - tests/test_profile.py
+  first_observed: 2026-08-04
+  last_verified: '2026-08-04'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The two Spotify source segments are concatenated without reordering under their existing Music policy, and OneDrive plus iCloud are concatenated under the existing Cloud Storage policy. These are physical ruleset consolidations only; matcher order and policy targets remain unchanged. Generated-only onedrive, icloud, and spotify-2 compatibility copies preserve the retired Raw URLs and their original pre-merge matcher subsets through frozen list/provider hashes, without re-entering the canonical source manifest, Subconverter config, Mihomo template, rule count, or coverage model. HBO GO and Max remain separate rulesets, all groups remain manually switchable, and the public product stays at 63 rulesets plus one FINAL segment.

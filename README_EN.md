@@ -37,7 +37,7 @@ Fill in the form as follows:
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-After pasting the complete URL into the remote-configuration field, the dropdown shows a candidate containing that same full URL. **Click that URL candidate to select it**; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default", then generate the subscription. **Do not rely only on whether the input field visibly contains a space; inspect the final generated custom subscription URL.** Some frontends insert a leading space while submitting the remote configuration. A correct result contains `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`, with `https` immediately after `config=`. If it contains `config=%20https...`, `%20` is that leading space. Delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone. If `config=` is missing or still begins with `config=%20https...`, the converter may fail to load Ekko Rules and fall back to its default preset instead of the 38 policy groups.
+After pasting the complete URL into the remote-configuration field, the dropdown shows a candidate containing that same full URL. **Click that URL candidate to select it**; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default", then generate the subscription. **Do not rely only on whether the input field visibly contains a space; inspect the final generated custom subscription URL.** Some frontends insert a leading space while submitting the remote configuration. A correct result contains `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`, with `https` immediately after `config=`. If it contains `config=%20https...`, `%20` is that leading space. Delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone. If `config=` is missing or still begins with `config=%20https...`, the converter may fail to load Ekko Rules and fall back to its default preset instead of the 40 policy groups.
 
 > The conversion backend needs the complete subscription URL to fetch nodes and perform the conversion, so it is not an anonymous relay. Use a trusted backend or self-host the conversion backend. Never paste a token-bearing subscription URL into issues, pull requests, logs, or public chats.
 
@@ -69,6 +69,7 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Social and communication**: separate groups for social media, messaging, Discord, and email;
 - **Remote streaming**: `🖥️ 远程串流` defaults to `DIRECT` for high-volume remote-access paths including Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP, preventing remote desktop, game streaming, or virtual-LAN traffic from unnecessarily traversing a proxy;
 - **Developer services**: `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers GitHub, GitLab, Docker/GHCR, Maven/Gradle, Node.js/npm, Python/PyPI, Rust/Cargo, Go, NuGet, RubyGems, Composer, Homebrew, CocoaPods, and their websites, APIs, registries, and downloads; switch it temporarily to `DIRECT` when proxy traffic matters;
+- **Cloud infrastructure**: `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
 
@@ -79,8 +80,10 @@ All groups remain manually switchable and automatic latency testing is disabled;
 The terminal routing order is fixed as:
 
 ```text
-all specialized rules
-→ six late-recovery rulesets
+all concrete business rules
+→ five non-Microsoft late-recovery rulesets
+→ overseas cloud → domestic cloud
+→ Microsoft and its late recovery → Google
 → classic mainland-domain rules
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼

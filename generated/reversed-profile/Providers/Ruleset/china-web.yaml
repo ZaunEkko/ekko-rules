@@ -165,7 +165,6 @@ payload:
 - DOMAIN-SUFFIX,gtm.oasisfeng.com
 - DOMAIN-SUFFIX,mtalk.google.com
 - DOMAIN-SUFFIX,ocsp.pki.goog
-- DOMAIN-SUFFIX,recaptcha.net
 - DOMAIN-SUFFIX,safebrowsing-cache.google.com
 - DOMAIN-SUFFIX,settings.crashlytics.com
 - DOMAIN-SUFFIX,ssl-google-analytics.l.google.com

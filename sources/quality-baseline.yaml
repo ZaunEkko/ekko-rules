@@ -7,24 +7,24 @@ products:
       rule_files: 63
       rule_segments: 63
       terminal_segments: 1
-      proxy_groups: 38
-      rules_in_files: 6967
-      rules_with_terminal: 6968
+      proxy_groups: 40
+      rules_in_files: 7472
+      rules_with_terminal: 7473
       destination_ip_rules: 206
       destination_ip_rules_without_no_resolve: 0
     first_match_unreachable:
       global:
-        exact_occurrences: 62
-        broad_coverage_occurrences: 32
-        overlap_between_categories: 0
-        union: 94
+        exact_occurrences: 132
+        broad_coverage_occurrences: 15
+        overlap_between_categories: 1
+        union: 146
       within_same_segment:
         exact_occurrences: 0
         broad_coverage_occurrences: 13
         overlap_between_categories: 0
         union: 13
       cross_segment_only:
-        union: 81
+        union: 133
 exact_duplicates_within_segment:
   occurrences_beyond_first: 0
   duplicate_keys: 0
@@ -43,3 +43,5 @@ next_gate:
   recovery_ledger: tests/fixtures/phase-3-recovery-ledger.json
   intentional_advertising_capture_count: 40
   advertising_routing_ledger: tests/fixtures/advertising-routing-ledger.json
+  intentional_cloud_capture_count: 71
+  cloud_routing_ledger: tests/fixtures/cloud-routing-ledger.json

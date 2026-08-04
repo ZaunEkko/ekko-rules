@@ -215,6 +215,20 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
+- name: ☁️ 国内云服务
+  type: select
+  proxies:
+  - DIRECT
+  - ♻️ 手动切换
+  use:
+  - subscription
+- name: ☁️ 海外云服务
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
 - name: 🧩 微软服务
   type: select
   proxies:
@@ -349,13 +363,6 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/ai-platforms.yaml
     path: ./ruleset/ai-platforms.yaml
-    interval: 86400
-  onedrive:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/onedrive.yaml
-    path: ./ruleset/onedrive.yaml
     interval: 86400
   discord:
     type: http
@@ -567,13 +574,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/spotify.yaml
     path: ./ruleset/spotify.yaml
     interval: 86400
-  spotify-2:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/spotify-2.yaml
-    path: ./ruleset/spotify-2.yaml
-    interval: 86400
   qobuz:
     type: http
     behavior: classical
@@ -609,19 +609,12 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/netflix.yaml
     path: ./ruleset/netflix.yaml
     interval: 86400
-  icloud:
+  cloud-storage:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/icloud.yaml
-    path: ./ruleset/icloud.yaml
-    interval: 86400
-  microsoft:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/microsoft.yaml
-    path: ./ruleset/microsoft.yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/cloud-storage.yaml
+    path: ./ruleset/cloud-storage.yaml
     interval: 86400
   apple:
     type: http
@@ -643,13 +636,6 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/global-media.yaml
     path: ./ruleset/global-media.yaml
-    interval: 86400
-  google:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google.yaml
-    path: ./ruleset/google.yaml
     interval: 86400
   china-web:
     type: http
@@ -679,13 +665,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/iqiyi-late-recovery.yaml
     path: ./ruleset/iqiyi-late-recovery.yaml
     interval: 86400
-  microsoft-late-recovery:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/microsoft-late-recovery.yaml
-    path: ./ruleset/microsoft-late-recovery.yaml
-    interval: 86400
   apple-late-recovery:
     type: http
     behavior: classical
@@ -699,6 +678,41 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-media-late-recovery.yaml
     path: ./ruleset/china-media-late-recovery.yaml
+    interval: 86400
+  overseas-cloud:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/overseas-cloud.yaml
+    path: ./ruleset/overseas-cloud.yaml
+    interval: 86400
+  china-cloud:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-cloud.yaml
+    path: ./ruleset/china-cloud.yaml
+    interval: 86400
+  microsoft:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/microsoft.yaml
+    path: ./ruleset/microsoft.yaml
+    interval: 86400
+  microsoft-late-recovery:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/microsoft-late-recovery.yaml
+    path: ./ruleset/microsoft-late-recovery.yaml
+    interval: 86400
+  google:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google.yaml
+    path: ./ruleset/google.yaml
     interval: 86400
   china-domains-direct:
     type: http
@@ -726,7 +740,6 @@ rules:
 - RULE-SET,microsoft-ai,🧲 海外 AI
 - RULE-SET,ai-developer,🧲 海外 AI
 - RULE-SET,ai-platforms,🧲 海外 AI
-- RULE-SET,onedrive,☁️ 云盘服务
 - RULE-SET,discord,🎙 Discord
 - RULE-SET,instagram,🗣 社交媒体
 - RULE-SET,mail,📪 邮件服务
@@ -757,25 +770,26 @@ rules:
 - RULE-SET,bilibili-hmt,🎬 B站港澳台
 - RULE-SET,iqiyi,🎬 爱奇艺
 - RULE-SET,spotify,🎵 音乐平台
-- RULE-SET,spotify-2,🎵 音乐平台
 - RULE-SET,qobuz,🎵 音乐平台
 - RULE-SET,apple-music,🎵 音乐平台
 - RULE-SET,china-media,🌏 国内流媒体
 - RULE-SET,tiktok,🎶 TikTok
 - RULE-SET,netflix,🎬 Netflix
-- RULE-SET,icloud,☁️ 云盘服务
-- RULE-SET,microsoft,🧩 微软服务
+- RULE-SET,cloud-storage,☁️ 云盘服务
 - RULE-SET,apple,🍎 苹果服务
 - RULE-SET,us-media,🎬 美国流媒体
 - RULE-SET,global-media,🌏 国外流媒体
-- RULE-SET,google,🔎 Google
 - RULE-SET,china-web,🌏 国内网站
 - RULE-SET,game-platform-late-recovery,🎮 游戏平台
 - RULE-SET,bilibili-hmt-late-recovery,🎬 B站港澳台
 - RULE-SET,iqiyi-late-recovery,🎬 爱奇艺
-- RULE-SET,microsoft-late-recovery,🧩 微软服务
 - RULE-SET,apple-late-recovery,🍎 苹果服务
 - RULE-SET,china-media-late-recovery,🌏 国内流媒体
+- RULE-SET,overseas-cloud,☁️ 海外云服务
+- RULE-SET,china-cloud,☁️ 国内云服务
+- RULE-SET,microsoft,🧩 微软服务
+- RULE-SET,microsoft-late-recovery,🧩 微软服务
+- RULE-SET,google,🔎 Google
 - RULE-SET,china-domains-direct,🌏 国内网站
 - RULE-SET,china-geoip-direct,DIRECT
 - MATCH,🐟 漏网之鱼
