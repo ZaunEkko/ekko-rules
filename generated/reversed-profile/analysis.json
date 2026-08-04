@@ -844,8 +844,8 @@
           "slug": "overseas-cloud",
           "scope": "core",
           "rule_types": {
-            "DOMAIN": 6,
-            "DOMAIN-SUFFIX": 180
+            "DOMAIN": 5,
+            "DOMAIN-SUFFIX": 181
           }
         },
         {

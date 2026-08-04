@@ -325,6 +325,7 @@ items:
   - https://cloud.tencent.com/document/product/436/6224
   - https://developer.huaweicloud.com/endpoint
   - https://docs.aws.amazon.com/general/latest/gr/rande.html
+  - https://docs.aws.amazon.com/general/latest/gr/mgmt-console.html
   - https://learn.microsoft.com/azure/reliability/regions-list
   - https://cloud.google.com/apis/design/dns_dhcp
   - https://docs.cloud.google.com/docs/security/compliance/endpoints
@@ -339,7 +340,7 @@ items:
   phase_2_candidate: none
   recommended_action: keep-region-aware
   current_product: standard
-  resolution: Two new groups separate default-DIRECT mainland cloud operations from manually selected overseas cloud infrastructure. Advertising and concrete AI, development, gaming, media, cloud-storage, Apple, and late-recovery service rules remain earlier. Overseas Alibaba OSS, Tencent COS, and Huawei Cloud region endpoints precede their broad mainland vendor roots; AWS China, Azure China, and Cloudflare China use domestic cloud, while global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud use overseas cloud. The exact unified OCI Console host cloud.oracle.com is included while the broad oracle.com root remains excluded. Shared googleapis.com remains under the Google policy; only explicit Compute, Storage, Cloud Resource Manager, and rep.googleapis.com regional GCP endpoints use overseas cloud. The explicit Alibaba OSS overseas acceleration suffix precedes the domestic aliyuncs.com catch-all. No cloud CIDR, ASN, GEOSITE, regexp, generic consumer-company root, or broad Akamai tenant suffix is published. The two cloud segments intentionally precede Microsoft, Google, and the classic mainland aggregate; their 57 reviewed later-rule captures are frozen in the cloud routing ledger.
+  resolution: Two new groups separate default-DIRECT mainland cloud operations from manually selected overseas cloud infrastructure. Advertising and concrete AI, development, gaming, media, cloud-storage, Apple, and late-recovery service rules remain earlier. Overseas Alibaba OSS, Tencent COS, and Huawei Cloud region endpoints precede their broad mainland vendor roots; AWS China, Azure China, and Cloudflare China use domestic cloud, while global AWS—including canonical and regional console.aws.amazon.com hosts—Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, and Oracle Cloud use overseas cloud. The exact unified OCI Console host cloud.oracle.com is included while the broad oracle.com root remains excluded. Shared googleapis.com remains under the Google policy; only explicit Compute, Storage, Cloud Resource Manager, and rep.googleapis.com regional GCP endpoints use overseas cloud. The explicit Alibaba OSS overseas acceleration suffix precedes the domestic aliyuncs.com catch-all. No cloud CIDR, ASN, GEOSITE, regexp, generic consumer-company root, or broad Akamai tenant suffix is published. The two cloud segments intentionally precede Microsoft, Google, and the classic mainland aggregate; their 57 reviewed later-rule captures are frozen in the cloud routing ledger.
 - id: cloud-segment-budget-consolidation
   status: accepted
   scope: product-boundary
