@@ -214,6 +214,10 @@ payload:
 - DOMAIN-SUFFIX,ks3-sgp-internal.ksyuncs.com
 - DOMAIN-SUFFIX,oos-cnhk-hqnet.ctyunapi.cn
 - DOMAIN-SUFFIX,oos-cnhk-nqnet.ctyunapi.cn
+- DOMAIN-SUFFIX,s3-us-north-1.qiniucs.com
+- DOMAIN-SUFFIX,s3.us-north-1.qiniucs.com
+- DOMAIN-SUFFIX,s3-ap-southeast-1.qiniucs.com
+- DOMAIN-SUFFIX,s3.ap-southeast-1.qiniucs.com
 - DOMAIN,console.byteplus.com
 - DOMAIN-SUFFIX,byteplusapi.com
 - DOMAIN-SUFFIX,console.aws.amazon.com

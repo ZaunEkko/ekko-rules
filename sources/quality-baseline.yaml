@@ -8,8 +8,8 @@ products:
       rule_segments: 63
       terminal_segments: 1
       proxy_groups: 40
-      rules_in_files: 7467
-      rules_with_terminal: 7468
+      rules_in_files: 7472
+      rules_with_terminal: 7473
       destination_ip_rules: 206
       destination_ip_rules_without_no_resolve: 0
     first_match_unreachable:
