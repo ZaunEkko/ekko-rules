@@ -148,7 +148,11 @@ DOMAIN-SUFFIX,ru-northwest-201.myhuaweicloud.com
 DOMAIN-SUFFIX,sa-brazil-1.myhuaweicloud.com
 DOMAIN-SUFFIX,tr-west-1.myhuaweicloud.com
 DOMAIN-SUFFIX,us-east-1.myhuaweicloud.com
+DOMAIN,console-intl.huaweicloud.com
 DOMAIN-SUFFIX,console.aws.amazon.com
+DOMAIN-SUFFIX,signin.aws.amazon.com
+DOMAIN-SUFFIX,signin.aws
+DOMAIN-SUFFIX,api.aws
 DOMAIN-SUFFIX,amazonaws.com
 DOMAIN-SUFFIX,amazoncognito.com
 DOMAIN-SUFFIX,amazonses.com
@@ -180,7 +184,7 @@ DOMAIN-SUFFIX,firebaseapp.com
 DOMAIN-SUFFIX,gcr.io
 DOMAIN,cloudresourcemanager.googleapis.com
 DOMAIN,compute.googleapis.com
-DOMAIN,storage.googleapis.com
+DOMAIN-SUFFIX,storage.googleapis.com
 DOMAIN-SUFFIX,rep.googleapis.com
 DOMAIN-SUFFIX,pkg.dev
 DOMAIN-SUFFIX,run.app

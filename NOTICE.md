@@ -20,10 +20,10 @@ Current file-rule accounting is explicit:
 | Classic mainland-domain pinned import | 1,482 | `china-domain-import-ledger.json` |
 | Advertising pinned import | 849 | `advertising-import-ledger.json` |
 | Filtered historical DIRECT-default recovery | 2,721 | immutable recovery ledger minus `public-rule-exclusions.json` |
-| Current specialized, private/local, and service corpus | 2,253 | canonical rules plus migration/review history |
-| **Total file rules** | **7,305** | `sources/quality-baseline.yaml` |
+| Current specialized, private/local, and service corpus | 2,259 | canonical rules plus migration/review history |
+| **Total file rules** | **7,311** | `sources/quality-baseline.yaml` |
 
-The 2,253-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
+The 2,259-rule current specialized corpus is not claimed to be entirely newly authored. It combines reconstructed factual indicators with substantial local rebuilding, additions, deletions, retargeting, and precision corrections; the initial expanded profile did not preserve per-rule source attribution.
 
 ## Current canonical rule-data inputs
 

@@ -1663,6 +1663,8 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "api.ucloud.cn": "DOMAIN-SUFFIX,ucloud.cn",
             "console.qingcloud.com": "DOMAIN-SUFFIX,qingcloud.com",
             "bucket.bcebos.com": "DOMAIN-SUFFIX,bcebos.com",
+            "cloud.baidu.com": "DOMAIN,cloud.baidu.com",
+            "console.bce.baidu.com": "DOMAIN,console.bce.baidu.com",
             "console.jdcloud.com": "DOMAIN-SUFFIX,jdcloud.com",
             "console.ksyun.com": "DOMAIN-SUFFIX,ksyun.com",
             "console.amazonaws.cn": "DOMAIN-SUFFIX,amazonaws.cn",
@@ -1693,15 +1695,21 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "console.tencentcloud.com": "DOMAIN-SUFFIX,tencentcloud.com",
             "bucket.cos.ap-singapore.myqcloud.com": "DOMAIN-SUFFIX,cos.ap-singapore.myqcloud.com",
             "obs.ap-southeast-3.myhuaweicloud.com": "DOMAIN-SUFFIX,ap-southeast-3.myhuaweicloud.com",
+            "console-intl.huaweicloud.com": "DOMAIN,console-intl.huaweicloud.com",
             "console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
             "us-east-1.console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
             "eu-west-1.console.aws.amazon.com": "DOMAIN-SUFFIX,console.aws.amazon.com",
+            "signin.aws.amazon.com": "DOMAIN-SUFFIX,signin.aws.amazon.com",
+            "us-east-1.signin.aws.amazon.com": "DOMAIN-SUFFIX,signin.aws.amazon.com",
+            "us-east-1.sso.signin.aws": "DOMAIN-SUFFIX,signin.aws",
+            "ec2.us-east-1.api.aws": "DOMAIN-SUFFIX,api.aws",
             "s3.us-east-1.amazonaws.com": "DOMAIN-SUFFIX,amazonaws.com",
             "portal.azure.com": "DOMAIN-SUFFIX,azure.com",
             "console.cloud.google.com": "DOMAIN-SUFFIX,cloud.google.com",
             "cloudresourcemanager.googleapis.com": "DOMAIN,cloudresourcemanager.googleapis.com",
             "compute.googleapis.com": "DOMAIN,compute.googleapis.com",
-            "storage.googleapis.com": "DOMAIN,storage.googleapis.com",
+            "storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
+            "example-bucket.storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
             "compute.europe-west1.rep.googleapis.com": "DOMAIN-SUFFIX,rep.googleapis.com",
             "example.workers.dev": "DOMAIN-SUFFIX,workers.dev",
             "www.digitalocean.com": "DOMAIN-SUFFIX,digitalocean.com",
@@ -2024,9 +2032,27 @@ class GenerationTests(unittest.TestCase):
         self.assertEqual(
             GENERATED_RULESET_ALIASES,
             {
-                "onedrive": "cloud-storage",
-                "icloud": "cloud-storage",
-                "spotify-2": "spotify",
+                "onedrive": (
+                    "cloud-storage",
+                    0,
+                    23,
+                    "70b2124935f9ed33e71bd6b2f6ee8ebb255fc0c31e1c9daea67312f42ed2e551",
+                    "402e08c9c0bf57fa829a3ab35f90997e02d33a640b5bc53e4c26507766f0cd31",
+                ),
+                "icloud": (
+                    "cloud-storage",
+                    23,
+                    81,
+                    "a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
+                    "b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
+                ),
+                "spotify-2": (
+                    "spotify",
+                    7,
+                    21,
+                    "1197e4bd8607004d93075d893352879fd9e45d252278b5c695dfca4115a28e81",
+                    "06da8a204ae8ebd52082fd18c3766ee9929873b9e5b28484077cb5c662a7700d",
+                ),
             },
         )
         self.assertTrue(GENERATED_RULESET_ALIASES.keys().isdisjoint(self.sources.rules))
@@ -2043,30 +2069,38 @@ class GenerationTests(unittest.TestCase):
                     "Mihomo/reversed-template.yaml",
                 )
             )
-            for alias, canonical_slug in GENERATED_RULESET_ALIASES.items():
-                with self.subTest(alias=alias):
+            for alias_slug, alias in GENERATED_RULESET_ALIASES.items():
+                with self.subTest(alias=alias_slug):
+                    list_path = output / "Ruleset" / f"{alias_slug}.list"
+                    provider_path = (
+                        output / "Providers" / "Ruleset" / f"{alias_slug}.yaml"
+                    )
+                    expected_entries = self.sources.rules[alias.canonical][
+                        alias.start : alias.end
+                    ]
                     self.assertEqual(
-                        (output / "Ruleset" / f"{alias}.list").read_bytes(),
-                        (output / "Ruleset" / f"{canonical_slug}.list").read_bytes(),
+                        list_path.read_text(encoding="utf-8").splitlines(),
+                        list(expected_entries),
                     )
                     self.assertEqual(
-                        (
-                            output / "Providers" / "Ruleset" / f"{alias}.yaml"
-                        ).read_bytes(),
-                        (
-                            output
-                            / "Providers"
-                            / "Ruleset"
-                            / f"{canonical_slug}.yaml"
-                        ).read_bytes(),
+                        hashlib.sha256(list_path.read_bytes()).hexdigest(),
+                        alias.list_sha256,
                     )
-                    self.assertIn(f"Ruleset/{alias}.list", generated_manifest)
+                    self.assertEqual(
+                        yaml.safe_load(provider_path.read_text(encoding="utf-8")),
+                        {"payload": list(expected_entries)},
+                    )
+                    self.assertEqual(
+                        hashlib.sha256(provider_path.read_bytes()).hexdigest(),
+                        alias.provider_sha256,
+                    )
+                    self.assertIn(f"Ruleset/{alias_slug}.list", generated_manifest)
                     self.assertIn(
-                        f"Providers/Ruleset/{alias}.yaml", generated_manifest
+                        f"Providers/Ruleset/{alias_slug}.yaml", generated_manifest
                     )
-                    self.assertNotIn(f"/{alias}.list", active_text)
-                    self.assertNotIn(f"/{alias}.yaml", active_text)
-                    self.assertNotIn(f"RULE-SET,{alias},", active_text)
+                    self.assertNotIn(f"/{alias_slug}.list", active_text)
+                    self.assertNotIn(f"/{alias_slug}.yaml", active_text)
+                    self.assertNotIn(f"RULE-SET,{alias_slug},", active_text)
         self.assertEqual(len(self.sources.rule_segments), 63)
         self.assertEqual(len(self.sources.segments), 64)
 

@@ -37,7 +37,7 @@
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-在“远程配置”输入框中粘贴完整地址后，下拉列表会出现一条相同的完整 URL。**必须点击这条 URL 候选项完成选择**，不能只粘贴或只按 Enter；成功后输入框会变回只读状态并完整显示该 URL。确认不再显示“默认”后，再点击“生成订阅链接”。**不要只看输入框中是否有空格，必须检查最终生成的定制订阅地址**：有些前端会在提交时自动在远程配置前插入空格。正确结果应包含 `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`，`config=` 后立即是 `https`；如果出现 `config=%20https...`，其中 `%20` 就是前导空格。此时应删除远程配置、重新粘贴并点击完整 URL 候选，再生成并复查，直到 `%20` 消失。若缺少 `config=` 或仍为 `config=%20https...`，转换器可能读取失败并回退到网站默认预设，而不是 Ekko Rules 的 38 个策略组。
+在“远程配置”输入框中粘贴完整地址后，下拉列表会出现一条相同的完整 URL。**必须点击这条 URL 候选项完成选择**，不能只粘贴或只按 Enter；成功后输入框会变回只读状态并完整显示该 URL。确认不再显示“默认”后，再点击“生成订阅链接”。**不要只看输入框中是否有空格，必须检查最终生成的定制订阅地址**：有些前端会在提交时自动在远程配置前插入空格。正确结果应包含 `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`，`config=` 后立即是 `https`；如果出现 `config=%20https...`，其中 `%20` 就是前导空格。此时应删除远程配置、重新粘贴并点击完整 URL 候选，再生成并复查，直到 `%20` 消失。若缺少 `config=` 或仍为 `config=%20https...`，转换器可能读取失败并回退到网站默认预设，而不是 Ekko Rules 的 40 个策略组。
 
 > 转换后端必须获得完整订阅地址才能拉取节点并完成转换，因此不要把它当作匿名中转。请使用可信后端或自行部署转换后端；不要在 Issue、PR、日志或公开聊天中粘贴带 token 的真实订阅链接。
 

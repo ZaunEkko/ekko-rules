@@ -61,6 +61,8 @@ DOMAIN-SUFFIX,ucloudufile.com
 DOMAIN-SUFFIX,qingcloud.com
 DOMAIN-SUFFIX,qingstor.com
 DOMAIN-SUFFIX,yunify.com
+DOMAIN,cloud.baidu.com
+DOMAIN,console.bce.baidu.com
 DOMAIN-SUFFIX,baidubce.com
 DOMAIN-SUFFIX,baidubcr.com
 DOMAIN-SUFFIX,baiduyuncdn.cn

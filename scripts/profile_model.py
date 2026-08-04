@@ -9,7 +9,7 @@ from datetime import date
 from ipaddress import IPv4Network, IPv6Network, ip_network
 from collections.abc import Set as AbstractSet
 from pathlib import Path, PurePosixPath
-from typing import Any, Iterable
+from typing import Any, Iterable, NamedTuple
 from urllib.parse import urlsplit
 
 import yaml
@@ -20,10 +20,38 @@ NODE_PLACEHOLDER = "__ALL_SUBSCRIPTION_NODES__"
 CORE_PRODUCT = "core"
 PRODUCTS = (CORE_PRODUCT,)
 CORE_SCOPE = "core"
+
+
+class GeneratedRulesetAlias(NamedTuple):
+    canonical: str
+    start: int
+    end: int
+    list_sha256: str
+    provider_sha256: str
+
+
 GENERATED_RULESET_ALIASES = {
-    "onedrive": "cloud-storage",
-    "icloud": "cloud-storage",
-    "spotify-2": "spotify",
+    "onedrive": GeneratedRulesetAlias(
+        canonical="cloud-storage",
+        start=0,
+        end=23,
+        list_sha256="70b2124935f9ed33e71bd6b2f6ee8ebb255fc0c31e1c9daea67312f42ed2e551",
+        provider_sha256="402e08c9c0bf57fa829a3ab35f90997e02d33a640b5bc53e4c26507766f0cd31",
+    ),
+    "icloud": GeneratedRulesetAlias(
+        canonical="cloud-storage",
+        start=23,
+        end=81,
+        list_sha256="a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
+        provider_sha256="b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
+    ),
+    "spotify-2": GeneratedRulesetAlias(
+        canonical="spotify",
+        start=7,
+        end=21,
+        list_sha256="1197e4bd8607004d93075d893352879fd9e45d252278b5c695dfca4115a28e81",
+        provider_sha256="06da8a204ae8ebd52082fd18c3766ee9929873b9e5b28484077cb5c662a7700d",
+    ),
 }
 DESTINATION_IP_RULE_TYPES = {
     "IP-CIDR",
@@ -957,19 +985,39 @@ def ini_group_line(group: ProxyGroup, node_filter: str) -> str:
 
 
 def _write_ruleset_files(
-    output: Path, *, slug: str, source_path: Path, entries: tuple[str, ...]
+    output: Path,
+    *,
+    slug: str,
+    source_path: Path | None,
+    entries: tuple[str, ...],
 ) -> None:
     destination = output / "Ruleset" / f"{slug}.list"
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_bytes(source_path.read_bytes())
+    if source_path is None:
+        write_text(destination, "\n".join(entries))
+    else:
+        destination.write_bytes(source_path.read_bytes())
     write_yaml(
         output / "Providers" / "Ruleset" / f"{slug}.yaml",
         {"payload": list(entries)},
     )
 
 
+def generated_ruleset_alias_entries(
+    sources: ProfileSources, alias: GeneratedRulesetAlias
+) -> tuple[str, ...] | None:
+    entries = sources.rules.get(alias.canonical)
+    if entries is None:
+        return None
+    selected = entries[alias.start : alias.end]
+    require(
+        len(selected) == alias.end - alias.start,
+        f"Generated compatibility alias range is incomplete: {alias.canonical}",
+    )
+    return selected
+
+
 def _write_rulesets(output: Path, sources: ProfileSources) -> None:
-    segments_by_slug = {segment.slug: segment for segment in sources.rule_segments}
     for segment in sources.rule_segments:
         _write_ruleset_files(
             output,
@@ -977,15 +1025,25 @@ def _write_rulesets(output: Path, sources: ProfileSources) -> None:
             source_path=sources.root / str(segment.source),
             entries=sources.rules[segment.slug],
         )
-    for alias, canonical_slug in GENERATED_RULESET_ALIASES.items():
-        canonical = segments_by_slug.get(canonical_slug)
-        if canonical is None:
+    for alias_slug, alias in GENERATED_RULESET_ALIASES.items():
+        entries = generated_ruleset_alias_entries(sources, alias)
+        if entries is None:
             continue
         _write_ruleset_files(
             output,
-            slug=alias,
-            source_path=sources.root / str(canonical.source),
-            entries=sources.rules[canonical_slug],
+            slug=alias_slug,
+            source_path=None,
+            entries=entries,
+        )
+        require(
+            file_sha256(output / "Ruleset" / f"{alias_slug}.list")
+            == alias.list_sha256,
+            f"Generated compatibility Ruleset changed: {alias_slug}",
+        )
+        require(
+            file_sha256(output / "Providers" / "Ruleset" / f"{alias_slug}.yaml")
+            == alias.provider_sha256,
+            f"Generated compatibility provider changed: {alias_slug}",
         )
 
 
@@ -1217,7 +1275,7 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 
 - `config/ekko-rules.ini`：Subconverter 在线预设，不接管 Clash 基础配置。
 - `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
-- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留为旧 Raw URL 兼容副本，不进入活动模板或规则计数。
+- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留合并前原始内容的旧 Raw URL 兼容副本，不进入活动模板或规则计数。
 - `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
 ## 在线订阅转换
@@ -1279,7 +1337,7 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 
 - `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
 - `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
-- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` remain only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
+- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
 - `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
 ## Online subscription conversion
@@ -1348,8 +1406,8 @@ def expected_generated_files(sources: ProfileSources) -> set[str]:
         *(segment.slug for segment in sources.rule_segments),
         *(
             alias
-            for alias, canonical_slug in GENERATED_RULESET_ALIASES.items()
-            if canonical_slug in sources.rules
+            for alias, metadata in GENERATED_RULESET_ALIASES.items()
+            if metadata.canonical in sources.rules
         ),
     ]:
         files.add(f"Ruleset/{slug}.list")

@@ -8,7 +8,7 @@ A single standard routing-rules product for Subconverter and Mihomo. This direct
 
 - `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
 - `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
-- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` remain only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
+- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
 - `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
 ## Online subscription conversion

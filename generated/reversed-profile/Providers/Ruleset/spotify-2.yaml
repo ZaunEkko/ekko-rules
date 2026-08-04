@@ -1,11 +1,4 @@
 payload:
-- DOMAIN,audio4-ak-spotify-com.akamaized.net
-- DOMAIN,cdn-spotify-experiments.conductrics.com
-- DOMAIN,heads-ak-spotify-com.akamaized.net
-- DOMAIN,spotify.com.edgesuite.net
-- DOMAIN-SUFFIX,audio-ak-spotify-com.akamaized.net
-- DOMAIN-SUFFIX,byspotify.com
-- DOMAIN-SUFFIX,heads4-ak-spotify-com.akamaized.net
 - DOMAIN-SUFFIX,scdn.co
 - DOMAIN-SUFFIX,spoti.fi
 - DOMAIN-SUFFIX,spotify-com.akamaized.net
