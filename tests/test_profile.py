@@ -1681,6 +1681,12 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "www.alibabacloud.com": "DOMAIN-SUFFIX,alibabacloud.com",
             "bucket.oss-ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-ap-southeast-1.aliyuncs.com",
             "bucket.oss-me-central-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-me-central-1.aliyuncs.com",
+            "ecs.ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,ap-southeast-1.aliyuncs.com",
+            "ecs-vpc.ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,ap-southeast-1.aliyuncs.com",
+            "vpc.eu-central-1.aliyuncs.com": "DOMAIN-SUFFIX,eu-central-1.aliyuncs.com",
+            "ecs.us-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,us-southeast-1.aliyuncs.com",
+            "ecs.ap-southeast-8.aliyuncs.com": "DOMAIN-SUFFIX,ap-southeast-8.aliyuncs.com",
+            "ecs.cn-hongkong.aliyuncs.com": "DOMAIN-SUFFIX,cn-hongkong.aliyuncs.com",
             "bucket.oss-accelerate-overseas.aliyuncs.com": "DOMAIN-SUFFIX,oss-accelerate-overseas.aliyuncs.com",
             "intl.cloud.tencent.com": "DOMAIN,intl.cloud.tencent.com",
             "www.tencentcloud.com": "DOMAIN-SUFFIX,tencentcloud.com",
@@ -1710,6 +1716,11 @@ class FirstMatchBaselineTests(unittest.TestCase):
                     ("overseas-cloud", "☁️ 海外云服务", rule),
                     domain=domain,
                 )
+
+        self.assert_match(
+            ("china-cloud", "☁️ 国内云服务", "DOMAIN-SUFFIX,aliyuncs.com"),
+            domain="ecs.cn-hangzhou.aliyuncs.com",
+        )
 
         shared_google_api_cases = {
             "fonts.googleapis.com": "DOMAIN-SUFFIX,googleapis.com",

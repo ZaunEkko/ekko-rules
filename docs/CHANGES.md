@@ -482,12 +482,12 @@ No cloud CIDR, ASN, `GEOSITE`, regular expression, generic consumer-company root
 
 The public product remains within the Subconverter 64-segment external-config ceiling. The two Spotify source segments are physically concatenated under the unchanged Music policy, and OneDrive plus iCloud are physically concatenated as `cloud-storage` under the unchanged Cloud Storage policy. Matcher order and targets are preserved; HBO GO and Max remain separate rulesets. Generated-only `onedrive`, `icloud`, and `spotify-2` compatibility copies preserve retired Raw ruleset/provider URLs for existing consumers; no active Subconverter or Mihomo entry references those aliases, and they do not count as canonical segments or rules.
 
-The exact OCI Console host `cloud.oracle.com` is included alongside the anchored `oraclecloud.com` infrastructure suffix. The broader consumer-company root `oracle.com` remains excluded. AWS's canonical and regional `*.console.aws.amazon.com` hosts use overseas cloud. Shared `googleapis.com` stays under `🔎 Google`; only explicit Compute, Storage, Cloud Resource Manager, and official `rep.googleapis.com` regional GCP endpoints enter overseas cloud. Alibaba OSS's explicit overseas acceleration suffix also precedes the domestic `aliyuncs.com` catch-all.
+The exact OCI Console host `cloud.oracle.com` is included alongside the anchored `oraclecloud.com` infrastructure suffix. The broader consumer-company root `oracle.com` remains excluded. AWS's canonical and regional `*.console.aws.amazon.com` hosts use overseas cloud. Shared `googleapis.com` stays under `🔎 Google`; only explicit Compute, Storage, Cloud Resource Manager, and official `rep.googleapis.com` regional GCP endpoints enter overseas cloud. Reviewed non-mainland Alibaba region suffixes cover both `SERVICE.REGION.aliyuncs.com` and `SERVICE-vpc.REGION.aliyuncs.com` APIs before the domestic `aliyuncs.com` catch-all; Alibaba OSS's explicit overseas acceleration suffix remains ahead as well.
 
 Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
-- 7,288 rules including the unique FINAL;
+- 7,306 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 133; same-segment: 13; cross-segment-only: 120, with cloud captures independently frozen in the cloud routing ledger.
