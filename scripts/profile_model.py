@@ -734,7 +734,7 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
                 "recovery_ledger": "tests/fixtures/phase-3-recovery-ledger.json",
                 "intentional_advertising_capture_count": 40,
                 "advertising_routing_ledger": "tests/fixtures/advertising-routing-ledger.json",
-                "intentional_cloud_capture_count": 67,
+                "intentional_cloud_capture_count": 71,
                 "cloud_routing_ledger": "tests/fixtures/cloud-routing-ledger.json",
             },
             "Unsupported Phase 3 recovery next_gate",

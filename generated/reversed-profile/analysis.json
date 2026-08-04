@@ -6,16 +6,16 @@
         "proxy_group_count": 40,
         "ruleset_count": 63,
         "segment_count": 64,
-        "rule_count": 7394,
+        "rule_count": 7462,
         "destination_ip_rule_count": 206
       },
       "quality": {
         "first_match_unreachable": {
           "global": {
-            "exact_occurrences": 129,
+            "exact_occurrences": 132,
             "broad_coverage_occurrences": 15,
             "overlap_between_categories": 1,
-            "union": 143
+            "union": 146
           },
           "within_same_segment": {
             "exact_occurrences": 0,
@@ -24,12 +24,12 @@
             "union": 13
           },
           "cross_segment_only": {
-            "union": 130
+            "union": 133
           }
         },
         "exact_duplicate_occurrences_beyond_first": 2,
         "exact_duplicate_rule_keys": 2,
-        "matchers_routed_to_multiple_targets": 127
+        "matchers_routed_to_multiple_targets": 130
       },
       "segments": [
         {
@@ -751,21 +751,21 @@
           "index": 51,
           "manifest_order": 51,
           "start": 2482,
-          "end": 2668,
-          "count": 187,
+          "end": 2667,
+          "count": 186,
           "target": "🌏 国内网站",
           "slug": "china-web",
           "scope": "core",
           "rule_types": {
-            "DOMAIN-SUFFIX": 174,
+            "DOMAIN-SUFFIX": 173,
             "PROCESS-NAME": 13
           }
         },
         {
           "index": 52,
           "manifest_order": 52,
-          "start": 2669,
-          "end": 3255,
+          "start": 2668,
+          "end": 3254,
           "count": 587,
           "target": "🎮 游戏平台",
           "slug": "game-platform-late-recovery",
@@ -779,8 +779,8 @@
         {
           "index": 53,
           "manifest_order": 53,
-          "start": 3256,
-          "end": 3363,
+          "start": 3255,
+          "end": 3362,
           "count": 108,
           "target": "🎬 B站港澳台",
           "slug": "bilibili-hmt-late-recovery",
@@ -794,8 +794,8 @@
         {
           "index": 54,
           "manifest_order": 54,
-          "start": 3364,
-          "end": 3399,
+          "start": 3363,
+          "end": 3398,
           "count": 36,
           "target": "🎬 爱奇艺",
           "slug": "iqiyi-late-recovery",
@@ -808,8 +808,8 @@
         {
           "index": 55,
           "manifest_order": 55,
-          "start": 3400,
-          "end": 4863,
+          "start": 3399,
+          "end": 4862,
           "count": 1464,
           "target": "🍎 苹果服务",
           "slug": "apple-late-recovery",
@@ -822,8 +822,8 @@
         {
           "index": 56,
           "manifest_order": 56,
-          "start": 4864,
-          "end": 4956,
+          "start": 4863,
+          "end": 4955,
           "count": 93,
           "target": "🌏 国内流媒体",
           "slug": "china-media-late-recovery",
@@ -837,22 +837,22 @@
         {
           "index": 57,
           "manifest_order": 57,
-          "start": 4957,
-          "end": 5232,
-          "count": 276,
+          "start": 4956,
+          "end": 5300,
+          "count": 345,
           "target": "☁️ 海外云服务",
           "slug": "overseas-cloud",
           "scope": "core",
           "rule_types": {
-            "DOMAIN": 5,
-            "DOMAIN-SUFFIX": 271
+            "DOMAIN": 51,
+            "DOMAIN-SUFFIX": 294
           }
         },
         {
           "index": 58,
           "manifest_order": 58,
-          "start": 5233,
-          "end": 5392,
+          "start": 5301,
+          "end": 5460,
           "count": 160,
           "target": "☁️ 国内云服务",
           "slug": "china-cloud",
@@ -865,8 +865,8 @@
         {
           "index": 59,
           "manifest_order": 59,
-          "start": 5393,
-          "end": 5440,
+          "start": 5461,
+          "end": 5508,
           "count": 48,
           "target": "🧩 微软服务",
           "slug": "microsoft",
@@ -878,8 +878,8 @@
         {
           "index": 60,
           "manifest_order": 60,
-          "start": 5441,
-          "end": 5873,
+          "start": 5509,
+          "end": 5941,
           "count": 433,
           "target": "🧩 微软服务",
           "slug": "microsoft-late-recovery",
@@ -892,8 +892,8 @@
         {
           "index": 61,
           "manifest_order": 61,
-          "start": 5874,
-          "end": 5910,
+          "start": 5942,
+          "end": 5978,
           "count": 37,
           "target": "🔎 Google",
           "slug": "google",
@@ -908,8 +908,8 @@
         {
           "index": 62,
           "manifest_order": 62,
-          "start": 5911,
-          "end": 7392,
+          "start": 5979,
+          "end": 7460,
           "count": 1482,
           "target": "🌏 国内网站",
           "slug": "china-domains-direct",
@@ -922,8 +922,8 @@
         {
           "index": 63,
           "manifest_order": 63,
-          "start": 7393,
-          "end": 7393,
+          "start": 7461,
+          "end": 7461,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -935,8 +935,8 @@
         {
           "index": 64,
           "manifest_order": 64,
-          "start": 7394,
-          "end": 7394,
+          "start": 7462,
+          "end": 7462,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",

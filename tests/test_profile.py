@@ -289,7 +289,7 @@ class CanonicalSourceTests(unittest.TestCase):
     def test_cloud_capture_ledger_is_frozen_and_closed(self) -> None:
         ledger = json.loads(CLOUD_ROUTING_LEDGER.read_text(encoding="utf-8"))
         self.assertEqual(ledger["schema_version"], 1)
-        self.assertEqual(ledger["count"], 67)
+        self.assertEqual(ledger["count"], 71)
         content = "".join(
             "\t".join(
                 (
@@ -340,11 +340,11 @@ class CanonicalSourceTests(unittest.TestCase):
         self.assertEqual(actual, ledger["rows"])
         self.assertEqual(
             Counter(row["cloud_slug"] for row in actual),
-            Counter({"china-cloud": 64, "overseas-cloud": 3}),
+            Counter({"china-cloud": 64, "overseas-cloud": 7}),
         )
         self.assertEqual(
             Counter(row["later_slug"] for row in actual),
-            Counter({"china-domains-direct": 52, "microsoft-late-recovery": 15}),
+            Counter({"china-domains-direct": 52, "microsoft-late-recovery": 19}),
         )
 
     def test_no_resolve_and_strict_cidr_gate(self) -> None:
@@ -380,9 +380,9 @@ class CanonicalSourceTests(unittest.TestCase):
             current["within_same_segment"]["union"],
             before["summary"]["coverage"]["within_same_segment"]["union"],
         )
-        self.assertEqual(current["global"]["union"], 143)
+        self.assertEqual(current["global"]["union"], 146)
         self.assertEqual(current["within_same_segment"]["union"], 13)
-        self.assertEqual(current["cross_segment_only"]["union"], 130)
+        self.assertEqual(current["cross_segment_only"]["union"], 133)
         self.assertLess(
             current["cross_segment_only"]["union"],
             before["summary"]["coverage"]["cross_segment_only"]["union"],
@@ -1724,12 +1724,30 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "aws.amazon.com": "DOMAIN-SUFFIX,aws.amazon.com",
             "docs.aws.amazon.com": "DOMAIN-SUFFIX,aws.amazon.com",
             "portal.azure.com": "DOMAIN-SUFFIX,azure.com",
+            "service.azure-api.net": "DOMAIN-SUFFIX,azure-api.net",
+            "registry.azurecr.io": "DOMAIN-SUFFIX,azurecr.io",
+            "hub.azure-devices.net": "DOMAIN-SUFFIX,azure-devices.net",
+            "container.westeurope.azurecontainer.io": "DOMAIN-SUFFIX,azurecontainer.io",
+            "app.azurecontainerapps.io": "DOMAIN-SUFFIX,azurecontainerapps.io",
+            "adb-123.1.azuredatabricks.net": "DOMAIN-SUFFIX,azuredatabricks.net",
+            "workspace.azuresynapse.net": "DOMAIN-SUFFIX,azuresynapse.net",
+            "cluster.azmk8s.io": "DOMAIN-SUFFIX,azmk8s.io",
+            "service.search.windows.net": "DOMAIN-SUFFIX,search.windows.net",
+            "app.azurestaticapps.net": "DOMAIN-SUFFIX,azurestaticapps.net",
+            "cache.redis.cache.windows.net": "DOMAIN-SUFFIX,redis.cache.windows.net",
             "storage.file.core.windows.net": "DOMAIN-SUFFIX,core.windows.net",
             "server.database.windows.net": "DOMAIN-SUFFIX,database.windows.net",
             "namespace.servicebus.windows.net": "DOMAIN-SUFFIX,servicebus.windows.net",
             "console.cloud.google.com": "DOMAIN-SUFFIX,cloud.google.com",
             "cloudresourcemanager.googleapis.com": "DOMAIN,cloudresourcemanager.googleapis.com",
             "compute.googleapis.com": "DOMAIN,compute.googleapis.com",
+            "bigquery.googleapis.com": "DOMAIN,bigquery.googleapis.com",
+            "container.googleapis.com": "DOMAIN,container.googleapis.com",
+            "sqladmin.googleapis.com": "DOMAIN,sqladmin.googleapis.com",
+            "iam.googleapis.com": "DOMAIN,iam.googleapis.com",
+            "pubsub.googleapis.com": "DOMAIN,pubsub.googleapis.com",
+            "secretmanager.googleapis.com": "DOMAIN,secretmanager.googleapis.com",
+            "artifactregistry.googleapis.com": "DOMAIN,artifactregistry.googleapis.com",
             "storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
             "example-bucket.storage.googleapis.com": "DOMAIN-SUFFIX,storage.googleapis.com",
             "compute.europe-west1.rep.googleapis.com": "DOMAIN-SUFFIX,rep.googleapis.com",
@@ -1756,6 +1774,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         shared_google_api_cases = {
             "fonts.googleapis.com": "DOMAIN-SUFFIX,googleapis.com",
             "people.googleapis.com": "DOMAIN-SUFFIX,googleapis.com",
+            "www.recaptcha.net": "DOMAIN-SUFFIX,recaptcha.net",
         }
         for domain, rule in shared_google_api_cases.items():
             with self.subTest(domain=domain):
@@ -1831,6 +1850,8 @@ class FirstMatchBaselineTests(unittest.TestCase):
         )
         self.assertNotIn("DOMAIN-SUFFIX,googleapis.com", published_cloud_rules)
         self.assertIn("DOMAIN-SUFFIX,googleapis.com", self.sources.rules["google"])
+        self.assertNotIn("DOMAIN-SUFFIX,recaptcha.net", self.sources.rules["china-web"])
+        self.assertIn("DOMAIN-SUFFIX,recaptcha.net", self.sources.rules["google"])
         for forbidden in [
             "DOMAIN-SUFFIX,alibaba.com",
             "DOMAIN-SUFFIX,tencent.com",

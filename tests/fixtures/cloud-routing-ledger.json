@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "policy": "Cloud infrastructure intentionally follows advertising and concrete business rules, then precedes vendor aggregates and the classic mainland layer. Only these frozen later matchers may be captured by the two cloud rulesets; any additional capture requires review.",
-  "count": 67,
-  "rows_sha256": "fa8012f2b3777472f5ef8845ccb8f32b5ae5d3cbbf042928eaf25d74307bec74",
+  "count": 71,
+  "rows_sha256": "33e01fd6b2358058b874e45a8b1a5661b770343800f56fcda0e5e6b627ea0c1c",
   "rows": [
     {
       "cloud_slug": "overseas-cloud",
@@ -45,6 +45,14 @@
       "later_rule": "DOMAIN-SUFFIX,azure-devices.cn"
     },
     {
+      "cloud_slug": "overseas-cloud",
+      "cloud_target": "☁️ 海外云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azure-devices.net",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azure-devices.net"
+    },
+    {
       "cloud_slug": "china-cloud",
       "cloud_target": "☁️ 国内云服务",
       "cloud_rule": "DOMAIN-SUFFIX,azure-dns.cn",
@@ -61,12 +69,36 @@
       "later_rule": "DOMAIN-SUFFIX,azure.cn"
     },
     {
+      "cloud_slug": "overseas-cloud",
+      "cloud_target": "☁️ 海外云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azurecontainer.io",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azurecontainer.io"
+    },
+    {
       "cloud_slug": "china-cloud",
       "cloud_target": "☁️ 国内云服务",
       "cloud_rule": "DOMAIN-SUFFIX,azurecr.cn",
       "later_slug": "microsoft-late-recovery",
       "later_target": "🧩 微软服务",
       "later_rule": "DOMAIN-SUFFIX,azurecr.cn"
+    },
+    {
+      "cloud_slug": "overseas-cloud",
+      "cloud_target": "☁️ 海外云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azuredatabricks.net",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azuredatabricks.net"
+    },
+    {
+      "cloud_slug": "overseas-cloud",
+      "cloud_target": "☁️ 海外云服务",
+      "cloud_rule": "DOMAIN-SUFFIX,azureiotcentral.com",
+      "later_slug": "microsoft-late-recovery",
+      "later_target": "🧩 微软服务",
+      "later_rule": "DOMAIN-SUFFIX,azureiotcentral.com"
     },
     {
       "cloud_slug": "china-cloud",
