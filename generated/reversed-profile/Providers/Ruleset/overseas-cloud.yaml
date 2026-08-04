@@ -9,6 +9,7 @@ payload:
 - DOMAIN-SUFFIX,alibabacloud.com.sg
 - DOMAIN-SUFFIX,alibabacloud.com.tw
 - DOMAIN-SUFFIX,alicloud.com
+- DOMAIN-SUFFIX,oss-accelerate-overseas.aliyuncs.com
 - DOMAIN-SUFFIX,oss-cn-hongkong.aliyuncs.com
 - DOMAIN-SUFFIX,oss-ap-northeast-1.aliyuncs.com
 - DOMAIN-SUFFIX,oss-ap-northeast-2.aliyuncs.com
@@ -160,7 +161,10 @@ payload:
 - DOMAIN-SUFFIX,firebase.io
 - DOMAIN-SUFFIX,firebaseapp.com
 - DOMAIN-SUFFIX,gcr.io
-- DOMAIN-SUFFIX,googleapis.com
+- DOMAIN,cloudresourcemanager.googleapis.com
+- DOMAIN,compute.googleapis.com
+- DOMAIN,storage.googleapis.com
+- DOMAIN-SUFFIX,rep.googleapis.com
 - DOMAIN-SUFFIX,pkg.dev
 - DOMAIN-SUFFIX,run.app
 - DOMAIN-SUFFIX,cloudflare.com

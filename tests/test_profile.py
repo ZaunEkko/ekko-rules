@@ -1681,6 +1681,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "www.alibabacloud.com": "DOMAIN-SUFFIX,alibabacloud.com",
             "bucket.oss-ap-southeast-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-ap-southeast-1.aliyuncs.com",
             "bucket.oss-me-central-1.aliyuncs.com": "DOMAIN-SUFFIX,oss-me-central-1.aliyuncs.com",
+            "bucket.oss-accelerate-overseas.aliyuncs.com": "DOMAIN-SUFFIX,oss-accelerate-overseas.aliyuncs.com",
             "intl.cloud.tencent.com": "DOMAIN,intl.cloud.tencent.com",
             "www.tencentcloud.com": "DOMAIN-SUFFIX,tencentcloud.com",
             "console.tencentcloud.com": "DOMAIN-SUFFIX,tencentcloud.com",
@@ -1690,6 +1691,10 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "s3.us-east-1.amazonaws.com": "DOMAIN-SUFFIX,amazonaws.com",
             "portal.azure.com": "DOMAIN-SUFFIX,azure.com",
             "console.cloud.google.com": "DOMAIN-SUFFIX,cloud.google.com",
+            "cloudresourcemanager.googleapis.com": "DOMAIN,cloudresourcemanager.googleapis.com",
+            "compute.googleapis.com": "DOMAIN,compute.googleapis.com",
+            "storage.googleapis.com": "DOMAIN,storage.googleapis.com",
+            "compute.europe-west1.rep.googleapis.com": "DOMAIN-SUFFIX,rep.googleapis.com",
             "example.workers.dev": "DOMAIN-SUFFIX,workers.dev",
             "www.digitalocean.com": "DOMAIN-SUFFIX,digitalocean.com",
             "www.vultr.com": "DOMAIN-SUFFIX,vultr.com",
@@ -1701,6 +1706,17 @@ class FirstMatchBaselineTests(unittest.TestCase):
             with self.subTest(domain=domain):
                 self.assert_match(
                     ("overseas-cloud", "☁️ 海外云服务", rule),
+                    domain=domain,
+                )
+
+        shared_google_api_cases = {
+            "fonts.googleapis.com": "DOMAIN-SUFFIX,googleapis.com",
+            "people.googleapis.com": "DOMAIN-SUFFIX,googleapis.com",
+        }
+        for domain, rule in shared_google_api_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("google", "🔎 Google", rule),
                     domain=domain,
                 )
 
@@ -1769,6 +1785,8 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 for rule in published_cloud_rules
             )
         )
+        self.assertNotIn("DOMAIN-SUFFIX,googleapis.com", published_cloud_rules)
+        self.assertIn("DOMAIN-SUFFIX,googleapis.com", self.sources.rules["google"])
         for forbidden in [
             "DOMAIN-SUFFIX,alibaba.com",
             "DOMAIN-SUFFIX,tencent.com",
