@@ -1,5 +1,12 @@
 #!/usr/bin/env node
-import { copyFileSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -38,9 +45,19 @@ for (const line of lines) {
 }
 writeFileSync(destIni, `${out.join("\n").replace(/\n+$/, "\n")}`, "utf8");
 
+const sourceRuleNames = readdirSync(sourceRules)
+  .filter((name) => name.endsWith(".list"))
+  .sort();
+const sourceRuleSet = new Set(sourceRuleNames);
+let pruned = 0;
+for (const name of readdirSync(destRules)) {
+  if (!name.endsWith(".list") || sourceRuleSet.has(name)) continue;
+  rmSync(path.join(destRules, name));
+  pruned += 1;
+}
+
 let copied = 0;
-for (const name of readdirSync(sourceRules)) {
-  if (!name.endsWith(".list")) continue;
+for (const name of sourceRuleNames) {
   copyFileSync(path.join(sourceRules, name), path.join(destRules, name));
   copied += 1;
 }
@@ -50,6 +67,7 @@ console.log(
     {
       ini: path.relative(root, destIni).replaceAll("\\", "/"),
       rulesets: copied,
+      pruned,
       complete_config_bases: 8,
     },
     null,

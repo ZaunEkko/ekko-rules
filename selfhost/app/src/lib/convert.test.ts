@@ -7,6 +7,7 @@ import test from "node:test";
 import {
   authorizeLocalAccess,
   cleanupOrphanedConversionInputs,
+  ConfigurationError,
   getRuntimeConfig,
   inlineMihomoProviderNodes,
   isJsonRequestContentType,
@@ -128,6 +129,17 @@ test("publishes to the LAN by default while keeping management passwords optiona
   }
 });
 
+test("throws a tagged error for invalid runtime configuration", () => {
+  const previousBaseUrl = process.env.LAN_BASE_URL;
+  try {
+    process.env.LAN_BASE_URL = "http://lan.example.test/with-path";
+    assert.throws(() => authorizeLocalAccess(), ConfigurationError);
+  } finally {
+    if (previousBaseUrl === undefined) delete process.env.LAN_BASE_URL;
+    else process.env.LAN_BASE_URL = previousBaseUrl;
+  }
+});
+
 test("accepts JSON media types and rejects simple cross-origin content types", () => {
   assert.equal(isJsonRequestContentType("application/json"), true);
   assert.equal(
@@ -241,7 +253,9 @@ test("maps client validation failures without hiding upstream failures", () => {
   assert.equal(publicErrorStatus("Access password required."), 401);
   assert.equal(
     publicErrorStatus(
-      "LAN_BASE_URL must be an http(s) origin without a path or credentials.",
+      new ConfigurationError(
+        "LAN_BASE_URL must be an http(s) origin without a path or credentials.",
+      ),
     ),
     500,
   );

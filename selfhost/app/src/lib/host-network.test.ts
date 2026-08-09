@@ -18,10 +18,12 @@ test("accepts private LAN IPv4 addresses and rejects public or malformed address
 });
 
 test("builds the detected subscription origin from trusted host metadata", () => {
+  const nowMs = Date.parse("2026-08-09T12:00:20.000Z");
   assert.deepEqual(
     parseDetectedLanAddress(
       { ipv4: "192.168.6.224", updatedAt: "2026-08-09T12:00:00.000Z" },
       8787,
+      nowMs,
     ),
     {
       ipv4: "192.168.6.224",
@@ -29,5 +31,36 @@ test("builds the detected subscription origin from trusted host metadata", () =>
       updatedAt: "2026-08-09T12:00:00.000Z",
     },
   );
-  assert.equal(parseDetectedLanAddress({ ipv4: "203.0.113.5" }, 8787), null);
+  assert.equal(
+    parseDetectedLanAddress(
+      { ipv4: "203.0.113.5", updatedAt: "2026-08-09T12:00:20.000Z" },
+      8787,
+      nowMs,
+    ),
+    null,
+  );
+});
+
+test("rejects stale, missing, or implausibly future LAN address metadata", () => {
+  const nowMs = Date.parse("2026-08-09T12:01:00.000Z");
+  assert.equal(
+    parseDetectedLanAddress(
+      { ipv4: "192.168.6.224", updatedAt: "2026-08-09T12:00:29.999Z" },
+      8787,
+      nowMs,
+    ),
+    null,
+  );
+  assert.equal(
+    parseDetectedLanAddress({ ipv4: "192.168.6.224" }, 8787, nowMs),
+    null,
+  );
+  assert.equal(
+    parseDetectedLanAddress(
+      { ipv4: "192.168.6.224", updatedAt: "2026-08-09T12:01:05.001Z" },
+      8787,
+      nowMs,
+    ),
+    null,
+  );
 });

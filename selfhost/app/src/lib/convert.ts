@@ -33,6 +33,13 @@ export type ConvertResult = {
   subscriptionUserinfo?: string;
 };
 
+export class ConfigurationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConfigurationError";
+  }
+}
+
 const SUBSCRIPTION_USERINFO_FIELDS = [
   "upload",
   "download",
@@ -187,7 +194,7 @@ export function authorizeLocalAccess(provided?: string): void {
   const runtime = getRuntimeConfig();
   const expected = runtime.accessPassword;
   if (runtime.configurationError) {
-    throw new Error(runtime.configurationError);
+    throw new ConfigurationError(runtime.configurationError);
   }
   if (!expected) return;
   const providedDigest = createHash("sha256").update(provided ?? "").digest();
@@ -734,9 +741,10 @@ export function publicErrorMessage(error: unknown): string {
   return "Conversion failed.";
 }
 
-export function publicErrorStatus(message: string): number {
+export function publicErrorStatus(error: unknown): number {
+  if (error instanceof ConfigurationError) return 500;
+  const message = typeof error === "string" ? error : publicErrorMessage(error);
   if (/password/i.test(message)) return 401;
-  if (/^LAN_BASE_URL\b/i.test(message)) return 500;
   if (
     /^(?:Request body|subscriptionUrl|A supported target|accessPassword|options|autoUpdate|emoji|udp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
       message,

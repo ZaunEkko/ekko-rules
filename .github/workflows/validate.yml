@@ -73,6 +73,16 @@ jobs:
         working-directory: selfhost/app
         run: npm ci
 
+      - name: Regenerate selfhost rule snapshot
+        run: node selfhost/scripts/sync-rulesets.mjs
+
+      - name: Confirm clean selfhost rule snapshot
+        shell: bash
+        run: >-
+          git diff --exit-code --
+          selfhost/subconverter/config
+          selfhost/subconverter/rulesets
+
       - name: Run selfhost unit tests
         working-directory: selfhost/app
         run: npm test
@@ -89,3 +99,6 @@ jobs:
 
       - name: Validate selfhost Compose configuration
         run: docker compose -f selfhost/compose.yaml config --quiet
+
+      - name: Validate Unix startup helper
+        run: sh -n selfhost/start.sh

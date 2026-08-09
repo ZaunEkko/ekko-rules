@@ -60,7 +60,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: message },
       {
-        status: publicErrorStatus(message),
+        status: publicErrorStatus(error),
         headers: {
           "Cache-Control": "no-store",
         },

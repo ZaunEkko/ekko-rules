@@ -85,7 +85,11 @@ $pidPath = Join-Path $RuntimeDir "lan-watcher.pid"
 [System.IO.File]::WriteAllText($pidPath, [string]$PID)
 try {
   while ($true) {
-    try { Write-LanAddress | Out-Null } catch { }
+    try {
+      Write-LanAddress | Out-Null
+    } catch {
+      Remove-Item -LiteralPath (Join-Path $RuntimeDir "lan-address.json") -Force -ErrorAction SilentlyContinue
+    }
     Start-Sleep -Seconds $RefreshSeconds
   }
 } finally {

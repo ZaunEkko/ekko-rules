@@ -45,6 +45,35 @@ write_lan_address() {
   printf '%s' "$ipv4"
 }
 
+run_lan_watcher() {
+  cleanup_lan_watcher() {
+    recorded_pid=$(cat "$PID_PATH" 2>/dev/null || true)
+    if [ "$recorded_pid" = "$$" ]; then
+      rm -f "$PID_PATH"
+    fi
+  }
+  trap cleanup_lan_watcher EXIT
+  trap 'exit 0' INT TERM
+  stopped_checks=0
+  while :; do
+    if ! write_lan_address >/dev/null 2>&1; then
+      rm -f "$RUNTIME_DIR/lan-address.json"
+    fi
+    if [ "$(docker inspect --format '{{.State.Running}}' ekko-selfhost-web-1 2>/dev/null || true)" = "true" ]; then
+      stopped_checks=0
+    else
+      stopped_checks=$((stopped_checks + 1))
+      [ "$stopped_checks" -lt 6 ] || break
+    fi
+    sleep 5
+  done
+}
+
+if [ "${1:-}" = "--watch-lan" ]; then
+  run_lan_watcher
+  exit 0
+fi
+
 DETECTED_IP=""
 if ! DETECTED_IP=$(write_lan_address); then
   rm -f "$RUNTIME_DIR/lan-address.json"
@@ -54,23 +83,33 @@ fi
 cd "$ROOT"
 docker compose up --build -d
 
-if [ -f "$PID_PATH" ] && kill -0 "$(cat "$PID_PATH")" 2>/dev/null; then
+watcher_is_running() {
+  [ -f "$PID_PATH" ] || return 1
+  watcher_pid=$(awk 'NR == 1 { print $1 }' "$PID_PATH" 2>/dev/null)
+  case "$watcher_pid" in
+    ''|*[!0-9]*) return 1 ;;
+  esac
+  kill -0 "$watcher_pid" 2>/dev/null || return 1
+  case "$(uname -s)" in
+    Linux)
+      watcher_command=$(tr '\000' ' ' < "/proc/$watcher_pid/cmdline" 2>/dev/null || true)
+      ;;
+    Darwin)
+      watcher_command=$(ps -p "$watcher_pid" -o command= 2>/dev/null || true)
+      ;;
+    *) return 1 ;;
+  esac
+  case "$watcher_command" in
+    *start.sh*--watch-lan*|*watch-lan-ip.ps1*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+if watcher_is_running; then
   :
 else
-  (
-    stopped_checks=0
-    while :; do
-      write_lan_address >/dev/null 2>&1 || true
-      if [ "$(docker inspect --format '{{.State.Running}}' ekko-selfhost-web-1 2>/dev/null || true)" = "true" ]; then
-        stopped_checks=0
-      else
-        stopped_checks=$((stopped_checks + 1))
-        [ "$stopped_checks" -lt 6 ] || break
-      fi
-      sleep 5
-    done
-  ) >/dev/null 2>&1 &
-  echo $! > "$PID_PATH"
+  sh "$ROOT/start.sh" --watch-lan >/dev/null 2>&1 &
+  printf '%s\n' "$!" > "$PID_PATH"
 fi
 
 printf '\nEkko Rules is ready:\n'
