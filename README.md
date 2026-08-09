@@ -2,11 +2,65 @@
 
 [English](README_EN.md)
 
-面向 Subconverter 与 Mihomo 的 AI、娱乐、游戏与 NSFW 特化分流规则。
+面向 Mihomo、sing-box 与主流代理客户端的本地订阅生成器和特化分流规则。既可以通过 Docker 在自己的电脑上生成完整配置，也可以把公开规则用于第三方 Subconverter 或 Mihomo 原生模板。
 
-## 快速使用
+## 选择使用方式
 
-### Subconverter 在线转换
+| 方式 | 适合谁 | 真实订阅由谁获取 | 生成结果 |
+|---|---|---|---|
+| **本地自托管（推荐）** | 希望订阅留在自己电脑、直接导入完整配置 | 自己的 Docker | 固定本地 URL，可反复刷新 |
+| 第三方在线转换 | 不方便运行 Docker、接受信任转换后端 | 第三方后端 | 第三方订阅 URL |
+| Mihomo 原生模板 | 只需要 Ekko Rules，其他客户端设置自己维护 | Mihomo 客户端 | Provider 模板 |
+
+### 推荐：本地自托管完整订阅
+
+需要 Docker 与 Docker Compose v2。Windows 首次部署推荐使用一次性安装入口：
+
+```bash
+git clone https://github.com/ZaunEkko/ekko-rules.git
+cd ekko-rules/selfhost
+
+# Windows：启动 Compose，并安装当前用户的局域网 IP 自启动助手
+setup.cmd
+
+# macOS / Linux
+sh ./start.sh
+```
+
+已经位于仓库目录时，只需：
+
+```bash
+cd selfhost
+setup.cmd
+```
+
+`setup.cmd` 只需运行一次。Compose 中的 Web 与转换器使用 `restart: unless-stopped`，以后 Docker Desktop 开机恢复容器时，Windows 登录任务也会自动恢复局域网 IP 检测；用户仍可在 Docker Desktop 中可视化启动、停止和重启容器。`start.cmd` 只启动当前会话，`docker compose up --build -d` 则始终可作为不安装宿主机助手的标准启动方式。
+
+打开 [http://127.0.0.1:8787](http://127.0.0.1:8787)，粘贴真实订阅、选择客户端并创建本地订阅。把生成的地址导入客户端一次即可：
+
+```text
+http://127.0.0.1:8787/sub/<随机 ID>
+```
+
+以后只要 Docker 正在运行，客户端刷新原地址就会重新拉取上游并即时生成配置；不需要重新创建地址。普通停止、重启或 `docker compose down` 都会保留它，只有 `docker compose down -v` 会删除保存档案的数据卷。
+
+固定地址也可以直接给同一局域网内的手机、平板和路由器使用。Docker 默认发布 Web 端口到宿主机所有网卡；Windows 首次运行 `setup.cmd` 后，轻量宿主机助手会随登录自动识别并持续刷新电脑当前局域网 IP。地址工具与保存的订阅放在同一区域，可以在 `localhost`、自动识别地址、自定义电脑 IP 和最近使用过的地址之间切换前缀。选择局域网模式后，换网络得到的新 IP 会自动应用到显示、复制和本地二维码，而 `/sub/<随机 ID>` 保持不变。具体说明见 [`selfhost/README.md`](selfhost/README.md#手机与路由器使用局域网订阅)。
+
+| 能力 | 当前行为 |
+|---|---|
+| 完整配置 | Mihomo 输出包含节点、端口、DNS、策略组和 Ekko Rules，可直接导入 |
+| 输出格式 | Mihomo / Clash、sing-box、Surge 4+、Quantumult X、Loon、Surfboard、Quantumult、Mellow |
+| 新协议 | Mihomo 与 sing-box 已验证 AnyTLS、VLESS Reality、Hysteria2、TUIC |
+| 固定地址 | 电脑、手机或路由器可导入；Docker 重启后档案路径继续有效 |
+| 多网络切换 | 局域网模式自动跟随新 IP；也可在 `localhost`、当前地址、自定义前缀和最近 8 个地址之间切换 |
+| 手机导入 | 浏览器本地生成二维码，不把订阅地址发送给第三方 |
+| 高级选项 | Emoji、UDP、TFO、TLS 1.3、节点筛选/排序/重命名、自定义 User-Agent 等 |
+| 更新方式 | 自动更新默认关闭；启用后可选择 1–168 小时，关闭时仍可手动刷新 |
+| 套餐信息 | 上游提供 `Subscription-Userinfo` 时，透传流量、容量和到期时间 |
+
+真实订阅地址只保存在本机 Docker 数据卷中，生成结果不会暴露上游订阅 URL；转换引擎端口也不会发布到宿主机。固定 URL 中的随机 ID 相当于本地访问凭据，不应公开分享。完整使用说明、安全边界和故障排查见 [`selfhost/README.md`](selfhost/README.md)。
+
+### 备用：Subconverter 在线转换
 
 打开支持自定义远程配置的 Subconverter 前端：
 
@@ -37,11 +91,16 @@
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
+<details>
+<summary>远程配置没有生效，或生成地址中出现 <code>%20</code> 时展开</summary>
+
 在“远程配置”输入框中粘贴完整地址后，下拉列表会出现一条相同的完整 URL。**必须点击这条 URL 候选项完成选择**，不能只粘贴或只按 Enter；成功后输入框会变回只读状态并完整显示该 URL。确认不再显示“默认”后，再点击“生成订阅链接”。**不要只看输入框中是否有空格，必须检查最终生成的定制订阅地址**：有些前端会在提交时自动在远程配置前插入空格。正确结果应包含 `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`，`config=` 后立即是 `https`；如果出现 `config=%20https...`，其中 `%20` 就是前导空格。此时应删除远程配置、重新粘贴并点击完整 URL 候选，再生成并复查，直到 `%20` 消失。若缺少 `config=` 或仍为 `config=%20https...`，转换器可能读取失败并回退到网站默认预设，而不是 Ekko Rules 的 40 个策略组。
+
+</details>
 
 > 转换后端必须获得完整订阅地址才能拉取节点并完成转换，因此不要把它当作匿名中转。请使用可信后端或自行部署转换后端；不要在 Issue、PR、日志或公开聊天中粘贴带 token 的真实订阅链接。
 
-### Mihomo 原生模板
+### 仅使用规则：Mihomo 原生模板
 
 Mihomo 模板地址：
 
@@ -65,7 +124,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **AI 与设计工具分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq、Figma，以及 Kimi、Z.ai、Qwen、MiniMax 等国际站统一归入 `🧲 海外 AI`；DeepSeek、小红书和国产 AI 大陆站进入默认直连的 `🌏 国内网站`；
 - **主流流媒体**：YouTube、Netflix、Disney+、Apple TV+、`🎬 HBO GO/MAX`、Prime Video、DAZN、TikTok 等重点服务单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
 - **区域媒体**：美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；
-- **游戏分流**：`🎮 游戏平台` 与 `🎮 游戏下载` 分开，方便平台访问和大流量下载选择不同线路；
+- **游戏分流**：中国大陆游戏平台、登录、社区和语音进入默认直连的 `🌏 国内网站`，专用下载端点进入默认直连的 `🎮 游戏下载`；`🎮 游戏平台` 仅承载海外平台并默认使用 `♻️ 手动切换`；
 - **社交与通信**：社交媒体、聊天软件、Discord 和邮件分别处理；
 - **远程串流**：`🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP 等高流量远程访问链路，避免远程桌面、游戏串流或虚拟局域网流量绕行代理；
 - **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖 GitHub、GitLab、Docker/GHCR、Maven/Gradle、Node.js/npm、Python/PyPI、Rust/Cargo、Go、NuGet、RubyGems、Composer、Homebrew、CocoaPods 等官网、API、包仓库和下载链路；用户在意代理流量时可临时切到 `DIRECT`；
@@ -123,11 +182,11 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 
 Ekko Rules 的职责边界：
 
-- 不保存代理节点或订阅凭据；
-- 不接管端口、DNS、TUN、控制器等客户端设置；
-- 只维护规则、规则顺序、策略组以及规则到策略组的映射；
-- `sources/` 是唯一规范源；
-- `generated/reversed-profile/` 只能由生成器重建。
+- 公开规则与在线远程配置不保存代理节点或订阅凭据；本地自托管应用只在用户自己的 Docker 数据卷中保存固定 URL 所需的最少源地址映射；
+- 公开 Mihomo 模板不接管端口、DNS、TUN、控制器等客户端设置；本地自托管入口会生成可直接导入的完整配置；
+- 公开规则产品维护规则、顺序、策略组和映射；自托管应用只负责在本机获取订阅并调用固定版本的转换引擎；
+- `sources/` 是规则产品的唯一规范源，`generated/reversed-profile/` 只能由生成器重建；
+- `selfhost/` 包含独立的本地 Web 应用、转换引擎快照与 Docker Compose，不提供公网托管模式。
 
 ## 开发与验证
 

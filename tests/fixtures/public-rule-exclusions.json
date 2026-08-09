@@ -90,10 +90,60 @@
       }
     ]
   },
+  "reassigned": [
+    {
+      "historical_owner": "game-platform",
+      "recovery_slug": "game-platform-late-recovery",
+      "target": "🎮 游戏平台",
+      "new_slug": "china-web",
+      "new_target": "🌏 国内网站",
+      "reason": "Mainland game platform, login, community, and voice domains must remain DIRECT instead of inheriting the overseas game-platform selector.",
+      "rules": [
+        "DOMAIN-SUFFIX,geforce.cn",
+        "DOMAIN-SUFFIX,gputechconf.cn",
+        "DOMAIN-SUFFIX,nvidia.cn",
+        "DOMAIN-SUFFIX,battlenet.com.cn",
+        "DOMAIN-SUFFIX,blizzard.cn",
+        "DOMAIN-SUFFIX,blz.nosdn.127.net",
+        "DOMAIN-SUFFIX,blzstatic.cn",
+        "DOMAIN-SUFFIX,bnet.163.com",
+        "DOMAIN-SUFFIX,di.res.netease.com",
+        "DOMAIN-SUFFIX,diablo3.nosdn.127.net",
+        "DOMAIN-SUFFIX,hearthstone.nosdn.127.net",
+        "DOMAIN-SUFFIX,heroes.nos.netease.com",
+        "DOMAIN-SUFFIX,overwatch.nosdn.127.net",
+        "DOMAIN-SUFFIX,sc2.nosdn.127.net",
+        "DOMAIN-SUFFIX,wow.nosdn.127.net",
+        "DOMAIN-SUFFIX,wowchina.com",
+        "DOMAIN-SUFFIX,dungeonkeeper.cn",
+        "DOMAIN-SUFFIX,dungeonkeeper.com.cn",
+        "DOMAIN-SUFFIX,legendofzelda.cn",
+        "DOMAIN-SUFFIX,legendofzelda.com.cn",
+        "DOMAIN-SUFFIX,mariokart.cn",
+        "DOMAIN-SUFFIX,mariokart.com.cn",
+        "DOMAIN-SUFFIX,miitomo.com.cn",
+        "DOMAIN-SUFFIX,nintendolabo.cn",
+        "DOMAIN-SUFFIX,nintendoswitch.cn",
+        "DOMAIN-SUFFIX,nintendoswitch.com.cn",
+        "DOMAIN-SUFFIX,supermariobros.com.cn",
+        "DOMAIN-SUFFIX,supersmashbros.cn",
+        "DOMAIN-SUFFIX,supersmashbros.com.cn",
+        "DOMAIN-SUFFIX,xn--mts47c3w9b1qr.cn",
+        "DOMAIN-SUFFIX,leagueoflegends.cn",
+        "DOMAIN-SUFFIX,lpl.com.cn",
+        "DOMAIN-SUFFIX,csgo.wmsj.cn",
+        "DOMAIN-SUFFIX,dota2.wmsj.cn",
+        "DOMAIN-SUFFIX,wmsjsteam.com",
+        "DOMAIN-SUFFIX,steamchina.com",
+        "DOMAIN-SUFFIX,xboxlive.cn"
+      ]
+    }
+  ],
   "counts": {
     "provider_override": 1,
     "late_recovery": 11,
-    "total": 12
+    "reassigned": 37,
+    "total": 49
   },
   "current_recovery_files": {
     "apple-late-recovery": {
@@ -101,8 +151,8 @@
       "sha256": "552d015eac6c29a97f2bea97b9af08bad35da1b856ae31e595fed3d9c5fd7637"
     },
     "game-platform-late-recovery": {
-      "rules": 587,
-      "sha256": "9dd59bde3849aee8e2f636035e54ac58898d1a605ef571969ded0bba7c10bae3"
+      "rules": 550,
+      "sha256": "c1a21ca5e17533a568544de8f70b62d036d6b22c8981a43f047c66ff9f581590"
     }
   }
 }
