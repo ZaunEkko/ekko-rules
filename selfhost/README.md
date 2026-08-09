@@ -39,6 +39,8 @@ sh ./start.sh
 
 `setup.cmd` 完成后不需要每次开机再次运行。Compose 中的 Web 与转换器都使用 `restart: unless-stopped`：Docker Desktop 自动恢复容器，Windows 登录任务自动恢复局域网 IP 检测，用户仍然可以在 Docker Desktop 中可视化启动、停止和重启容器。
 
+若启动时电脑尚未联网或暂时识别不到局域网 IP，Compose 仍会正常启动；后台检测器会等待可用网络，并在识别成功后自动刷新 Web UI 中的局域网地址。
+
 三个 Windows 入口的区别：
 
 | 入口 | 启动 Docker | 自动识别当前 IP | 以后登录自动恢复检测 |

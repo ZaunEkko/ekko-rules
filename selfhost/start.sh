@@ -45,7 +45,11 @@ write_lan_address() {
   printf '%s' "$ipv4"
 }
 
-DETECTED_IP=$(write_lan_address)
+DETECTED_IP=""
+if ! DETECTED_IP=$(write_lan_address); then
+  rm -f "$RUNTIME_DIR/lan-address.json"
+  printf '%s\n' 'LAN IP detection is not available yet; Compose will still start.' >&2
+fi
 
 cd "$ROOT"
 docker compose up --build -d
@@ -71,5 +75,9 @@ fi
 
 printf '\nEkko Rules is ready:\n'
 printf '  Computer: http://localhost:%s\n' "$WEB_PORT_VALUE"
-printf '  Trusted LAN: http://%s:%s\n\n' "$DETECTED_IP" "$WEB_PORT_VALUE"
+if [ -n "$DETECTED_IP" ]; then
+  printf '  Trusted LAN: http://%s:%s\n\n' "$DETECTED_IP" "$WEB_PORT_VALUE"
+else
+  printf '  Trusted LAN: waiting for an active network\n\n'
+fi
 printf 'The LAN address watcher will refresh automatically when the network changes.\n'

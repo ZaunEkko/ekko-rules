@@ -8,7 +8,7 @@ services:
     command:
       - sh
       - -c
-      - mkdir -p /shared /data && chmod 1777 /shared && chown 10001:10001 /data && chmod 700 /data
+      - mkdir -p /shared /data && chown 10001:10001 /shared /data && chmod 700 /shared /data
     volumes:
       - convert_shared:/shared
       - profiles_data:/data
@@ -27,8 +27,6 @@ services:
     # Intentionally no host ports. Gateway reaches it only on the Docker network.
     expose:
       - "25500"
-    volumes:
-      - convert_shared:/shared:rw
     read_only: true
     tmpfs:
       - /tmp:size=64m,mode=1777

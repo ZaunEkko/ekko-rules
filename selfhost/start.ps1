@@ -29,7 +29,13 @@ if ($WebPort -lt 1 -or $WebPort -gt 65535) {
 }
 
 [System.IO.Directory]::CreateDirectory($runtimeDir) | Out-Null
-$detectedIp = & $watcherPath -RuntimeDir $runtimeDir -WebPort $WebPort -Once
+$detectedIp = $null
+try {
+  $detectedIp = & $watcherPath -RuntimeDir $runtimeDir -WebPort $WebPort -Once
+} catch {
+  Remove-Item -LiteralPath (Join-Path $runtimeDir "lan-address.json") -Force -ErrorAction SilentlyContinue
+  Write-Warning "LAN IP detection is not available yet; Compose will still start."
+}
 
 Push-Location $root
 try {
@@ -70,6 +76,10 @@ if (-not $watcherRunning) {
 Write-Host ""
 Write-Host "Ekko Rules is ready:"
 Write-Host "  Computer: http://localhost:$WebPort"
-Write-Host "  Trusted LAN: http://${detectedIp}:$WebPort"
+if ($detectedIp) {
+  Write-Host "  Trusted LAN: http://${detectedIp}:$WebPort"
+} else {
+  Write-Host "  Trusted LAN: waiting for an active network"
+}
 Write-Host ""
 Write-Host "The LAN address watcher will refresh automatically when the network changes."

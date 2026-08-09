@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { mkdir, readdir, writeFile, rm } from "node:fs/promises";
 import * as http from "node:http";
 import * as https from "node:https";
@@ -177,7 +177,7 @@ export function getRuntimeConfig() {
     ),
     configurationError: configurationErrors.join(" "),
     fixedConfigPath: "config/ekko-rules-selfhost.ini",
-    // Shared with the converter container. Gateway writes fetched subscriptions here.
+    // Gateway stores short-lived inputs here for its internal HTTP handoff route.
     sharedDir: requiredEnv("CONVERT_SHARED_DIR", "/shared"),
     sharedUrlPrefix: requiredEnv("CONVERT_SHARED_URL_PREFIX", "file:///shared"),
   };
@@ -190,9 +190,19 @@ export function authorizeLocalAccess(provided?: string): void {
     throw new Error(runtime.configurationError);
   }
   if (!expected) return;
-  if (!provided || provided !== expected) {
+  const providedDigest = createHash("sha256").update(provided ?? "").digest();
+  const expectedDigest = createHash("sha256").update(expected).digest();
+  if (!provided || !timingSafeEqual(providedDigest, expectedDigest)) {
     throw new Error("Access password required.");
   }
+}
+
+export function isJsonRequestContentType(value: string | null): boolean {
+  const mediaType = (value ?? "").split(";", 1)[0].trim().toLowerCase();
+  return (
+    mediaType === "application/json" ||
+    /^application\/[a-z0-9!#$&^_.+-]+\+json$/.test(mediaType)
+  );
 }
 
 export function parseConvertRequest(input: unknown): ConvertRequest {
@@ -461,6 +471,11 @@ export function inlineMihomoProviderNodes(
     if (existingProxies) return completeConfig;
     throw new Error("Complete Mihomo config contains no node section.");
   }
+  if (existingProxies) {
+    throw new Error(
+      "Complete Mihomo config contains both inline and provider node sections.",
+    );
+  }
 
   const nodesStart = nodeLines.findIndex((line) => /^proxies:\s*$/.test(line));
   if (nodesStart < 0) {
@@ -721,6 +736,7 @@ export function publicErrorMessage(error: unknown): string {
 
 export function publicErrorStatus(message: string): number {
   if (/password/i.test(message)) return 401;
+  if (/^LAN_BASE_URL\b/i.test(message)) return 500;
   if (
     /^(?:Request body|subscriptionUrl|A supported target|accessPassword|options|autoUpdate|emoji|udp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
       message,

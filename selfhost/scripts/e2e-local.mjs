@@ -91,6 +91,22 @@ async function waitForHealth(attempts = 90) {
   throw new Error("Health check did not become ready.");
 }
 
+async function assertJsonOnlyPostRoutes() {
+  for (const route of ["/api/convert", "/api/profiles"]) {
+    const response = await fetch(`${baseUrl}${route}`, {
+      method: "POST",
+      headers: { "content-type": "text/plain" },
+      body: "{}",
+    });
+    if (response.status !== 415) {
+      throw new Error(
+        `${route} accepted a non-JSON request with HTTP ${response.status}.`,
+      );
+    }
+  }
+  console.log(JSON.stringify({ phase: "json-content-type", rejected: true }));
+}
+
 async function convert(target) {
   const response = await fetch(`${baseUrl}/api/convert`, {
     method: "POST",
@@ -330,6 +346,7 @@ async function main() {
 
   const health = await waitForHealth();
   console.log(JSON.stringify({ phase: "health", health }));
+  await assertJsonOnlyPostRoutes();
 
   const capabilities = await fetch(`${baseUrl}/api/capabilities`).then((response) => response.json());
   if (capabilities.supported_targets.length !== Object.keys(targetMarkers).length) {

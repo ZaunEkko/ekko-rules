@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   authorizeLocalAccess,
   convertSubscription,
+  isJsonRequestContentType,
   parseConvertRequest,
   publicErrorMessage,
   publicErrorStatus,
@@ -36,6 +37,13 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!isJsonRequestContentType(request.headers.get("content-type"))) {
+    return NextResponse.json(
+      { error: "Content-Type must be application/json." },
+      { status: 415, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
   let raw: unknown;
   try {
     raw = await request.json();

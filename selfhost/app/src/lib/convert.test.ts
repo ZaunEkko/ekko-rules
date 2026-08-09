@@ -9,6 +9,7 @@ import {
   cleanupOrphanedConversionInputs,
   getRuntimeConfig,
   inlineMihomoProviderNodes,
+  isJsonRequestContentType,
   looksLikeSubscription,
   normalizeSubscriptionContent,
   publicErrorStatus,
@@ -127,6 +128,20 @@ test("publishes to the LAN by default while keeping management passwords optiona
   }
 });
 
+test("accepts JSON media types and rejects simple cross-origin content types", () => {
+  assert.equal(isJsonRequestContentType("application/json"), true);
+  assert.equal(
+    isJsonRequestContentType("Application/Problem+Json; charset=utf-8"),
+    true,
+  );
+  assert.equal(isJsonRequestContentType("text/plain"), false);
+  assert.equal(
+    isJsonRequestContentType("application/x-www-form-urlencoded"),
+    false,
+  );
+  assert.equal(isJsonRequestContentType(null), false);
+});
+
 test("uses the validated DNS addresses for the actual HTTP connection", async () => {
   const server = createServer((request, response) => {
     response.end(request.headers.host || "");
@@ -225,6 +240,12 @@ test("maps client validation failures without hiding upstream failures", () => {
   );
   assert.equal(publicErrorStatus("Access password required."), 401);
   assert.equal(
+    publicErrorStatus(
+      "LAN_BASE_URL must be an http(s) origin without a path or credentials.",
+    ),
+    500,
+  );
+  assert.equal(
     publicErrorStatus("Subscription fetch failed with HTTP 500."),
     502,
   );
@@ -277,4 +298,29 @@ test("inlines Mihomo provider nodes and rewires provider-backed groups", () => {
   assert.match(result, /^    include-all: true$/m);
   assert.doesNotMatch(result, /proxy-providers:|http:\/\/web:3000|^    use:$/m);
   assert.match(result, /^rules:$/m);
+});
+
+test("rejects ambiguous Mihomo configs instead of adding a duplicate proxies key", () => {
+  const complete = [
+    "proxies:",
+    "  - name: Existing",
+    "    type: direct",
+    "proxy-providers:",
+    "  Local:",
+    "    type: http",
+    "proxy-groups:",
+    "  - name: Select",
+    "    type: select",
+    "    use:",
+    "      - Local",
+    "rules:",
+    "  - MATCH,Select",
+    "",
+  ].join("\n");
+  const nodes = "proxies:\n  - name: New\n    type: direct\n";
+
+  assert.throws(
+    () => inlineMihomoProviderNodes(complete, nodes),
+    /both inline and provider node sections/i,
+  );
 });
