@@ -50,5 +50,5 @@ jobs:
           claude_args: |
             --model claude-opus-5
             --effort max
-            --max-turns 30
+            --max-turns 60
             --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*)"
