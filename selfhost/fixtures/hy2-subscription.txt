@@ -1,0 +1,1 @@
+hy2://fixture-password@203.0.113.21:443?sni=fixture.example.test&insecure=1#fixture-hy2-http

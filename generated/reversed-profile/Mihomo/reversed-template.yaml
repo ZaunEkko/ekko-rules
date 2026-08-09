@@ -246,8 +246,8 @@ proxy-groups:
 - name: 🎮 游戏平台
   type: select
   proxies:
-  - DIRECT
   - ♻️ 手动切换
+  - DIRECT
   use:
   - subscription
 - name: 🎮 游戏下载

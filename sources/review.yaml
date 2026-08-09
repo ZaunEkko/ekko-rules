@@ -284,12 +284,13 @@ items:
   - sources/rules/china-web.list
   - sources/rules/china-media.list
   - sources/rules/game-platform.list
+  - sources/rules/game-download.list
   first_observed: 2026-08-03
-  last_verified: '2026-08-04'
+  last_verified: '2026-08-09'
   phase_2_candidate: none
   recommended_action: keep
   current_product: standard
-  resolution: Anchored official roots add mainland coverage for Amap, Railway 12306, DingTalk, Feishu, WPS and KDocs, Aliyun Drive, major logistics, recruitment, housing, UnionPay and representative mainland banks, education, healthcare, and automotive services through the existing default-DIRECT mainland website group. Douyin mainland, Huya, and YY use the existing mainland media group. Xiaoheihe, 5EPlay, Perfect World esports, TapTap mainland, MiHoYo mainland, major gaming communities, WeGame, mainland League of Legends and Valorant, and evidenced Tencent GVoice/GME endpoints use the existing default-DIRECT game platform group. No policy group is added.
+  resolution: Anchored official roots add mainland coverage for Amap, Railway 12306, DingTalk, Feishu, WPS and KDocs, Aliyun Drive, major logistics, recruitment, housing, UnionPay and representative mainland banks, education, healthcare, and automotive services through the existing default-DIRECT mainland website group. Douyin mainland, Huya, and YY use the existing mainland media group. Xiaoheihe, 5EPlay, Perfect World esports, TapTap mainland, MiHoYo mainland, major gaming communities, WeGame, mainland League of Legends and Valorant, and evidenced Tencent GVoice/GME endpoints now use the same default-DIRECT mainland website group. Dedicated game download endpoints use the default-DIRECT game download group, while the game platform group is reserved for overseas services and defaults to manual selection. No policy group is added.
 - id: mainland-game-voice-and-international-boundaries
   status: accepted
   scope: routing-security
@@ -297,14 +298,15 @@ items:
   evidence:
   - https://intl.cloud.tencent.com/document/product/607/35232
   - https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/tencent-games
+  - https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/category-game-platforms-download
   - https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/tiktok
   - tests/test_profile.py
   first_observed: 2026-08-04
-  last_verified: '2026-08-04'
+  last_verified: '2026-08-09'
   phase_2_candidate: none
   recommended_action: keep-precise
   current_product: standard
-  resolution: The official Douyin-only aweme.snssdk.com host enters mainland media, which is ordered before TikTok, while the shared snssdk.com suffix remains in TikTok so unclassified international traffic keeps the user's selector. Tencent Native GVoice/GME service roots and documented exact qcloud configuration, RTC, and speech hosts are routed through game-platform; generic qcloud.com, myqcloud.com, cloud/CDN roots, dynamic service IPs, and a WeGame process-wide rule remain excluded. Advertising stays first and continues to capture Amap, MiHoYo, and Zuoyebang telemetry. TapTap international taptap.io and other international storefronts remain outside mainland rules.
+  resolution: The official Douyin-only aweme.snssdk.com host enters mainland media, which is ordered before TikTok, while the shared snssdk.com suffix remains in TikTok so unclassified international traffic keeps the user's selector. Tencent Native GVoice/GME service roots and documented exact qcloud configuration, RTC, and speech hosts are routed through china-web so domestic game voice stays DIRECT; generic qcloud.com, myqcloud.com, cloud/CDN roots, dynamic service IPs, and a WeGame process-wide rule remain excluded. The observed down.val.qq.com download host and reviewed dedicated download endpoints enter game-download before the broader domestic val.qq.com rule. Advertising stays first and continues to capture Amap, MiHoYo, and Zuoyebang telemetry. Overseas game storefronts use game-platform, while TapTap international taptap.io remains outside mainland rules.
 - id: transient-resolution-failures
   status: observe
   scope: all

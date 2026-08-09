@@ -509,3 +509,21 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 94; same-segment: 13; cross-segment-only: 81.
+
+## ER-024 — Mainland game DIRECT boundary and download recovery
+
+**Type:** policy-boundary correction, download classification, and voice-path protection
+
+The existing `🌏 国内网站` group now owns mainland Chinese game launchers, login services, communities, storefronts, and Tencent GVoice/GME configuration, RTC, and speech endpoints. It remains default-DIRECT. Mainland game domains were also removed from the later game-platform recovery layer, preventing that late matcher from sending domestic voice or login traffic through a selected overseas node.
+
+`🎮 游戏平台` is now reserved for overseas platforms and lists `♻️ 手动切换` before `DIRECT`. `🎮 游戏下载` remains DIRECT-first. The observed `down.val.qq.com` host enters game downloads through an exact rule before the broader `val.qq.com` mainland rule. WeGame, 4399, TapTap, Perfect World, current Battle.net China, GOG, Epic, EA, Ubisoft, Steam, PlayStation, Xbox, and Riot download endpoints are classified only through dedicated download hosts or download-specific suffixes; ordinary overseas platform roots remain under the manually selected platform group.
+
+No additional policy group or ruleset segment is introduced. Tests freeze the three-way boundary: domestic game services to `🌏 国内网站`, dedicated downloads to `🎮 游戏下载`, and overseas platforms to `🎮 游戏平台`.
+
+## ER-025 — Local and LAN stable subscription addresses
+
+**Type:** self-hosted delivery, trusted-LAN access, and release hardening
+
+The self-hosted Web service now follows conventional Compose behavior and publishes port `8787` on all host interfaces by default, so trusted-LAN devices can use the computer IP without rebuilding the stack. Windows gains a one-time `setup.cmd` path that starts Compose and registers a least-privilege current-user logon task; Docker Desktop can thereafter restore the `unless-stopped` containers while the independent helper keeps the host LAN address current without opening another port or reading subscription data. Session launchers remain available on Windows, macOS, and Linux. The compact address manager now sits beside saved profiles and switches exported prefixes among `localhost`, the current browser origin, the freshly detected or custom LAN address, and eight recently used origins. Once detected-LAN mode is selected, later host-IP changes update displayed, copied, and QR-rendered URLs automatically without changing profile IDs or reordering history. `WEB_BIND_HOST=127.0.0.1` remains available for explicit host-only deployments, `ACCESS_PASSWORD` is optional management protection, and `LAN_BASE_URL` can advertise a preferred origin.
+
+Every saved profile can be copied as a URL or rendered as an in-browser QR code for phones and tablets; QR data is never sent to an external service. Dependency installation now uses the lockfile through `npm ci`, the Next.js patch level and transitive security fixes are pinned, and release audit reports no known npm vulnerabilities. Browser User-Agents fall back to target-client defaults during profile creation while real subscription-client User-Agents continue to pass through during refreshes.

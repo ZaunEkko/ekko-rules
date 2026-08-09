@@ -285,8 +285,8 @@ groups:
   type: select
   scope: core
   members:
-  - DIRECT
   - ♻️ 手动切换
+  - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 36
   name: 🎮 游戏下载
