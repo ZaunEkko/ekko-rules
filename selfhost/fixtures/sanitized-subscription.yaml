@@ -1,0 +1,35 @@
+# Synthetic fixture for local end-to-end conversion only.
+# Contains no real provider tokens, passwords, UUIDs, or hostnames of private services.
+proxies:
+  - name: "香港 fixture-ss"
+    type: ss
+    server: 203.0.113.10
+    port: 8400
+    cipher: aes-256-gcm
+    password: "fixture-password-not-real"
+  - name: "fixture-vmess"
+    type: vmess
+    server: 203.0.113.11
+    port: 44000
+    uuid: "00000000-0000-4000-8000-000000000001"
+    alterId: 0
+    cipher: auto
+    network: tcp
+  - name: "fixture-anytls"
+    type: anytls
+    server: 203.0.113.12
+    port: 443
+    password: "fixture-anytls-password"
+    udp: true
+    sni: "fixture.example.test"
+
+proxy-groups:
+  - name: "PROXY"
+    type: select
+    proxies:
+      - 香港 fixture-ss
+      - fixture-vmess
+      - fixture-anytls
+
+rules:
+  - MATCH,PROXY

@@ -1,0 +1,106 @@
+# Personal local/LAN converter stack.
+# Do not publish the converter engine port to the host.
+name: ekko-selfhost
+
+services:
+  shared-init:
+    image: busybox:1.37
+    command:
+      - sh
+      - -c
+      - mkdir -p /shared /data && chmod 1777 /shared && chown 10001:10001 /data && chmod 700 /data
+    volumes:
+      - convert_shared:/shared
+      - profiles_data:/data
+    restart: "no"
+
+  subconverter:
+    build:
+      context: ./subconverter
+    image: ekko-rules-selfhost-subconverter:local
+    restart: unless-stopped
+    depends_on:
+      shared-init:
+        condition: service_completed_successfully
+    networks:
+      - internal
+    # Intentionally no host ports. Gateway reaches it only on the Docker network.
+    expose:
+      - "25500"
+    volumes:
+      - convert_shared:/shared:rw
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /base/cache:size=64m,mode=0700,uid=10001,gid=10001
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 1.0
+
+  web:
+    build:
+      context: ./app
+      args:
+        EKKO_RULES_VERSION: ${EKKO_RULES_VERSION:-local}
+        SUBCONVERTER_VERSION: ${SUBCONVERTER_VERSION:-v1.3.0}
+    image: ekko-rules-selfhost-web:local
+    restart: unless-stopped
+    depends_on:
+      shared-init:
+        condition: service_completed_successfully
+      subconverter:
+        condition: service_started
+    ports:
+      - "${WEB_BIND_HOST:-0.0.0.0}:${WEB_PORT:-8787}:3000"
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+      WEB_BIND_HOST: ${WEB_BIND_HOST:-0.0.0.0}
+      WEB_PORT: ${WEB_PORT:-8787}
+      LAN_BASE_URL: ${LAN_BASE_URL:-}
+      HOST_NETWORK_INFO_PATH: /host-runtime/lan-address.json
+      SUBCONVERTER_BASE_URL: http://subconverter:25500
+      EKKO_RULES_VERSION: ${EKKO_RULES_VERSION:-local}
+      SUBCONVERTER_VERSION: ${SUBCONVERTER_VERSION:-v1.3.0}
+      CONVERT_TIMEOUT_MS: ${CONVERT_TIMEOUT_MS:-30000}
+      MAX_SUBSCRIPTION_BYTES: ${MAX_SUBSCRIPTION_BYTES:-5242880}
+      ACCESS_PASSWORD: ${ACCESS_PASSWORD:-}
+      CONVERT_SHARED_DIR: /shared
+      CONVERT_SHARED_URL_PREFIX: http://web:3000/api/internal/input
+      PROFILE_DATA_DIR: /data
+      CONVERT_ALLOW_HOSTNAMES: ${CONVERT_ALLOW_HOSTNAMES:-}
+    volumes:
+      - convert_shared:/shared:rw
+      - profiles_data:/data:rw
+      - ./.runtime:/host-runtime:ro
+    networks:
+      - internal
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 1.0
+
+  # Ephemeral fixture server used only by local end-to-end validation.
+  fixture:
+    image: python:3.12-alpine
+    profiles: ["e2e"]
+    working_dir: /srv
+    command: ["python", "/srv/server.py"]
+    volumes:
+      - ./fixtures:/srv:ro
+    networks:
+      - internal
+
+volumes:
+  convert_shared:
+  profiles_data:
+
+networks:
+  internal:
+    driver: bridge
+    internal: false

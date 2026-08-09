@@ -1,0 +1,28 @@
+common:
+  api_mode: true
+  api_access_token: ""
+  default_url: []
+  enable_insert: false
+  enable_filter: false
+  filter_script: ""
+  exclude_remarks: []
+  include_remarks: []
+  enable_rule_generator: true
+  overwrite_original_rules: true
+
+server:
+  listen: 0.0.0.0
+  port: 25500
+  serve_file_root:
+
+advanced:
+  log_level: warn
+  max_pending_connections: 64
+  max_concurrent_threads: 4
+  max_file_size: 104857600
+
+emojis:
+  add_emoji: false
+  remove_old_emoji: true
+  rules:
+    - {import: snippets/emoji.txt}

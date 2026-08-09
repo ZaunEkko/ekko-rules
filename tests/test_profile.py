@@ -224,6 +224,16 @@ class CanonicalSourceTests(unittest.TestCase):
                 "♻️ 手动切换",
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
+            "🎮 游戏平台": [
+                "♻️ 手动切换",
+                "DIRECT",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "🎮 游戏下载": [
+                "DIRECT",
+                "♻️ 手动切换",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
         }
         for group_name, expected_members in expected_group_members.items():
             group = next(
@@ -875,6 +885,10 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         excluded_by_slug: dict[str, set[str]] = {}
         for item in public_exclusions["removed"]["late_recovery"]:
             excluded_by_slug.setdefault(item["recovery_slug"], set()).add(item["rule"])
+        for item in public_exclusions.get("reassigned", []):
+            excluded_by_slug.setdefault(item["recovery_slug"], set()).update(
+                item["rules"]
+            )
 
         for owner, record in self.ledger["owners"].items():
             rules = [
@@ -942,7 +956,12 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
             group.name: list(group.members) for group in sources.proxy_groups
         }
         for record in self.ledger["owners"].values():
-            self.assertEqual(group_members[record["target"]][0], "DIRECT")
+            expected_default = (
+                "♻️ 手动切换"
+                if record["target"] == "🎮 游戏平台"
+                else "DIRECT"
+            )
+            self.assertEqual(group_members[record["target"]][0], expected_default)
         self.assertEqual(
             group_members["🐟 漏网之鱼"],
             ["♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
@@ -988,6 +1007,14 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
             mihomo_groups["🧑‍💻 开发服务"][:2],
             ["♻️ 手动切换", "DIRECT"],
         )
+        self.assertEqual(
+            mihomo_groups["🎮 游戏平台"][:2],
+            ["♻️ 手动切换", "DIRECT"],
+        )
+        self.assertEqual(
+            mihomo_groups["🎮 游戏下载"][:2],
+            ["DIRECT", "♻️ 手动切换"],
+        )
         subconverter = (
             GENERATED / "config" / "ekko-rules.ini"
         ).read_text(encoding="utf-8")
@@ -1005,6 +1032,16 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         self.assertIn(
             "custom_proxy_group=🧑‍💻 开发服务`select`[]♻️ 手动切换`"
             "[]DIRECT`",
+            subconverter,
+        )
+        self.assertIn(
+            "custom_proxy_group=🎮 游戏平台`select`[]♻️ 手动切换`"
+            "[]DIRECT`",
+            subconverter,
+        )
+        self.assertIn(
+            "custom_proxy_group=🎮 游戏下载`select`[]DIRECT`"
+            "[]♻️ 手动切换`",
             subconverter,
         )
         self.assertIn(
@@ -1144,14 +1181,28 @@ class PublicRuleExclusionTests(unittest.TestCase):
     def test_exclusion_ledger_is_immutable_and_closed(self) -> None:
         self.assertEqual(
             hashlib.sha256(PUBLIC_RULE_EXCLUSIONS.read_bytes()).hexdigest(),
-            "b7a78bb1879a8294fb665538cacfad7b69eca531b7092efc1da635e3f289a404",
+            "2ff918c099c39c51fcc75cde58b6d770ce963cea81acf819ea081bbe99fbbd1c",
         )
         ledger = json.loads(PUBLIC_RULE_EXCLUSIONS.read_text(encoding="utf-8"))
         removed = [
             *ledger["removed"]["provider_override"],
             *ledger["removed"]["late_recovery"],
         ]
-        self.assertEqual(len(removed), ledger["counts"]["total"])
+        reassigned = [
+            (record, rule)
+            for record in ledger.get("reassigned", [])
+            for rule in record["rules"]
+        ]
+        self.assertEqual(
+            len(removed),
+            ledger["counts"]["provider_override"]
+            + ledger["counts"]["late_recovery"],
+        )
+        self.assertEqual(len(reassigned), ledger["counts"]["reassigned"])
+        self.assertEqual(
+            len(removed) + len(reassigned),
+            ledger["counts"]["total"],
+        )
         current_text = "\n".join(
             path.read_text(encoding="utf-8")
             for path in (SOURCES / "rules").glob("*.list")
@@ -1164,6 +1215,19 @@ class PublicRuleExclusionTests(unittest.TestCase):
                 self.assertEqual(
                     first_match(sources, domain=domain),
                     {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"},
+                )
+
+        for record, rule in reassigned:
+            with self.subTest(reassigned_rule=rule):
+                self.assertIn(rule, current_text)
+                domain = rule.split(",", 1)[1]
+                self.assertEqual(
+                    first_match(sources, domain=domain),
+                    {
+                        "slug": record["new_slug"],
+                        "target": record["new_target"],
+                        "rule": rule,
+                    },
                 )
 
         for slug, expected in ledger["current_recovery_files"].items():
@@ -1798,8 +1862,8 @@ class FirstMatchBaselineTests(unittest.TestCase):
 
         priority_cases = {
             "gmeconf.qcloud.com": (
-                "game-platform",
-                "🎮 游戏平台",
+                "china-web",
+                "🌏 国内网站",
                 "DOMAIN,gmeconf.qcloud.com",
             ),
             "epicgames-download1-1251447533.file.myqcloud.com": (
@@ -1895,12 +1959,40 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "www.hupu.com": "DOMAIN-SUFFIX,hupu.com",
             "www.wegame.com.cn": "DOMAIN-SUFFIX,wegame.com.cn",
             "lol.qq.com": "DOMAIN-SUFFIX,lol.qq.com",
-            "down.val.qq.com": "DOMAIN-SUFFIX,val.qq.com",
             "cn.voice.gcloudcs.com": "DOMAIN-SUFFIX,gcloudcs.com",
             "gmeconf.qcloud.com": "DOMAIN,gmeconf.qcloud.com",
             "qcloud.rtc.qq.com": "DOMAIN,qcloud.rtc.qq.com",
         }
         for domain, rule in game_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-web", "🌏 国内网站", rule),
+                    domain=domain,
+                )
+
+        download_cases = {
+            "down.val.qq.com": "DOMAIN,down.val.qq.com",
+            "download.wegame.qq.com": "DOMAIN,download.wegame.qq.com",
+            "patch.tapapks.com": "DOMAIN-SUFFIX,tapapks.com",
+            "client.wmupd.com": "DOMAIN-SUFFIX,wmupd.com",
+            "dl.playstation.net": "DOMAIN-SUFFIX,dl.playstation.net",
+            "blzdist-wow.necdn.leihuo.netease.com": (
+                "DOMAIN,blzdist-wow.necdn.leihuo.netease.com"
+            ),
+        }
+        for domain, rule in download_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("game-download", "🎮 游戏下载", rule),
+                    domain=domain,
+                )
+
+        overseas_game_cases = {
+            "store.steampowered.com": "DOMAIN-SUFFIX,steampowered.com",
+            "www.epicgames.com": "DOMAIN-SUFFIX,epicgames.com",
+            "www.riotgames.com": "DOMAIN-SUFFIX,riotgames.com",
+        }
+        for domain, rule in overseas_game_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
                     ("game-platform", "🎮 游戏平台", rule),

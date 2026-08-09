@@ -1,0 +1,1 @@
+tuic://00000000-0000-4000-8000-000000000003:fixture-password@203.0.113.22:443?sni=fixture.example.test&congestion_control=bbr&udp_relay_mode=native&allow_insecure=1#fixture-tuic-http
