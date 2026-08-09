@@ -47,4 +47,8 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
             actions: read
-          claude_args: "--max-turns 10"
+          claude_args: |
+            --model claude-opus-5
+            --effort max
+            --max-turns 30
+            --allowedTools "Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*)"
