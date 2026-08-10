@@ -294,6 +294,10 @@ DOMAIN-SUFFIX,dota2.wmsj.cn
 DOMAIN-SUFFIX,wmsjsteam.com
 DOMAIN-SUFFIX,steamchina.com
 DOMAIN-SUFFIX,xboxlive.cn
+DOMAIN-SUFFIX,gov.cn
+DOMAIN-SUFFIX,edu.cn
+DOMAIN-SUFFIX,ac.cn
+DOMAIN-SUFFIX,mil.cn
 PROCESS-NAME,aria2c.exe
 PROCESS-NAME,fdm.exe
 PROCESS-NAME,Folx.exe
