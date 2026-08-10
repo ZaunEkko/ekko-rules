@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 uses **2026-08-10**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -535,3 +535,9 @@ Every saved profile can be copied as a URL or rendered as an in-browser QR code 
 The existing `🧑‍💻 开发服务` selector gains 142 anchored rules for mainstream developer collaboration, project management, API tooling, deployment control planes, CI/CD, observability, language ecosystems, infrastructure tooling, managed developer databases, and online IDEs. Representative additions include Linear, Slack, Atlassian/Jira/Confluence/Trello, Postman, Sentry, Vercel, Supabase, Netlify, Railway, Render, Fly.io, Heroku, CircleCI, Travis CI, Buildkite, Datadog, Grafana, New Relic, JetBrains, Deno, Bun, HashiCorp, Pulumi, Prisma, MongoDB, Redis, Neon, PlanetScale, Replit, CodeSandbox, StackBlitz, and CodePen.
 
 The boundary remains intentionally narrow. Shared CDN and object-storage roots are excluded, as are public deployment suffixes such as `vercel.app`, `netlify.app`, `onrender.com`, and `herokuapp.com`. Sentry and New Relic use explicit console/API hosts instead of broad telemetry-ingestion suffixes, preventing ordinary application telemetry from being reclassified as developer traffic. Cloudflare uses exact dashboard, API, documentation, and root website hosts while the broader infrastructure namespace remains with `☁️ 海外云服务`. `vscode.dev` keeps its existing Microsoft ownership. The verified first-match unreachable metrics therefore remain unchanged at global union 146, same-segment union 13, and cross-segment-only union 133.
+
+## ER-027 — Notion developer collaboration routing
+
+**Type:** anchored service completion, no policy-group or precedence change
+
+Notion's application, API, static assets, uploaded content, legacy `notion.so` entry points, and the official `notion.new` shortcut now route through `🧑‍💻 开发服务`. The five added rules cover `notion.com`, `notion.so`, `notion-static.com`, `notionusercontent.com`, and the exact `notion.new` host. Public user-published `notion.site` pages remain outside the developer selector, preserving the existing boundary that excludes user-hosted sites.
