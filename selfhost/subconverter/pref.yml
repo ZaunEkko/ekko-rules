@@ -23,6 +23,9 @@ advanced:
 
 emojis:
   add_emoji: false
+  # The engine normalizes existing prefixes when emoji=true. Restore flags
+  # from explicit ISO suffixes first, then fall back to localized name aliases.
   remove_old_emoji: true
   rules:
+    - {import: snippets/emoji-codes.txt}
     - {import: snippets/emoji.txt}

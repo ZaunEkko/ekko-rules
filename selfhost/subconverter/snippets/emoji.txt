@@ -1,8 +1,8 @@
-(?i:Bandwidth|expire|流量|时间|应急|过期),🏳️‍🌈
+(?i:Bandwidth|expire|traffic|流量|时间|应急|过期|到期|套餐|重置|官网|公告|客服|订阅),🏳️‍🌈
 (?i:\bHK[G]?\d*\b|Hong.*?Kong|\bHKT\b|\bHKBN\b|\bHGC\b|\bWTT\b|\bCMI\b|[^-]港),🇭🇰
-(?i:\bTW[N]?\d*\b|Taiwan|新北|彰化|\bCHT\b|台湾|[^-]台|\bHINET\b),🇨🇳
+(?i:\bTW[N]?\d*\b|Taiwan|Taipei|Kaohsiung|Taichung|Tainan|新北|台北|臺北|高雄|台中|臺中|台南|臺南|彰化|\bCHT\b|台湾|臺灣|[^-]台|\bHINET\b),🇹🇼
 (?i:\bSG[P]?\d*\b|Singapore|新加坡|狮城|[^-]新),🇸🇬
-(尼日利亚|Nigeria),🇳🇬
+(?i:\bNG\d*\b|尼日利亚|Nigeria|Lagos),🇳🇬
 (?i:\bJP[N]?\d*\b|Japan|Tokyo|Osaka|Saitama|日本|东京|大阪|埼玉|[^-]日),🇯🇵
 (?i:(?<!North\s)(\bK[O]?R\d*\b|Korea|首尔|韩|韓)),🇰🇷
 (?i:\bUS[A]?\d*\b|America|United.*?States|美国|[^-]美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥),🇺🇸
@@ -61,7 +61,7 @@
 (蒙古|Монголулс|Mongolia),🇲🇳
 (Macao|澳门|\bCTM\b),🇲🇴
 (墨西哥|Mexico),🇲🇽
-(Malaysia|马来|MY),🇲🇾
+(?i:\bMY\d*\b|Malaysia|Kuala Lumpur|马来|吉隆坡),🇲🇾
 (?i:\bNL[D]?\d*\b|Netherlands|荷兰|阿姆斯特丹),🇳🇱
 (挪威|Norway),🇳🇴
 (新西兰|纽西兰|New Zealand),🇳🇿
@@ -84,12 +84,119 @@
 (乌拉圭|Uruguay),🇺🇾
 (梵蒂冈|Vatican),🇻🇦
 (Vietnam|越南),🇻🇳
-(Africa|南非),🇿🇦
-(Ukraine|UA|乌克兰),🇺🇦
+(?i:\bZA\d*\b|South.*?Africa|Africa|Johannesburg|Cape Town|南非|约翰内斯堡|开普敦),🇿🇦
+(?i:\bUA\d*\b|Ukraine|Kyiv|Kiev|乌克兰|基辅),🇺🇦
 (Puerto.*?Rico|波多黎各),🇵🇷
 (Ecuador|厄瓜多尔),🇪🇨
 (Venezuela|委内瑞拉),🇻🇪
 (Morocco|摩洛哥),🇲🇦
 (Nepal|尼泊尔),🇳🇵
-(Bengal|孟加拉),🇧🇩
+(?i:\bBD\d*\b|Bangladesh|Bengal|Dhaka|孟加拉|达卡),🇧🇩
+(?i:\bAF\d*\b|Afghanistan|Kabul|阿富汗|喀布尔),🇦🇫
+(?i:\bAM\d*\b|Armenia|Yerevan|亚美尼亚|埃里温),🇦🇲
+(?i:\bAO\d*\b|Angola|Luanda|安哥拉|罗安达),🇦🇴
+(?i:\bBS\d*\b|Bahamas|Nassau|巴哈马|拿骚),🇧🇸
+(?i:\bBH\d*\b|Bahrain|Manama|巴林|麦纳麦),🇧🇭
+(?i:\bBB\d*\b|Barbados|Bridgetown|巴巴多斯|布里奇敦),🇧🇧
+(?i:\bBY\d*\b|Belarus|Minsk|白俄罗斯|白俄|明斯克),🇧🇾
+(?i:\bBZ\d*\b|Belize|Belmopan|伯利兹|贝尔莫潘),🇧🇿
+(?i:\bBJ\d*\b|Benin|Porto-Novo|贝宁|波多诺伏),🇧🇯
+(?i:\bBM\d*\b|Bermuda|Hamilton|百慕大),🇧🇲
+(?i:\bBT\d*\b|Bhutan|Thimphu|不丹|廷布),🇧🇹
+(?i:\bBO\d*\b|Bolivia|La Paz|Sucre|玻利维亚|拉巴斯),🇧🇴
+(?i:\bBW\d*\b|Botswana|Gaborone|博茨瓦纳|哈博罗内),🇧🇼
+(?i:\bBN\d*\b|Brunei|Bandar Seri Begawan|文莱|斯里巴加湾),🇧🇳
+(?i:\bBF\d*\b|Burkina Faso|Ouagadougou|布基纳法索|瓦加杜古),🇧🇫
+(?i:\bBI\d*\b|Burundi|Gitega|Bujumbura|布隆迪),🇧🇮
+(?i:\bCV\d*\b|Cape Verde|Cabo Verde|Praia|佛得角|普拉亚),🇨🇻
+(?i:\bCM\d*\b|Cameroon|Yaounde|Douala|喀麦隆|雅温得|杜阿拉),🇨🇲
+(?i:\bCF\d*\b|Central African Republic|Bangui|中非共和国|班吉),🇨🇫
+(?i:\bTD\d*\b|Chad|N'Djamena|乍得|恩贾梅纳),🇹🇩
+(?i:\bKM\d*\b|Comoros|Moroni|科摩罗|莫罗尼),🇰🇲
+(?i:\bCD\d*\b|Democratic Republic of (?:the )?Congo|DR Congo|Congo Kinshasa|Kinshasa|刚果金|刚果民主共和国|金沙萨),🇨🇩
+(?i:\bCG\d*\b|Republic of (?:the )?Congo|Congo Brazzaville|Brazzaville|刚果布|刚果共和国|布拉柴维尔),🇨🇬
+(?i:\bCU\d*\b|Cuba|Havana|古巴|哈瓦那),🇨🇺
+(?i:\bDJ\d*\b|Djibouti|吉布提),🇩🇯
+(?i:\bDO\d*\b|Dominican Republic|Santo Domingo|多米尼加共和国|圣多明各),🇩🇴
+(?i:\bDM\d*\b|Dominica|Roseau|多米尼克|罗索),🇩🇲
+(?i:\bSV\d*\b|El Salvador|San Salvador|萨尔瓦多|圣萨尔瓦多),🇸🇻
+(?i:\bGQ\d*\b|Equatorial Guinea|Malabo|赤道几内亚|马拉博),🇬🇶
+(?i:\bER\d*\b|Eritrea|Asmara|厄立特里亚|阿斯马拉),🇪🇷
+(?i:\bET\d*\b|Ethiopia|Addis Ababa|埃塞俄比亚|亚的斯亚贝巴),🇪🇹
+(?i:\bFJ\d*\b|Fiji|Suva|斐济|苏瓦),🇫🇯
+(?i:\bGA\d*\b|Gabon|Libreville|加蓬|利伯维尔),🇬🇦
+(?i:\bGM\d*\b|Gambia|Banjul|冈比亚|班珠尔),🇬🇲
+(?i:\bGH\d*\b|Ghana|Accra|加纳|阿克拉),🇬🇭
+(?i:\bGD\d*\b|Grenada|Saint George's|格林纳达|圣乔治),🇬🇩
+(?i:\bGT\d*\b|Guatemala|危地马拉),🇬🇹
+(?i:\bGW\d*\b|Guinea-Bissau|Bissau|几内亚比绍|比绍),🇬🇼
+(?i:\bPG\d*\b|Papua New Guinea|Port Moresby|巴布亚新几内亚|莫尔兹比港),🇵🇬
+(?i:\bGN\d*\b|Guinea|Conakry|几内亚|科纳克里),🇬🇳
+(?i:\bGY\d*\b|Guyana|Georgetown|圭亚那|乔治敦),🇬🇾
+(?i:\bHT\d*\b|Haiti|Port-au-Prince|海地|太子港),🇭🇹
+(?i:\bHN\d*\b|Honduras|Tegucigalpa|洪都拉斯|特古西加尔巴),🇭🇳
+(?i:\bIQ\d*\b|Iraq|Baghdad|伊拉克|巴格达),🇮🇶
+(?i:\bCI\d*\b|Ivory Coast|Cote d'Ivoire|Abidjan|科特迪瓦|象牙海岸|阿比让),🇨🇮
+(?i:\bJM\d*\b|Jamaica|Kingston|牙买加|金斯敦),🇯🇲
+(?i:\bKI\d*\b|Kiribati|Tarawa|基里巴斯|塔拉瓦),🇰🇮
+(?i:\bKW\d*\b|Kuwait|Kuwait City|科威特),🇰🇼
+(?i:\bLA\d*\b|Laos|Vientiane|老挝|万象),🇱🇦
+(?i:\bLB\d*\b|Lebanon|Beirut|黎巴嫩|贝鲁特),🇱🇧
+(?i:\bLS\d*\b|Lesotho|Maseru|莱索托|马塞卢),🇱🇸
+(?i:\bLR\d*\b|Liberia|Monrovia|利比里亚|蒙罗维亚),🇱🇷
+(?i:\bLY\d*\b|Libya|Tripoli|利比亚|的黎波里),🇱🇾
+(?i:\bLI\d*\b|Liechtenstein|Vaduz|列支敦士登|瓦杜兹),🇱🇮
+(?i:\bMG\d*\b|Madagascar|Antananarivo|马达加斯加|塔那那利佛),🇲🇬
+(?i:\bMW\d*\b|Malawi|Lilongwe|马拉维|利隆圭),🇲🇼
+(?i:\bMV\d*\b|Maldives|Male|马尔代夫|马累),🇲🇻
+(?i:\bML\d*\b|Mali|Bamako|马里|巴马科),🇲🇱
+(?i:\bMT\d*\b|Malta|Valletta|马耳他|瓦莱塔),🇲🇹
+(?i:\bMH\d*\b|Marshall Islands|Majuro|马绍尔群岛|马朱罗),🇲🇭
+(?i:\bMR\d*\b|Mauritania|Nouakchott|毛里塔尼亚|努瓦克肖特),🇲🇷
+(?i:\bMU\d*\b|Mauritius|Port Louis|毛里求斯|路易港),🇲🇺
+(?i:\bFM\d*\b|Micronesia|Palikir|密克罗尼西亚|帕利基尔),🇫🇲
+(?i:\bMC\d*\b|Monaco|摩纳哥),🇲🇨
+(?i:\bME\d*\b|Montenegro|Podgorica|黑山|波德戈里察),🇲🇪
+(?i:\bMZ\d*\b|Mozambique|Maputo|莫桑比克|马普托),🇲🇿
+(?i:\bNA\d*\b|Namibia|Windhoek|纳米比亚|温得和克),🇳🇦
+(?i:\bNR\d*\b|Nauru|Yaren|瑙鲁|亚伦),🇳🇷
+(?i:\bNI\d*\b|Nicaragua|Managua|尼加拉瓜|马那瓜),🇳🇮
+(?i:\bNE\d*\b|Niger|Niamey|尼日尔|尼亚美),🇳🇪
+(?i:\bOM\d*\b|Oman|Muscat|阿曼|马斯喀特),🇴🇲
+(?i:\bPW\d*\b|Palau|Ngerulmud|帕劳|恩吉鲁穆德),🇵🇼
+(?i:\bPS\d*\b|Palestine|Ramallah|Palestinian|巴勒斯坦|拉姆安拉),🇵🇸
+(?i:\bPY\d*\b|Paraguay|Asuncion|巴拉圭|亚松森),🇵🇾
+(?i:\bQA\d*\b|Qatar|Doha|卡塔尔|多哈),🇶🇦
+(?i:\bRW\d*\b|Rwanda|Kigali|卢旺达|基加利),🇷🇼
+(?i:\bKN\d*\b|Saint Kitts|St Kitts|Basseterre|圣基茨|巴斯特尔),🇰🇳
+(?i:\bLC\d*\b|Saint Lucia|St Lucia|Castries|圣卢西亚|卡斯特里),🇱🇨
+(?i:\bVC\d*\b|Saint Vincent|St Vincent|Kingstown|圣文森特|金斯敦),🇻🇨
+(?i:\bWS\d*\b|Samoa|Apia|萨摩亚|阿皮亚),🇼🇸
+(?i:\bSM\d*\b|San Marino|圣马力诺),🇸🇲
+(?i:\bST\d*\b|Sao Tome|São Tomé|圣多美|圣多美和普林西比),🇸🇹
+(?i:\bSN\d*\b|Senegal|Dakar|塞内加尔|达喀尔),🇸🇳
+(?i:\bSC\d*\b|Seychelles|Victoria|塞舌尔|维多利亚),🇸🇨
+(?i:\bSL\d*\b|Sierra Leone|Freetown|塞拉利昂|弗里敦),🇸🇱
+(?i:\bSB\d*\b|Solomon Islands|Honiara|所罗门群岛|霍尼亚拉),🇸🇧
+(?i:\bSO\d*\b|Somalia|Mogadishu|索马里|摩加迪沙),🇸🇴
+(?i:\bSS\d*\b|South Sudan|Juba|南苏丹|朱巴),🇸🇸
+(?i:\bLK\d*\b|Sri Lanka|Colombo|斯里兰卡|科伦坡),🇱🇰
+(?i:\bSD\d*\b|Sudan|Khartoum|苏丹|喀土穆),🇸🇩
+(?i:\bSR\d*\b|Suriname|Paramaribo|苏里南|帕拉马里博),🇸🇷
+(?i:\bSY\d*\b|Syria|Damascus|叙利亚|大马士革),🇸🇾
+(?i:\bTJ\d*\b|Tajikistan|Dushanbe|塔吉克斯坦|杜尚别),🇹🇯
+(?i:\bTZ\d*\b|Tanzania|Dodoma|Dar es Salaam|坦桑尼亚|多多马|达累斯萨拉姆),🇹🇿
+(?i:\bTL\d*\b|Timor-Leste|East Timor|Dili|东帝汶|帝力),🇹🇱
+(?i:\bTG\d*\b|Togo|Lome|多哥|洛美),🇹🇬
+(?i:\bTO\d*\b|Tonga|Nuku'alofa|汤加|努库阿洛法),🇹🇴
+(?i:\bTT\d*\b|Trinidad and Tobago|Port of Spain|特立尼达和多巴哥|西班牙港),🇹🇹
+(?i:\bTM\d*\b|Turkmenistan|Ashgabat|土库曼斯坦|阿什哈巴德),🇹🇲
+(?i:\bTV\d*\b|Tuvalu|Funafuti|图瓦卢|富纳富提),🇹🇻
+(?i:\bUG\d*\b|Uganda|Kampala|乌干达|坎帕拉),🇺🇬
+(?i:\bUZ\d*\b|Uzbekistan|Tashkent|乌兹别克斯坦|塔什干),🇺🇿
+(?i:\bVU\d*\b|Vanuatu|Port Vila|瓦努阿图|维拉港),🇻🇺
+(?i:\bYE\d*\b|Yemen|Sanaa|Sana'a|也门|萨那),🇾🇪
+(?i:\bZM\d*\b|Zambia|Lusaka|赞比亚|卢萨卡),🇿🇲
+(?i:\bZW\d*\b|Zimbabwe|Harare|津巴布韦|哈拉雷),🇿🇼
+(?i:\bXK\d*\b|Kosovo|Pristina|科索沃|普里什蒂纳),🇽🇰
 (?i:\bC[H]?N\b|China|back|回国|中国[^-]|江苏[^-]|北京[^-]|上海[^-]|广州[^-]|深圳[^-]|杭州[^-]|常州[^-]|徐州[^-]|青岛[^-]|宁波[^-]|镇江[^-]|成都[^-]|河北[^-]|山西[^-]|辽宁[^-]|吉林[^-]|黑龙江[^-]|江苏[^-]|浙江[^-]|安徽[^-]|福建[^-]|江西[^-]|山东[^-]|河南[^-]|湖北[^-]|湖南[^-]|广东[^-]|海南[^-]|四川[^-]|贵州[^-]|云南[^-]|陕西[^-]|甘肃[^-]|青海[^-]|内蒙古[^-]|广西[^-]|西藏[^-]|宁夏[^-]|新疆[^-]),🇨🇳

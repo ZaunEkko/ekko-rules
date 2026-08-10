@@ -207,11 +207,12 @@ export default function HomePage() {
   const compatibilityTargets = targets.filter(
     (item) => item.tier === "compatibility",
   );
-  const enabledOptionCount = countEnabledOptions(
-    target === "singbox"
-      ? convertOptions
-      : { ...convertOptions, singboxIpv6: false },
-  );
+  const supportsXudp = target === "clash" || target === "singbox";
+  const enabledOptionCount = countEnabledOptions({
+    ...convertOptions,
+    xudp: supportsXudp && convertOptions.xudp,
+    singboxIpv6: target === "singbox" && convertOptions.singboxIpv6,
+  });
   const engineOk = Boolean(
     health?.subconverter_reachable && !health.configuration_error,
   );
@@ -730,6 +731,16 @@ export default function HomePage() {
                       setConvertOptions((current) => ({ ...current, udp }))
                     }
                   />
+                  {supportsXudp ? (
+                    <OptionToggle
+                      checked={convertOptions.xudp}
+                      title="强制 XUDP"
+                      description="仅 VLESS / VMess；关闭时自动判断"
+                      onChange={(xudp) =>
+                        setConvertOptions((current) => ({ ...current, xudp }))
+                      }
+                    />
+                  ) : null}
                   <OptionToggle
                     checked={convertOptions.tfo}
                     title="启用 TFO"
@@ -749,7 +760,7 @@ export default function HomePage() {
                   <OptionToggle
                     checked={convertOptions.sort}
                     title="节点排序"
-                    description="按节点名称稳定排序"
+                    description="开启后按名称重排；关闭则保留机场原始顺序"
                     onChange={(sort) =>
                       setConvertOptions((current) => ({ ...current, sort }))
                     }
@@ -800,7 +811,7 @@ export default function HomePage() {
                     <OptionToggle
                       checked={convertOptions.singboxIpv6}
                       title="sing-box IPv6"
-                      description="为 sing-box 完整配置启用 IPv6"
+                      description="控制 FakeIP、TUN 地址与 AAAA 解析"
                       onChange={(singboxIpv6) =>
                         setConvertOptions((current) => ({
                           ...current,

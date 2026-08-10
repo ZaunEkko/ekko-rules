@@ -15,6 +15,7 @@ import {
   parseConvertOptions,
   type ConvertOptions,
 } from "./options";
+import { applyTargetOutputOptions } from "./output-options";
 
 export type ConvertRequest = {
   subscriptionUrl: string;
@@ -464,6 +465,124 @@ function topLevelSectionEnd(lines: string[], start: number): number {
   return lines.length;
 }
 
+function parseYamlScalar(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+    try {
+      const parsed = JSON.parse(trimmed) as unknown;
+      if (typeof parsed === "string") return parsed;
+    } catch {
+      // Fall through to the unquoted representation for unusual YAML escapes.
+    }
+    return trimmed.slice(1, -1);
+  }
+  if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    return trimmed.slice(1, -1).replace(/''/g, "'");
+  }
+  return trimmed;
+}
+
+function mihomoProxyNames(proxySection: string[]): string[] {
+  return proxySection.flatMap((line) => {
+    const flow = line.match(
+      /^  - \{\s*name:\s*("(?:\\.|[^"\\])*"|'(?:''|[^'])*'|[^,}]+)/,
+    );
+    const block = line.match(/^  - name:\s*(.+)$/);
+    const scalar = flow?.[1] ?? block?.[1];
+    return scalar === undefined ? [] : [parseYamlScalar(scalar)];
+  });
+}
+
+function removeYamlSequenceProperty(
+  block: string[],
+  property: string,
+): string[] {
+  const result: string[] = [];
+  for (let index = 0; index < block.length; index += 1) {
+    const match = block[index].match(
+      new RegExp(`^(\\s+)${property}:\\s*$`),
+    );
+    if (!match) {
+      result.push(block[index]);
+      continue;
+    }
+
+    const propertyIndent = match[1].length;
+    while (index + 1 < block.length) {
+      const next = block[index + 1];
+      if (!next.trim()) {
+        index += 1;
+        continue;
+      }
+      const nextIndent = next.match(/^\s*/)?.[0].length ?? 0;
+      if (nextIndent <= propertyIndent) break;
+      index += 1;
+    }
+  }
+  return result;
+}
+
+function appendOrderedNodesToGroup(
+  groupBlock: string[],
+  nodeNames: string[],
+): string[] {
+  if (!groupBlock.some((line) => /^\s+use:\s*$/.test(line))) {
+    return groupBlock;
+  }
+
+  const rewritten = removeYamlSequenceProperty(groupBlock, "use");
+  const proxiesIndex = rewritten.findIndex((line) => /^\s+proxies:\s*$/.test(line));
+  const entries = nodeNames.map((name) => `      - ${JSON.stringify(name)}`);
+  if (proxiesIndex < 0) {
+    return [...rewritten, "    proxies:", ...entries];
+  }
+
+  const propertyIndent = rewritten[proxiesIndex].match(/^\s*/)?.[0].length ?? 0;
+  let insertAt = proxiesIndex + 1;
+  while (insertAt < rewritten.length) {
+    const line = rewritten[insertAt];
+    if (!line.trim()) {
+      insertAt += 1;
+      continue;
+    }
+    const indent = line.match(/^\s*/)?.[0].length ?? 0;
+    if (indent <= propertyIndent) break;
+    insertAt += 1;
+  }
+  rewritten.splice(insertAt, 0, ...entries);
+  return rewritten;
+}
+
+function inlineOrderedNodesIntoGroups(
+  lines: string[],
+  nodeNames: string[],
+): string[] {
+  const groupsStart = lines.findIndex((line) => /^proxy-groups:\s*$/.test(line));
+  if (groupsStart < 0) return lines;
+  const groupsEnd = topLevelSectionEnd(lines, groupsStart);
+  const groupLines = lines.slice(groupsStart + 1, groupsEnd);
+  const rewritten: string[] = [];
+
+  for (let index = 0; index < groupLines.length; ) {
+    if (!/^  - name:\s*/.test(groupLines[index])) {
+      rewritten.push(groupLines[index]);
+      index += 1;
+      continue;
+    }
+    let end = index + 1;
+    while (end < groupLines.length && !/^  - name:\s*/.test(groupLines[end])) {
+      end += 1;
+    }
+    rewritten.push(
+      ...appendOrderedNodesToGroup(groupLines.slice(index, end), nodeNames),
+    );
+    index = end;
+  }
+
+  lines.splice(groupsStart + 1, groupsEnd - groupsStart - 1, ...rewritten);
+  return lines;
+}
+
 export function inlineMihomoProviderNodes(
   completeConfig: string,
   providerNodes: string,
@@ -491,33 +610,14 @@ export function inlineMihomoProviderNodes(
   const nodesEnd = topLevelSectionEnd(nodeLines, nodesStart);
   const replacement = nodeLines.slice(nodesStart, nodesEnd);
   while (replacement.length > 1 && replacement.at(-1) === "") replacement.pop();
+  const nodeNames = mihomoProxyNames(replacement);
+  if (!nodeNames.length) {
+    throw new Error("Mihomo node conversion contains no named proxies.");
+  }
 
   const providerEnd = topLevelSectionEnd(completeLines, providerStart);
   completeLines.splice(providerStart, providerEnd - providerStart, ...replacement);
-
-  const inlined: string[] = [];
-  for (let index = 0; index < completeLines.length; index += 1) {
-    const line = completeLines[index];
-    const useMatch = line.match(/^(\s+)use:\s*$/);
-    if (!useMatch) {
-      inlined.push(line);
-      continue;
-    }
-
-    const indent = useMatch[1];
-    inlined.push(`${indent}include-all: true`);
-    while (index + 1 < completeLines.length) {
-      const next = completeLines[index + 1];
-      if (!next.trim()) {
-        index += 1;
-        continue;
-      }
-      const nextIndent = next.match(/^\s*/)?.[0].length ?? 0;
-      if (nextIndent <= indent.length) break;
-      index += 1;
-    }
-  }
-
+  const inlined = inlineOrderedNodesIntoGroups(completeLines, nodeNames);
   return `${inlined.join("\n").replace(/\n+$/, "")}\n`;
 }
 
@@ -629,6 +729,8 @@ export async function convertSubscription(
       body = inlineMihomoProviderNodes(body, nodeBody);
     }
     assertConvertedBody(body, request.target, outputMode);
+    body = applyTargetOutputOptions(body, request.target, convertOptions);
+    assertConvertedBody(body, request.target, outputMode);
 
     return {
       filename:
@@ -650,17 +752,19 @@ export async function convertSubscription(
   }
 }
 
-function applyConvertOptions(
+export function applyConvertOptions(
   endpoint: URL,
   options: ConvertOptions,
   target: TargetFormat,
 ): void {
+  // Preserving provider order is a user-visible contract. Send the disabled
+  // value explicitly instead of inheriting a backend image's default.
+  endpoint.searchParams.set("sort", String(options.sort));
   const enabledSwitches: Array<[boolean, string]> = [
     [options.udp, "udp"],
     [options.tfo, "tfo"],
     [options.skipCertVerify, "scv"],
     [options.tls13, "tls13"],
-    [options.sort, "sort"],
     [options.filterUnsupported, "fdn"],
     [options.appendType, "append_type"],
   ];
@@ -670,9 +774,6 @@ function applyConvertOptions(
   if (options.include) endpoint.searchParams.set("include", options.include);
   if (options.exclude) endpoint.searchParams.set("exclude", options.exclude);
   if (options.rename) endpoint.searchParams.set("rename", options.rename);
-  if (target === "singbox" && options.singboxIpv6) {
-    endpoint.searchParams.set("singbox.ipv6", "1");
-  }
 }
 
 function assertConvertedBody(
@@ -746,7 +847,7 @@ export function publicErrorStatus(error: unknown): number {
   const message = typeof error === "string" ? error : publicErrorMessage(error);
   if (/password/i.test(message)) return 401;
   if (
-    /^(?:Request body|subscriptionUrl|A supported target|accessPassword|options|autoUpdate|emoji|udp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
+    /^(?:Request body|subscriptionUrl|A supported target|accessPassword|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
       message,
     ) ||
     /^(?:Invalid subscription URL|Only http and https subscription URLs|Subscription URLs must not include credentials|Subscription URL is too long|Subscription host (?:is not allowed|resolves to a blocked address)|Encoded hostnames are not allowed|Subscription content is empty or unsupported|Node provider output is only available)/i.test(
