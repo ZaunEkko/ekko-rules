@@ -1334,6 +1334,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             (("final", "🐟 漏网之鱼", "MATCH"), "mail.hinet.net"),
             (("google", "🔎 Google", "DOMAIN-SUFFIX,gvt1.com"), "download.gvt1.com"),
             (("final", "🐟 漏网之鱼", "MATCH"), "app.sentry.io"),
+            (("final", "🐟 漏网之鱼", "MATCH"), "workspace.notion.site"),
             (("final", "🐟 漏网之鱼", "MATCH"), "players.brightcove.net"),
         ]
         for expected, domain in cases:
@@ -2148,6 +2149,11 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "api.nuget.org": "DOMAIN-SUFFIX,nuget.org",
             "formulae.brew.sh": "DOMAIN-SUFFIX,brew.sh",
             "linear.app": "DOMAIN-SUFFIX,linear.app",
+            "www.notion.so": "DOMAIN-SUFFIX,notion.so",
+            "api.notion.com": "DOMAIN-SUFFIX,notion.com",
+            "secure.notion-static.com": "DOMAIN-SUFFIX,notion-static.com",
+            "img.notionusercontent.com": "DOMAIN-SUFFIX,notionusercontent.com",
+            "notion.new": "DOMAIN,notion.new",
             "wss-primary.slack.com": "DOMAIN-SUFFIX,slack.com",
             "workspace.atlassian.net": "DOMAIN-SUFFIX,atlassian.net",
             "api.postman.com": "DOMAIN-SUFFIX,postman.com",
