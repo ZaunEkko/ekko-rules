@@ -53,7 +53,7 @@ http://127.0.0.1:8787/sub/<随机 ID>
 | 新协议 | Mihomo 与 sing-box 已验证 AnyTLS、VLESS Reality、Hysteria2、TUIC |
 | 固定地址 | 电脑、手机或路由器可导入；Docker 重启后档案路径继续有效 |
 | 多网络切换 | 局域网模式自动跟随新 IP；也可在 `localhost`、当前地址、自定义前缀和最近 8 个地址之间切换 |
-| 手机导入 | 浏览器本地生成二维码，不把订阅地址发送给第三方 |
+| 手机导入 | Mihomo / Clash 可用系统相机一键唤起客户端，也可在客户端内扫描原始 URL；两种二维码均在浏览器本地生成 |
 | 高级选项 | Emoji、UDP、TFO、TLS 1.3、节点筛选/排序/重命名、自定义 User-Agent 等 |
 | 更新方式 | 自动更新默认关闭；启用后可选择 1–168 小时，关闭时仍可手动刷新 |
 | 套餐信息 | 上游提供 `Subscription-Userinfo` 时，透传流量、容量和到期时间 |
@@ -127,7 +127,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **游戏分流**：中国大陆游戏平台、登录、社区和语音进入默认直连的 `🌏 国内网站`，专用下载端点进入默认直连的 `🎮 游戏下载`；`🎮 游戏平台` 仅承载海外平台并默认使用 `♻️ 手动切换`；
 - **社交与通信**：社交媒体、聊天软件、Discord 和邮件分别处理；
 - **远程串流**：`🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP 等高流量远程访问链路，避免远程桌面、游戏串流或虚拟局域网流量绕行代理；
-- **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖 GitHub、GitLab、Docker/GHCR、Maven/Gradle、Node.js/npm、Python/PyPI、Rust/Cargo、Go、NuGet、RubyGems、Composer、Homebrew、CocoaPods 等官网、API、包仓库和下载链路；用户在意代理流量时可临时切到 `DIRECT`；
+- **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，除代码托管与语言包生态外，还覆盖 Linear、Slack、Atlassian、Postman、Sentry、Vercel、Supabase、主流 CI/CD、可观测平台、开发数据库和在线 IDE 的官网、控制台、API 与必要资源链路；用户在意代理流量时可临时切到 `DIRECT`；通用 CDN、对象存储及用户托管站点仍不纳入；
 - **云基础设施**：`☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud，以及国内厂商的海外区域端点；广告和具体业务规则仍优先；
 - **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认使用 `REJECT` 拦截，仍可手动改为节点或 `DIRECT`；
 - **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。

@@ -53,7 +53,7 @@ The same stable profile can directly serve phones, tablets, and routers on a tru
 | Modern protocols | AnyTLS, VLESS Reality, Hysteria2, and TUIC are verified for Mihomo and sing-box |
 | Stable profile | Import on a computer, phone, or router; the profile path survives Docker restarts |
 | Network switching | Detected-LAN mode follows a new IP automatically; `localhost`, current origin, custom prefix, and eight recent origins remain selectable |
-| Mobile import | QR codes are rendered locally in the browser without sending the URL to a third party |
+| Mobile import | Mihomo / Clash can be opened from the system camera or scan the raw URL in-app; both QR codes are rendered locally |
 | Advanced options | Emoji, UDP, TFO, TLS 1.3, filtering, sorting, renaming, custom User-Agent, and more |
 | Updates | Automatic updates are off by default; enable a 1–168 hour interval or refresh manually |
 | Usage metadata | Traffic, quota, and expiry are forwarded when upstream provides `Subscription-Userinfo` |
@@ -127,7 +127,7 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Gaming**: mainland Chinese launchers, login, community, and voice services use the default-DIRECT `🌏 国内网站` group; dedicated download endpoints use default-DIRECT `🎮 游戏下载`; `🎮 游戏平台` is reserved for overseas platforms and defaults to `♻️ 手动切换`;
 - **Social and communication**: separate groups for social media, messaging, Discord, and email;
 - **Remote streaming**: `🖥️ 远程串流` defaults to `DIRECT` for high-volume remote-access paths including Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP, preventing remote desktop, game streaming, or virtual-LAN traffic from unnecessarily traversing a proxy;
-- **Developer services**: `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers GitHub, GitLab, Docker/GHCR, Maven/Gradle, Node.js/npm, Python/PyPI, Rust/Cargo, Go, NuGet, RubyGems, Composer, Homebrew, CocoaPods, and their websites, APIs, registries, and downloads; switch it temporarily to `DIRECT` when proxy traffic matters;
+- **Developer services**: `🧑‍💻 开发服务` lists `♻️ 手动切换` first and now covers Linear, Slack, Atlassian, Postman, Sentry, Vercel, Supabase, mainstream CI/CD and observability platforms, developer databases, and online IDEs in addition to source hosting and language-package ecosystems; switch it temporarily to `DIRECT` when proxy traffic matters; generic CDNs, object storage, and user-hosted sites remain excluded;
 - **Cloud infrastructure**: `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
