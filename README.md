@@ -127,7 +127,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **游戏分流**：中国大陆游戏平台、登录、社区和语音进入默认直连的 `🌏 国内网站`，专用下载端点进入默认直连的 `🎮 游戏下载`；`🎮 游戏平台` 仅承载海外平台并默认使用 `♻️ 手动切换`；
 - **社交与通信**：社交媒体、聊天软件、Discord 和邮件分别处理；
 - **远程串流**：`🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP 等高流量远程访问链路，避免远程桌面、游戏串流或虚拟局域网流量绕行代理；
-- **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，除代码托管与语言包生态外，还覆盖 Linear、Slack、Atlassian、Postman、Sentry、Vercel、Supabase、主流 CI/CD、可观测平台、开发数据库和在线 IDE 的官网、控制台、API 与必要资源链路；用户在意代理流量时可临时切到 `DIRECT`；通用 CDN、对象存储及用户托管站点仍不纳入；
+- **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，除代码托管与语言包生态外，还覆盖 Linear、Notion、Slack、Atlassian、Postman、Sentry、Vercel、Supabase、主流 CI/CD、可观测平台、开发数据库和在线 IDE 的官网、控制台、API 与必要资源链路；用户在意代理流量时可临时切到 `DIRECT`；通用 CDN、对象存储及用户托管站点仍不纳入；
 - **云基础设施**：`☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud，以及国内厂商的海外区域端点；广告和具体业务规则仍优先；
 - **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认使用 `REJECT` 拦截，仍可手动改为节点或 `DIRECT`；
 - **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。

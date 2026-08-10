@@ -125,6 +125,11 @@ DOMAIN-SUFFIX,jetbrains.team
 DOMAIN-SUFFIX,kotlinlang.org
 DOMAIN-SUFFIX,ktor.io
 DOMAIN-SUFFIX,linear.app
+DOMAIN,notion.new
+DOMAIN-SUFFIX,notion-static.com
+DOMAIN-SUFFIX,notion.com
+DOMAIN-SUFFIX,notion.so
+DOMAIN-SUFFIX,notionusercontent.com
 DOMAIN-SUFFIX,mongodb.com
 DOMAIN-SUFFIX,mongodb.net
 DOMAIN-SUFFIX,mongodb.org
