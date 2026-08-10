@@ -7,6 +7,11 @@ import {
   DEFAULT_CONVERT_OPTIONS,
   type ConvertOptions,
 } from "@/lib/options";
+import {
+  qrImportValue,
+  supportsClientInstallQr,
+  type QrImportMode,
+} from "@/lib/qr-import";
 
 type Health = {
   status: string;
@@ -187,6 +192,7 @@ export default function HomePage() {
   const [profileError, setProfileError] = useState<string | null>(null);
   const [runtimeOrigin, setRuntimeOrigin] = useState("");
   const [qrProfile, setQrProfile] = useState<Profile | null>(null);
+  const [qrMode, setQrMode] = useState<QrImportMode>("install");
   const [baseUrlOverride, setBaseUrlOverride] = useState("");
   const [baseUrlDraft, setBaseUrlDraft] = useState("");
   const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
@@ -220,6 +226,15 @@ export default function HomePage() {
     current.hostname = "localhost";
     return current.origin;
   }, [runtimeOrigin]);
+  const qrSubscriptionUrl = qrProfile
+    ? absoluteLocalUrl(qrProfile.subscriptionPath, subscriptionBaseUrl)
+    : "";
+  const clientInstallQrAvailable = Boolean(
+    qrProfile && supportsClientInstallQr(qrProfile.target),
+  );
+  const qrValue = qrProfile
+    ? qrImportValue(qrProfile.target, qrSubscriptionUrl, qrMode)
+    : "";
 
   const loadProfiles = useCallback(async () => {
     setProfileBusy(true);
@@ -373,7 +388,7 @@ export default function HomePage() {
       }
       const payload = (await response.json()) as { profile: Profile };
       setCreatedProfile(payload.profile);
-      setQrProfile(payload.profile);
+      openQr(payload.profile);
       setProfiles((current) => [
         payload.profile,
         ...current.filter((item) => item.id !== payload.profile.id),
@@ -384,6 +399,11 @@ export default function HomePage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function openQr(profile: Profile) {
+    setQrMode(supportsClientInstallQr(profile.target) ? "install" : "raw");
+    setQrProfile(profile);
   }
 
   async function copyUrl(profile: Profile) {
@@ -920,7 +940,7 @@ export default function HomePage() {
                 <button className="copy-button" type="button" onClick={() => void copyUrl(createdProfile)}>
                   {copying === createdProfile.id ? "已复制" : "复制地址"}
                 </button>
-                <button className="qr-button" type="button" onClick={() => setQrProfile(createdProfile)}>
+                <button className="qr-button" type="button" onClick={() => openQr(createdProfile)}>
                   显示二维码
                 </button>
                 <a className="download-link" href={createdProfile.downloadPath}>下载当前配置</a>
@@ -1094,7 +1114,7 @@ export default function HomePage() {
                       <button type="button" onClick={() => void copyUrl(profile)}>
                         {copying === profile.id ? "已复制" : "复制"}
                       </button>
-                      <button type="button" onClick={() => setQrProfile(profile)}>二维码</button>
+                      <button type="button" onClick={() => openQr(profile)}>二维码</button>
                       <a href={profile.downloadPath}>下载</a>
                       <button className="delete-button" type="button" onClick={() => void deleteProfile(profile)}>删除</button>
                     </div>
@@ -1111,16 +1131,57 @@ export default function HomePage() {
             <div className="qr-card">
               <div>
                 <strong>{qrProfile.name}</strong>
-                <span>手机扫描后导入；设备必须能访问这台电脑。</span>
+                <span>
+                  {qrMode === "install" && clientInstallQrAvailable
+                    ? "使用系统相机扫码，再选择 Mihomo / Clash 客户端打开。"
+                    : "请在 Mihomo / Clash 的“从 QR 码导入”入口扫描。"}
+                </span>
               </div>
+              {clientInstallQrAvailable ? (
+                <div className="qr-mode-switch" role="group" aria-label="二维码导入方式">
+                  <button
+                    type="button"
+                    className={qrMode === "install" ? "is-active" : ""}
+                    aria-pressed={qrMode === "install"}
+                    onClick={() => setQrMode("install")}
+                  >
+                    系统相机一键导入
+                  </button>
+                  <button
+                    type="button"
+                    className={qrMode === "raw" ? "is-active" : ""}
+                    aria-pressed={qrMode === "raw"}
+                    onClick={() => setQrMode("raw")}
+                  >
+                    客户端内扫码
+                  </button>
+                </div>
+              ) : null}
               <QRCodeSVG
-                value={absoluteLocalUrl(qrProfile.subscriptionPath, subscriptionBaseUrl)}
+                value={qrValue}
                 size={220}
                 level="M"
                 marginSize={4}
                 title={`${qrProfile.name} 本地订阅二维码`}
               />
-              <code>{absoluteLocalUrl(qrProfile.subscriptionPath, subscriptionBaseUrl)}</code>
+              <div className="qr-value">
+                <span>
+                  {qrMode === "install"
+                    ? "二维码内容（远程安装 scheme）"
+                    : "二维码内容（远程订阅 URL）"}
+                </span>
+                <code>{qrValue}</code>
+              </div>
+              {qrMode === "install" ? (
+                <div className="qr-value">
+                  <span>实际远程订阅地址</span>
+                  <code>{qrSubscriptionUrl}</code>
+                </div>
+              ) : (
+                <small className="qr-note">
+                  CMFA 客户端内扫码会把这个地址保存为可刷新的 URL 订阅；不要改用系统相机直接打开。
+                </small>
+              )}
               <button type="button" className="secondary-button" onClick={() => setQrProfile(null)}>关闭</button>
             </div>
           </div>

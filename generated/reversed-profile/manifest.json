@@ -27,7 +27,7 @@
     "Providers/Ruleset/claude.yaml": "03d1c1da8af1d036d17387011d23f8aa69f1290f7d09ea5f4e76df73cbf94137",
     "Providers/Ruleset/cloud-storage.yaml": "aa7efedd4f06f6253d69491231ce4e3da123746d6866b8772c32e872522b2fc3",
     "Providers/Ruleset/dazn.yaml": "c7ccfc4109357213bce831b93025ede9f322f9fccee0e7aca39150748d16d11b",
-    "Providers/Ruleset/developer-platforms.yaml": "b6323b9b2b8528c529811df24da5418309a4e09a849e25f29bb8be81cecaebe1",
+    "Providers/Ruleset/developer-platforms.yaml": "c7623c7fc794ff77ae6d3ce653d9bf12b2ac973bc62533190d0b03b86aae3f6d",
     "Providers/Ruleset/discord.yaml": "82fabe2714808ad17a0d2cbe5e40ded120fda0b75b747e72b6a6c59b3e3ebf6d",
     "Providers/Ruleset/disney-plus.yaml": "920ff27886b1af35282830c639b779280062ac827b848b0b4def86b1f018ef2f",
     "Providers/Ruleset/game-download.yaml": "ef82ce2ce6640a6ba42ae9cd368327003af6e443ca72693efd3144d74d9c69d2",
@@ -95,7 +95,7 @@
     "Ruleset/claude.list": "d7773fec75adf789cfea2a8d533bcdf658a865b550624f6e8e055084de87598a",
     "Ruleset/cloud-storage.list": "372214c0aef91fe00f630335f637613afbca23f0348e979211d672762d6cfac7",
     "Ruleset/dazn.list": "82da3ade078dd16fec09f3305316fed2e134bf9ebc4783046f19da3cd499f8a4",
-    "Ruleset/developer-platforms.list": "ce21d95475e528778ad993c0d42c6ed0705791b0944f17988f6900c95aa581bf",
+    "Ruleset/developer-platforms.list": "170c48e12bc3dfd00ec239ba8b589c47aca79d65c9768afb960abd641b428d1b",
     "Ruleset/discord.list": "a6f6c824c444e8e403a91c17221ba21a7c9b2d122134603d06bc74c02cb47824",
     "Ruleset/disney-plus.list": "2ab3ae574f508f67669c1f025f50c5d3c2e4203800cc1f7a7d5fad9efa6ee2de",
     "Ruleset/game-download.list": "5ce2f9bceb6a7bc7e501ee25889a5c687956fcf20525f24b26f949a83c54a1c8",
@@ -140,7 +140,7 @@
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "967b2d25cf7ce076c0a2149ee86ec6c96bed451b3a386a0b08c9e10c9cd04ffb",
+    "analysis.json": "006ab3bb6d4220fe9bd2795b67acae3e9dbbad48e26ae8e07a4ec31738bc5da5",
     "config/ekko-rules.ini": "4deff08c2fba832ba962cf998023f04d9e573d311c6fb9bb2890a07791547553"
   }
 }

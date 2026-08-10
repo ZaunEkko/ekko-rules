@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 uses **2026-08-10**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -527,3 +527,11 @@ No additional policy group or ruleset segment is introduced. Tests freeze the th
 The self-hosted Web service now follows conventional Compose behavior and publishes port `8787` on all host interfaces by default, so trusted-LAN devices can use the computer IP without rebuilding the stack. Windows gains a one-time `setup.cmd` path that starts Compose and registers a least-privilege current-user logon task; Docker Desktop can thereafter restore the `unless-stopped` containers while the independent helper keeps the host LAN address current without opening another port or reading subscription data. Session launchers remain available on Windows, macOS, and Linux. The compact address manager now sits beside saved profiles and switches exported prefixes among `localhost`, the current browser origin, the freshly detected or custom LAN address, and eight recently used origins. Once detected-LAN mode is selected, later host-IP changes update displayed, copied, and QR-rendered URLs automatically without changing profile IDs or reordering history. `WEB_BIND_HOST=127.0.0.1` remains available for explicit host-only deployments, `ACCESS_PASSWORD` is optional management protection, and `LAN_BASE_URL` can advertise a preferred origin.
 
 Every saved profile can be copied as a URL or rendered as an in-browser QR code for phones and tablets; QR data is never sent to an external service. Dependency installation now uses the lockfile through `npm ci`, the Next.js patch level and transitive security fixes are pinned, and release audit reports no known npm vulnerabilities. Browser User-Agents fall back to target-client defaults during profile creation while real subscription-client User-Agents continue to pass through during refreshes.
+
+## ER-026 — Mainstream developer workflow coverage
+
+**Type:** anchored service expansion, no policy-group or precedence change
+
+The existing `🧑‍💻 开发服务` selector gains 142 anchored rules for mainstream developer collaboration, project management, API tooling, deployment control planes, CI/CD, observability, language ecosystems, infrastructure tooling, managed developer databases, and online IDEs. Representative additions include Linear, Slack, Atlassian/Jira/Confluence/Trello, Postman, Sentry, Vercel, Supabase, Netlify, Railway, Render, Fly.io, Heroku, CircleCI, Travis CI, Buildkite, Datadog, Grafana, New Relic, JetBrains, Deno, Bun, HashiCorp, Pulumi, Prisma, MongoDB, Redis, Neon, PlanetScale, Replit, CodeSandbox, StackBlitz, and CodePen.
+
+The boundary remains intentionally narrow. Shared CDN and object-storage roots are excluded, as are public deployment suffixes such as `vercel.app`, `netlify.app`, `onrender.com`, and `herokuapp.com`. Sentry and New Relic use explicit console/API hosts instead of broad telemetry-ingestion suffixes, preventing ordinary application telemetry from being reclassified as developer traffic. Cloudflare uses exact dashboard, API, documentation, and root website hosts while the broader infrastructure namespace remains with `☁️ 海外云服务`. `vscode.dev` keeps its existing Microsoft ownership. The verified first-match unreachable metrics therefore remain unchanged at global union 146, same-segment union 13, and cross-segment-only union 133.
