@@ -107,17 +107,139 @@ async function assertJsonOnlyPostRoutes() {
   console.log(JSON.stringify({ phase: "json-content-type", rejected: true }));
 }
 
-async function convert(target) {
+async function convert(target, options) {
   const response = await fetch(`${baseUrl}/api/convert`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ subscriptionUrl: fixtureUrl, target }),
+    body: JSON.stringify({ subscriptionUrl: fixtureUrl, target, options }),
   });
   const text = await response.text();
   if (!response.ok) throw new Error(`${target} conversion failed: HTTP ${response.status} ${text}`);
   const missing = targetMarkers[target].filter((marker) => !text.includes(marker));
   if (missing.length) throw new Error(`${target} output missing: ${missing.join(", ")}`);
   return text;
+}
+
+async function assertOutputOptionTransforms() {
+  const clash = await convert("clash", { xudp: true });
+  const vmessLine = clash
+    .split(/\r?\n/)
+    .find((line) => line.includes("fixture-vmess"));
+  if (!vmessLine || !/(?:xudp:\s*true|packet-encoding:\s*xudp)/.test(vmessLine)) {
+    throw new Error("Mihomo XUDP override did not reach the VMess node.");
+  }
+
+  const singboxWithoutIpv6 = JSON.parse(
+    await convert("singbox", { xudp: true, singboxIpv6: false }),
+  );
+  const vmess = singboxWithoutIpv6.outbounds.find(
+    (outbound) => outbound.type === "vmess",
+  );
+  if (vmess?.packet_encoding !== "xudp") {
+    throw new Error("sing-box XUDP override did not reach the VMess outbound.");
+  }
+  const withoutIpv6Text = JSON.stringify(singboxWithoutIpv6);
+  if (/inet6_|"AAAA"/.test(withoutIpv6Text)) {
+    throw new Error("sing-box IPv6 fields remained while IPv6 was disabled.");
+  }
+
+  const singboxWithIpv6 = JSON.parse(
+    await convert("singbox", { singboxIpv6: true }),
+  );
+  const withIpv6Text = JSON.stringify(singboxWithIpv6);
+  if (!/inet6_/.test(withIpv6Text) || !/"AAAA"/.test(withIpv6Text)) {
+    throw new Error("sing-box IPv6 fields were not preserved when enabled.");
+  }
+  console.log(JSON.stringify({
+    phase: "output-options",
+    mihomo_xudp: true,
+    singbox_xudp: true,
+    singbox_ipv6_toggle: true,
+  }));
+}
+
+function clashProxyNames(output) {
+  const lines = output.replace(/\r\n/g, "\n").split("\n");
+  const start = lines.findIndex((line) => line === "proxies:");
+  const end = lines.findIndex(
+    (line, index) => index > start && /^proxy-groups:\s*$/.test(line),
+  );
+  if (start < 0 || end < 0) return [];
+  return lines.slice(start + 1, end).flatMap((line) => {
+    const flow = line.match(
+      /^\s*-\s*\{name:\s*(?:"([^"]*)"|'([^']*)'|([^,}]+))/,
+    );
+    const block = line.match(
+      /^\s*-\s*name:\s*(?:"([^"]*)"|'([^']*)'|(.+))$/,
+    );
+    const match = flow || block;
+    return match ? [(match[1] || match[2] || match[3] || "").trim()] : [];
+  });
+}
+
+function clashGroupProxyNames(output, groupName) {
+  const lines = output.replace(/\r\n/g, "\n").split("\n");
+  const groupStart = lines.findIndex(
+    (line) => line === `  - name: ${groupName}`,
+  );
+  if (groupStart < 0) return [];
+  const groupEnd = lines.findIndex(
+    (line, index) => index > groupStart && /^  - name:\s*/.test(line),
+  );
+  const block = lines.slice(groupStart, groupEnd < 0 ? lines.length : groupEnd);
+  const proxiesStart = block.findIndex((line) => /^    proxies:\s*$/.test(line));
+  if (proxiesStart < 0) return [];
+  return block.slice(proxiesStart + 1).flatMap((line) => {
+    const match = line.match(/^      -\s*(.+)$/);
+    if (!match) return [];
+    const value = match[1].trim();
+    if (value.startsWith('"')) {
+      try {
+        return [JSON.parse(value)];
+      } catch {
+        return [value];
+      }
+    }
+    return [value.startsWith("'") && value.endsWith("'")
+      ? value.slice(1, -1).replace(/''/g, "'")
+      : value];
+  });
+}
+
+async function assertDefaultNodeOrderAndEmoji() {
+  const output = await convert("clash");
+  const names = clashProxyNames(output);
+  const expected = [
+    "🇭🇰 香港 fixture-ss",
+    "fixture-vmess",
+    "fixture-anytls",
+    "🇹🇼 fixture-Taiwan Taipei",
+    "🇧🇭 fixture-Bahrain Manama",
+    "🇧🇾 fixture-Belarus Minsk",
+    "🇬🇬 fixture-Guernsey 3x GG",
+    "🇮🇴 fixture-British Indian Ocean Territory 3x IO",
+  ];
+  if (JSON.stringify(names) !== JSON.stringify(expected)) {
+    throw new Error(
+      `default conversion changed node order or missed emoji: ${JSON.stringify(names)}`,
+    );
+  }
+  const manualGroup = clashGroupProxyNames(output, "♻️ 手动切换");
+  const expectedGroup = ["DIRECT", ...expected];
+  if (JSON.stringify(manualGroup) !== JSON.stringify(expectedGroup)) {
+    throw new Error(
+      `manual group changed node order: ${JSON.stringify(manualGroup)}`,
+    );
+  }
+  if (/^\s+include-all:\s*true\s*$/m.test(output)) {
+    throw new Error("Mihomo groups still rely on unordered include-all expansion.");
+  }
+  console.log(JSON.stringify({
+    phase: "node-order-emoji",
+    preserved: true,
+    supplemented: true,
+    nodes: names.length,
+  }));
 }
 
 async function assertModernProtocolLinks() {
@@ -199,6 +321,7 @@ async function createProfile(autoUpdate, updateIntervalHours, name) {
         autoUpdate,
         emoji: true,
         udp: true,
+        xudp: true,
         tfo: true,
         skipCertVerify: true,
         tls13: true,
@@ -240,11 +363,19 @@ async function fetchProfile(profile, autoUpdate, updateIntervalHours) {
     "MATCH,🐟 漏网之鱼",
     "☁️ 国内云服务",
     "☁️ 海外云服务",
+    "DOMAIN-SUFFIX,gov.cn,🌏 国内网站",
+    "DOMAIN-SUFFIX,cn,🌏 国内网站",
     "port: 7890",
     "enhanced-mode: fake-ip",
   ];
   const missing = required.filter((item) => !text.includes(item));
   if (missing.length) throw new Error(`profile output missing: ${missing.join(", ")}`);
+  if (
+    text.indexOf("DOMAIN-SUFFIX,gov.cn,🌏 国内网站") >
+    text.indexOf("MATCH,🐟 漏网之鱼")
+  ) {
+    throw new Error("China domain fallback appears after the final catch-all rule.");
+  }
   if (text.includes("proxy-providers:") || text.includes("0.0.0.0:3000")) {
     throw new Error("profile output still delegates nodes to an internal provider URL.");
   }
@@ -355,6 +486,8 @@ async function main() {
 
   await assertModernProtocolLinks();
   await assertGatewayModernProtocolSubscriptions();
+  await assertDefaultNodeOrderAndEmoji();
+  await assertOutputOptionTransforms();
 
   const formatResults = {};
   for (const target of Object.keys(targetMarkers)) {

@@ -54,7 +54,7 @@ The same stable profile can directly serve phones, tablets, and routers on a tru
 | Stable profile | Import on a computer, phone, or router; the profile path survives Docker restarts |
 | Network switching | Detected-LAN mode follows a new IP automatically; `localhost`, current origin, custom prefix, and eight recent origins remain selectable |
 | Mobile import | Mihomo / Clash can be opened from the system camera or scan the raw URL in-app; both QR codes are rendered locally |
-| Advanced options | Emoji, UDP, TFO, TLS 1.3, filtering, sorting, renaming, custom User-Agent, and more |
+| Advanced options | Emoji, UDP, TFO, TLS 1.3, VLESS/VMess XUDP, sing-box IPv6, filtering, sorting, renaming, custom User-Agent, and more |
 | Updates | Automatic updates are off by default; enable a 1–168 hour interval or refresh manually |
 | Usage metadata | Traffic, quota, and expiry are forwarded when upstream provides `Subscription-Userinfo` |
 

@@ -54,7 +54,7 @@ http://127.0.0.1:8787/sub/<随机 ID>
 | 固定地址 | 电脑、手机或路由器可导入；Docker 重启后档案路径继续有效 |
 | 多网络切换 | 局域网模式自动跟随新 IP；也可在 `localhost`、当前地址、自定义前缀和最近 8 个地址之间切换 |
 | 手机导入 | Mihomo / Clash 可用系统相机一键唤起客户端，也可在客户端内扫描原始 URL；两种二维码均在浏览器本地生成 |
-| 高级选项 | Emoji、UDP、TFO、TLS 1.3、节点筛选/排序/重命名、自定义 User-Agent 等 |
+| 高级选项 | Emoji、UDP、TFO、TLS 1.3、VLESS/VMess XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 等 |
 | 更新方式 | 自动更新默认关闭；启用后可选择 1–168 小时，关闭时仍可手动刷新 |
 | 套餐信息 | 上游提供 `Subscription-Userinfo` 时，透传流量、容量和到期时间 |
 

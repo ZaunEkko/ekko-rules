@@ -6,6 +6,7 @@ import path from "node:path";
 import test from "node:test";
 import {
   authorizeLocalAccess,
+  applyConvertOptions,
   cleanupOrphanedConversionInputs,
   ConfigurationError,
   getRuntimeConfig,
@@ -21,6 +22,7 @@ import {
   normalizeSubscriptionBaseUrl,
   requestTextWithLimits,
 } from "./convert";
+import { DEFAULT_CONVERT_OPTIONS } from "./options";
 
 async function listenOnLoopback(server: Server): Promise<number> {
   await new Promise<void>((resolve, reject) => {
@@ -279,6 +281,20 @@ test("normalizes a mixed plaintext node list but leaves configs unchanged", () =
   assert.equal(normalizeSubscriptionContent(yaml), yaml);
 });
 
+test("always tells the conversion engine whether node sorting is enabled", () => {
+  const preserved = new URL("http://subconverter.test/sub");
+  applyConvertOptions(preserved, DEFAULT_CONVERT_OPTIONS, "clash");
+  assert.equal(preserved.searchParams.get("sort"), "false");
+
+  const sorted = new URL("http://subconverter.test/sub");
+  applyConvertOptions(
+    sorted,
+    { ...DEFAULT_CONVERT_OPTIONS, sort: true },
+    "clash",
+  );
+  assert.equal(sorted.searchParams.get("sort"), "true");
+});
+
 test("inlines Mihomo provider nodes and rewires provider-backed groups", () => {
   const complete = [
     "port: 7890",
@@ -300,17 +316,48 @@ test("inlines Mihomo provider nodes and rewires provider-backed groups", () => {
   ].join("\n");
   const nodes = [
     "proxies:",
-    "  - name: AnyTLS",
+    "  - name: 03-Original-First",
     "    type: anytls",
     "    server: 203.0.113.1",
     "    port: 443",
+    "  - name: 01-Original-Second",
+    "    type: ss",
+    "    server: 203.0.113.2",
+    "    port: 8443",
+    "  - name: 02-Original-Third",
+    "    type: ss",
+    "    server: 203.0.113.3",
+    "    port: 9443",
     "",
   ].join("\n");
 
   const result = inlineMihomoProviderNodes(complete, nodes);
-  assert.match(result, /^proxies:\n  - name: AnyTLS/m);
-  assert.match(result, /^    include-all: true$/m);
-  assert.doesNotMatch(result, /proxy-providers:|http:\/\/web:3000|^    use:$/m);
+  assert.match(result, /^proxies:\n  - name: 03-Original-First/m);
+  assert.ok(
+    result.indexOf("03-Original-First") <
+      result.indexOf("01-Original-Second"),
+  );
+  assert.ok(
+    result.indexOf("01-Original-Second") <
+      result.indexOf("02-Original-Third"),
+  );
+  const group = result.slice(
+    result.indexOf("proxy-groups:"),
+    result.indexOf("rules:"),
+  );
+  assert.ok(group.indexOf("DIRECT") < group.indexOf('"03-Original-First"'));
+  assert.ok(
+    group.indexOf('"03-Original-First"') <
+      group.indexOf('"01-Original-Second"'),
+  );
+  assert.ok(
+    group.indexOf('"01-Original-Second"') <
+      group.indexOf('"02-Original-Third"'),
+  );
+  assert.doesNotMatch(
+    result,
+    /proxy-providers:|http:\/\/web:3000|^    use:|^    include-all:/m,
+  );
   assert.match(result, /^rules:$/m);
 });
 

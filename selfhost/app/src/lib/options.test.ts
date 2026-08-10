@@ -20,16 +20,18 @@ test("parses converter switches and bounded text options", () => {
   const options = parseConvertOptions({
     autoUpdate: true,
     udp: true,
+    xudp: true,
     tfo: true,
     include: " 香港|日本 ",
     customUserAgent: "Mihomo/1.0",
     updateIntervalHours: 12,
   });
   assert.equal(options.udp, true);
+  assert.equal(options.xudp, true);
   assert.equal(options.tfo, true);
   assert.equal(options.include, "香港|日本");
   assert.equal(options.updateIntervalHours, 12);
-  assert.equal(countEnabledOptions(options), 7);
+  assert.equal(countEnabledOptions(options), 8);
 });
 
 test("rejects invalid option values and control characters", () => {

@@ -52,6 +52,7 @@ test("convert requests accept known targets and reject unknown targets", () => {
         autoUpdate: false,
         emoji: true,
         udp: false,
+        xudp: false,
         tfo: false,
         skipCertVerify: false,
         tls13: false,
