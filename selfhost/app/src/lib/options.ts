@@ -2,6 +2,7 @@ export type ConvertOptions = {
   autoUpdate: boolean;
   emoji: boolean;
   udp: boolean;
+  xudp: boolean;
   tfo: boolean;
   skipCertVerify: boolean;
   tls13: boolean;
@@ -20,6 +21,7 @@ export const DEFAULT_CONVERT_OPTIONS: ConvertOptions = {
   autoUpdate: false,
   emoji: true,
   udp: false,
+  xudp: false,
   tfo: false,
   skipCertVerify: false,
   tls13: false,
@@ -38,6 +40,7 @@ const BOOLEAN_OPTIONS = [
   "autoUpdate",
   "emoji",
   "udp",
+  "xudp",
   "tfo",
   "skipCertVerify",
   "tls13",

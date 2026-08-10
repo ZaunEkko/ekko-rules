@@ -173,12 +173,15 @@ uninstall-helper.cmd
 
 - Emoji 国旗；
 - 强制启用 UDP、TCP Fast Open 或 TLS 1.3；
+- 为 Mihomo / sing-box 的 VLESS、VMess 节点强制使用 XUDP；关闭时保留订阅与转换引擎的自动判断；
 - 跳过证书验证（默认关闭）；
 - 节点名称排序、协议类型前缀和不支持节点过滤；
 - 包含/排除节点正则和节点重命名规则；
 - 拉取上游订阅时使用的自定义 User-Agent；
 - 可完全关闭的自动更新；开启后可设置 1 到 168 小时的刷新间隔；
-- sing-box IPv6 开关。
+- sing-box IPv6 开关，直接控制 FakeIP、TUN IPv6 地址与 AAAA 解析。
+
+Mihomo 输出始终使用客户端要求的新字段名，完整配置始终展开 Ekko Rules，因此这两项不再重复提供开关。“插入默认节点”依赖额外预置节点源，本项目不会替用户注入第三方节点；Mihomo 已随完整配置提供 DNS 接管与加密上游，也不沿用旧版 Subconverter Web 的模板型 DoH 按钮。
 
 Mihomo 固定地址每次被客户端刷新时，都会在本机即时拉取真实订阅并把节点直接内联到完整配置中。生成结果不会包含真实机场订阅 URL，也不会再引用仅容器内部可达的 provider 地址；客户端拿到一个文件即可获得节点、DNS、策略组与规则。
 

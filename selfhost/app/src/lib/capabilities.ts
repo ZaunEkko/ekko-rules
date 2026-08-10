@@ -161,6 +161,7 @@ export function buildCapabilitiesPayload() {
     advanced_options: [
       "emoji",
       "udp",
+      "xudp",
       "tfo",
       "skip_cert_verify",
       "tls_1_3",

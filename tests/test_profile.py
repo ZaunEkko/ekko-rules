@@ -1634,6 +1634,11 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "fuss10.elemecdn.com": "DOMAIN-SUFFIX,elemecdn.com",
             "www.alibaba.cn": "DOMAIN-SUFFIX,alibaba.cn",
             "www.alibaba.com.cn": "DOMAIN-SUFFIX,alibaba.com.cn",
+            "www.gov.cn": "DOMAIN-SUFFIX,gov.cn",
+            "www.tsinghua.edu.cn": "DOMAIN-SUFFIX,edu.cn",
+            "www.cas.ac.cn": "DOMAIN-SUFFIX,ac.cn",
+            "www.mod.gov.cn": "DOMAIN-SUFFIX,gov.cn",
+            "portal.mil.cn": "DOMAIN-SUFFIX,mil.cn",
         }
         for domain, rule in mainland_cases.items():
             with self.subTest(domain=domain):

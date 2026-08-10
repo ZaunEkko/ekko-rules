@@ -34,6 +34,7 @@ test("stores the private source behind an opaque restart-safe profile id", () =>
         autoUpdate: true,
         emoji: true,
         udp: true,
+        xudp: false,
         tfo: false,
         skipCertVerify: false,
         tls13: false,

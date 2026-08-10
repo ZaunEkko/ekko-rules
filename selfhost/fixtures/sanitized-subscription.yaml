@@ -1,7 +1,7 @@
 # Synthetic fixture for local end-to-end conversion only.
 # Contains no real provider tokens, passwords, UUIDs, or hostnames of private services.
 proxies:
-  - name: "香港 fixture-ss"
+  - name: "🇭🇰 香港 fixture-ss"
     type: ss
     server: 203.0.113.10
     port: 8400
@@ -22,14 +22,49 @@ proxies:
     password: "fixture-anytls-password"
     udp: true
     sni: "fixture.example.test"
+  - name: "fixture-Taiwan Taipei"
+    type: ss
+    server: 203.0.113.13
+    port: 8401
+    cipher: aes-256-gcm
+    password: "fixture-password-not-real"
+  - name: "fixture-Bahrain Manama"
+    type: ss
+    server: 203.0.113.14
+    port: 8402
+    cipher: aes-256-gcm
+    password: "fixture-password-not-real"
+  - name: "fixture-Belarus Minsk"
+    type: ss
+    server: 203.0.113.15
+    port: 8403
+    cipher: aes-256-gcm
+    password: "fixture-password-not-real"
+  - name: "fixture-Guernsey 3x GG"
+    type: ss
+    server: 203.0.113.16
+    port: 8404
+    cipher: aes-256-gcm
+    password: "fixture-password-not-real"
+  - name: "fixture-British Indian Ocean Territory 3x IO"
+    type: ss
+    server: 203.0.113.17
+    port: 8405
+    cipher: aes-256-gcm
+    password: "fixture-password-not-real"
 
 proxy-groups:
   - name: "PROXY"
     type: select
     proxies:
-      - 香港 fixture-ss
+      - 🇭🇰 香港 fixture-ss
       - fixture-vmess
       - fixture-anytls
+      - fixture-Taiwan Taipei
+      - fixture-Bahrain Manama
+      - fixture-Belarus Minsk
+      - fixture-Guernsey 3x GG
+      - fixture-British Indian Ocean Territory 3x IO
 
 rules:
   - MATCH,PROXY
