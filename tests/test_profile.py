@@ -1567,6 +1567,19 @@ class FirstMatchBaselineTests(unittest.TestCase):
             ("DOMAIN-SUFFIX,ts.net", "host.example.ts.net"),
             ("DOMAIN,root-tok-01.zerotier.com", "root-tok-01.zerotier.com"),
             ("DOMAIN-SUFFIX,teamviewer.com", "router1.teamviewer.com"),
+            ("DOMAIN-SUFFIX,todesk.com", "client.todesk.com"),
+            ("DOMAIN-SUFFIX,oray.com", "sunlogin.oray.com"),
+            ("DOMAIN-SUFFIX,raylink.live", "api.raylink.live"),
+            ("DOMAIN-SUFFIX,shengwang.cn", "console.shengwang.cn"),
+            ("DOMAIN-SUFFIX,agora.io", "edge.agora.io"),
+            ("DOMAIN-SUFFIX,agoraio.cn", "edge.agoraio.cn"),
+            ("DOMAIN-SUFFIX,sd-rtn.com", "edge.sd-rtn.com"),
+            ("DOMAIN-SUFFIX,rtnsvc.com", "edge.rtnsvc.com"),
+            ("DOMAIN-SUFFIX,rtesvc.com", "edge.rtesvc.com"),
+            ("DOMAIN-SUFFIX,zego.im", "rtc-api.zego.im"),
+            ("DOMAIN-SUFFIX,rongcloud.cn", "api.rongcloud.cn"),
+            ("DOMAIN-SUFFIX,ronghub.com", "api.ronghub.com"),
+            ("DOMAIN-SUFFIX,easemob.com", "api.easemob.com"),
         ]
         for rule, domain in domain_cases:
             with self.subTest(domain=domain):
@@ -1613,6 +1626,81 @@ class FirstMatchBaselineTests(unittest.TestCase):
                         f"PROCESS-NAME,{process_name}",
                     ),
                     process_name=process_name,
+                )
+
+    def test_mainland_foundation_services_route_direct(self) -> None:
+        direct_cases = {
+            "www.geetest.com": "DOMAIN-SUFFIX,geetest.com",
+            "www.yidun.com": "DOMAIN-SUFFIX,yidun.com",
+            "www.jpush.cn": "DOMAIN-SUFFIX,jpush.cn",
+            "docs.jiguang.cn": "DOMAIN-SUFFIX,jiguang.cn",
+            "api.jiguang.com": "DOMAIN-SUFFIX,jiguang.com",
+            "www.getui.com": "DOMAIN-SUFFIX,getui.com",
+            "wshz.getui.net": "DOMAIN-SUFFIX,getui.net",
+            "wshz.gepush.com": "DOMAIN-SUFFIX,gepush.com",
+            "sdk.igexin.com": "DOMAIN-SUFFIX,igexin.com",
+            "gitee.com": "DOMAIN-SUFFIX,gitee.com",
+            "atomgit.com": "DOMAIN-SUFFIX,atomgit.com",
+            "gitcode.com": "DOMAIN-SUFFIX,gitcode.com",
+            "modelscope.cn": "DOMAIN-SUFFIX,modelscope.cn",
+            "openxlab.org.cn": "DOMAIN-SUFFIX,openxlab.org.cn",
+            "www.paddlepaddle.org.cn": "DOMAIN-SUFFIX,paddlepaddle.org.cn",
+            "www.mindspore.cn": "DOMAIN-SUFFIX,mindspore.cn",
+            "shimo.im": "DOMAIN-SUFFIX,shimo.im",
+            "lanhuapp.com": "DOMAIN-SUFFIX,lanhuapp.com",
+            "pixso.cn": "DOMAIN-SUFFIX,pixso.cn",
+            "www.cfca.com.cn": "DOMAIN-SUFFIX,cfca.com.cn",
+            "www.esign.cn": "DOMAIN-SUFFIX,esign.cn",
+            "www.fadada.com": "DOMAIN-SUFFIX,fadada.com",
+            "www.xuetangx.com": "DOMAIN-SUFFIX,xuetangx.com",
+            "www.yuketang.cn": "DOMAIN-SUFFIX,yuketang.cn",
+            "mooc.chaoxing.com": "DOMAIN-SUFFIX,chaoxing.com",
+            "www.zhihuishu.com": "DOMAIN-SUFFIX,zhihuishu.com",
+            "www.aqara.cn": "DOMAIN-SUFFIX,aqara.cn",
+            "openapi.tuya.cn": "DOMAIN-SUFFIX,tuya.cn",
+            "www.nio.cn": "DOMAIN-SUFFIX,nio.cn",
+            "store.xiaopeng.com": "DOMAIN-SUFFIX,xiaopeng.com",
+            "www.lixiang.com": "DOMAIN-SUFFIX,lixiang.com",
+            "www.zeekr.com": "DOMAIN-SUFFIX,zeekr.com",
+        }
+        for domain, rule in direct_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-web", "🌏 国内网站", rule),
+                    domain=domain,
+                )
+
+        existing_cases = {
+            "captcha.tencentcloudapi.com": (
+                "china-cloud",
+                "☁️ 国内云服务",
+                "DOMAIN-SUFFIX,tencentcloudapi.com",
+            ),
+            "verify.cmpassport.com": (
+                "china-domains-direct",
+                "🌏 国内网站",
+                "DOMAIN-SUFFIX,cmpassport.com",
+            ),
+            "api.netease.im": (
+                "china-domains-direct",
+                "🌏 国内网站",
+                "DOMAIN-SUFFIX,netease.im",
+            ),
+        }
+        for domain, expected in existing_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(expected, domain=domain)
+
+        for domain in [
+            "api.tuya.com",
+            "api.roborock.com",
+            "api.ecovacs.com",
+            "api.dreame.tech",
+        ]:
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("final", "🐟 漏网之鱼", "MATCH"),
+                    domain=domain,
                 )
 
     def test_steam_and_mainland_consumer_routing_are_precise(self) -> None:
@@ -1720,6 +1808,211 @@ class FirstMatchBaselineTests(unittest.TestCase):
         ]:
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, published_rules)
+
+    def test_mainland_ai_video_and_third_party_playback_route_direct(self) -> None:
+        ai_video_cases = {
+            "seko.sensetime.com": "DOMAIN-SUFFIX,sensetime.com",
+            "p1-kling.klingai.com": "DOMAIN-SUFFIX,klingai.com",
+            "v1-kling.kechuangai.com": "DOMAIN-SUFFIX,kechuangai.com",
+            "api.vidu.cn": "DOMAIN-SUFFIX,vidu.cn",
+            "platform.vidu.com": "DOMAIN-SUFFIX,vidu.com",
+            "www.hailuoai.com": "DOMAIN-SUFFIX,hailuoai.com",
+            "www.liblib.art": "DOMAIN-SUFFIX,liblib.art",
+            "liblibai-web-static.liblib.cloud": "DOMAIN-SUFFIX,liblib.cloud",
+            "www.liblib.tv": "DOMAIN-SUFFIX,liblib.tv",
+            "www.runninghub.cn": "DOMAIN-SUFFIX,runninghub.cn",
+            "rh-images.xiaoyaoyou.com": "DOMAIN,rh-images.xiaoyaoyou.com",
+            "api.tusiart.cn": "DOMAIN-SUFFIX,tusiart.cn",
+            "assets.tusiassets.com": "DOMAIN-SUFFIX,tusiassets.com",
+            "www.moki.cn": "DOMAIN-SUFFIX,moki.cn",
+            "doc.chanjing.cc": "DOMAIN-SUFFIX,chanjing.cc",
+            "studio.wujieai.com": "DOMAIN-SUFFIX,wujieai.com",
+            "cdn.wujiebantu.com": "DOMAIN-SUFFIX,wujiebantu.com",
+            "dev.shanjian.tv": "DOMAIN-SUFFIX,shanjian.tv",
+            "www.shanjian-china.com": "DOMAIN-SUFFIX,shanjian-china.com",
+            "duix.guiji.ai": "DOMAIN-SUFFIX,guiji.ai",
+            "www.guiji.cn": "DOMAIN-SUFFIX,guiji.cn",
+            "aic.oceanengine.com": "DOMAIN-SUFFIX,oceanengine.com",
+        }
+        for domain, rule in ai_video_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-web", "🌏 国内网站", rule),
+                    domain=domain,
+                )
+
+        existing_jimeng_cases = {
+            "www.jimeng.com": "DOMAIN-SUFFIX,jimeng.com",
+            "jimeng.jianying.com": "DOMAIN-SUFFIX,jianying.com",
+            "zenvideo.qq.com": "DOMAIN-SUFFIX,qq.com",
+            "aigc.baidu.com": "DOMAIN-SUFFIX,baidu.com",
+            "www.whee.com": "DOMAIN-SUFFIX,whee.com",
+        }
+        for domain, rule in existing_jimeng_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-domains-direct", "🌏 国内网站", rule),
+                    domain=domain,
+                )
+
+        playback_cases = {
+            "cj.lziapi.com": "DOMAIN-SUFFIX,lziapi.com",
+            "v.lzcdn31.com": "DOMAIN-SUFFIX,lzcdn31.com",
+            "v.cdnlz22.com": "DOMAIN-SUFFIX,cdnlz22.com",
+            "cj.ffzyapi.com": "DOMAIN-SUFFIX,ffzyapi.com",
+            "vip.ffzy-play8.com": "DOMAIN-SUFFIX,ffzy-play8.com",
+            "vip.ffzy-play9.com": "DOMAIN-SUFFIX,ffzy-play9.com",
+            "bfzyapi.com": "DOMAIN-SUFFIX,bfzyapi.com",
+            "v.fengbao11.com": "DOMAIN-SUFFIX,fengbao11.com",
+            "suoniapi.com": "DOMAIN-SUFFIX,suoniapi.com",
+            "v14.rstu6.com": "DOMAIN-SUFFIX,rstu6.com",
+            "v9.ppqrrs.com": "DOMAIN-SUFFIX,ppqrrs.com",
+            "api.apibdzy.com": "DOMAIN-SUFFIX,apibdzy.com",
+            "vod6.bdzybf11.com": "DOMAIN-SUFFIX,bdzybf11.com",
+            "api.wujinapi.com": "DOMAIN-SUFFIX,wujinapi.com",
+            "www.hongniuzy2.com": "DOMAIN-SUFFIX,hongniuzy2.com",
+            "api.zuidazy.me": "DOMAIN-SUFFIX,zuidazy.me",
+            "vip.ffzy-play3.com": "DOMAIN-SUFFIX,ffzy-play3.com",
+            "api.kczyapi.com": "DOMAIN-SUFFIX,kczyapi.com",
+            "vod2.kczybf.com": "DOMAIN,vod2.kczybf.com",
+            "api.sdzyapi.com": "DOMAIN-SUFFIX,sdzyapi.com",
+            "v8.qqqrst.com": "DOMAIN-SUFFIX,qqqrst.com",
+            "m3u8.apiyhzy.com": "DOMAIN-SUFFIX,apiyhzy.com",
+            "vod12.wgslsw.com": "DOMAIN-SUFFIX,wgslsw.com",
+            "www.huyaapi.com": "DOMAIN-SUFFIX,huyaapi.com",
+            "1080p.huyall.com": "DOMAIN-SUFFIX,huyall.com",
+            "p2100.net": "DOMAIN-SUFFIX,p2100.net",
+            "v14.yuglf.com": "DOMAIN-SUFFIX,yuglf.com",
+            "caiji.moduapi.cc": "DOMAIN-SUFFIX,moduapi.cc",
+            "play.modujx17.com": "DOMAIN-SUFFIX,modujx17.com",
+            "api.xinlangapi.com": "DOMAIN-SUFFIX,xinlangapi.com",
+            "api.hhzyapi.com": "DOMAIN-SUFFIX,hhzyapi.com",
+            "play.hhuus.com": "DOMAIN,play.hhuus.com",
+            "api.subocaiji.com": "DOMAIN-SUFFIX,subocaiji.com",
+            "play.xluuss.com": "DOMAIN,play.xluuss.com",
+            "hn.bfvvs.com": "DOMAIN,hn.bfvvs.com",
+            "hnzy.bfvvs.com": "DOMAIN,hnzy.bfvvs.com",
+            "v7.zuidazym3u8.com": "DOMAIN-SUFFIX,zuidazym3u8.com",
+            "ikunzyapi.com": "DOMAIN-SUFFIX,ikunzyapi.com",
+            "video.bfikuncdn.com": "DOMAIN-SUFFIX,bfikuncdn.com",
+            "video.ikzybf.com": "DOMAIN-SUFFIX,ikzybf.com",
+            "www.imgikzy.com": "DOMAIN-SUFFIX,imgikzy.com",
+            "v3.sxzyhuij.com": "DOMAIN-SUFFIX,sxzyhuij.com",
+            "v8.suonizy-youku.com": "DOMAIN-SUFFIX,suonizy-youku.com",
+            "img.snzypic.com": "DOMAIN-SUFFIX,snzypic.com",
+        }
+        for domain, rule in playback_cases.items():
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("china-media", "🌏 国内流媒体", rule),
+                    domain=domain,
+                )
+
+        current_m3u8_suffixes = [
+            "cdnlz22.com",
+            "lfthirtytwo.com",
+            "lz15uu.com",
+            "lzcdn27.com",
+            "lzcdn28.com",
+            "lzcdn31.com",
+            "lzcdn33v1.com",
+            "ffzy-online1.com",
+            "ffzy-online3.com",
+            "ffzy-online5.com",
+            "ffzy-online6.com",
+            "ffzy-play5.com",
+            "ffzy-play3.com",
+            "ffzy-play8.com",
+            "ffzy-play9.com",
+            "ffzy-play10.com",
+            "ffzy-plays.com",
+            "feifei-play.com",
+            "feifei-kan.com",
+            "ffzy-bofang.com",
+            "ddbbffcdn.com",
+            "rrcdnbf5.com",
+            "rrcdnbf6.com",
+            "bvvvvvvv7f.com",
+            "bvvvvvvvvv1f.com",
+            "bfllvip.com",
+            "baofeng9.com",
+            "baofeng11.com",
+            "fengbao8.com",
+            "fengbao10.com",
+            "fengbao11.com",
+            "rstu6.com",
+            "ppqrrs.com",
+            "bdzybf11.com",
+            "bdzybf22.com",
+            "qqqrst.com",
+            "wgslsw.com",
+            "huyall.com",
+            "yuglf.com",
+            "modujx10.com",
+            "modujx11.com",
+            "modujx12.com",
+            "modujx13.com",
+            "modujx14.com",
+            "modujx15.com",
+            "modujx16.com",
+            "modujx17.com",
+            "zuidazym3u8.com",
+            "bfikuncdn.com",
+            "ikzybf.com",
+        ]
+        for suffix in current_m3u8_suffixes:
+            with self.subTest(m3u8_suffix=suffix):
+                self.assert_match(
+                    (
+                        "china-media",
+                        "🌏 国内流媒体",
+                        f"DOMAIN-SUFFIX,{suffix}",
+                    ),
+                    domain=f"video.{suffix}",
+                )
+
+        current_direct_mp4_suffixes = [
+            "lzdow1314.top",
+            "dowlz2.com",
+            "dowlz5.com",
+            "dowlz6.com",
+            "dowlz10.com",
+            "dowlz11.com",
+            "dowlz12.com",
+            "dowlz17.com",
+            "dowlz18.com",
+            "dowlz19.com",
+            "lz8xiazai.com",
+            "lzidw2025.com",
+            "lzdown26.com",
+            "lzdown27.com",
+            "lzdown28.com",
+            "lzdown29.com",
+            "lzcdn33v1.com",
+        ]
+        for suffix in current_direct_mp4_suffixes:
+            with self.subTest(direct_mp4_suffix=suffix):
+                self.assert_match(
+                    (
+                        "china-media",
+                        "🌏 国内流媒体",
+                        f"DOMAIN-SUFFIX,{suffix}",
+                    ),
+                    domain=f"download.{suffix}",
+                )
+
+        for shared_rule in [
+            "DOMAIN-SUFFIX,kwai.com",
+            "DOMAIN-SUFFIX,sanity.io",
+            "DOMAIN-SUFFIX,doubanio.com",
+            "DOMAIN-SUFFIX,geocities.jp",
+            "DOMAIN-SUFFIX,vibex.cn",
+            "DOMAIN-SUFFIX,tensorartassets.com",
+            "DOMAIN-SUFFIX,xiaoyaoyou.com",
+        ]:
+            with self.subTest(shared_rule=shared_rule):
+                self.assertNotIn(shared_rule, self.sources.rules["china-web"])
+                self.assertNotIn(shared_rule, self.sources.rules["china-media"])
 
     def test_domestic_and_overseas_cloud_routing_is_region_aware(self) -> None:
         domestic_cases = {
