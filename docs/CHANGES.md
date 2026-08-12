@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -541,3 +541,39 @@ The boundary remains intentionally narrow. Shared CDN and object-storage roots a
 **Type:** anchored service completion, no policy-group or precedence change
 
 Notion's application, API, static assets, uploaded content, legacy `notion.so` entry points, and the official `notion.new` shortcut now route through `🧑‍💻 开发服务`. The five added rules cover `notion.com`, `notion.so`, `notion-static.com`, `notionusercontent.com`, and the exact `notion.new` host. Public user-published `notion.site` pages remain outside the developer selector, preserving the existing boundary that excludes user-hosted sites.
+
+## ER-028 — Mainland AI video creation and third-party playback paths
+
+**Type:** anchored service expansion and playback-path recovery
+
+The default-DIRECT `🌏 国内网站` group gains company, product, API, and dedicated asset roots for Seko, Kling, Vidu, LiblibAI and LibTV, RunningHub, Tusi, MOKI, Chanjing, Wujie, Shanjian, Guiji, and Ocean Engine. Existing classic mainland coverage continues to own Jimeng and its Jianying path, Tencent Zhiying, Baidu AIGC, and WHEE, while the existing explicit rules continue to own Hailuo, Doubao, Qwen, and Zhipu. Brand-specific media roots are included, but shared Kuaishou, Vibex, TensorArt, public CDN, analytics, and object-storage roots remain outside this change.
+
+The default-DIRECT `🌏 国内流媒体` group now covers both the collection API and the actual media path for current Liangzi, Feifan, Baofeng, Suoni, Baidou, Kuaiche, Shandian, Yinghua, Huya, Piaoling, Modu, Xinlang, Huohu, Subo, Hongniu, Zuida, and iKun integrations, with additional current API roots for Wujin. Media roots were sampled across each accessible provider's page range and filtered to the hosts serving returned `.m3u8`, share, image, or dedicated download URLs. Liangzi's separately hosted direct `.mp4` download paths are included because clients may download or stream those large files even though the sampled API classifies them under `vod_down_url`, not `vod_play_url`. Unrelated Douban, Geocities, and shared infrastructure hosts returned by metadata were deliberately excluded. This prevents high-volume playlist, playback, or download requests from falling through to `🐟 漏网之鱼` merely because the lightweight collection API matched DIRECT.
+
+The change adds no policy group or ruleset segment and introduces no keyword, regular-expression, destination-IP, public-suffix, or shared-CDN matcher. Provider-owned playback domains can rotate, so the review record requires an evidence refresh instead of broadening the matching boundary.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,772 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-029 — Mainland authentication, real-time, and foundation services
+
+**Type:** restrained official-root expansion with existing-policy reuse
+
+The default-DIRECT `🖥️ 远程串流` group gains official roots for ToDesk, Sunlogin/Oray, RayLink, Shengwang/Agora, ZEGO, RongCloud, and Easemob. Current Shengwang firewall guidance supplies the compact RTC transport roots; no dynamic IP, public STUN/TURN namespace, or guessed process name is added.
+
+The default-DIRECT `🌏 国内网站` group gains one-root coverage for mainstream CAPTCHA and push providers, mainland code and model communities, collaboration tools, electronic certification, teaching platforms, and clearly mainland smart-device or connected-car entry points. Existing Tencent CAPTCHA, China Mobile number verification, and NetEase Yunxin coverage is reused from domestic cloud or the classic mainland import instead of being duplicated. Globally shared Tuya, Roborock, Ecovacs, and Dreame roots remain outside the automatic mainland boundary.
+
+No policy group, ruleset segment, keyword matcher, destination-IP rule, or generic CDN suffix is introduced. The change adds 45 anchored suffix rules and keeps all existing first-match overlap metrics unchanged.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,817 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
