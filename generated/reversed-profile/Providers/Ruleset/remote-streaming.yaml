@@ -52,3 +52,16 @@ payload:
 - PROCESS-NAME,SteamLink.exe
 - PROCESS-NAME,steamlink
 - PROCESS-NAME,mstsc.exe
+- DOMAIN-SUFFIX,todesk.com
+- DOMAIN-SUFFIX,oray.com
+- DOMAIN-SUFFIX,raylink.live
+- DOMAIN-SUFFIX,shengwang.cn
+- DOMAIN-SUFFIX,agora.io
+- DOMAIN-SUFFIX,agoraio.cn
+- DOMAIN-SUFFIX,sd-rtn.com
+- DOMAIN-SUFFIX,rtnsvc.com
+- DOMAIN-SUFFIX,rtesvc.com
+- DOMAIN-SUFFIX,zego.im
+- DOMAIN-SUFFIX,rongcloud.cn
+- DOMAIN-SUFFIX,ronghub.com
+- DOMAIN-SUFFIX,easemob.com

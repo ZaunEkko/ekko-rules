@@ -244,6 +244,63 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The author-domain ruleset is the user-requested global first segment so zaunekko.com appears first while still using the default-direct mainland group. DeepSeek, Xiaohongshu, and verified Chinese AI mainland roots remain in china-web after advertising. Distinct international roots including kimi.com, z.ai, qwen.ai, qwenlm.ai, minimax.io, ByteDance global AI domains, and the anchored Figma roots use Overseas AI. When a legacy mainland URL redirects to the same final international hostname, first-match routing follows that final hostname because domain rules cannot distinguish URL paths or branding regions on one host.
+- id: mainland-ai-video-and-third-party-playback
+  status: accepted
+  scope: routing-compatibility
+  summary: Mainland AI video creation and commonly used third-party video playback services need precise default-DIRECT coverage instead of the proxy fallback.
+  evidence:
+  - https://seko.sensetime.com/
+  - https://kling.ai/cn
+  - https://platform.vidu.cn/docs/introduction
+  - https://www.jimeng.com/
+  - https://www.liblib.art/document/about
+  - https://www.runninghub.cn/runninghub-api-doc-cn/
+  - https://tusi.cn/updates
+  - https://www.moki.cn/policy/agreement.html
+  - https://doc.chanjing.cc/
+  - https://www.wujieai.com/
+  - https://dev.shanjian.tv/
+  - https://guiji.cn/compliance.html
+  - https://aic.oceanengine.com/
+  - https://github.com/loopool/fan/blob/96037b8ab08d96c05b07af68cb70b3428bb6c701/fan.py
+  - https://github.com/fangkuia/XPTV/blob/fa82ceb50d5c1d8f197d970f9855f702560602/X/loon%26surge%26shadowrocket.list
+  - sources/rules/china-web.list
+  - sources/rules/china-media.list
+  - tests/test_profile.py
+  first_observed: 2026-08-12
+  last_verified: '2026-08-12'
+  phase_2_candidate: none
+  recommended_action: keep-precise
+  current_product: standard
+  resolution: Seko, Kling, Vidu, LiblibAI and LibTV, RunningHub, Tusi, MOKI, Chanjing, Wujie, Shanjian, Guiji, and Ocean Engine use anchored company, product, API, or dedicated asset roots in the default-DIRECT mainland website group, while existing Jimeng, Hailuo, Doubao, Qwen, Zhipu, Tencent Zhiying, Baidu AIGC, and WHEE coverage remains reused. Current service-owned API, image, share, m3u8 playback, and Liangzi direct-MP4 download roots use the default-DIRECT mainland media group so data-heavy playback or download paths do not fall through to FINAL. The current integrations cover Liangzi, Feifan, Baofeng, Suoni, Baidou, Kuaiche, Shandian, Yinghua, Huya, Piaoling, Modu, Xinlang, Huohu, Subo, Wujin, Hongniu, Zuida, and iKun. Shared cloud, object-storage, analytics, kwai.com, sanity.io, doubanio.com, geocities.jp, vibex.cn, and TensorArt roots remain excluded; provider domain churn requires evidence refresh rather than keyword or public-suffix matching.
+- id: mainland-foundation-service-coverage
+  status: accepted
+  scope: routing-compatibility
+  summary: Common mainland authentication, push, real-time communication, remote access, developer, collaboration, education, and device-service roots should avoid the proxy fallback without becoming an exhaustive SDK allowlist.
+  evidence:
+  - https://cloud.tencent.com/document/product/1110/36334
+  - https://doc.shengwang.cn/doc/rtc/javascript/basic-features/firewall
+  - https://doc-zh.zego.im/real-time-video-web/introduction/overview
+  - https://docs.rongcloud.cn/miniprogram-imlib/user/overview
+  - https://www.easemob.com/
+  - https://www.jpush.cn/push
+  - https://docs.getui.com/getui/start/accessGuide/
+  - https://www.todesk.com/
+  - https://sunlogin.oray.com/product/feat
+  - https://modelscope.cn/
+  - https://openxlab.org.cn/
+  - https://www.paddlepaddle.org.cn/
+  - https://www.mindspore.cn/
+  - https://www.tsinghua.edu.cn/jyjx/zxjy/ptjs.htm
+  - https://www.aqara.cn/prodCenter
+  - https://www.nio.cn/
+  - tests/test_profile.py
+  first_observed: 2026-08-12
+  last_verified: '2026-08-12'
+  phase_2_candidate: none
+  recommended_action: keep-anchored
+  current_product: standard
+  resolution: The existing default-DIRECT remote-streaming policy gains official roots for ToDesk, Sunlogin/Oray, RayLink, Shengwang/Agora transport, ZEGO, RongCloud, and Easemob without dynamic IPs, generic STUN/TURN roots, or guessed process names. The existing default-DIRECT mainland website policy gains one-root coverage for mainstream CAPTCHA and push providers, domestic code and model communities, collaboration, electronic certification, teaching platforms, and selected mainland device or connected-car entry points. Tencent CAPTCHA, China Mobile number verification, and NetEase Yunxin remain owned by existing domestic-cloud or classic-mainland rules. Globally shared tuya.com, roborock.com, ecovacs.com, and dreame.tech roots remain excluded; only the clearly mainland tuya.cn and aqara.cn entries are added. Advertising remains earlier, and no new policy group, ruleset segment, keyword, public-suffix, IP, or shared-CDN matcher is introduced.
 - id: steam-mainland-download-hosts
   status: accepted
   scope: game-download

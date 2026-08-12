@@ -121,12 +121,13 @@ PUT_YOUR_SUBSCRIPTION_URL_HERE
 Ekko Rules 主要面向需要单独选择节点或地区的场景：
 
 - **广告拦截**：`🛑 广告拦截` 使用固定版本、锚定域名规则并默认 `REJECT`；仍可手动改为节点或 `DIRECT`；
-- **AI 与设计工具分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq、Figma，以及 Kimi、Z.ai、Qwen、MiniMax 等国际站统一归入 `🧲 海外 AI`；DeepSeek、小红书和国产 AI 大陆站进入默认直连的 `🌏 国内网站`；
+- **AI 与设计工具分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq、Figma，以及 Kimi、Z.ai、Qwen、MiniMax 等国际站统一归入 `🧲 海外 AI`；DeepSeek、小红书，以及 Seko、可灵、Vidu、即梦、海螺、LiblibAI、RunningHub、吐司、MOKI、蝉镜等国产 AI 大陆站进入默认直连的 `🌏 国内网站`；
 - **主流流媒体**：YouTube、Netflix、Disney+、Apple TV+、`🎬 HBO GO/MAX`、Prime Video、DAZN、TikTok 等重点服务单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
-- **区域媒体**：美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；
+- **区域媒体**：美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；已核验的量子、非凡、暴风、索尼、百度、闪电、火狐、速博、红牛、最大、iKun 等第三方视频接口及其专用播放域名进入默认直连的 `🌏 国内流媒体`，避免播放流量落入代理兜底；
 - **游戏分流**：中国大陆游戏平台、登录、社区和语音进入默认直连的 `🌏 国内网站`，专用下载端点进入默认直连的 `🎮 游戏下载`；`🎮 游戏平台` 仅承载海外平台并默认使用 `♻️ 手动切换`；
 - **社交与通信**：社交媒体、聊天软件、Discord 和邮件分别处理；
-- **远程串流**：`🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP 等高流量远程访问链路，避免远程桌面、游戏串流或虚拟局域网流量绕行代理；
+- **远程串流与实时通信**：`🖥️ 远程串流` 默认 `DIRECT`，除 Tailscale、ZeroTier、Moonlight、RustDesk、AnyDesk、TeamViewer 等远程访问链路外，也覆盖 ToDesk、向日葵、RayLink 及主流 RTC/IM 基础服务，避免远程桌面、语音或实时数据绕行代理；
+- **国内基础服务**：验证码、推送、国内代码与模型社区、协作文档、电子认证、主流教学平台以及明确的国区智能设备和车联网入口复用默认直连的 `🌏 国内网站`；只保留官方根域，国际共用设备云不做宽泛直连；
 - **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，除代码托管与语言包生态外，还覆盖 Linear、Notion、Slack、Atlassian、Postman、Sentry、Vercel、Supabase、主流 CI/CD、可观测平台、开发数据库和在线 IDE 的官网、控制台、API 与必要资源链路；用户在意代理流量时可临时切到 `DIRECT`；通用 CDN、对象存储及用户托管站点仍不纳入；
 - **云基础设施**：`☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud，以及国内厂商的海外区域端点；广告和具体业务规则仍优先；
 - **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认使用 `REJECT` 拦截，仍可手动改为节点或 `DIRECT`；
