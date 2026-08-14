@@ -8,7 +8,6 @@ import {
   authorizeLocalAccess,
   applyConvertOptions,
   cleanupOrphanedConversionInputs,
-  ConfigurationError,
   getRuntimeConfig,
   inlineMihomoProviderNodes,
   isJsonRequestContentType,
@@ -132,11 +131,10 @@ test("publishes to the LAN by default while keeping management passwords optiona
     delete process.env.ACCESS_PASSWORD;
     assert.equal(getRuntimeConfig().webBindHost, "0.0.0.0");
     assert.equal(getRuntimeConfig().lanAccessEnabled, true);
-    assert.equal(getRuntimeConfig().configurationError, "");
+    assert.equal(getRuntimeConfig().subscriptionBaseUrlError, "");
     assert.doesNotThrow(() => authorizeLocalAccess());
 
     process.env.ACCESS_PASSWORD = "lan-secret";
-    assert.equal(getRuntimeConfig().configurationError, "");
     assert.doesNotThrow(() => authorizeLocalAccess("lan-secret"));
     assert.throws(() => authorizeLocalAccess("wrong"), /password/i);
   } finally {
@@ -147,14 +145,22 @@ test("publishes to the LAN by default while keeping management passwords optiona
   }
 });
 
-test("throws a tagged error for invalid runtime configuration", () => {
+test("treats the advertised LAN origin as a frontend-only hint", () => {
   const previousBaseUrl = process.env.LAN_BASE_URL;
+  const previousPassword = process.env.ACCESS_PASSWORD;
   try {
+    process.env.ACCESS_PASSWORD = "management-secret";
     process.env.LAN_BASE_URL = "http://lan.example.test/with-path";
-    assert.throws(() => authorizeLocalAccess(), ConfigurationError);
+    const runtime = getRuntimeConfig();
+    assert.equal(runtime.subscriptionBaseUrl, "");
+    assert.match(runtime.subscriptionBaseUrlError, /LAN_BASE_URL/);
+    assert.doesNotThrow(() => authorizeLocalAccess("management-secret"));
+    assert.throws(() => authorizeLocalAccess("wrong"), /password/i);
   } finally {
     if (previousBaseUrl === undefined) delete process.env.LAN_BASE_URL;
     else process.env.LAN_BASE_URL = previousBaseUrl;
+    if (previousPassword === undefined) delete process.env.ACCESS_PASSWORD;
+    else process.env.ACCESS_PASSWORD = previousPassword;
   }
 });
 
@@ -269,14 +275,6 @@ test("maps client validation failures without hiding upstream failures", () => {
     400,
   );
   assert.equal(publicErrorStatus("Access password required."), 401);
-  assert.equal(
-    publicErrorStatus(
-      new ConfigurationError(
-        "LAN_BASE_URL must be an http(s) origin without a path or credentials.",
-      ),
-    ),
-    500,
-  );
   assert.equal(
     publicErrorStatus("Subscription fetch failed with HTTP 500."),
     502,
