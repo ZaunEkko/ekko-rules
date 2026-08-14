@@ -34,13 +34,6 @@ export type ConvertResult = {
   subscriptionUserinfo?: string;
 };
 
-export class ConfigurationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ConfigurationError";
-  }
-}
-
 const SUBSCRIPTION_USERINFO_FIELDS = [
   "upload",
   "download",
@@ -161,7 +154,6 @@ export function getRuntimeConfig() {
   const subscriptionBaseUrl = normalizeSubscriptionBaseUrl(
     process.env.LAN_BASE_URL,
   );
-  const configurationErrors = [subscriptionBaseUrl.error].filter(Boolean);
   return {
     subconverterBaseUrl: requiredEnv(
       "SUBCONVERTER_BASE_URL",
@@ -179,11 +171,11 @@ export function getRuntimeConfig() {
     webPort: envInt("WEB_PORT", 8787),
     lanAccessEnabled,
     subscriptionBaseUrl: subscriptionBaseUrl.value,
+    subscriptionBaseUrlError: subscriptionBaseUrl.error,
     hostNetworkInfoPath: requiredEnv(
       "HOST_NETWORK_INFO_PATH",
       "/host-runtime/lan-address.json",
     ),
-    configurationError: configurationErrors.join(" "),
     fixedConfigPath: "config/ekko-rules-selfhost.ini",
     // Gateway stores short-lived inputs here for its internal HTTP handoff route.
     sharedDir: requiredEnv("CONVERT_SHARED_DIR", "/shared"),
@@ -194,9 +186,6 @@ export function getRuntimeConfig() {
 export function authorizeLocalAccess(provided?: string): void {
   const runtime = getRuntimeConfig();
   const expected = runtime.accessPassword;
-  if (runtime.configurationError) {
-    throw new ConfigurationError(runtime.configurationError);
-  }
   if (!expected) return;
   const providedDigest = createHash("sha256").update(provided ?? "").digest();
   const expectedDigest = createHash("sha256").update(expected).digest();
@@ -843,7 +832,6 @@ export function publicErrorMessage(error: unknown): string {
 }
 
 export function publicErrorStatus(error: unknown): number {
-  if (error instanceof ConfigurationError) return 500;
   const message = typeof error === "string" ? error : publicErrorMessage(error);
   if (/password/i.test(message)) return 401;
   if (

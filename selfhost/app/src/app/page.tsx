@@ -21,10 +21,10 @@ type Health = {
   access_password_required: boolean;
   lan_access_enabled: boolean;
   subscription_base_url: string | null;
+  subscription_base_url_error: string | null;
   detected_lan_ipv4: string | null;
   detected_lan_base_url: string | null;
   detected_lan_updated_at: string | null;
-  configuration_error: string | null;
 };
 
 type TargetCapability = {
@@ -213,9 +213,7 @@ export default function HomePage() {
     xudp: supportsXudp && convertOptions.xudp,
     singboxIpv6: target === "singbox" && convertOptions.singboxIpv6,
   });
-  const engineOk = Boolean(
-    health?.subconverter_reachable && !health.configuration_error,
-  );
+  const engineOk = Boolean(health?.subconverter_reachable);
   const sourceReady = Boolean(subscriptionUrl.trim());
   const defaultSubscriptionBaseUrl =
     health?.subscription_base_url || runtimeOrigin;
@@ -981,7 +979,7 @@ export default function HomePage() {
             <span>{profileCountLabel}</span>
           </div>
 
-          <details className={`address-manager ${health?.configuration_error ? "is-error" : ""}`}>
+          <details className={`address-manager ${health?.subscription_base_url_error ? "is-error" : ""}`}>
             <summary>
               <span className="address-manager-mark">URL</span>
               <span className="address-manager-current">
@@ -993,20 +991,20 @@ export default function HomePage() {
             <div className="address-manager-body">
               <div className="address-manager-note">
                 <strong>
-                  {health?.configuration_error
-                    ? "局域网地址配置有误"
+                  {health?.subscription_base_url_error
+                    ? "预设前缀已忽略"
                     : health?.lan_access_enabled
                       ? "本机与局域网均可使用"
                       : "当前只允许本机使用"}
                 </strong>
                 <span>
-                  {health?.configuration_error
-                    ? "请检查 .env 中的 LAN_BASE_URL。"
+                  {health?.subscription_base_url_error
+                    ? "LAN_BASE_URL 只用于页面生成地址，不会阻止后台转换；请在这里重新选择前缀。"
                     : health?.detected_lan_ipv4
                       ? baseUrlMode === "detected"
                         ? `已跟随当前电脑 IP：${health.detected_lan_ipv4}`
                         : `已识别当前电脑 IP：${health.detected_lan_ipv4}`
-                      : "切换前缀不会改变任何档案 ID。"}
+                      : "前缀只用于显示、复制和二维码；任何能访问本服务的地址都可配合同一档案 ID 使用。"}
                 </span>
               </div>
               <div className="lan-prefix-actions" aria-label="订阅地址模式">

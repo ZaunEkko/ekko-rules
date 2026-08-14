@@ -11,9 +11,11 @@ const outFile = path.join(outDir, "ekko-rules-clash.yaml");
 const mihomo = process.env.MIHOMO_BIN || "C:/Program Files/TAG/mihomo-tag.exe";
 const baseUrl = "http://127.0.0.1:8787";
 const fixtureUrl = "http://fixture:8080/sanitized-subscription.yaml";
+const invalidAdvertisedBaseUrl = "http://copy-only.invalid/ignored-path";
 const composeEnv = {
   ...process.env,
   CONVERT_ALLOW_HOSTNAMES: "fixture",
+  LAN_BASE_URL: invalidAdvertisedBaseUrl,
 };
 const createdProfiles = new Map();
 
@@ -483,6 +485,21 @@ async function main() {
 
   const health = await waitForHealth();
   console.log(JSON.stringify({ phase: "health", health }));
+  if (
+    health.status !== "ok" ||
+    health.subscription_base_url !== null ||
+    !health.subscription_base_url_error
+  ) {
+    throw new Error(
+      "An invalid UI export prefix degraded the backend or was not ignored.",
+    );
+  }
+  console.log(JSON.stringify({
+    phase: "display-prefix-isolation",
+    advertised: invalidAdvertisedBaseUrl,
+    reachable: baseUrl,
+    backend_ready: true,
+  }));
   await assertJsonOnlyPostRoutes();
 
   const capabilities = await fetch(`${baseUrl}/api/capabilities`).then((response) => response.json());
@@ -541,6 +558,7 @@ async function main() {
     subscription_userinfo_verified: true,
     manual_update_only_verified: true,
     scheduled_update_verified: true,
+    display_prefix_isolated: true,
     modern_protocols: modernLinks.map((item) => item.protocol),
     complete_targets: Object.keys(targetMarkers),
   }, null, 2));
