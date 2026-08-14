@@ -364,9 +364,15 @@ async function fetchProfile(profile, autoUpdate, updateIntervalHours) {
     "☁️ 国内云服务",
     "☁️ 海外云服务",
     "DOMAIN-SUFFIX,gov.cn,🌏 国内网站",
-    "DOMAIN-SUFFIX,cn,🌏 国内网站",
+    "DOMAIN-SUFFIX,edu.cn,🌏 国内网站",
+    "DOMAIN-SUFFIX,ac.cn,🌏 国内网站",
+    "DOMAIN-SUFFIX,mil.cn,🌏 国内网站",
     "port: 7890",
+    "allow-lan: false",
+    "bind-address: 127.0.0.1",
+    "listen: 127.0.0.1:53",
     "enhanced-mode: fake-ip",
+    "geosite:gfw",
   ];
   const missing = required.filter((item) => !text.includes(item));
   if (missing.length) throw new Error(`profile output missing: ${missing.join(", ")}`);

@@ -43,6 +43,22 @@ async function closeServer(server: Server): Promise<void> {
   });
 }
 
+test("keeps the Mihomo base local by default and preserves fallback coverage", async () => {
+  const base = await readFile(
+    new URL("../../../subconverter/base/ekko-rules-base.yaml", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(base, /^allow-lan: false$/m);
+  assert.match(base, /^bind-address: 127\.0\.0\.1$/m);
+  assert.match(base, /^  listen: 127\.0\.0\.1:53$/m);
+  assert.match(base, /^    "geosite:gfw":$/m);
+  assert.match(base, /^  fallback:$/m);
+
+  const fallbackFilter = base.slice(base.indexOf("  fallback-filter:"));
+  assert.doesNotMatch(fallbackFilter, /^    geosite:$/m);
+});
+
 test("normalizes safe upstream subscription usage metadata", () => {
   assert.equal(
     sanitizeSubscriptionUserinfo(
