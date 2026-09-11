@@ -2,15 +2,18 @@
 
 [中文](README.md)
 
-Local subscription generation and specialized AI, entertainment, gaming, and NSFW routing for Mihomo, sing-box, and mainstream proxy clients. Run the complete converter on your own computer, or reuse the public rules with a third-party Subconverter or the native Mihomo template.
+Subscription generation and specialized AI, entertainment, gaming, and NSFW routing for Mihomo, sing-box, and mainstream proxy clients. The same code runs in two shapes: on your own computer, where the real subscription never leaves the machine, or as an open converter that **stores nothing** and lets every visitor assemble their own subscription link in the browser. The public rules can also be reused with a third-party Subconverter or the native Mihomo template.
 
 ## Choose a setup
 
 | Setup | Best for | Who fetches the real subscription | Result |
 |---|---|---|---|
 | **Local self-hosting (recommended)** | Keeping the subscription on your own computer and importing a complete configuration | Your Docker stack | Stable local URL that can be refreshed repeatedly |
+| **Open converter** | No Docker available, and you would rather not hand the subscription to a service that keeps it | The site's server (**stores nothing**, discarded after each conversion) | A subscription link that carries every option itself |
 | Third-party online conversion | No Docker available and you accept trusting the backend | Third-party backend | Third-party subscription URL |
 | Native Mihomo template | You only need Ekko Rules and manage client settings yourself | Your Mihomo client | Provider template |
+
+One switch separates the two self-hosted shapes. `SELFHOST_MODE=lan` stores fixed profiles and keeps the real subscription out of every URL; `SELFHOST_MODE=public` stores nothing at all, at the cost of carrying the subscription inside the link. See [selfhost/README.md](selfhost/README.md) and the [deployment guide](selfhost/docs/vps.md).
 
 ### Recommended: local complete subscriptions
 

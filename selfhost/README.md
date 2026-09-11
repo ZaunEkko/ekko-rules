@@ -14,7 +14,11 @@ http://192.168.1.100:8787/sub/<同一个随机 ID>
 
 稳定的是 `/sub/<随机 ID>` 档案路径；前面的访问地址可以在 Web UI 中切换。普通停止、重启或 `docker compose down` 不会改变档案 ID、真实订阅映射和高级选项。
 
-Web 端口默认像常见 Docker 服务一样发布到宿主机所有网卡，所以同一可信局域网可以直接访问；转换引擎端口仍然只存在于 Compose 内部网络。本项目不应直接暴露为公网转换服务。
+Web 端口默认像常见 Docker 服务一样发布到宿主机所有网卡，所以同一可信局域网可以直接访问；转换引擎端口仍然只存在于 Compose 内部网络。默认部署不应直接暴露到公网。
+
+另一种形态是放到服务器上做**开放转换站**（`SELFHOST_MODE=public`）：服务器不保存任何东西，每个访问者在浏览器里拼出自己的链接（`/sub?url=…`），互相看不到对方的内容。代价是真实订阅写在链接里，页面会明确提示不要转发。见 [部署开放转换站](docs/vps.md)。
+
+想让真实订阅留在自己机器上、用固定 `/sub/<随机 ID>` 地址，就用本页这套默认形态——不存在把别人的订阅存在公网服务器上的第三种形态。
 
 ## 运行要求
 
@@ -93,7 +97,22 @@ ACCESS_PASSWORD=可选的本地管理密码
 
 - `WEB_BIND_HOST` 默认已经是 `0.0.0.0`；只有明确希望禁止局域网访问时才改为 `127.0.0.1`。
 - `LAN_BASE_URL` 仅用于预设页面显示、复制和二维码中的地址前缀，留空时使用打开 Web UI 的地址；它不参与后端授权或订阅校验。只要某个地址能访问本服务，就可以用该地址拼接同一个 `/sub/<随机 ID>`。
-- `ACCESS_PASSWORD` 是可选的管理保护，设置后会保护创建、读取列表和删除操作；手机或路由器访问 `/sub/<随机 ID>` 时不需要额外请求头。
+- `ACCESS_PASSWORD` 是可选的管理保护，设置后会保护创建、读取列表和删除操作；手机或路由器访问 `/sub/<随机 ID>` 时不需要额外请求头。开放形态没有管理接口，该变量在那里被忽略。
+
+开放形态额外使用下面这些变量，完整说明见 [docs/vps.md](docs/vps.md) 与 `.env.vps.example`：
+
+```dotenv
+SELFHOST_MODE=public
+PUBLIC_BASE_URL=https://sub.example.com
+TRUST_PROXY_HEADERS=1
+RATE_LIMIT_MANAGE_PER_MINUTE=30
+RATE_LIMIT_SUBSCRIBE_PER_MINUTE=60
+```
+
+- `SELFHOST_MODE=public` 关闭全部档案存储：`/api/profiles` 与 `/sub/<随机 ID>` 一律 404，只剩 `/sub?url=…`；
+- `PUBLIC_BASE_URL` 取代 `LAN_BASE_URL` 作为页面显示、复制与二维码的前缀，必须是纯 origin；
+- `TRUST_PROXY_HEADERS` 让限速按反向代理给出的真实客户端 IP 统计；
+- 两个 `RATE_LIMIT_*` 是每分钟每 IP 的请求上限，设为 `0` 关闭。本地形态默认关闭。
 
 Web UI 提供：
 
@@ -214,9 +233,50 @@ Mihomo 固定地址每次被客户端刷新时，都会在本机即时拉取真�
 - 非 Mihomo 输出由网关先拉取，再通过短生命周期内部文件交给引擎；
 - 临时订阅正文每次转换结束后立即删除；
 - Web 与转换引擎以非 root 用户运行，根文件系统只读；引擎缓存使用限额内存盘；
-- Web 端口默认对宿主机和可信局域网发布；可选 `ACCESS_PASSWORD` 用于保护管理操作。
+- Web 端口默认对宿主机和可信局域网发布；可选 `ACCESS_PASSWORD` 用于保护管理操作；
+- 管理接口只接受属于本部署的 Host（回环、私网、CGNAT、`.local`、容器名或自己配置的域名），阻断把公网域名解析到内网地址的 DNS 重绑定。
 
-这个 Compose 面向个人电脑和可信局域网使用，不应直接作为公网转换服务发布。
+开放形态在此之上还会：
+
+- 关闭全部档案存储，没有任何可枚举的列表；
+- 管理接口只接受 `PUBLIC_BASE_URL` 里那一个域名；
+- 应用端口只绑定 `127.0.0.1`，由机器上已有的反向代理终止 TLS；
+- 按客户端 IP 对管理接口和订阅刷新限速；
+- 在反向代理和应用两层拒绝来自公网的 `/api/internal/*` 引擎交接请求；
+- 通过 `robots.txt` 与 `X-Robots-Tag` 拒绝搜索引擎收录。
+
+## 远程配置
+
+转换时使用哪套规则由 `config` 决定，默认且永远排在第一位的是本仓库的 Ekko Rules。页面另外内置了 ACL4SSR 的常用几套（全分组 / 无测速 / 去广告 / 精简 / 多国家等），通过短 id 选择，例如：
+
+```text
+/sub?url=<真实订阅>&target=clash&config=acl4ssr-full
+```
+
+选中第三方配置时，那次转换的分组、规则与 base 模板**全部**来自对方项目，Ekko Rules 不参与；文件由转换引擎在请求时从对方服务器拉取，本仓库只保存引用，不复制也不再分发（见 [NOTICE.md](../NOTICE.md)）。
+
+| 变量 | 作用 |
+|---|---|
+| `THIRD_PARTY_REMOTE_CONFIGS=0` | 移除内置的第三方预设，只留 Ekko Rules |
+| `REMOTE_CONFIGS` | 追加自己的预设，`[{"id":"mine","label":"My rules","url":"https://..."}]` |
+| `ALLOW_CUSTOM_REMOTE_CONFIG=0` | 禁止访客直接粘贴配置地址 |
+
+允许粘贴地址时，拉取动作由**服务器**而不是访客浏览器发出，因此仍然强制：只接受 https、不接受带凭据的 URL、长度上限 512，并且和订阅地址走同一套私网/回环/云元数据拦截。引擎侧另有 `max_allowed_rulesets` 与 `max_allowed_download_size` 上限，避免一份恶意配置引用上千个远程文件，把本机变成扇出抓取器。
+
+远程配置与其规则集在引擎内缓存（配置 30 分钟、规则集 24 小时），否则每次客户端刷新都会重新拉取上游全部文件。
+
+## 这是单用户服务
+
+以下只适用于会保存档案的 `lan` 形态；开放形态不保存任何东西，也就没有可被别人读取的列表。
+
+服务没有账号、没有会话、也没有档案归属：`profiles_data` 是一份共享列表，`GET /api/profiles` 返回其中**全部**档案，`DELETE /api/profiles/<id>` 可以删除其中任意一个。返回值里的 `/sub/<随机 ID>` 本身就是凭据，拿到它就能取回该档案的完整配置和节点密码。
+
+由此得到两条硬性结论：
+
+- **能打开管理页面的人 = 能拿走全部订阅的人。** 局域网部署如果不设 `ACCESS_PASSWORD`，同一网络内的任何设备（合租室友、公司网络、被入侵的路由器）都能列出并使用你的所有固定地址。检测到这种组合时，页面顶部会给出红色提醒；在不完全可信的网络里请设置密码，或把 `WEB_BIND_HOST` 改回 `127.0.0.1`。
+- **不能给第二个人用。** 共用一个 `ACCESS_PASSWORD` 就等于共用一个账号：对方看得到你的档案，你也看得到对方的，任何一方都能删除全部。
+
+要真正做到多用户，缺的不是一个开关，而是一整套：账号与会话、档案上的 owner 字段并按 owner 过滤列表与删除、每用户配额、存储侧对真实订阅的加密、审计与封禁、以及配套的条款与责任。本项目不做这件事——它面向个人自用，不应作为面向他人的公共转换服务发布。
 
 ## 常见问题
 
@@ -252,7 +312,8 @@ docker compose logs --tail=100 web subconverter
 | `GET` | `/api/profiles` | 列出不含源地址的本地档案 |
 | `POST` | `/api/profiles` | 验证订阅并创建固定地址 |
 | `DELETE` | `/api/profiles/<id>` | 删除固定地址 |
-| `GET` | `/sub/<id>` | 客户端完整配置更新入口 |
+| `GET` | `/sub` | 无状态订阅入口，参数即配置（`public` 形态使用） |
+| `GET` | `/sub/<id>` | 客户端完整配置更新入口（`lan` 形态） |
 | `GET` | `/sub/<id>/nodes` | 旧版 Mihomo provider 配置的兼容节点入口 |
 | `GET` | `/sub/<id>?download=1` | 下载当前完整配置 |
 | `POST` | `/api/convert` | 不保存档案的一次性下载入口 |
@@ -306,6 +367,17 @@ npm run build
 cd selfhost
 node scripts/e2e-local.mjs
 ```
+
+服务器部署的自动更新（CI 构建镜像推 GHCR，服务器定时拉取，不向 GitHub 开放任何入口）见 [docs/vps.md](docs/vps.md#自动部署ci--cd)。
+
+远程配置验证（会访问公网，逐个拉取第三方配置）：
+
+```bash
+cd selfhost
+node scripts/verify-remote-configs.mjs
+```
+
+它会遍历 `/api/capabilities` 返回的全部远程配置，断言 Ekko Rules 永远排在首位且为内置项，对每一套跑一次完整 Mihomo 转换，再用其中一套第三方配置验证 8 种客户端格式，最后确认云元数据、回环、私网、明文 HTTP 和不存在的预设都被拒绝。预设列表变动或准备上线开放部署前跑一次。
 
 端到端脚本会验证 8 种完整输出、Mihomo 与 sing-box 的 AnyTLS 等现代协议、Emoji/UDP/筛选/重命名等高级选项、真实源地址不出现在 Mihomo 完整配置中、Mihomo 配置语法，以及固定 URL 在普通 Compose 重启后的可用性。可通过 `MIHOMO_BIN` 指定本机 Mihomo 可执行文件。
 
