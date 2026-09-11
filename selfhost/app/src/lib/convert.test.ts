@@ -164,6 +164,74 @@ test("treats the advertised LAN origin as a frontend-only hint", () => {
   }
 });
 
+test("refuses to run an open deployment with an unusable export origin", () => {
+  const previousMode = process.env.SELFHOST_MODE;
+  const previousBaseUrl = process.env.PUBLIC_BASE_URL;
+  try {
+    process.env.SELFHOST_MODE = "public";
+    process.env.PUBLIC_BASE_URL = "https://sub.example.test/with-path";
+
+    const blocked = getRuntimeConfig();
+    assert.match(blocked.deploymentError, /PUBLIC_BASE_URL/);
+    assert.equal(publicErrorStatus(blocked.deploymentError), 503);
+    assert.throws(() => authorizeLocalAccess(), /PUBLIC_BASE_URL/);
+
+    process.env.PUBLIC_BASE_URL = "https://sub.example.test";
+    const ready = getRuntimeConfig();
+    assert.equal(ready.deploymentError, "");
+    assert.equal(ready.subscriptionBaseUrl, "https://sub.example.test");
+    assert.equal(ready.trustProxyHeaders, true);
+    assert.equal(ready.subscribeRateLimitPerMinute > 0, true);
+    assert.equal(ready.manageRateLimitPerMinute > 0, true);
+  } finally {
+    if (previousMode === undefined) delete process.env.SELFHOST_MODE;
+    else process.env.SELFHOST_MODE = previousMode;
+    if (previousBaseUrl === undefined) delete process.env.PUBLIC_BASE_URL;
+    else process.env.PUBLIC_BASE_URL = previousBaseUrl;
+  }
+});
+
+test("an open deployment stores nothing and needs no password", () => {
+  const previousMode = process.env.SELFHOST_MODE;
+  const previousPassword = process.env.ACCESS_PASSWORD;
+  try {
+    process.env.SELFHOST_MODE = "public";
+    // Even a stray password cannot half-close a door that is meant to be open.
+    process.env.ACCESS_PASSWORD = "ignored-here";
+    const runtime = getRuntimeConfig();
+    assert.equal(runtime.deployMode, "public");
+    assert.equal(runtime.storedProfilesEnabled, false);
+    assert.equal(runtime.deploymentError, "");
+    assert.doesNotThrow(() => authorizeLocalAccess());
+    assert.doesNotThrow(() => authorizeLocalAccess("anything"));
+    // Ekko Rules stays first and is what an empty `config` resolves to.
+    assert.equal(runtime.remoteConfigs[0].id, "ekko");
+    assert.equal(runtime.remoteConfigs[0].builtin, true);
+    assert.equal(runtime.remoteConfigs.length > 1, true);
+    assert.equal(runtime.allowCustomRemoteConfig, true);
+  } finally {
+    if (previousMode === undefined) delete process.env.SELFHOST_MODE;
+    else process.env.SELFHOST_MODE = previousMode;
+    if (previousPassword === undefined) delete process.env.ACCESS_PASSWORD;
+    else process.env.ACCESS_PASSWORD = previousPassword;
+  }
+});
+
+test("keeps rate limits off for the personal LAN deployment", () => {
+  const previousMode = process.env.SELFHOST_MODE;
+  try {
+    delete process.env.SELFHOST_MODE;
+    const runtime = getRuntimeConfig();
+    assert.equal(runtime.deployMode, "lan");
+    assert.equal(runtime.manageRateLimitPerMinute, 0);
+    assert.equal(runtime.subscribeRateLimitPerMinute, 0);
+    assert.equal(runtime.trustProxyHeaders, false);
+  } finally {
+    if (previousMode === undefined) delete process.env.SELFHOST_MODE;
+    else process.env.SELFHOST_MODE = previousMode;
+  }
+});
+
 test("accepts JSON media types and rejects simple cross-origin content types", () => {
   assert.equal(isJsonRequestContentType("application/json"), true);
   assert.equal(
