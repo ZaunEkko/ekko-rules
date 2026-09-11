@@ -54,6 +54,16 @@ services:
       WEB_BIND_HOST: ${WEB_BIND_HOST:-0.0.0.0}
       WEB_PORT: ${WEB_PORT:-8787}
       LAN_BASE_URL: ${LAN_BASE_URL:-}
+      # lan (default) = personal stored addresses; public = open, stores nothing.
+      SELFHOST_MODE: ${SELFHOST_MODE:-lan}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
+      TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-}
+      RATE_LIMIT_MANAGE_PER_MINUTE: ${RATE_LIMIT_MANAGE_PER_MINUTE:-}
+      RATE_LIMIT_SUBSCRIBE_PER_MINUTE: ${RATE_LIMIT_SUBSCRIBE_PER_MINUTE:-}
+      REMOTE_CONFIGS: ${REMOTE_CONFIGS:-}
+      THIRD_PARTY_REMOTE_CONFIGS: ${THIRD_PARTY_REMOTE_CONFIGS:-}
+      ALLOW_CUSTOM_REMOTE_CONFIG: ${ALLOW_CUSTOM_REMOTE_CONFIG:-}
+      SITE_LINKS: ${SITE_LINKS:-}
       HOST_NETWORK_INFO_PATH: /host-runtime/lan-address.json
       SUBCONVERTER_BASE_URL: http://subconverter:25500
       EKKO_RULES_VERSION: ${EKKO_RULES_VERSION:-local}
@@ -70,6 +80,16 @@ services:
       - ./.runtime:/host-runtime:ro
     networks:
       - internal
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
     read_only: true
     tmpfs:
       - /tmp:size=64m,mode=1777

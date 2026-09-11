@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRuntimeConfig } from "@/lib/convert";
 import { readDetectedLanAddress } from "@/lib/host-network";
+import { readMetrics } from "@/lib/metrics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,6 +12,9 @@ export async function GET() {
     runtimeConfig.hostNetworkInfoPath,
     runtimeConfig.webPort,
   );
+  const metrics = runtimeConfig.metricsEnabled
+    ? await readMetrics(runtimeConfig.profileDataDir)
+    : null;
   let subconverterReachable = false;
   try {
     const response = await fetch(`${runtimeConfig.subconverterBaseUrl}/version`, {
@@ -26,13 +30,31 @@ export async function GET() {
   return NextResponse.json(
     {
       status: subconverterReachable ? "ok" : "degraded",
-      mode: "personal-local-network",
+      mode:
+        runtimeConfig.deployMode === "public"
+          ? "open-stateless-converter"
+          : "personal-local-network",
+      deploy_mode: runtimeConfig.deployMode,
+      stores_profiles: runtimeConfig.storedProfilesEnabled,
+      deployment_error: runtimeConfig.deploymentError || null,
+      deployment_warning: runtimeConfig.deploymentWarning || null,
       ekko_rules_version: runtimeConfig.ekkoRulesVersion,
       subconverter_version: runtimeConfig.subconverterVersion,
       subconverter_reachable: subconverterReachable,
-      access_password_required: Boolean(runtimeConfig.accessPassword),
+      access_password_required:
+        runtimeConfig.deployMode !== "public" &&
+        Boolean(runtimeConfig.accessPassword),
       lan_access_enabled: runtimeConfig.lanAccessEnabled,
       subscription_base_url: runtimeConfig.subscriptionBaseUrl || null,
+      alt_origins: runtimeConfig.altOrigins,
+      metrics: metrics
+        ? {
+            visits_today: metrics.visitsToday,
+            visits_total: metrics.visitsTotal,
+            conversions_today: metrics.conversionsToday,
+            conversions_total: metrics.conversionsTotal,
+          }
+        : null,
       subscription_base_url_error:
         runtimeConfig.subscriptionBaseUrlError || null,
       detected_lan_ipv4: detectedLanAddress?.ipv4 || null,

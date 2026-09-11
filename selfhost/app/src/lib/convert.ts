@@ -16,6 +16,8 @@ import {
   type ConvertOptions,
 } from "./options";
 import { applyTargetOutputOptions } from "./output-options";
+import { evaluateDeployment, type DeployMode } from "./deployment";
+import { parseRemoteConfigPresets } from "./remote-configs";
 
 export type ConvertRequest = {
   subscriptionUrl: string;
@@ -142,6 +144,15 @@ function envInt(name: string, fallback: number): number {
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
+const FIXED_CONFIG_PATH = "config/ekko-rules-selfhost.ini";
+
+function envIntAllowZero(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (raw === undefined || raw.trim() === "") return fallback;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 0 ? Math.floor(value) : fallback;
+}
+
 function requiredEnv(name: string, fallback: string): string {
   const value = process.env[name];
   return value && value.trim() ? value.trim() : fallback;
@@ -151,9 +162,24 @@ export function getRuntimeConfig() {
   const accessPassword = process.env.ACCESS_PASSWORD?.trim() || "";
   const webBindHost = requiredEnv("WEB_BIND_HOST", "0.0.0.0");
   const lanAccessEnabled = !isLoopbackBindHost(webBindHost);
-  const subscriptionBaseUrl = normalizeSubscriptionBaseUrl(
-    process.env.LAN_BASE_URL,
-  );
+  const deployment = evaluateDeployment({
+    mode: process.env.SELFHOST_MODE,
+    accessPassword,
+    publicBaseUrl: process.env.PUBLIC_BASE_URL,
+    trustProxyHeaders: process.env.TRUST_PROXY_HEADERS,
+    webBindHost,
+    altOrigins: process.env.PUBLIC_ALT_ORIGINS,
+  });
+  const lanBaseUrl = normalizeSubscriptionBaseUrl(process.env.LAN_BASE_URL);
+  // A public deployment exports its own origin; LAN_BASE_URL stays for the
+  // personal computer / trusted LAN deployment.
+  const subscriptionBaseUrl =
+    deployment.mode === "lan"
+      ? lanBaseUrl
+      : {
+          value: deployment.publicBaseUrl,
+          error: deployment.publicBaseUrlError,
+        };
   return {
     subconverterBaseUrl: requiredEnv(
       "SUBCONVERTER_BASE_URL",
@@ -170,14 +196,41 @@ export function getRuntimeConfig() {
     webBindHost,
     webPort: envInt("WEB_PORT", 8787),
     lanAccessEnabled,
+    deployMode: deployment.mode as DeployMode,
+    storedProfilesEnabled: deployment.storesProfiles,
+    deploymentError: deployment.error,
+    deploymentWarning: deployment.warning,
+    altOrigins: deployment.altOrigins,
+    trustProxyHeaders: deployment.trustProxyHeaders,
+    manageRateLimitPerMinute: envIntAllowZero(
+      "RATE_LIMIT_MANAGE_PER_MINUTE",
+      deployment.mode === "public" ? 30 : 0,
+    ),
+    subscribeRateLimitPerMinute: envIntAllowZero(
+      "RATE_LIMIT_SUBSCRIBE_PER_MINUTE",
+      deployment.mode === "public" ? 60 : 0,
+    ),
     subscriptionBaseUrl: subscriptionBaseUrl.value,
     subscriptionBaseUrlError: subscriptionBaseUrl.error,
     hostNetworkInfoPath: requiredEnv(
       "HOST_NETWORK_INFO_PATH",
       "/host-runtime/lan-address.json",
     ),
-    fixedConfigPath: "config/ekko-rules-selfhost.ini",
+    fixedConfigPath: FIXED_CONFIG_PATH,
+    remoteConfigs: parseRemoteConfigPresets(
+      process.env.REMOTE_CONFIGS,
+      FIXED_CONFIG_PATH,
+      (process.env.THIRD_PARTY_REMOTE_CONFIGS || "").trim() !== "0",
+    ),
+    allowCustomRemoteConfig:
+      (process.env.ALLOW_CUSTOM_REMOTE_CONFIG || "").trim() !== "0",
     // Gateway stores short-lived inputs here for its internal HTTP handoff route.
+    profileDataDir: requiredEnv("PROFILE_DATA_DIR", "/data"),
+    // Aggregate counters only, and only where the site is public enough for
+    // them to mean anything.
+    metricsEnabled:
+      deployment.mode === "public" &&
+      (process.env.PUBLIC_METRICS || "").trim() !== "0",
     sharedDir: requiredEnv("CONVERT_SHARED_DIR", "/shared"),
     sharedUrlPrefix: requiredEnv("CONVERT_SHARED_URL_PREFIX", "file:///shared"),
   };
@@ -185,6 +238,13 @@ export function getRuntimeConfig() {
 
 export function authorizeLocalAccess(provided?: string): void {
   const runtime = getRuntimeConfig();
+  if (runtime.deploymentError) {
+    throw new Error(runtime.deploymentError);
+  }
+  // An open deployment stores nothing and its conversion entry is public by
+  // design, so a password there would only half-close a door that is meant to
+  // be open. ACCESS_PASSWORD stays the optional guard for the personal one.
+  if (runtime.deployMode === "public") return;
   const expected = runtime.accessPassword;
   if (!expected) return;
   const providedDigest = createHash("sha256").update(provided ?? "").digest();
@@ -616,6 +676,7 @@ export async function convertSubscription(
     authorize?: boolean;
     outputMode?: "complete" | "clash-provider-nodes";
     sourceUserAgent?: string | null;
+    remoteConfigValue?: string;
   } = {},
 ): Promise<ConvertResult> {
   const runtime = getRuntimeConfig();
@@ -676,7 +737,10 @@ export async function convertSubscription(
       endpoint.searchParams.set(name, value);
     }
     endpoint.searchParams.set("url", engineInputUrl);
-    endpoint.searchParams.set("config", runtime.fixedConfigPath);
+    endpoint.searchParams.set(
+      "config",
+      options.remoteConfigValue || runtime.fixedConfigPath,
+    );
     endpoint.searchParams.set("emoji", String(convertOptions.emoji));
     endpoint.searchParams.set(
       "list",
@@ -831,11 +895,16 @@ export function publicErrorMessage(error: unknown): string {
   return "Conversion failed.";
 }
 
+export function isDeploymentConfigurationError(message: string): boolean {
+  return /^PUBLIC_BASE_URL must be/.test(message);
+}
+
 export function publicErrorStatus(error: unknown): number {
   const message = typeof error === "string" ? error : publicErrorMessage(error);
+  if (isDeploymentConfigurationError(message)) return 503;
   if (/password/i.test(message)) return 401;
   if (
-    /^(?:Request body|subscriptionUrl|A supported target|accessPassword|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
+    /^(?:Request body|subscriptionUrl|A supported target|accessPassword|remoteConfig|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
       message,
     ) ||
     /^(?:Invalid subscription URL|Only http and https subscription URLs|Subscription URLs must not include credentials|Subscription URL is too long|Subscription host (?:is not allowed|resolves to a blocked address)|Encoded hostnames are not allowed|Subscription content is empty or unsupported|Node provider output is only available)/i.test(

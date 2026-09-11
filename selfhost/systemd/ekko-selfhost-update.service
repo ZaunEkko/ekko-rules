@@ -1,0 +1,15 @@
+[Unit]
+Description=Update the Ekko Rules self-hosted converter from published images
+Documentation=https://github.com/ZaunEkko/ekko-rules/blob/main/selfhost/docs/vps.md
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+# Adjust to wherever the repository is checked out on this server.
+WorkingDirectory=/opt/ekko-rules/selfhost
+ExecStart=/opt/ekko-rules/selfhost/scripts/vps-update.sh
+TimeoutStartSec=900
+# A failed update leaves the running service untouched; the journal keeps why.
+StandardOutput=journal
+StandardError=journal

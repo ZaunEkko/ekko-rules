@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import {
   convertSubscription,
+  getRuntimeConfig,
   publicErrorMessage,
   safeLog,
 } from "@/lib/convert";
 import { readStoredProfile } from "@/lib/profiles";
+import {
+  RATE_LIMIT_MESSAGE,
+  checkSubscribeRate,
+} from "@/lib/request-guard";
+import { rateLimitResponseHeaders } from "@/lib/rate-limit";
+import { STATELESS_ONLY_MESSAGE } from "@/lib/stateless-only";
 import { subscriptionMetadataHeaders } from "@/lib/subscription-metadata";
 
 export const runtime = "nodejs";
@@ -14,6 +21,19 @@ export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  if (!getRuntimeConfig().storedProfilesEnabled) {
+    return NextResponse.json(
+      { error: STATELESS_ONLY_MESSAGE },
+      { status: 404, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  const rate = checkSubscribeRate(request.headers);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: RATE_LIMIT_MESSAGE },
+      { status: 429, headers: rateLimitResponseHeaders(rate) },
+    );
+  }
   try {
     const { id } = await context.params;
     const profile = await readStoredProfile(id);

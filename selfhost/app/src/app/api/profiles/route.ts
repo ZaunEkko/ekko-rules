@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   authorizeLocalAccess,
+  getRuntimeConfig,
   convertSubscription,
   isJsonRequestContentType,
   parseConvertRequest,
@@ -13,11 +14,38 @@ import {
   listStoredProfiles,
   publicProfile,
 } from "@/lib/profiles";
+import {
+  HOST_GUARD_MESSAGE,
+  RATE_LIMIT_MESSAGE,
+  checkManageRate,
+  isManagementHostAllowed,
+} from "@/lib/request-guard";
+import { rateLimitResponseHeaders } from "@/lib/rate-limit";
+import { STATELESS_ONLY_MESSAGE } from "@/lib/stateless-only";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  if (!isManagementHostAllowed(request.headers)) {
+    return NextResponse.json(
+      { error: HOST_GUARD_MESSAGE },
+      { status: 403, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  if (!getRuntimeConfig().storedProfilesEnabled) {
+    return NextResponse.json(
+      { error: STATELESS_ONLY_MESSAGE },
+      { status: 404, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  const rate = checkManageRate(request.headers);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: RATE_LIMIT_MESSAGE },
+      { status: 429, headers: rateLimitResponseHeaders(rate) },
+    );
+  }
   try {
     authorizeLocalAccess(request.headers.get("x-ekko-access-password") || undefined);
     return NextResponse.json(
@@ -37,6 +65,25 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!isManagementHostAllowed(request.headers)) {
+    return NextResponse.json(
+      { error: HOST_GUARD_MESSAGE },
+      { status: 403, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  if (!getRuntimeConfig().storedProfilesEnabled) {
+    return NextResponse.json(
+      { error: STATELESS_ONLY_MESSAGE },
+      { status: 404, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  const rate = checkManageRate(request.headers);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: RATE_LIMIT_MESSAGE },
+      { status: 429, headers: rateLimitResponseHeaders(rate) },
+    );
+  }
   if (!isJsonRequestContentType(request.headers.get("content-type"))) {
     return NextResponse.json(
       { error: "Content-Type must be application/json." },
