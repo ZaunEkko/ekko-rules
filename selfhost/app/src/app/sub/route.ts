@@ -81,7 +81,9 @@ export async function GET(request: Request) {
     }
 
     if (runtimeConfig.metricsEnabled) {
-      await recordMetric(runtimeConfig.profileDataDir, "conversion");
+      // Not awaited: writes are serialised, and a client waiting on its config
+      // should never queue behind someone else's counter.
+      void recordMetric(runtimeConfig.profileDataDir, "conversion");
     }
     safeLog("stateless.convert_success", {
       target: result.target,

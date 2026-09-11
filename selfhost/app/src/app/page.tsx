@@ -418,10 +418,35 @@ export default function HomePage() {
     }
 
     void loadRuntimeStatus();
-    const timer = window.setInterval(loadRuntimeStatus, 15_000);
+
+    // An open station can have many tabs sitting idle in the background; none
+    // of them needs to keep asking. Polling stops while the tab is hidden and
+    // refreshes once as soon as it comes back.
+    let timer: number | null = null;
+    const start = () => {
+      if (timer === null) timer = window.setInterval(loadRuntimeStatus, 15_000);
+    };
+    const stop = () => {
+      if (timer !== null) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void loadRuntimeStatus();
+        start();
+      } else {
+        stop();
+      }
+    };
+    onVisibility();
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       cancelled = true;
-      window.clearInterval(timer);
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 
