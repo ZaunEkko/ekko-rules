@@ -1,0 +1,108 @@
+name: Publish selfhost images
+
+# Builds the self-hosted converter images and publishes them to GHCR so a
+# server deploys a known digest instead of building from source.
+#
+# No server credential lives in this repository: the VPS pulls, nothing here
+# pushes to it. See selfhost/docs/vps.md for the update timer that consumes
+# these images.
+
+on:
+  push:
+    tags:
+      - "selfhost-v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Extra tag to publish, besides latest and the commit sha"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-selfhost
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  WEB_IMAGE: ghcr.io/${{ github.repository_owner }}/ekko-rules-selfhost-web
+  ENGINE_IMAGE: ghcr.io/${{ github.repository_owner }}/ekko-rules-selfhost-subconverter
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Resolve image tags
+        id: tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          short_sha="$(git rev-parse --short HEAD)"
+          version="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_REF_TYPE}" != "tag" ]; then version="sha-${short_sha}"; fi
+          version="${version#selfhost-}"
+          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Confirm the rule snapshot matches the repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          node selfhost/scripts/sync-rulesets.mjs
+          git diff --exit-code -- selfhost/subconverter/config selfhost/subconverter/rulesets
+
+      - name: Log in to GHCR
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          printf "%s" "$GHCR_TOKEN" | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and push the converter engine
+        shell: bash
+        env:
+          VERSION: ${{ steps.tags.outputs.version }}
+          SHORT_SHA: ${{ steps.tags.outputs.short_sha }}
+          EXTRA_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          args=(--tag "$ENGINE_IMAGE:$VERSION" --tag "$ENGINE_IMAGE:sha-$SHORT_SHA" --tag "$ENGINE_IMAGE:latest")
+          if [ -n "$EXTRA_TAG" ]; then args+=(--tag "$ENGINE_IMAGE:$EXTRA_TAG"); fi
+          docker build "${args[@]}" selfhost/subconverter
+          docker push --all-tags "$ENGINE_IMAGE"
+
+      - name: Build and push the web gateway
+        shell: bash
+        env:
+          VERSION: ${{ steps.tags.outputs.version }}
+          SHORT_SHA: ${{ steps.tags.outputs.short_sha }}
+          EXTRA_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          args=(--build-arg "EKKO_RULES_VERSION=$VERSION")
+          args+=(--tag "$WEB_IMAGE:$VERSION" --tag "$WEB_IMAGE:sha-$SHORT_SHA" --tag "$WEB_IMAGE:latest")
+          if [ -n "$EXTRA_TAG" ]; then args+=(--tag "$WEB_IMAGE:$EXTRA_TAG"); fi
+          docker build "${args[@]}" selfhost/app
+          docker push --all-tags "$WEB_IMAGE"
+
+      - name: Record the published digests
+        shell: bash
+        env:
+          VERSION: ${{ steps.tags.outputs.version }}
+        run: |
+          set -euo pipefail
+          echo "### Published images" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          for image in "$ENGINE_IMAGE" "$WEB_IMAGE"; do
+            digest="$(docker image inspect --format "{{index .RepoDigests 0}}" "$image:$VERSION" || echo unknown)"
+            echo "- $image:$VERSION" >> "$GITHUB_STEP_SUMMARY"
+            echo "  - $digest" >> "$GITHUB_STEP_SUMMARY"
+          done

@@ -100,5 +100,18 @@ jobs:
       - name: Validate selfhost Compose configuration
         run: docker compose -f selfhost/compose.yaml config --quiet
 
-      - name: Validate Unix startup helper
-        run: sh -n selfhost/start.sh
+      - name: Validate the published-image overlay
+        working-directory: selfhost
+        env:
+          SELFHOST_MODE: public
+          PUBLIC_BASE_URL: https://sub.example.com
+        run: docker compose -f compose.yaml -f compose.ghcr.yaml config --quiet
+
+      - name: Validate the reverse proxy example
+        run: |
+          docker run --rm -v "$PWD/selfhost/nginx:/site:ro" nginx:alpine sh -c 'cp /site/sub.example.com.conf /tmp/site.conf && sed -i "s#include /etc/nginx/snippets/cloudflare-only.conf;##; s#ssl_certificate .*#ssl_certificate /tmp/c.pem;#; s#ssl_certificate_key .*#ssl_certificate_key /tmp/k.pem;#; s#include /etc/letsencrypt/options-ssl-nginx.conf;##; s#ssl_dhparam .*##" /tmp/site.conf && apk add --no-cache openssl >/dev/null && openssl req -x509 -newkey rsa:2048 -nodes -keyout /tmp/k.pem -out /tmp/c.pem -days 1 -subj "/CN=t" >/dev/null 2>&1 && rm -f /etc/nginx/conf.d/default.conf && cp /tmp/site.conf /etc/nginx/conf.d/ && nginx -t'
+
+      - name: Validate Unix shell helpers
+        run: |
+          sh -n selfhost/start.sh
+          sh -n selfhost/scripts/vps-update.sh
