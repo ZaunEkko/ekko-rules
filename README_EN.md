@@ -2,122 +2,64 @@
 
 [中文](README.md)
 
-Subscription generation and specialized AI, entertainment, gaming, and NSFW routing for Mihomo, sing-box, and mainstream proxy clients. The same code runs in two shapes: on your own computer, where the real subscription never leaves the machine, or as an open converter that **stores nothing** and lets every visitor assemble their own subscription link in the browser. The public rules can also be reused with a third-party Subconverter or the native Mihomo template.
+Subscription conversion and specialized routing for Mihomo, sing-box, and mainstream proxy clients. Turn an airport subscription into one complete configuration you can import directly: nodes, DNS, policy groups, and rules all in the same file.
 
-## Choose a setup
+## Three steps
 
-| Setup | Best for | Who fetches the real subscription | Result |
-|---|---|---|---|
-| **Local self-hosting (recommended)** | Keeping the subscription on your own computer and importing a complete configuration | Your Docker stack | Stable local URL that can be refreshed repeatedly |
-| **Open converter** | No Docker available, and you would rather not hand the subscription to a service that keeps it | The site's server (**stores nothing**, discarded after each conversion) | A subscription link that carries every option itself |
-| Third-party online conversion | No Docker available and you accept trusting the backend | Third-party backend | Third-party subscription URL |
-| Native Mihomo template | You only need Ekko Rules and manage client settings yourself | Your Mihomo client | Provider template |
+<!-- DEMO: record the walkthrough once sub.boxnook.cc is live -->
 
-One switch separates the two self-hosted shapes. `SELFHOST_MODE=lan` stores fixed profiles and keeps the real subscription out of every URL; `SELFHOST_MODE=public` stores nothing at all, at the cost of carrying the subscription inside the link. See [selfhost/README.md](selfhost/README.md) and the [deployment guide](selfhost/docs/vps.md).
+**1.** Open **[sub.boxnook.cc](https://sub.boxnook.cc)**
+**2.** Paste your subscription URL (the field is masked by default)
+**3.** Press "one-tap import" for Mihomo / Clash
 
-### Recommended: local complete subscriptions
+Done. Flip UDP, XUDP and the rest under advanced options if you need them — the link rewrites itself as you go. Copying the link or scanning it with a phone works too.
 
-Docker with Compose v2 is required. On Windows, use the one-time setup entry for the first deployment:
+**The site stores nothing.** No accounts and no profile list; the subscription body is held in memory for the conversion and deleted straight after, and no log records the address. The trade-off is that **the link carries your subscription credential** — import it into your own client, do not forward it.
+
+Rules default to this repository's Ekko Rules. The page can also switch to the common ACL4SSR sets, or take a remote configuration URL of your own.
+
+## Rather not involve anyone else? Run it yourself
+
+The same code in its other shape: the real subscription goes only to your own Docker, **never appearing in a URL at all**, and you get a stable local address that your client keeps refreshing.
 
 ```bash
 git clone https://github.com/ZaunEkko/ekko-rules.git
 cd ekko-rules/selfhost
-
-# Windows: start Compose and install the current-user LAN helper
-setup.cmd
-
-# macOS / Linux
-sh ./start.sh
+docker compose up --build -d
 ```
 
-If you are already in the repository:
+Open [http://127.0.0.1:8787](http://127.0.0.1:8787) to create one, and you get `http://127.0.0.1:8787/sub/<random id>`. Phones, tablets, and routers on the same LAN use the computer's IP instead.
 
-```bash
-cd selfhost
-setup.cmd
-```
+On Windows, `setup.cmd` additionally installs a login-time helper that tracks the machine's LAN address, so the page follows along after a Wi-Fi change. Full instructions, security boundaries, and troubleshooting live in [`selfhost/README.md`](selfhost/README.md).
 
-Run `setup.cmd` only once. The Web and converter services use `restart: unless-stopped`, so Docker Desktop can restore the containers on later sign-ins while the Windows logon task restores LAN-IP detection. The containers remain fully manageable in Docker Desktop. `start.cmd` starts only the current session, and `docker compose up --build -d` remains the standard path when no host helper should be installed.
+| | Hosted site | Self-hosted |
+|---|---|---|
+| Who fetches your subscription | The site's server, discarded immediately | Your own Docker |
+| Subscription inside the URL | Yes — so do not forward the link | No |
+| Stable address | The link carries every option | `/sub/<random id>` |
+| What you install | Nothing | Docker + Compose v2 |
 
-Open [http://127.0.0.1:8787](http://127.0.0.1:8787), paste the real subscription, select a client, and create a local subscription. Import the generated URL once:
+Both shapes emit eight client formats: Mihomo / Clash, sing-box, Surge 4+, Quantumult X, Loon, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry are passed through.
 
-```text
-http://127.0.0.1:8787/sub/<random ID>
-```
+## Rules only, no conversion
 
-Whenever Docker is running, refreshing that same URL fetches the upstream subscription again and generates a fresh configuration. Normal stops, restarts, and `docker compose down` preserve the URL; only `docker compose down -v` removes the profile volume.
-
-The same stable profile can directly serve phones, tablets, and routers on a trusted LAN. Docker publishes the Web port on all host interfaces by default. After the first Windows `setup.cmd` run, a lightweight current-user helper automatically follows the computer's LAN IP across later sign-ins and network changes. Address controls live beside the saved profiles and can switch every displayed, copied, and QR-rendered URL among `localhost`, the detected address, a custom computer IP, and the eight most recently used origins. When detected-LAN mode is selected, a new IP is applied automatically while the `/sub/<random ID>` path remains unchanged. See [`selfhost/README.md`](selfhost/README.md#手机与路由器使用局域网订阅) for details.
-
-| Capability | Current behavior |
-|---|---|
-| Complete configuration | Mihomo output includes nodes, ports, DNS, policy groups, and Ekko Rules |
-| Output formats | Mihomo / Clash, sing-box, Surge 4+, Quantumult X, Loon, Surfboard, Quantumult, and Mellow |
-| Modern protocols | AnyTLS, VLESS Reality, Hysteria2, and TUIC are verified for Mihomo and sing-box |
-| Stable profile | Import on a computer, phone, or router; the profile path survives Docker restarts |
-| Network switching | Detected-LAN mode follows a new IP automatically; `localhost`, current origin, custom prefix, and eight recent origins remain selectable |
-| Mobile import | Mihomo / Clash can be opened from the system camera or scan the raw URL in-app; both QR codes are rendered locally |
-| Advanced options | Emoji, UDP, TFO, TLS 1.3, VLESS/VMess XUDP, sing-box IPv6, filtering, sorting, renaming, custom User-Agent, and more |
-| Updates | Automatic updates are off by default; enable a 1–168 hour interval or refresh manually |
-| Usage metadata | Traffic, quota, and expiry are forwarded when upstream provides `Subscription-Userinfo` |
-
-The real subscription URL is stored only in a local Docker volume and is not exposed in generated output. The converter-engine port is not published to the host. Treat the random ID in the fixed URL as a local access credential and do not share it publicly. See [`selfhost/README.md`](selfhost/README.md) for implementation details and security boundaries.
-
-### Alternative: online Subconverter conversion
-
-Open a Subconverter frontend that supports custom remote configurations:
-
-| Frontend | Recommended use |
-|---|---|
-| [`https://sub.v1.mk/`](https://sub.v1.mk/) | **Recommended.** Supports newer protocols such as AnyTLS; prefer it when the subscription contains newer-protocol nodes. |
-| [`https://acl4ssr-sub.github.io/`](https://acl4ssr-sub.github.io/) | A popular alternative with older protocol support; it may not convert AnyTLS and other newer protocols. |
-
-Subscription conversion combines three separate parts:
-
-| Part | Role and trust boundary |
-|---|---|
-| Conversion frontend | Provides the web form for the subscription URL, target format, and remote configuration, then submits the conversion request to a backend. |
-| Conversion backend | Fetches the real subscription and the Ekko Rules remote configuration, then generates the result; **its operator can know the complete real subscription URL, including its token.** |
-| Ekko Rules | Provides only public rules, order, policy groups, and mappings; it neither receives nor stores the subscription URL submitted to the conversion backend. |
-
-Self-hosting only the frontend while continuing to call a public conversion backend does not hide the real subscription URL. Protecting it requires a trusted or self-hosted conversion backend as well.
-
-Fill in the form as follows:
-
-| Field | Value |
-|---|---|
-| Subscription URL | Your own provider or node subscription |
-| Target | `Clash` |
-| Remote config | The Ekko Rules Raw URL below |
-
-```text
-https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
-```
-
-<details>
-<summary>Expand when the remote configuration is ignored or the generated URL contains <code>%20</code></summary>
-
-After pasting the complete URL into the remote-configuration field, the dropdown shows a candidate containing that same full URL. **Click that URL candidate to select it**; pasting it or pressing Enter alone is not sufficient. A successful selection returns the field to read-only mode while displaying the full URL. Confirm that it no longer says "Default", then generate the subscription. **Do not rely only on whether the input field visibly contains a space; inspect the final generated custom subscription URL.** Some frontends insert a leading space while submitting the remote configuration. A correct result contains `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`, with `https` immediately after `config=`. If it contains `config=%20https...`, `%20` is that leading space. Delete the remote configuration, paste it again, click the complete URL candidate, regenerate, and recheck until `%20` is gone. If `config=` is missing or still begins with `config=%20https...`, the converter may fail to load Ekko Rules and fall back to its default preset instead of the 40 policy groups.
-
-</details>
-
-> The conversion backend needs the complete subscription URL to fetch nodes and perform the conversion, so it is not an anonymous relay. Use a trusted backend or self-host the conversion backend. Never paste a token-bearing subscription URL into issues, pull requests, logs, or public chats.
-
-### Rules only: native Mihomo template
-
-Mihomo template URL:
+### Native Mihomo template
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Mihomo/reversed-template.yaml
 ```
 
-Download the template and replace:
+Download it, replace `PUT_YOUR_SUBSCRIPTION_URL_HERE` with your own subscription URL, and load it in Clash Verge Rev or another Mihomo client. The template supplies proxy providers, policy groups, rule providers, and rules only; it does not take over ports, DNS, TUN, the controller, or other client settings.
+
+### Third-party Subconverter
+
+In a frontend that accepts a custom remote configuration (such as [`sub.v1.mk`](https://sub.v1.mk/)), set the output to `Clash` and the remote configuration to:
 
 ```text
-PUT_YOUR_SUBSCRIPTION_URL_HERE
+https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-with your own subscription URL, then load it in a Mihomo client such as Clash Verge Rev. The template provides only the proxy provider, policy groups, rule providers, and rules. Ports, DNS, TUN, controller settings, and other client configuration remain client-owned.
+> **A conversion backend sees the complete subscription URL, token included.** Ekko Rules only publishes rules; it never receives and cannot see what anyone submits to a third-party backend. Self-hosting only the frontend while still calling a public backend hides nothing. Never paste a tokenized subscription URL into an issue, a PR, a log, or a public chat.
 
 ## Key routing groups
 
@@ -186,11 +128,11 @@ If credentials were already exposed, revoke or rotate them immediately; editing 
 
 Ekko Rules has the following responsibility boundary:
 
-- public rules and online remote configurations store no proxy nodes or subscription credentials; the self-hosted app stores only the minimum stable-URL mapping in the user's local Docker volume;
+- public rules and online remote configurations store no proxy nodes or subscription credentials; the self-hosted `lan` shape stores only the minimum stable-URL mapping in the user's own Docker volume; the `public` shape stores no subscription, node, or per-person record at all, only two running pairs of integers;
 - the public Mihomo template leaves ports, DNS, TUN, controller, and other settings to the client; the self-hosted entry point generates an import-ready complete configuration;
 - the public rules product maintains rules, order, policy groups, and mappings; the self-hosted app only fetches subscriptions locally and invokes a pinned converter engine;
 - `sources/` is the sole canonical source for the rules product, and `generated/reversed-profile/` is rebuilt only by the generator;
-- `selfhost/` contains the local web app, converter snapshot, and Docker Compose stack; it has no public-hosting mode.
+- `selfhost/` contains the web app, converter snapshot, and Docker Compose stack in two shapes: `lan` stores fixed profiles and serves only whoever deployed it, `public` stores nothing and serves everyone. There is no third shape that keeps other people's subscriptions on a public server.
 
 ## Development and validation
 

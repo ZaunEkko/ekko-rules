@@ -16,6 +16,15 @@ if [ ! -f "$ROOT/.env" ]; then
   exit 1
 fi
 
+# A server that silently falls back to the stored-profile shape would start
+# keeping visitors' subscriptions on a public box. Refuse instead: the default
+# exists so that a bare `docker compose up` on someone's own computer is the
+# personal one, not so that a deploy can forget to say which it wants.
+if ! grep -qE "^[[:space:]]*SELFHOST_MODE[[:space:]]*=[[:space:]]*(lan|public)[[:space:]]*$" "$ROOT/.env"; then
+  echo "$ROOT/.env must set SELFHOST_MODE to lan or public." >&2
+  exit 1
+fi
+
 current_images() {
   # shellcheck disable=SC2086
   docker compose $COMPOSE_FILES images --quiet 2>/dev/null | sort
