@@ -46,6 +46,16 @@ Two one-time deterministic imports use the same pinned revision of [`v2fly/domai
 
 Only sources that directly contribute to the current canonical product are attributed above. Earlier reconstruction comparisons remain internal audit evidence and are not presented as current product inputs or dependencies.
 
+### Third-party remote configs referenced by the self-hosted converter
+
+The converter in `selfhost/` can be pointed at remote configuration templates that are **not** part of this product's rule data. It ships references only: no third-party file is copied into this repository, redistributed, or modified, and each file is fetched at request time from its own project's servers by the operator's own deployment.
+
+| Referenced project | What is referenced | License |
+|---|---|---|
+| [ACL4SSR](https://github.com/ACL4SSR/ACL4SSR) | Online Subconverter configuration templates under `Clash/config/` | GPL-3.0 |
+
+Selecting one of these replaces Ekko Rules entirely for that conversion: the groups, rules, and base template all come from the referenced project, and its availability, correctness, and licensing are that project's own. Ekko Rules remains the first and default option, and an operator may drop every third-party entry with `THIRD_PARTY_REMOTE_CONFIGS=0`. A visitor-supplied configuration URL is likewise fetched, not stored or republished.
+
 ## Trademarks and service names
 
 Apple, Microsoft, Google, OpenAI, Claude, Netflix, Disney+, YouTube, HBO, Roblox, Bilibili, iQIYI, npm, Node.js, and all other company, product, and service names are trademarks or identifiers of their respective owners. Their appearance describes routing categories and does not imply affiliation, endorsement, or sponsorship.
