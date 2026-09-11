@@ -51,15 +51,15 @@ https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-pr
 
 Download it, replace `PUT_YOUR_SUBSCRIPTION_URL_HERE` with your own subscription URL, and load it in Clash Verge Rev or another Mihomo client. The template supplies proxy providers, policy groups, rule providers, and rules only; it does not take over ports, DNS, TUN, the controller, or other client settings.
 
-### Third-party Subconverter
+### With another Subconverter frontend
 
-In a frontend that accepts a custom remote configuration (such as [`sub.v1.mk`](https://sub.v1.mk/)), set the output to `Clash` and the remote configuration to:
+The rules are public, so they also work in any Subconverter frontend that accepts a custom remote configuration: set the output to `Clash` and the remote configuration to
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-> **A conversion backend sees the complete subscription URL, token included.** Ekko Rules only publishes rules; it never receives and cannot see what anyone submits to a third-party backend. Self-hosting only the frontend while still calling a public backend hides nothing. Never paste a tokenized subscription URL into an issue, a PR, a log, or a public chat.
+> **A conversion backend sees the complete subscription URL, token included.** That is inherent to online conversion: the backend must have the full address to fetch the nodes. Ekko Rules only publishes rules; it never receives and cannot see what anyone submits elsewhere, and self-hosting only the frontend while still calling a public backend hides nothing. If that matters to you, use one of the two shapes above. Never paste a tokenized subscription URL into an issue, a PR, a log, or a public chat.
 
 ## Key routing groups
 

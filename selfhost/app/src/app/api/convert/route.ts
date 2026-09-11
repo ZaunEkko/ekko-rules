@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   convertSubscription,
+  getRuntimeConfig,
   isJsonRequestContentType,
   parseConvertRequest,
   publicErrorMessage,
@@ -13,6 +14,7 @@ import {
   checkManageRate,
   isManagementHostAllowed,
 } from "@/lib/request-guard";
+import { recordMetric } from "@/lib/metrics";
 import { rateLimitResponseHeaders } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -54,6 +56,10 @@ export async function POST(request: Request) {
     const result = await convertSubscription(parsed, {
       sourceUserAgent: request.headers.get("user-agent"),
     });
+    const runtimeConfig = getRuntimeConfig();
+    if (runtimeConfig.metricsEnabled) {
+      void recordMetric(runtimeConfig.profileDataDir, "conversion");
+    }
     safeLog("convert.success", {
       requestId: result.requestId,
       target: result.target,

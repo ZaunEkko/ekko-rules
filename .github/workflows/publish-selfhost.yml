@@ -28,8 +28,6 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  WEB_IMAGE: ghcr.io/${{ github.repository_owner }}/ekko-rules-selfhost-web
-  ENGINE_IMAGE: ghcr.io/${{ github.repository_owner }}/ekko-rules-selfhost-subconverter
 
 jobs:
   publish:
@@ -39,11 +37,16 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - name: Resolve image tags
+      - name: Resolve image names and tags
         id: tags
         shell: bash
         run: |
           set -euo pipefail
+          # A container repository name may not contain uppercase letters, and
+          # the owner login does.
+          owner="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr "[:upper:]" "[:lower:]")"
+          echo "WEB_IMAGE=${REGISTRY}/${owner}/ekko-rules-selfhost-web" >> "$GITHUB_ENV"
+          echo "ENGINE_IMAGE=${REGISTRY}/${owner}/ekko-rules-selfhost-subconverter" >> "$GITHUB_ENV"
           short_sha="$(git rev-parse --short HEAD)"
           version="${GITHUB_REF_NAME}"
           if [ "${GITHUB_REF_TYPE}" != "tag" ]; then version="sha-${short_sha}"; fi

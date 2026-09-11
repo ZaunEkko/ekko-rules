@@ -1,4 +1,4 @@
-import { getRuntimeConfig } from "./convert";
+import { getRuntimeConfig, safeLog } from "./convert";
 import { isAllowedManagementHost } from "./host-guard";
 import {
   clientRateKey,
@@ -21,14 +21,24 @@ function limiterFor(name: string, limit: number): RateLimiter {
   return limiter;
 }
 
+let warnedAboutSharedKey = false;
+
 function check(name: string, limit: number, headers: Headers): RateLimitDecision {
   if (limit <= 0) {
     return { allowed: true, remaining: Number.POSITIVE_INFINITY, retryAfterSeconds: 0 };
   }
   const runtime = getRuntimeConfig();
-  return limiterFor(name, limit).check(
-    clientRateKey(headers, runtime.trustProxyHeaders),
-  );
+  const key = clientRateKey(headers, runtime.trustProxyHeaders);
+  // Without a forwarded address every visitor lands in one bucket, which turns
+  // a per-client limit into a site-wide one. That is a proxy misconfiguration,
+  // and it is invisible until users start seeing 429, so say it once.
+  if (key === "shared" && runtime.trustProxyHeaders && !warnedAboutSharedKey) {
+    warnedAboutSharedKey = true;
+    safeLog("ratelimit.no_client_address", {
+      hint: "reverse proxy is not sending X-Forwarded-For or X-Real-IP; limits now apply site-wide",
+    });
+  }
+  return limiterFor(name, limit).check(key);
 }
 
 /** Management and one-off conversion endpoints. */

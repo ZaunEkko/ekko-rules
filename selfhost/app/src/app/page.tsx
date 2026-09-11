@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
   countEnabledOptions,
@@ -469,20 +469,25 @@ export default function HomePage() {
     });
   }, [baseUrlMode, baseUrlOverride, health?.detected_lan_base_url]);
 
-  // One count per session, so a reload does not inflate the figure.
+  // One count per session, and — because status polling hands this effect a
+  // fresh object every 15 seconds — at most one per mount even where session
+  // storage is unavailable.
+  const visitReported = useRef(false);
+  const metricsAvailable = Boolean(health?.metrics);
   useEffect(() => {
-    if (health?.metrics === undefined || health?.metrics === null) return;
+    if (!metricsAvailable || visitReported.current) return;
+    visitReported.current = true;
     const KEY = "ekko-rules.visit-counted";
     try {
       if (window.sessionStorage.getItem(KEY)) return;
       window.sessionStorage.setItem(KEY, "1");
     } catch {
-      // A browser that refuses session storage simply counts each load.
+      // A browser that refuses site data counts once per page load instead.
     }
     void fetch("/api/metrics/visit", { method: "POST", cache: "no-store" }).catch(
       () => undefined,
     );
-  }, [health?.metrics]);
+  }, [metricsAvailable]);
 
   useEffect(() => {
     if (health?.stores_profiles === false) return;

@@ -51,20 +51,20 @@ https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-pr
 
 下载后把 `PUT_YOUR_SUBSCRIPTION_URL_HERE` 换成自己的订阅地址，再由 Clash Verge Rev 等 Mihomo 客户端加载。模板只提供代理 Provider、策略组、Rule Provider 和规则，不接管端口、DNS、TUN、控制器或其他客户端设置。
 
-### 第三方 Subconverter
+### 配合其它 Subconverter 前端
 
-在支持自定义远程配置的前端（如 [`sub.v1.mk`](https://sub.v1.mk/)）里，「生成类型」选 `Clash`，「远程配置」填：
+规则本身是公开的，也可以在任何支持自定义远程配置的 Subconverter 前端里使用：「生成类型」选 `Clash`，「远程配置」填
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
 ```
 
-> **转换后端能看到完整的真实订阅地址，包括其中的 token。** Ekko Rules 只提供公开规则，不接收也看不到任何人提交给第三方后端的订阅。只自托管前端而仍调用公共后端，同样藏不住这个地址。不要在 Issue、PR、日志或公开聊天里粘贴带 token 的订阅链接。
+> **转换后端能看到完整的真实订阅地址，包括其中的 token。** 这是所有在线转换的共性：后端必须拿到完整地址才能拉取节点。Ekko Rules 只提供公开规则，不接收也看不到任何人提交给别处的订阅；只自托管前端而仍调用公共后端，同样藏不住这个地址。介意这一点就用上面的两种形态之一。不要在 Issue、PR、日志或公开聊天里粘贴带 token 的订阅链接。
 
 <details>
 <summary>远程配置没有生效，或生成地址中出现 <code>%20</code> 时展开</summary>
 
-在“远程配置”输入框中粘贴完整地址后，下拉列表会出现一条相同的完整 URL。**必须点击这条 URL 候选项完成选择**，不能只粘贴或只按 Enter；成功后输入框会变回只读状态并完整显示该 URL。确认不再显示“默认”后，再点击“生成订阅链接”。**不要只看输入框中是否有空格，必须检查最终生成的定制订阅地址**：有些前端会在提交时自动在远程配置前插入空格。正确结果应包含 `config=https%3A%2F%2Fraw.githubusercontent.com%2FZaunEkko%2Fekko-rules%2F...%2Fekko-rules.ini`，`config=` 后立即是 `https`；如果出现 `config=%20https...`，其中 `%20` 就是前导空格。此时应删除远程配置、重新粘贴并点击完整 URL 候选，再生成并复查，直到 `%20` 消失。若缺少 `config=` 或仍为 `config=%20https...`，转换器可能读取失败并回退到网站默认预设，而不是 Ekko Rules 的 40 个策略组。
+某些前端会在提交时于远程配置前插入一个空格。粘贴完整地址后，如果下拉列表出现同样的完整 URL，**必须点击这条候选项完成选择**，不能只粘贴或只按 Enter。生成后检查最终的订阅地址：`config=` 后应立即是 `https`；若出现 `config=%20https...`，那个 `%20` 就是前导空格，需要删除远程配置重新粘贴并重新选择，直到它消失。否则转换器可能读取失败并回退到该站自己的默认预设，而不是 Ekko Rules 的策略组。
 
 </details>
 
