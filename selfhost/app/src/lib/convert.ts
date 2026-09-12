@@ -164,20 +164,24 @@ const REMOTE_CONFIG_CACHE_MAX_ENTRIES = 8;
  */
 const remoteConfigCache = new Map<string, { body: string; expiresAt: number }>();
 
-function readCachedRemoteConfig(url: string, nowMs = Date.now()): string | null {
+/**
+ * An expired entry is kept rather than dropped: if the refresh then fails, the
+ * stale copy is still better than a failed conversion. This mirrors the
+ * engine's own `serve_cache_on_fetch_fail`, which the gateway took over
+ * responsibility for when it started fetching these itself.
+ */
+function readCachedRemoteConfig(
+  url: string,
+  nowMs = Date.now(),
+): { body: string; fresh: boolean } | null {
   const hit = remoteConfigCache.get(url);
   if (!hit) return null;
-  if (hit.expiresAt <= nowMs) {
-    remoteConfigCache.delete(url);
-    return null;
-  }
-  return hit.body;
+  return { body: hit.body, fresh: hit.expiresAt > nowMs };
 }
 
 function cacheRemoteConfig(url: string, body: string, nowMs = Date.now()): void {
-  for (const [key, entry] of remoteConfigCache) {
-    if (entry.expiresAt <= nowMs) remoteConfigCache.delete(key);
-  }
+  // Eviction is by count only. Age decides freshness, not retention.
+  remoteConfigCache.delete(url);
   while (remoteConfigCache.size >= REMOTE_CONFIG_CACHE_MAX_ENTRIES) {
     const oldest = remoteConfigCache.keys().next();
     if (oldest.done) break;
@@ -801,22 +805,31 @@ export async function convertSubscription(
         throw new Error("remoteConfig host is not allowed.");
       }
 
-      let configBody = readCachedRemoteConfig(safeConfigUrl.href);
+      const cachedConfig = readCachedRemoteConfig(safeConfigUrl.href);
+      let configBody = cachedConfig?.fresh ? cachedConfig.body : null;
       if (configBody === null) {
-        const fetchedConfig = await requestTextWithLimits(safeConfigUrl.href, {
-          method: "GET",
-          timeoutMs: runtime.timeoutMs,
-          maxBytes: REMOTE_CONFIG_MAX_BYTES,
-          requestLabel: "Remote config fetch",
-          resolvedAddresses: configAddresses,
-        });
-        if (!fetchedConfig.ok) {
-          throw new Error(
-            `Remote config fetch failed with HTTP ${fetchedConfig.status}.`,
-          );
+        try {
+          const fetchedConfig = await requestTextWithLimits(safeConfigUrl.href, {
+            method: "GET",
+            timeoutMs: runtime.timeoutMs,
+            maxBytes: REMOTE_CONFIG_MAX_BYTES,
+            requestLabel: "Remote config fetch",
+            resolvedAddresses: configAddresses,
+          });
+          if (!fetchedConfig.ok) {
+            throw new Error(
+              `Remote config fetch failed with HTTP ${fetchedConfig.status}.`,
+            );
+          }
+          configBody = fetchedConfig.body;
+          cacheRemoteConfig(safeConfigUrl.href, configBody);
+        } catch (error) {
+          if (!cachedConfig) throw error;
+          safeLog("remote_config.served_stale", {
+            reason: publicErrorMessage(error),
+          });
+          configBody = cachedConfig.body;
         }
-        configBody = fetchedConfig.body;
-        cacheRemoteConfig(safeConfigUrl.href, configBody);
       }
 
       const configName = "remote.ini";
