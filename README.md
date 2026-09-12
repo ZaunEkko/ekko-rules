@@ -1,8 +1,25 @@
+<div align="center">
+
+<img src="selfhost/app/src/app/icon.png" width="88" alt="Ekko Rules">
+
 # Ekko Rules
 
-[English](README_EN.md)
+**把机场订阅换成一份能直接导入的完整配置**
 
-面向 Clash、sing-box 与主流代理客户端的订阅转换与特化分流规则。把机场订阅换成一份能直接导入的完整配置：节点、DNS、策略组与规则全在里面。
+节点 · DNS · 策略组 · 分流规则，一个文件全给你
+
+[![License](https://img.shields.io/github/license/ZaunEkko/ekko-rules?style=flat-square&color=1b1be0)](LICENSE)
+[![Validate](https://img.shields.io/github/actions/workflow/status/ZaunEkko/ekko-rules/validate.yml?branch=main&style=flat-square&label=validate)](https://github.com/ZaunEkko/ekko-rules/actions/workflows/validate.yml)
+[![Clients](https://img.shields.io/badge/clients-8-1b1be0?style=flat-square)](#三步拿到配置)
+[![Stored](https://img.shields.io/badge/stored-nothing-1b1be0?style=flat-square)](#三步拿到配置)
+
+**[在线转换](https://sub.boxnook.cc)** · [自己部署](#在自己电脑上跑一份) · [规则说明](#重点分流) · [English](README_EN.md)
+
+<!-- DEMO：待 sub.boxnook.cc 上线后补录操作动图，放在这里 -->
+
+</div>
+
+---
 
 ## 三步拿到配置
 
@@ -18,9 +35,9 @@
 
 规则默认用本仓库的 Ekko Rules，也可以在页面上换成 ACL4SSR 的常用几套，或粘贴自己的远程配置地址。
 
-## 不想经过任何第三方？在自己电脑上跑一份
+## 在自己电脑上跑一份
 
-同一套代码，换个形态：真实订阅只交给本机 Docker，**连链接里都不会出现**，换回一个固定的本地地址，客户端导入一次以后一直刷新它。
+不想让任何第三方经手？同一套代码换个形态：真实订阅只交给本机 Docker，**连链接里都不会出现**，换回一个固定的本地地址，客户端导入一次以后一直刷新它。
 
 ```bash
 git clone https://github.com/ZaunEkko/ekko-rules.git

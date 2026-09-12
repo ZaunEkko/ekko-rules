@@ -1,8 +1,25 @@
+<div align="center">
+
+<img src="selfhost/app/src/app/icon.png" width="88" alt="Ekko Rules">
+
 # Ekko Rules
 
-[中文](README.md)
+**Turn an airport subscription into one configuration you can import as-is**
 
-Subscription conversion and specialized routing for Clash, sing-box, and mainstream proxy clients. Turn an airport subscription into one complete configuration you can import directly: nodes, DNS, policy groups, and rules all in the same file.
+Nodes · DNS · policy groups · routing rules, all in a single file
+
+[![License](https://img.shields.io/github/license/ZaunEkko/ekko-rules?style=flat-square&color=1b1be0)](LICENSE)
+[![Validate](https://img.shields.io/github/actions/workflow/status/ZaunEkko/ekko-rules/validate.yml?branch=main&style=flat-square&label=validate)](https://github.com/ZaunEkko/ekko-rules/actions/workflows/validate.yml)
+[![Clients](https://img.shields.io/badge/clients-8-1b1be0?style=flat-square)](#three-steps)
+[![Stored](https://img.shields.io/badge/stored-nothing-1b1be0?style=flat-square)](#three-steps)
+
+**[Convert online](https://sub.boxnook.cc)** · [Self-host](#run-it-yourself) · [Rules](#key-routing-groups) · [中文](README.md)
+
+<!-- DEMO: record the walkthrough once sub.boxnook.cc is live and place it here -->
+
+</div>
+
+---
 
 ## Three steps
 
@@ -18,9 +35,9 @@ Done. Flip UDP, XUDP and the rest under advanced options if you need them — th
 
 Rules default to this repository's Ekko Rules. The page can also switch to the common ACL4SSR sets, or take a remote configuration URL of your own.
 
-## Rather not involve anyone else? Run it yourself
+## Run it yourself
 
-The same code in its other shape: the real subscription goes only to your own Docker, **never appearing in a URL at all**, and you get a stable local address that your client keeps refreshing.
+Rather not involve anyone else? The same code in its other shape: the real subscription goes only to your own Docker, **never appearing in a URL at all**, and you get a stable local address that your client keeps refreshing.
 
 ```bash
 git clone https://github.com/ZaunEkko/ekko-rules.git
