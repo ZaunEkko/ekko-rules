@@ -13,7 +13,7 @@
     "Providers/Ruleset/apple-music.yaml": "3e251d93e64dd313dac4c3cf62c9556bc18c50732f241b3260aba9994117ace1",
     "Providers/Ruleset/apple-tv-plus.yaml": "492fc7c7e3a943be054227814c74fc1790cccbac6a22376c67d325c684e08c2c",
     "Providers/Ruleset/apple.yaml": "1d4c5892dd6c3d1772e6d864ee3195dcf0815481e348d51894e41940bc7c4a3c",
-    "Providers/Ruleset/author-domain.yaml": "3f0ed29ef94ce6b93c439d56f79819555c3a5c2aebb7b415c30bda96308d7403",
+    "Providers/Ruleset/author-domain.yaml": "574971f8ecc3bad161ebfa1f05eec35c945692da0c15b74b6beb89642f55ad22",
     "Providers/Ruleset/bahamut.yaml": "3821a4c2147f4bd5b906e417f477b62d7403c6026daed5c3385bd9e9c257a2f6",
     "Providers/Ruleset/bilibili-hmt-late-recovery.yaml": "a5e98020f876ac31f51f9099670fb0e9cbfb78ed592ad6cf18ad6294e0ab0a02",
     "Providers/Ruleset/bilibili-hmt.yaml": "bb7182ffda04655b893fcf1520cacadc9a5fbfe1bf45a02f3c48b6f0cd0340e1",
@@ -81,7 +81,7 @@
     "Ruleset/apple-music.list": "8fce260b8ce8b5e63c0d995bf94de155cea12176123f74635db357b099eaecf9",
     "Ruleset/apple-tv-plus.list": "ffa90eb89ae2cecc89609906b9699e97ecc13f36ed737d95a9b7bf5394f93f21",
     "Ruleset/apple.list": "04281b060d1a62dc0c3715638d55ade11ca81516f496939daa6434b691e4f202",
-    "Ruleset/author-domain.list": "7f1a08bce0a8834be14c8237ca1ebd196ce395f8687c369e171af3dd8ab3f276",
+    "Ruleset/author-domain.list": "2c12efa2cafa73ae01f37d47c982c3efa32acfbaf2cd26ae9f49df00f105efb2",
     "Ruleset/bahamut.list": "5f29c59cd853201826dd02d42bb38ad8094d0871b7df57b46fcdf91a602b6596",
     "Ruleset/bilibili-hmt-late-recovery.list": "eff859235d09e9c3e4ff10e09765be69cc2993b69fbf506c9dbbfea30b3cdb87",
     "Ruleset/bilibili-hmt.list": "fd0e7dc9068c229278fd8892546bb8621de0759378a1f25fe6d2ae79e674cc1b",
@@ -140,7 +140,7 @@
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "654696b28ea9ce2a0e7d2749261ce00cbe03cae3ad449975ea7efc6e87ea4d16",
+    "analysis.json": "c76e3851a0689d68f98b412818c585ff4c377f0f2cff69b28b54bafe86f00308",
     "config/ekko-rules.ini": "4deff08c2fba832ba962cf998023f04d9e573d311c6fb9bb2890a07791547553"
   }
 }
