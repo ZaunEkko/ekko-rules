@@ -62,7 +62,7 @@ export async function GET(request: Request) {
       "Referrer-Policy": "no-referrer",
       "X-Request-Id": result.requestId,
       "X-Ekko-Target": result.target,
-      ...subscriptionMetadataHeaders(parsed.name, result.filename),
+      ...subscriptionMetadataHeaders(parsed.name),
     };
     if (parsed.options.autoUpdate) {
       headers["Profile-Update-Interval"] = String(
