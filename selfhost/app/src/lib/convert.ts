@@ -165,6 +165,13 @@ const REMOTE_CONFIG_CACHE_MAX_ENTRIES = 8;
 const remoteConfigCache = new Map<string, { body: string; expiresAt: number }>();
 
 /**
+ * One refresh per config at a time. Without this, every conversion that arrives
+ * on a cold or just-expired entry starts its own upstream request for the same
+ * file.
+ */
+const remoteConfigRefreshes = new Map<string, Promise<string>>();
+
+/**
  * An expired entry is kept rather than dropped: if the refresh then fails, the
  * stale copy is still better than a failed conversion. This mirrors the
  * engine's own `serve_cache_on_fetch_fail`, which the gateway took over
@@ -792,39 +799,55 @@ export async function convertSubscription(
     let configValue = options.remoteConfigValue || runtime.fixedConfigPath;
     if (options.remoteConfigFetchUrl) {
       let safeConfigUrl: SafeUrl;
-      let configAddresses: string[];
       try {
         safeConfigUrl = parsePublicHttpUrl(options.remoteConfigFetchUrl);
         if (safeConfigUrl.protocol !== "https:") {
           throw new Error("not https");
         }
-        configAddresses = await assertPublicHostname(safeConfigUrl.hostname);
       } catch {
         // The underlying checks are worded for subscriptions; say which field
         // the visitor actually got wrong.
         throw new Error("remoteConfig host is not allowed.");
       }
 
-      const cachedConfig = readCachedRemoteConfig(safeConfigUrl.href);
+      const configUrl = safeConfigUrl.href;
+      const configHostname = safeConfigUrl.hostname;
+      const cachedConfig = readCachedRemoteConfig(configUrl);
       let configBody = cachedConfig?.fresh ? cachedConfig.body : null;
       if (configBody === null) {
         try {
-          const fetchedConfig = await requestTextWithLimits(safeConfigUrl.href, {
-            method: "GET",
-            timeoutMs: runtime.timeoutMs,
-            maxBytes: REMOTE_CONFIG_MAX_BYTES,
-            requestLabel: "Remote config fetch",
-            resolvedAddresses: configAddresses,
-          });
-          if (!fetchedConfig.ok) {
-            throw new Error(
-              `Remote config fetch failed with HTTP ${fetchedConfig.status}.`,
-            );
+          // Resolution happens inside the refresh: a transient DNS failure is
+          // a reason to fall back to the cached copy, not to fail outright.
+          let refresh = remoteConfigRefreshes.get(configUrl);
+          if (!refresh) {
+            refresh = (async () => {
+              const configAddresses = await assertPublicHostname(configHostname);
+              const fetchedConfig = await requestTextWithLimits(configUrl, {
+                method: "GET",
+                timeoutMs: runtime.timeoutMs,
+                maxBytes: REMOTE_CONFIG_MAX_BYTES,
+                requestLabel: "Remote config fetch",
+                resolvedAddresses: configAddresses,
+              });
+              if (!fetchedConfig.ok) {
+                throw new Error(
+                  `Remote config fetch failed with HTTP ${fetchedConfig.status}.`,
+                );
+              }
+              cacheRemoteConfig(configUrl, fetchedConfig.body);
+              return fetchedConfig.body;
+            })();
+            remoteConfigRefreshes.set(configUrl, refresh);
+            void refresh
+              .catch(() => undefined)
+              .finally(() => remoteConfigRefreshes.delete(configUrl));
           }
-          configBody = fetchedConfig.body;
-          cacheRemoteConfig(safeConfigUrl.href, configBody);
+          configBody = await refresh;
         } catch (error) {
-          if (!cachedConfig) throw error;
+          if (!cachedConfig) {
+            // Nothing cached and nothing fetched: the host is the problem.
+            throw new Error("remoteConfig host is not allowed.");
+          }
           safeLog("remote_config.served_stale", {
             reason: publicErrorMessage(error),
           });
