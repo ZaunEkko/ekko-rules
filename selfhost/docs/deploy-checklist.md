@@ -78,7 +78,6 @@ sudo nginx -t && sudo systemctl reload nginx
 ## 5. 自动更新
 
 ```bash
-sudo chmod +x /opt/ekko-rules/selfhost/scripts/vps-update.sh
 sudo cp /opt/ekko-rules/selfhost/systemd/ekko-selfhost-update.* /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now ekko-selfhost-update.timer
