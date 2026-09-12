@@ -1549,16 +1549,17 @@ class FirstMatchBaselineTests(unittest.TestCase):
         )
         self.assertEqual(
             self.sources.rules["author-domain"],
-            ("DOMAIN-SUFFIX,zaunekko.com",),
+            ("DOMAIN-SUFFIX,boxnook.cc", "DOMAIN-SUFFIX,zaunekko.com"),
         )
-        self.assert_match(
-            (
-                "author-domain",
-                "🌏 国内网站",
-                "DOMAIN-SUFFIX,zaunekko.com",
-            ),
-            domain="zaunekko.com",
-        )
+        for rule, domain in (
+            ("DOMAIN-SUFFIX,boxnook.cc", "sub.boxnook.cc"),
+            ("DOMAIN-SUFFIX,zaunekko.com", "zaunekko.com"),
+        ):
+            with self.subTest(domain=domain):
+                self.assert_match(
+                    ("author-domain", "🌏 国内网站", rule),
+                    domain=domain,
+                )
 
     def test_remote_streaming_is_direct_first(self) -> None:
         domain_cases = [

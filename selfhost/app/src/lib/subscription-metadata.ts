@@ -18,20 +18,23 @@ function rfc5987(value: string): string {
   );
 }
 
+/**
+ * A subscription is not a file the user saves. Clients name the profile after
+ * whatever filename the response hands them, extension and all, which is how a
+ * profile ends up listed as "ekko-rules.yaml" instead of "ekko-rules". So the
+ * name published here carries no extension; the explicit download button
+ * (`/api/convert`) still sends a real filename, because that one really is a
+ * file.
+ */
 export function subscriptionMetadataHeaders(
   profileName: string,
-  resultFilename: string,
 ): Record<string, string> {
   const name = safeProfileName(profileName);
-  const extensionMatch = resultFilename.match(/(\.[A-Za-z0-9]+)$/);
-  const extension = extensionMatch?.[1] || ".yaml";
-  const unicodeFilename = `${name}${extension}`;
-  const fallbackFilename = `${asciiFilename(name)}${extension}`;
 
   return {
     "Profile-Title": `base64:${Buffer.from(name, "utf8").toString("base64")}`,
     "Content-Disposition":
-      `attachment; filename="${fallbackFilename}"; ` +
-      `filename*=UTF-8''${rfc5987(unicodeFilename)}`,
+      `attachment; filename="${asciiFilename(name)}"; ` +
+      `filename*=UTF-8''${rfc5987(name)}`,
   };
 }

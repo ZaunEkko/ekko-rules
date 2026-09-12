@@ -53,7 +53,7 @@ export async function GET(
       "Cache-Control": "no-store, no-cache, must-revalidate",
       "X-Request-Id": result.requestId,
       "X-Ekko-Target": result.target,
-      ...subscriptionMetadataHeaders(profile.name, result.filename),
+      ...subscriptionMetadataHeaders(profile.name),
     };
     if (profile.options.autoUpdate) {
       headers["Profile-Update-Interval"] = String(

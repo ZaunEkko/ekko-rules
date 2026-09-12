@@ -18,7 +18,7 @@ export function supportsClientInstallQr(target: string): boolean {
 }
 
 export function clientInstallLabel(target: string): string {
-  return target === "clash" ? "一键导入 Mihomo / Clash" : "";
+  return target === "clash" ? "一键导入 Clash / Mihomo" : "";
 }
 
 export function qrImportValue(

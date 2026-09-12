@@ -1,7 +1,7 @@
 export const TARGET_DEFINITIONS = {
   clash: {
-    label: "Mihomo / Clash",
-    shortLabel: "Mihomo",
+    label: "Clash / Mihomo",
+    shortLabel: "Clash",
     engineTarget: "clash",
     engineParams: {},
     extension: "yaml",
