@@ -13,6 +13,8 @@ services:
   web:
     image: ghcr.io/${EKKO_IMAGE_OWNER:-zaunekko}/ekko-rules-selfhost-web:${EKKO_IMAGE_TAG:-latest}
     environment:
-      # The deployed version is the image tag; otherwise the base file's
-      # default would make every published image report "local".
-      EKKO_RULES_VERSION: ${EKKO_IMAGE_TAG:-latest}
+      # Let the image speak for itself. Each published image has its release
+      # version baked in at build time, and a server that follows `latest`
+      # would otherwise report its own pin ("latest") as the version. The null
+      # value unsets the base file's entry, which would say "local".
+      EKKO_RULES_VERSION:

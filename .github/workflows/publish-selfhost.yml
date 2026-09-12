@@ -54,8 +54,14 @@ jobs:
           # docs tell operators to pin in EKKO_IMAGE_TAG.
           version="${version#selfhost-}"
           version="${version#v}"
+          # A server that follows `latest` must only ever receive releases.
+          # A manual dispatch still publishes sha-<commit> (and any extra tag
+          # asked for), but it does not move the pointer those servers track.
+          is_release=false
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then is_release=true; fi
           echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "is_release=${is_release}" >> "$GITHUB_OUTPUT"
 
       - name: Confirm the rule snapshot matches the repository
         shell: bash
@@ -77,10 +83,12 @@ jobs:
         env:
           VERSION: ${{ steps.tags.outputs.version }}
           SHORT_SHA: ${{ steps.tags.outputs.short_sha }}
+          IS_RELEASE: ${{ steps.tags.outputs.is_release }}
           EXTRA_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          args=(--tag "$ENGINE_IMAGE:$VERSION" --tag "$ENGINE_IMAGE:sha-$SHORT_SHA" --tag "$ENGINE_IMAGE:latest")
+          args=(--tag "$ENGINE_IMAGE:$VERSION" --tag "$ENGINE_IMAGE:sha-$SHORT_SHA")
+          if [ "$IS_RELEASE" = "true" ]; then args+=(--tag "$ENGINE_IMAGE:latest"); fi
           if [ -n "$EXTRA_TAG" ]; then args+=(--tag "$ENGINE_IMAGE:$EXTRA_TAG"); fi
           docker build "${args[@]}" selfhost/subconverter
           docker push --all-tags "$ENGINE_IMAGE"
@@ -90,11 +98,13 @@ jobs:
         env:
           VERSION: ${{ steps.tags.outputs.version }}
           SHORT_SHA: ${{ steps.tags.outputs.short_sha }}
+          IS_RELEASE: ${{ steps.tags.outputs.is_release }}
           EXTRA_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
           args=(--build-arg "EKKO_RULES_VERSION=$VERSION")
-          args+=(--tag "$WEB_IMAGE:$VERSION" --tag "$WEB_IMAGE:sha-$SHORT_SHA" --tag "$WEB_IMAGE:latest")
+          args+=(--tag "$WEB_IMAGE:$VERSION" --tag "$WEB_IMAGE:sha-$SHORT_SHA")
+          if [ "$IS_RELEASE" = "true" ]; then args+=(--tag "$WEB_IMAGE:latest"); fi
           if [ -n "$EXTRA_TAG" ]; then args+=(--tag "$WEB_IMAGE:$EXTRA_TAG"); fi
           docker build "${args[@]}" selfhost/app
           docker push --all-tags "$WEB_IMAGE"

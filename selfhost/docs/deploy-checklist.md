@@ -43,11 +43,15 @@ sudo chmod 600 .env
 SELFHOST_MODE=public
 WEB_BIND_HOST=127.0.0.1
 PUBLIC_BASE_URL=https://sub.example.com
-EKKO_IMAGE_TAG=0.1.0
+EKKO_IMAGE_TAG=latest
 ```
 
 `SELFHOST_MODE` 必须显式写上——`vps-update.sh` 会拒绝没有声明形态的 `.env`，
 因为静默落回 `lan` 意味着开始把访问者的订阅存在公网机器上。
+
+`EKKO_IMAGE_TAG=latest` 让这台机器跟随发布：打一个 `selfhost-v*` tag，定时器下一轮就会拉到它。
+`latest` 只会被 tag 发布移动，手动 `workflow_dispatch` 只发 `sha-<commit>`，不会把服务器
+带到未发布的构建上。要固定版本或回滚时再改成具体版号（见 `docs/vps.md`）。
 
 启动：
 
