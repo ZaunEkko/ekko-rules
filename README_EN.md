@@ -2,7 +2,7 @@
 
 [中文](README.md)
 
-Subscription conversion and specialized routing for Mihomo, sing-box, and mainstream proxy clients. Turn an airport subscription into one complete configuration you can import directly: nodes, DNS, policy groups, and rules all in the same file.
+Subscription conversion and specialized routing for Clash, sing-box, and mainstream proxy clients. Turn an airport subscription into one complete configuration you can import directly: nodes, DNS, policy groups, and rules all in the same file.
 
 ## Three steps
 
