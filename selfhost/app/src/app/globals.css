@@ -654,10 +654,14 @@ html[data-shell] body {
 
 /* the claim, set as figures ----------------------------------------------- */
 
+/* Even columns across the full measure, however many facts there are: the rest
+   of the page justifies label-left / value-right to both edges, and a strip
+   that stopped 200px short of the right rule read as a mistake. */
 [data-shell] .open-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2.6rem;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 1.4rem;
   margin: 1.6rem 0 0;
 }
 [data-shell] .open-facts div { display: flex; align-items: baseline; gap: .5rem; }
@@ -1088,7 +1092,11 @@ html[data-shell] body {
 @media (max-width: 760px) {
   [data-shell] .topbar { gap: .7rem; margin-bottom: 1.9rem; }
   [data-shell] .top-links { margin-left: 0; order: 3; width: 100%; gap: 1.1rem; }
-  [data-shell] .open-facts { gap: 1.2rem; }
+  [data-shell] .open-facts {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .8rem 1.2rem;
+  }
   [data-shell] .field-label { flex-direction: column; gap: .2rem; }
 }
 
