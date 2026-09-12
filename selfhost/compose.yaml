@@ -66,7 +66,10 @@ services:
       SITE_LINKS: ${SITE_LINKS:-}
       HOST_NETWORK_INFO_PATH: /host-runtime/lan-address.json
       SUBCONVERTER_BASE_URL: http://subconverter:25500
-      EKKO_RULES_VERSION: ${EKKO_RULES_VERSION:-local}
+      # EKKO_RULES_VERSION is deliberately absent: the build above bakes it
+      # into the image, so an image always reports the version it was built
+      # from. Setting it here would let a stale value in .env outrank the
+      # image and make a published release report someone else's number.
       SUBCONVERTER_VERSION: ${SUBCONVERTER_VERSION:-v1.3.0}
       CONVERT_TIMEOUT_MS: ${CONVERT_TIMEOUT_MS:-30000}
       MAX_SUBSCRIPTION_BYTES: ${MAX_SUBSCRIPTION_BYTES:-5242880}
