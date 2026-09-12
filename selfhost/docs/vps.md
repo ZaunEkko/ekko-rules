@@ -126,7 +126,6 @@ sudo docker compose -f compose.yaml -f compose.ghcr.yaml pull
 sudo docker compose -f compose.yaml -f compose.ghcr.yaml up -d
 
 # 安装定时更新
-sudo chmod +x scripts/vps-update.sh
 sudo cp systemd/ekko-selfhost-update.* /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now ekko-selfhost-update.timer
