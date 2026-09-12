@@ -4,7 +4,12 @@ import * as http from "node:http";
 import * as https from "node:https";
 import { isIP, type LookupFunction } from "node:net";
 import path from "node:path";
-import { assertPublicHostname, parsePublicHttpUrl, redactUrl } from "./ssrf";
+import {
+  assertPublicHostname,
+  parsePublicHttpUrl,
+  redactUrl,
+  type SafeUrl,
+} from "./ssrf";
 import {
   isSupportedTarget,
   targetDefinition,
@@ -147,6 +152,42 @@ function envInt(name: string, fallback: number): number {
 const FIXED_CONFIG_PATH = "config/ekko-rules-selfhost.ini";
 /** A rule template is text; anything this large is not one. */
 const REMOTE_CONFIG_MAX_BYTES = 1_048_576;
+const REMOTE_CONFIG_CACHE_TTL_MS = 30 * 60_000;
+const REMOTE_CONFIG_CACHE_MAX_ENTRIES = 8;
+
+/**
+ * Pasted configs are fetched by the gateway rather than the engine, which
+ * means the engine's own `cache_config` can no longer reuse them: it sees a
+ * fresh per-request path every time. So the cache moves here, keyed by URL and
+ * bounded in both age and count — one upstream fetch per config per half hour,
+ * the same window the engine would have used.
+ */
+const remoteConfigCache = new Map<string, { body: string; expiresAt: number }>();
+
+function readCachedRemoteConfig(url: string, nowMs = Date.now()): string | null {
+  const hit = remoteConfigCache.get(url);
+  if (!hit) return null;
+  if (hit.expiresAt <= nowMs) {
+    remoteConfigCache.delete(url);
+    return null;
+  }
+  return hit.body;
+}
+
+function cacheRemoteConfig(url: string, body: string, nowMs = Date.now()): void {
+  for (const [key, entry] of remoteConfigCache) {
+    if (entry.expiresAt <= nowMs) remoteConfigCache.delete(key);
+  }
+  while (remoteConfigCache.size >= REMOTE_CONFIG_CACHE_MAX_ENTRIES) {
+    const oldest = remoteConfigCache.keys().next();
+    if (oldest.done) break;
+    remoteConfigCache.delete(oldest.value);
+  }
+  remoteConfigCache.set(url, {
+    body,
+    expiresAt: nowMs + REMOTE_CONFIG_CACHE_TTL_MS,
+  });
+}
 
 function envIntAllowZero(name: string, fallback: number): number {
   const raw = process.env[name];
@@ -746,7 +787,7 @@ export async function convertSubscription(
     // the name cannot rebind to a private address between the two.
     let configValue = options.remoteConfigValue || runtime.fixedConfigPath;
     if (options.remoteConfigFetchUrl) {
-      let safeConfigUrl;
+      let safeConfigUrl: SafeUrl;
       let configAddresses: string[];
       try {
         safeConfigUrl = parsePublicHttpUrl(options.remoteConfigFetchUrl);
@@ -759,20 +800,27 @@ export async function convertSubscription(
         // the visitor actually got wrong.
         throw new Error("remoteConfig host is not allowed.");
       }
-      const fetchedConfig = await requestTextWithLimits(safeConfigUrl.href, {
-        method: "GET",
-        timeoutMs: runtime.timeoutMs,
-        maxBytes: REMOTE_CONFIG_MAX_BYTES,
-        requestLabel: "Remote config fetch",
-        resolvedAddresses: configAddresses,
-      });
-      if (!fetchedConfig.ok) {
-        throw new Error(
-          `Remote config fetch failed with HTTP ${fetchedConfig.status}.`,
-        );
+
+      let configBody = readCachedRemoteConfig(safeConfigUrl.href);
+      if (configBody === null) {
+        const fetchedConfig = await requestTextWithLimits(safeConfigUrl.href, {
+          method: "GET",
+          timeoutMs: runtime.timeoutMs,
+          maxBytes: REMOTE_CONFIG_MAX_BYTES,
+          requestLabel: "Remote config fetch",
+          resolvedAddresses: configAddresses,
+        });
+        if (!fetchedConfig.ok) {
+          throw new Error(
+            `Remote config fetch failed with HTTP ${fetchedConfig.status}.`,
+          );
+        }
+        configBody = fetchedConfig.body;
+        cacheRemoteConfig(safeConfigUrl.href, configBody);
       }
+
       const configName = "remote.ini";
-      await writeFile(path.join(workDir, configName), fetchedConfig.body, {
+      await writeFile(path.join(workDir, configName), configBody, {
         encoding: "utf8",
         mode: 0o600,
       });
