@@ -27,7 +27,7 @@
 
 **1.** 打开 **[sub.boxnook.cc](https://sub.boxnook.cc)**
 **2.** 粘贴机场订阅地址（输入框默认打码）
-**3.** 点「一键导入 Mihomo / Clash」
+**3.** 点「一键导入 Clash / Mihomo」
 
 完了。需要的话在「高级选项」里勾 UDP、XUDP 这类开关，链接会当场跟着变；也可以复制链接或用手机扫码导入。
 
@@ -56,7 +56,7 @@ Windows 首次部署可以改用 `setup.cmd`，它顺带安装一个随登录运
 | 固定地址 | 链接自带全部参数 | `/sub/<随机 ID>` |
 | 需要装什么 | 什么都不用 | Docker + Compose v2 |
 
-两种形态都输出 8 种客户端格式：Mihomo / Clash、sing-box、Surge 4+、Quantumult X、Loon、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会透传流量、容量与到期时间。
+两种形态都输出 8 种客户端格式：Clash / Mihomo、sing-box、Surge 4+、Quantumult X、Loon、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会透传流量、容量与到期时间。
 
 ## 只要规则，不要转换
 
