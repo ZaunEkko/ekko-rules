@@ -150,7 +150,15 @@ journalctl -u ekko-selfhost-update.service -n 50
 
 ### 固定版本与回滚
 
-默认跟随 `latest`。要可复现或需要回滚时，在 `.env` 里钉住版本：
+默认跟随 `latest`，打一个 `selfhost-v*` tag 就是一次发布：publish 工作流把 `latest`
+指到新镜像，服务器的定时器下一轮（最多 10 分钟）拉到并重建容器，不需要上机改任何东西。
+只有 tag 发布会移动 `latest`；手动 `workflow_dispatch` 只发 `sha-<commit>` 和你指定的额外
+tag，不会把跟随 `latest` 的机器带到未发布的构建上。
+
+页面上报的版本始终是镜像构建时烙进去的发布号，不是 `EKKO_IMAGE_TAG` 本身，
+所以跟随 `latest` 的机器依然会如实报出 `0.1.1` 这样的版本。
+
+要可复现或需要回滚时，在 `.env` 里钉住版本：
 
 ```dotenv
 EKKO_IMAGE_TAG=1.2.3
