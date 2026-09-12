@@ -145,6 +145,8 @@ function envInt(name: string, fallback: number): number {
 }
 
 const FIXED_CONFIG_PATH = "config/ekko-rules-selfhost.ini";
+/** A rule template is text; anything this large is not one. */
+const REMOTE_CONFIG_MAX_BYTES = 1_048_576;
 
 function envIntAllowZero(name: string, fallback: number): number {
   const raw = process.env[name];
@@ -676,7 +678,14 @@ export async function convertSubscription(
     authorize?: boolean;
     outputMode?: "complete" | "clash-provider-nodes";
     sourceUserAgent?: string | null;
+    /** Curated value: a local path or an operator-vetted URL. */
     remoteConfigValue?: string;
+    /**
+     * A visitor-supplied config URL. It is never handed to the engine: the
+     * gateway fetches it with DNS pinned to the addresses it validated, and
+     * the engine only ever sees the resulting local file.
+     */
+    remoteConfigFetchUrl?: string;
   } = {},
 ): Promise<ConvertResult> {
   const runtime = getRuntimeConfig();
@@ -722,7 +731,8 @@ export async function convertSubscription(
   const workDir = path.join(runtime.sharedDir, requestId);
   const inputName = "subscription.input";
   const inputPath = path.join(workDir, inputName);
-  const engineInputUrl = `${runtime.sharedUrlPrefix.replace(/\/$/, "")}/${requestId}/${inputName}`;
+  const sharedPrefix = runtime.sharedUrlPrefix.replace(/\/$/, "");
+  const engineInputUrl = `${sharedPrefix}/${requestId}/${inputName}`;
 
   await mkdir(workDir, { recursive: true, mode: 0o700 });
   try {
@@ -731,16 +741,51 @@ export async function convertSubscription(
       mode: 0o600,
     });
 
+    // A pasted config URL is fetched here rather than by the engine: this
+    // client pins DNS to the addresses assertPublicHostname just checked, so
+    // the name cannot rebind to a private address between the two.
+    let configValue = options.remoteConfigValue || runtime.fixedConfigPath;
+    if (options.remoteConfigFetchUrl) {
+      let safeConfigUrl;
+      let configAddresses: string[];
+      try {
+        safeConfigUrl = parsePublicHttpUrl(options.remoteConfigFetchUrl);
+        if (safeConfigUrl.protocol !== "https:") {
+          throw new Error("not https");
+        }
+        configAddresses = await assertPublicHostname(safeConfigUrl.hostname);
+      } catch {
+        // The underlying checks are worded for subscriptions; say which field
+        // the visitor actually got wrong.
+        throw new Error("remoteConfig host is not allowed.");
+      }
+      const fetchedConfig = await requestTextWithLimits(safeConfigUrl.href, {
+        method: "GET",
+        timeoutMs: runtime.timeoutMs,
+        maxBytes: REMOTE_CONFIG_MAX_BYTES,
+        requestLabel: "Remote config fetch",
+        resolvedAddresses: configAddresses,
+      });
+      if (!fetchedConfig.ok) {
+        throw new Error(
+          `Remote config fetch failed with HTTP ${fetchedConfig.status}.`,
+        );
+      }
+      const configName = "remote.ini";
+      await writeFile(path.join(workDir, configName), fetchedConfig.body, {
+        encoding: "utf8",
+        mode: 0o600,
+      });
+      configValue = `${sharedPrefix}/${requestId}/${configName}`;
+    }
+
     const endpoint = new URL("/sub", `${runtime.subconverterBaseUrl}/`);
     endpoint.searchParams.set("target", definition.engineTarget);
     for (const [name, value] of Object.entries(definition.engineParams)) {
       endpoint.searchParams.set(name, value);
     }
     endpoint.searchParams.set("url", engineInputUrl);
-    endpoint.searchParams.set(
-      "config",
-      options.remoteConfigValue || runtime.fixedConfigPath,
-    );
+    endpoint.searchParams.set("config", configValue);
     endpoint.searchParams.set("emoji", String(convertOptions.emoji));
     endpoint.searchParams.set(
       "list",

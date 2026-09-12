@@ -8,7 +8,6 @@ import {
 } from "@/lib/convert";
 import { rateLimitResponseHeaders } from "@/lib/rate-limit";
 import { isCustomRemoteConfig, resolveRemoteConfig } from "@/lib/remote-configs";
-import { assertPublicHostname } from "@/lib/ssrf";
 import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "@/lib/request-guard";
 import { recordMetric } from "@/lib/metrics";
 import { parseStatelessConvertQuery } from "@/lib/stateless-request";
@@ -38,16 +37,6 @@ export async function GET(request: Request) {
       runtimeConfig.remoteConfigs,
       runtimeConfig.allowCustomRemoteConfig,
     );
-    if (isCustomRemoteConfig(preset)) {
-      // The engine, not the visitor's browser, performs this fetch, so a
-      // pasted config host goes through the same private-address checks as a
-      // subscription host.
-      try {
-        await assertPublicHostname(new URL(preset.value).hostname);
-      } catch {
-        throw new Error("remoteConfig host is not allowed.");
-      }
-    }
 
     const result = await convertSubscription(
       {
@@ -58,7 +47,11 @@ export async function GET(request: Request) {
       {
         authorize: false,
         sourceUserAgent: request.headers.get("user-agent"),
-        remoteConfigValue: preset.value,
+        // Curated entries are values the operator vouched for; a pasted URL is
+        // fetched by the gateway instead of being passed to the engine.
+        ...(isCustomRemoteConfig(preset)
+          ? { remoteConfigFetchUrl: preset.value }
+          : { remoteConfigValue: preset.value }),
       },
     );
 

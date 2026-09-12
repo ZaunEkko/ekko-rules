@@ -5,6 +5,9 @@ import { getRuntimeConfig } from "@/lib/convert";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/** The only two files the engine is ever handed. */
+const HANDOFF_FILES = new Set(["subscription.input", "remote.ini"]);
+
 const REQUEST_ID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -41,7 +44,7 @@ export async function GET(
   context: { params: Promise<{ requestId: string; filename: string }> },
 ) {
   const { requestId, filename } = await context.params;
-  if (!REQUEST_ID_PATTERN.test(requestId) || filename !== "subscription.input") {
+  if (!REQUEST_ID_PATTERN.test(requestId) || !HANDOFF_FILES.has(filename)) {
     return new Response("Not found.", { status: 404 });
   }
   const runtimeConfig = getRuntimeConfig();

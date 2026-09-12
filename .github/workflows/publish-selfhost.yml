@@ -50,7 +50,10 @@ jobs:
           short_sha="$(git rev-parse --short HEAD)"
           version="${GITHUB_REF_NAME}"
           if [ "${GITHUB_REF_TYPE}" != "tag" ]; then version="sha-${short_sha}"; fi
+          # selfhost-v0.1.0 must publish as 0.1.0, which is what the deploy
+          # docs tell operators to pin in EKKO_IMAGE_TAG.
           version="${version#selfhost-}"
+          version="${version#v}"
           echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 

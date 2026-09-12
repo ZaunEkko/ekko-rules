@@ -57,17 +57,20 @@ else
 fi
 
 # A deploy that leaves the service unhealthy is worse than no deploy: say so
-# loudly enough for the timer's journal to show it.
+# loudly enough for the timer's journal to show it. `State` reaches "running"
+# before the healthcheck has said anything and stays there afterwards, so the
+# health column is the one that answers "can this thing actually convert".
 attempt=0
-while [ "$attempt" -lt 30 ]; do
-  status=$(docker compose $COMPOSE_FILES ps --format "{{.Service}} {{.State}}" 2>/dev/null || true)
+while [ "$attempt" -lt 45 ]; do
+  status=$(docker compose $COMPOSE_FILES ps --format "{{.Service}} {{.State}} {{.Health}}" 2>/dev/null || true)
   case "$status" in
-    *"web running"*) echo "$status"; exit 0 ;;
+    *"web running healthy"*) echo "$status"; exit 0 ;;
+    *"web running unhealthy"*) break ;;
   esac
   attempt=$((attempt + 1))
   sleep 2
 done
 
-echo "web did not reach a running state after the update." >&2
+echo "web did not become healthy after the update." >&2
 docker compose $COMPOSE_FILES logs --tail=50 web >&2 || true
 exit 1
