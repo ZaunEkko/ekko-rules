@@ -915,6 +915,10 @@ export function Workbench({
                     <dt>今日访问</dt>
                     <dd><Tally value={health.metrics.visits_today} /></dd>
                   </div>
+                  <div>
+                    <dt>累计访问</dt>
+                    <dd><Tally value={health.metrics.visits_total} /></dd>
+                  </div>
                 </>
               ) : null}
             </dl>
