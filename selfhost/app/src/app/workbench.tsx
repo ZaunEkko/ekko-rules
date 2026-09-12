@@ -85,8 +85,8 @@ type Profile = {
 const FALLBACK_TARGETS: TargetCapability[] = [
   {
     id: "clash",
-    label: "Mihomo / Clash",
-    short_label: "Mihomo",
+    label: "Clash / Mihomo",
+    short_label: "Clash",
     client_family: "Mihomo 内核客户端",
     client_examples: ["Clash Verge Rev", "Mihomo Party", "FlClash"],
     extension: "yaml",
@@ -1712,8 +1712,8 @@ export function Workbench({
                 <strong>{qrProfile.name}</strong>
                 <span>
                   {qrMode === "install" && clientInstallQrAvailable
-                    ? "使用系统相机扫码，再选择 Mihomo / Clash 客户端打开。"
-                    : "请在 Mihomo / Clash 的“从 QR 码导入”入口扫描。"}
+                    ? "使用系统相机扫码，再选择 Clash / Mihomo 客户端打开。"
+                    : "请在 Clash / Mihomo 的“从 QR 码导入”入口扫描。"}
                 </span>
               </div>
               {clientInstallQrAvailable ? (
