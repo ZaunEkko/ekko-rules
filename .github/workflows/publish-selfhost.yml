@@ -65,12 +65,16 @@ jobs:
           if [ "${GITHUB_EVENT_NAME}" = "push" ] && [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             is_release=true
           fi
-          # ...and the optional extra tag is the other way in: `docker push
-          # --all-tags` would publish whatever it names, `latest` included.
-          if [ "$(echo "${EXTRA_TAG:-}" | tr "[:upper:]" "[:lower:]")" = "latest" ]; then
-            echo "The extra tag may not be 'latest'; that pointer is moved by releases only." >&2
-            exit 1
-          fi
+          # `latest` is not a name anything else may claim. The optional input
+          # is one way in; a ref named `latest`, `vlatest` or `selfhost-vlatest`
+          # is the other, since the stripping above turns all three into the
+          # same string and every build tags $IMAGE:$VERSION unconditionally.
+          for candidate in "${version}" "${EXTRA_TAG:-}"; do
+            if [ "$(echo "$candidate" | tr "[:upper:]" "[:lower:]")" = "latest" ]; then
+              echo "Refusing to publish '$candidate': the latest pointer is moved by releases only." >&2
+              exit 1
+            fi
+          done
           echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "is_release=${is_release}" >> "$GITHUB_OUTPUT"
@@ -90,36 +94,61 @@ jobs:
           set -euo pipefail
           printf "%s" "$GHCR_TOKEN" | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
 
-      - name: Build and push the converter engine
+      # Both images are built before anything is pushed, and `latest` moves
+      # only after both are in the registry under immutable tags. Promoting it
+      # from inside a per-image step would let a failed web build leave a new
+      # engine `latest` paired with the previous web one, and a server whose
+      # timer follows `latest` would deploy that mismatched pair.
+      - name: Build both images
         shell: bash
         env:
           VERSION: ${{ steps.tags.outputs.version }}
           SHORT_SHA: ${{ steps.tags.outputs.short_sha }}
-          IS_RELEASE: ${{ steps.tags.outputs.is_release }}
           EXTRA_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          args=(--tag "$ENGINE_IMAGE:$VERSION" --tag "$ENGINE_IMAGE:sha-$SHORT_SHA")
-          if [ "$IS_RELEASE" = "true" ]; then args+=(--tag "$ENGINE_IMAGE:latest"); fi
-          if [ -n "$EXTRA_TAG" ]; then args+=(--tag "$ENGINE_IMAGE:$EXTRA_TAG"); fi
-          docker build "${args[@]}" selfhost/subconverter
-          docker push --all-tags "$ENGINE_IMAGE"
+          engine=(--tag "$ENGINE_IMAGE:$VERSION" --tag "$ENGINE_IMAGE:sha-$SHORT_SHA")
+          web=(
+            --build-arg "EKKO_RULES_VERSION=$VERSION"
+            --tag "$WEB_IMAGE:$VERSION"
+            --tag "$WEB_IMAGE:sha-$SHORT_SHA"
+          )
+          if [ -n "$EXTRA_TAG" ]; then
+            engine+=(--tag "$ENGINE_IMAGE:$EXTRA_TAG")
+            web+=(--tag "$WEB_IMAGE:$EXTRA_TAG")
+          fi
+          docker build "${engine[@]}" selfhost/subconverter
+          docker build "${web[@]}" selfhost/app
 
-      - name: Build and push the web gateway
+      # Named tags rather than --all-tags: the latter pushes whatever happens
+      # to be tagged locally, which is how `latest` escapes by accident.
+      - name: Push the immutable tags
         shell: bash
         env:
           VERSION: ${{ steps.tags.outputs.version }}
           SHORT_SHA: ${{ steps.tags.outputs.short_sha }}
-          IS_RELEASE: ${{ steps.tags.outputs.is_release }}
           EXTRA_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          args=(--build-arg "EKKO_RULES_VERSION=$VERSION")
-          args+=(--tag "$WEB_IMAGE:$VERSION" --tag "$WEB_IMAGE:sha-$SHORT_SHA")
-          if [ "$IS_RELEASE" = "true" ]; then args+=(--tag "$WEB_IMAGE:latest"); fi
-          if [ -n "$EXTRA_TAG" ]; then args+=(--tag "$WEB_IMAGE:$EXTRA_TAG"); fi
-          docker build "${args[@]}" selfhost/app
-          docker push --all-tags "$WEB_IMAGE"
+          for image in "$ENGINE_IMAGE" "$WEB_IMAGE"; do
+            docker push "$image:$VERSION"
+            docker push "$image:sha-$SHORT_SHA"
+            if [ -n "$EXTRA_TAG" ]; then docker push "$image:$EXTRA_TAG"; fi
+          done
+
+      - name: Promote latest
+        if: steps.tags.outputs.is_release == 'true'
+        shell: bash
+        env:
+          VERSION: ${{ steps.tags.outputs.version }}
+        run: |
+          set -euo pipefail
+          for image in "$ENGINE_IMAGE" "$WEB_IMAGE"; do
+            docker tag "$image:$VERSION" "$image:latest"
+          done
+          for image in "$ENGINE_IMAGE" "$WEB_IMAGE"; do
+            docker push "$image:latest"
+          done
 
       - name: Record the published digests
         shell: bash
