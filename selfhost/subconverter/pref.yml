@@ -1,5 +1,10 @@
 common:
   api_mode: true
+  # Deterministic outbound behaviour: never inherit a proxy from the container
+  # environment when fetching remote configs or rulesets.
+  proxy_config: NONE
+  proxy_ruleset: NONE
+  proxy_subscription: NONE
   api_access_token: ""
   default_url: []
   enable_insert: false
@@ -9,6 +14,18 @@ common:
   include_remarks: []
   enable_rule_generator: true
   overwrite_original_rules: true
+  # Fallback base templates. A third-party remote config usually declares only
+  # `clash_rule_base`, and a target with no base at all converts to nothing.
+  # These are the same bases the bundled Ekko Rules config names, so a foreign
+  # config still produces a complete file for every supported client.
+  clash_rule_base: base/ekko-rules-base.yaml
+  singbox_rule_base: base/singbox.json
+  surge_rule_base: base/surge.conf
+  quanx_rule_base: base/quanx.conf
+  loon_rule_base: base/loon.conf
+  surfboard_rule_base: base/surfboard.conf
+  quan_rule_base: base/quan.conf
+  mellow_rule_base: base/mellow.conf
 
 server:
   listen: 0.0.0.0
@@ -20,6 +37,21 @@ advanced:
   max_pending_connections: 64
   max_concurrent_threads: 4
   max_file_size: 104857600
+  # Remote configs and their rulesets are fetched by the engine on every
+  # request unless cached. Without this an open deployment would hammer the
+  # upstream host once per subscription refresh.
+  enable_cache: true
+  # The gateway hands over a unique per-request input URL, so caching it only
+  # wastes memory.
+  cache_subscription: 1
+  cache_config: 1800
+  cache_ruleset: 86400
+  serve_cache_on_fetch_fail: true
+  async_fetch_ruleset: true
+  # Abuse ceilings for user-supplied remote configs: a hostile config must not
+  # be able to turn this server into a fan-out fetcher.
+  max_allowed_rulesets: 300
+  max_allowed_download_size: 52428800
 
 emojis:
   add_emoji: false

@@ -1,0 +1,14 @@
+[Unit]
+Description=Check for new Ekko Rules self-hosted converter images
+Documentation=https://github.com/ZaunEkko/ekko-rules/blob/main/selfhost/docs/vps.md
+
+[Timer]
+# A few minutes after boot, then every 10 minutes with jitter so many servers
+# do not hit the registry at the same second.
+OnBootSec=3min
+OnUnitActiveSec=10min
+RandomizedDelaySec=2min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

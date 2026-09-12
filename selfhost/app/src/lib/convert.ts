@@ -4,7 +4,12 @@ import * as http from "node:http";
 import * as https from "node:https";
 import { isIP, type LookupFunction } from "node:net";
 import path from "node:path";
-import { assertPublicHostname, parsePublicHttpUrl, redactUrl } from "./ssrf";
+import {
+  assertPublicHostname,
+  parsePublicHttpUrl,
+  redactUrl,
+  type SafeUrl,
+} from "./ssrf";
 import {
   isSupportedTarget,
   targetDefinition,
@@ -16,6 +21,8 @@ import {
   type ConvertOptions,
 } from "./options";
 import { applyTargetOutputOptions } from "./output-options";
+import { evaluateDeployment, type DeployMode } from "./deployment";
+import { parseRemoteConfigPresets } from "./remote-configs";
 
 export type ConvertRequest = {
   subscriptionUrl: string;
@@ -142,6 +149,64 @@ function envInt(name: string, fallback: number): number {
   return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
+const FIXED_CONFIG_PATH = "config/ekko-rules-selfhost.ini";
+/** A rule template is text; anything this large is not one. */
+const REMOTE_CONFIG_MAX_BYTES = 1_048_576;
+const REMOTE_CONFIG_CACHE_TTL_MS = 30 * 60_000;
+const REMOTE_CONFIG_CACHE_MAX_ENTRIES = 8;
+
+/**
+ * Pasted configs are fetched by the gateway rather than the engine, which
+ * means the engine's own `cache_config` can no longer reuse them: it sees a
+ * fresh per-request path every time. So the cache moves here, keyed by URL and
+ * bounded in both age and count — one upstream fetch per config per half hour,
+ * the same window the engine would have used.
+ */
+const remoteConfigCache = new Map<string, { body: string; expiresAt: number }>();
+
+/**
+ * One refresh per config at a time. Without this, every conversion that arrives
+ * on a cold or just-expired entry starts its own upstream request for the same
+ * file.
+ */
+const remoteConfigRefreshes = new Map<string, Promise<string>>();
+
+/**
+ * An expired entry is kept rather than dropped: if the refresh then fails, the
+ * stale copy is still better than a failed conversion. This mirrors the
+ * engine's own `serve_cache_on_fetch_fail`, which the gateway took over
+ * responsibility for when it started fetching these itself.
+ */
+function readCachedRemoteConfig(
+  url: string,
+  nowMs = Date.now(),
+): { body: string; fresh: boolean } | null {
+  const hit = remoteConfigCache.get(url);
+  if (!hit) return null;
+  return { body: hit.body, fresh: hit.expiresAt > nowMs };
+}
+
+function cacheRemoteConfig(url: string, body: string, nowMs = Date.now()): void {
+  // Eviction is by count only. Age decides freshness, not retention.
+  remoteConfigCache.delete(url);
+  while (remoteConfigCache.size >= REMOTE_CONFIG_CACHE_MAX_ENTRIES) {
+    const oldest = remoteConfigCache.keys().next();
+    if (oldest.done) break;
+    remoteConfigCache.delete(oldest.value);
+  }
+  remoteConfigCache.set(url, {
+    body,
+    expiresAt: nowMs + REMOTE_CONFIG_CACHE_TTL_MS,
+  });
+}
+
+function envIntAllowZero(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (raw === undefined || raw.trim() === "") return fallback;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 0 ? Math.floor(value) : fallback;
+}
+
 function requiredEnv(name: string, fallback: string): string {
   const value = process.env[name];
   return value && value.trim() ? value.trim() : fallback;
@@ -151,9 +216,24 @@ export function getRuntimeConfig() {
   const accessPassword = process.env.ACCESS_PASSWORD?.trim() || "";
   const webBindHost = requiredEnv("WEB_BIND_HOST", "0.0.0.0");
   const lanAccessEnabled = !isLoopbackBindHost(webBindHost);
-  const subscriptionBaseUrl = normalizeSubscriptionBaseUrl(
-    process.env.LAN_BASE_URL,
-  );
+  const deployment = evaluateDeployment({
+    mode: process.env.SELFHOST_MODE,
+    accessPassword,
+    publicBaseUrl: process.env.PUBLIC_BASE_URL,
+    trustProxyHeaders: process.env.TRUST_PROXY_HEADERS,
+    webBindHost,
+    altOrigins: process.env.PUBLIC_ALT_ORIGINS,
+  });
+  const lanBaseUrl = normalizeSubscriptionBaseUrl(process.env.LAN_BASE_URL);
+  // A public deployment exports its own origin; LAN_BASE_URL stays for the
+  // personal computer / trusted LAN deployment.
+  const subscriptionBaseUrl =
+    deployment.mode === "lan"
+      ? lanBaseUrl
+      : {
+          value: deployment.publicBaseUrl,
+          error: deployment.publicBaseUrlError,
+        };
   return {
     subconverterBaseUrl: requiredEnv(
       "SUBCONVERTER_BASE_URL",
@@ -170,14 +250,41 @@ export function getRuntimeConfig() {
     webBindHost,
     webPort: envInt("WEB_PORT", 8787),
     lanAccessEnabled,
+    deployMode: deployment.mode as DeployMode,
+    storedProfilesEnabled: deployment.storesProfiles,
+    deploymentError: deployment.error,
+    deploymentWarning: deployment.warning,
+    altOrigins: deployment.altOrigins,
+    trustProxyHeaders: deployment.trustProxyHeaders,
+    manageRateLimitPerMinute: envIntAllowZero(
+      "RATE_LIMIT_MANAGE_PER_MINUTE",
+      deployment.mode === "public" ? 30 : 0,
+    ),
+    subscribeRateLimitPerMinute: envIntAllowZero(
+      "RATE_LIMIT_SUBSCRIBE_PER_MINUTE",
+      deployment.mode === "public" ? 60 : 0,
+    ),
     subscriptionBaseUrl: subscriptionBaseUrl.value,
     subscriptionBaseUrlError: subscriptionBaseUrl.error,
     hostNetworkInfoPath: requiredEnv(
       "HOST_NETWORK_INFO_PATH",
       "/host-runtime/lan-address.json",
     ),
-    fixedConfigPath: "config/ekko-rules-selfhost.ini",
+    fixedConfigPath: FIXED_CONFIG_PATH,
+    remoteConfigs: parseRemoteConfigPresets(
+      process.env.REMOTE_CONFIGS,
+      FIXED_CONFIG_PATH,
+      (process.env.THIRD_PARTY_REMOTE_CONFIGS || "").trim() !== "0",
+    ),
+    allowCustomRemoteConfig:
+      (process.env.ALLOW_CUSTOM_REMOTE_CONFIG || "").trim() !== "0",
     // Gateway stores short-lived inputs here for its internal HTTP handoff route.
+    profileDataDir: requiredEnv("PROFILE_DATA_DIR", "/data"),
+    // Aggregate counters only, and only where the site is public enough for
+    // them to mean anything.
+    metricsEnabled:
+      deployment.mode === "public" &&
+      (process.env.PUBLIC_METRICS || "").trim() !== "0",
     sharedDir: requiredEnv("CONVERT_SHARED_DIR", "/shared"),
     sharedUrlPrefix: requiredEnv("CONVERT_SHARED_URL_PREFIX", "file:///shared"),
   };
@@ -185,6 +292,13 @@ export function getRuntimeConfig() {
 
 export function authorizeLocalAccess(provided?: string): void {
   const runtime = getRuntimeConfig();
+  if (runtime.deploymentError) {
+    throw new Error(runtime.deploymentError);
+  }
+  // An open deployment stores nothing and its conversion entry is public by
+  // design, so a password there would only half-close a door that is meant to
+  // be open. ACCESS_PASSWORD stays the optional guard for the personal one.
+  if (runtime.deployMode === "public") return;
   const expected = runtime.accessPassword;
   if (!expected) return;
   const providedDigest = createHash("sha256").update(provided ?? "").digest();
@@ -616,6 +730,14 @@ export async function convertSubscription(
     authorize?: boolean;
     outputMode?: "complete" | "clash-provider-nodes";
     sourceUserAgent?: string | null;
+    /** Curated value: a local path or an operator-vetted URL. */
+    remoteConfigValue?: string;
+    /**
+     * A visitor-supplied config URL. It is never handed to the engine: the
+     * gateway fetches it with DNS pinned to the addresses it validated, and
+     * the engine only ever sees the resulting local file.
+     */
+    remoteConfigFetchUrl?: string;
   } = {},
 ): Promise<ConvertResult> {
   const runtime = getRuntimeConfig();
@@ -661,7 +783,8 @@ export async function convertSubscription(
   const workDir = path.join(runtime.sharedDir, requestId);
   const inputName = "subscription.input";
   const inputPath = path.join(workDir, inputName);
-  const engineInputUrl = `${runtime.sharedUrlPrefix.replace(/\/$/, "")}/${requestId}/${inputName}`;
+  const sharedPrefix = runtime.sharedUrlPrefix.replace(/\/$/, "");
+  const engineInputUrl = `${sharedPrefix}/${requestId}/${inputName}`;
 
   await mkdir(workDir, { recursive: true, mode: 0o700 });
   try {
@@ -670,13 +793,83 @@ export async function convertSubscription(
       mode: 0o600,
     });
 
+    // A pasted config URL is fetched here rather than by the engine: this
+    // client pins DNS to the addresses assertPublicHostname just checked, so
+    // the name cannot rebind to a private address between the two.
+    let configValue = options.remoteConfigValue || runtime.fixedConfigPath;
+    if (options.remoteConfigFetchUrl) {
+      let safeConfigUrl: SafeUrl;
+      try {
+        safeConfigUrl = parsePublicHttpUrl(options.remoteConfigFetchUrl);
+        if (safeConfigUrl.protocol !== "https:") {
+          throw new Error("not https");
+        }
+      } catch {
+        // The underlying checks are worded for subscriptions; say which field
+        // the visitor actually got wrong.
+        throw new Error("remoteConfig host is not allowed.");
+      }
+
+      const configUrl = safeConfigUrl.href;
+      const configHostname = safeConfigUrl.hostname;
+      const cachedConfig = readCachedRemoteConfig(configUrl);
+      let configBody = cachedConfig?.fresh ? cachedConfig.body : null;
+      if (configBody === null) {
+        try {
+          // Resolution happens inside the refresh: a transient DNS failure is
+          // a reason to fall back to the cached copy, not to fail outright.
+          let refresh = remoteConfigRefreshes.get(configUrl);
+          if (!refresh) {
+            refresh = (async () => {
+              const configAddresses = await assertPublicHostname(configHostname);
+              const fetchedConfig = await requestTextWithLimits(configUrl, {
+                method: "GET",
+                timeoutMs: runtime.timeoutMs,
+                maxBytes: REMOTE_CONFIG_MAX_BYTES,
+                requestLabel: "Remote config fetch",
+                resolvedAddresses: configAddresses,
+              });
+              if (!fetchedConfig.ok) {
+                throw new Error(
+                  `Remote config fetch failed with HTTP ${fetchedConfig.status}.`,
+                );
+              }
+              cacheRemoteConfig(configUrl, fetchedConfig.body);
+              return fetchedConfig.body;
+            })();
+            remoteConfigRefreshes.set(configUrl, refresh);
+            void refresh
+              .catch(() => undefined)
+              .finally(() => remoteConfigRefreshes.delete(configUrl));
+          }
+          configBody = await refresh;
+        } catch (error) {
+          if (!cachedConfig) {
+            // Nothing cached and nothing fetched: the host is the problem.
+            throw new Error("remoteConfig host is not allowed.");
+          }
+          safeLog("remote_config.served_stale", {
+            reason: publicErrorMessage(error),
+          });
+          configBody = cachedConfig.body;
+        }
+      }
+
+      const configName = "remote.ini";
+      await writeFile(path.join(workDir, configName), configBody, {
+        encoding: "utf8",
+        mode: 0o600,
+      });
+      configValue = `${sharedPrefix}/${requestId}/${configName}`;
+    }
+
     const endpoint = new URL("/sub", `${runtime.subconverterBaseUrl}/`);
     endpoint.searchParams.set("target", definition.engineTarget);
     for (const [name, value] of Object.entries(definition.engineParams)) {
       endpoint.searchParams.set(name, value);
     }
     endpoint.searchParams.set("url", engineInputUrl);
-    endpoint.searchParams.set("config", runtime.fixedConfigPath);
+    endpoint.searchParams.set("config", configValue);
     endpoint.searchParams.set("emoji", String(convertOptions.emoji));
     endpoint.searchParams.set(
       "list",
@@ -831,11 +1024,16 @@ export function publicErrorMessage(error: unknown): string {
   return "Conversion failed.";
 }
 
+export function isDeploymentConfigurationError(message: string): boolean {
+  return /^PUBLIC_BASE_URL must be/.test(message);
+}
+
 export function publicErrorStatus(error: unknown): number {
   const message = typeof error === "string" ? error : publicErrorMessage(error);
+  if (isDeploymentConfigurationError(message)) return 503;
   if (/password/i.test(message)) return 401;
   if (
-    /^(?:Request body|subscriptionUrl|A supported target|accessPassword|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
+    /^(?:Request body|subscriptionUrl|A supported target|accessPassword|remoteConfig|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
       message,
     ) ||
     /^(?:Invalid subscription URL|Only http and https subscription URLs|Subscription URLs must not include credentials|Subscription URL is too long|Subscription host (?:is not allowed|resolves to a blocked address)|Encoded hostnames are not allowed|Subscription content is empty or unsupported|Node provider output is only available)/i.test(

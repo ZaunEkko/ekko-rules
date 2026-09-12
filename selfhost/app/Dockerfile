@@ -16,7 +16,13 @@ RUN npm run build
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
-ENV NODE_ENV=production \
+# Carried into the runtime image so a published tag reports its own version
+# instead of falling back to "local".
+ARG EKKO_RULES_VERSION=local
+ARG SUBCONVERTER_VERSION=v1.3.0
+ENV EKKO_RULES_VERSION=$EKKO_RULES_VERSION \
+    SUBCONVERTER_VERSION=$SUBCONVERTER_VERSION \
+    NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
     PORT=3000

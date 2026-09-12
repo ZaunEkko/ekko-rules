@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
   countEnabledOptions,
@@ -8,13 +8,31 @@ import {
   type ConvertOptions,
 } from "@/lib/options";
 import {
+  clientInstallLabel,
   qrImportValue,
   supportsClientInstallQr,
   type QrImportMode,
 } from "@/lib/qr-import";
+import {
+  buildStatelessConvertQuery,
+  type StatelessConvertRequest,
+} from "@/lib/stateless-request";
+import { Picker } from "./picker";
+import { SiteMark } from "./site-mark";
+import { Tally } from "./tally";
 
 type Health = {
   status: string;
+  deploy_mode?: "lan" | "public";
+  stores_profiles?: boolean;
+  metrics?: {
+    visits_today: number;
+    visits_total: number;
+    conversions_today: number;
+    conversions_total: number;
+  } | null;
+  deployment_error?: string | null;
+  deployment_warning?: string | null;
   ekko_rules_version: string;
   subconverter_version: string;
   subconverter_reachable: boolean;
@@ -39,8 +57,19 @@ type TargetCapability = {
   verified_modern_protocols: string[];
 };
 
+type RemoteConfigOption = {
+  id: string;
+  label: string;
+  description: string;
+  builtin: boolean;
+};
+
 type Capabilities = {
   supported_targets: TargetCapability[];
+  stores_profiles?: boolean;
+  remote_configs?: RemoteConfigOption[];
+  allow_custom_remote_config?: boolean;
+  site_links?: { label: string; url: string }[];
 };
 
 type Profile = {
@@ -199,6 +228,9 @@ export default function HomePage() {
   const [baseUrlHistory, setBaseUrlHistory] = useState<string[]>([]);
   const [baseUrlMode, setBaseUrlMode] = useState<BaseUrlMode>("localhost");
   const [lanRefreshing, setLanRefreshing] = useState(false);
+  const [revealLink, setRevealLink] = useState(false);
+  const [remoteConfigId, setRemoteConfigId] = useState("ekko");
+  const [customRemoteConfig, setCustomRemoteConfig] = useState("");
 
   const targets = capabilities?.supported_targets ?? FALLBACK_TARGETS;
   const selectedTarget =
@@ -214,9 +246,49 @@ export default function HomePage() {
     singboxIpv6: target === "singbox" && convertOptions.singboxIpv6,
   });
   const engineOk = Boolean(health?.subconverter_reachable);
+  // Two shapes only: the personal deployment stores fixed addresses, the open
+  // one stores nothing and puts every choice in the visitor own link.
+  const storesProfiles = health?.stores_profiles !== false;
+  const remoteConfigOptions = capabilities?.remote_configs ?? [];
+  const allowCustomRemoteConfig = Boolean(capabilities?.allow_custom_remote_config);
+  const usingCustomRemoteConfig = remoteConfigId === "__custom__";
+  const siteLinks = capabilities?.site_links ?? [];
+  const statelessQuery = useMemo(() => {
+    if (storesProfiles || !subscriptionUrl.trim()) return "";
+    const remoteConfig = usingCustomRemoteConfig
+      ? customRemoteConfig.trim()
+      : remoteConfigId === "ekko"
+        ? ""
+        : remoteConfigId;
+    return buildStatelessConvertQuery({
+      subscriptionUrl,
+      target: target as StatelessConvertRequest["target"],
+      options: {
+        ...convertOptions,
+        xudp: supportsXudp && convertOptions.xudp,
+        singboxIpv6: target === "singbox" && convertOptions.singboxIpv6,
+      },
+      name: profileName,
+      remoteConfig,
+    });
+  }, [
+    convertOptions,
+    customRemoteConfig,
+    profileName,
+    remoteConfigId,
+    storesProfiles,
+    subscriptionUrl,
+    supportsXudp,
+    target,
+    usingCustomRemoteConfig,
+  ]);
   const sourceReady = Boolean(subscriptionUrl.trim());
-  const defaultSubscriptionBaseUrl =
-    health?.subscription_base_url || runtimeOrigin;
+  // One open deployment can answer on several domains. A visitor's link must
+  // stay on the domain they actually opened, so the current origin wins there;
+  // the personal shape keeps using its configured prefix.
+  const defaultSubscriptionBaseUrl = storesProfiles
+    ? health?.subscription_base_url || runtimeOrigin
+    : runtimeOrigin || health?.subscription_base_url || "";
   const subscriptionBaseUrl =
     baseUrlOverride || defaultSubscriptionBaseUrl;
   const localhostBaseUrl = useMemo(() => {
@@ -234,6 +306,24 @@ export default function HomePage() {
   const qrValue = qrProfile
     ? qrImportValue(qrProfile.target, qrSubscriptionUrl, qrMode)
     : "";
+
+  // The link is the product, so it reads the way a config file does: one
+  // parameter per line, coloured by what that parameter decides.
+  const linkSegments = useMemo(() => {
+    if (!statelessQuery) return [] as Array<{ key: string; value: string }>;
+    return statelessQuery.split("&").map((pair) => {
+      const separator = pair.indexOf("=");
+      const key = separator < 0 ? pair : pair.slice(0, separator);
+      const raw = separator < 0 ? "" : pair.slice(separator + 1);
+      let value = raw;
+      try {
+        value = decodeURIComponent(raw);
+      } catch {
+        value = raw;
+      }
+      return { key, value };
+    });
+  }, [statelessQuery]);
 
   const loadProfiles = useCallback(async () => {
     setProfileBusy(true);
@@ -328,10 +418,35 @@ export default function HomePage() {
     }
 
     void loadRuntimeStatus();
-    const timer = window.setInterval(loadRuntimeStatus, 15_000);
+
+    // An open station can have many tabs sitting idle in the background; none
+    // of them needs to keep asking. Polling stops while the tab is hidden and
+    // refreshes once as soon as it comes back.
+    let timer: number | null = null;
+    const start = () => {
+      if (timer === null) timer = window.setInterval(loadRuntimeStatus, 15_000);
+    };
+    const stop = () => {
+      if (timer !== null) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        void loadRuntimeStatus();
+        start();
+      } else {
+        stop();
+      }
+    };
+    onVisibility();
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
       cancelled = true;
-      window.clearInterval(timer);
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 
@@ -354,7 +469,28 @@ export default function HomePage() {
     });
   }, [baseUrlMode, baseUrlOverride, health?.detected_lan_base_url]);
 
+  // One count per session, and — because status polling hands this effect a
+  // fresh object every 15 seconds — at most one per mount even where session
+  // storage is unavailable.
+  const visitReported = useRef(false);
+  const metricsAvailable = Boolean(health?.metrics);
   useEffect(() => {
+    if (!metricsAvailable || visitReported.current) return;
+    visitReported.current = true;
+    const KEY = "ekko-rules.visit-counted";
+    try {
+      if (window.sessionStorage.getItem(KEY)) return;
+      window.sessionStorage.setItem(KEY, "1");
+    } catch {
+      // A browser that refuses site data counts once per page load instead.
+    }
+    void fetch("/api/metrics/visit", { method: "POST", cache: "no-store" }).catch(
+      () => undefined,
+    );
+  }, [metricsAvailable]);
+
+  useEffect(() => {
+    if (health?.stores_profiles === false) return;
     if (health && !health.access_password_required && !profilesLoaded) {
       void loadProfiles();
     }
@@ -365,10 +501,37 @@ export default function HomePage() {
     return `${profiles.length} 个固定地址`;
   }, [profiles.length, profilesLoaded]);
 
+  function buildStatelessProfile(): Profile {
+    const path = `/sub?${statelessQuery}`;
+    return {
+      id: "stateless",
+      name: profileName.trim() || `${selectedTarget?.short_label ?? target} 订阅`,
+      target,
+      createdAt: new Date().toISOString(),
+      subscriptionPath: path,
+      downloadPath: path,
+      enabledOptionCount,
+    };
+  }
+
   async function createProfile(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
-    setBusy(true);
     setError(null);
+
+    // Nothing is stored on an open deployment, so the link is assembled in the
+    // browser and never leaves it until the user shares it themselves.
+    if (!storesProfiles) {
+      if (usingCustomRemoteConfig && !customRemoteConfig.trim()) {
+        setError("请填写远程配置地址，或改回内置选项。");
+        return;
+      }
+      const profile = buildStatelessProfile();
+      setCreatedProfile(profile);
+      openQr(profile);
+      return;
+    }
+
+    setBusy(true);
     try {
       const response = await fetch("/api/profiles", {
         method: "POST",
@@ -514,45 +677,75 @@ export default function HomePage() {
   }
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" data-shell={storesProfiles ? "local" : "open"}>
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark" aria-hidden="true">
             E<i />
           </span>
           <div className="brand-copy">
-            <strong>Ekko Rules Local</strong>
-            <span>私有订阅工作台</span>
+            <strong>{storesProfiles ? "Ekko Rules Local" : "Ekko Rules"}</strong>
+            <span>{storesProfiles ? "私有订阅工作台" : "订阅转换"}</span>
           </div>
         </div>
+        {siteLinks.length ? (
+          <nav className="top-links" aria-label="项目链接">
+            {siteLinks.map((link) => (
+              <a
+                key={link.url}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <SiteMark url={link.url} />
+                <span className="top-link-label">{link.label}</span>
+              </a>
+            ))}
+          </nav>
+        ) : null}
+
         <div className="runtime-status" aria-live="polite">
           <span className={`status-dot ${engineOk ? "is-ok" : ""}`} />
           <strong>
             {health === null
-              ? "正在连接本地服务"
+              ? "正在连接"
               : engineOk
-                ? "转换引擎已就绪"
-                : "转换引擎未就绪"}
+                ? "引擎已就绪"
+                : "引擎未就绪"}
           </strong>
-          <code>{subscriptionBaseUrl ? new URL(subscriptionBaseUrl).host : "本机 Docker"}</code>
         </div>
 
       </header>
 
       <section className="workbench">
+        {health?.deployment_error ? (
+          <div className="message is-error" role="alert">
+            管理接口已锁定：{health.deployment_error}
+          </div>
+        ) : null}
+        {health?.deployment_warning ? (
+          <div className="message is-error" role="alert">
+            {health.deployment_warning}
+          </div>
+        ) : null}
+        {storesProfiles ? (
+          <>
         <div className="intro-row">
           <div className="intro-copy">
-            <p className="kicker">LOCAL / PRIVATE / REUSABLE</p>
-            <h1>导入一次，以后原地址更新。</h1>
+            <p className="kicker">本地自托管 · 订阅不出这台机器</p>
+            <h1>
+              <span>导入一次，</span>
+              <em>以后原地址更新。</em>
+            </h1>
             <p>
-              把真实订阅交给本机 Docker，得到一个固定的本地订阅 URL。客户端只需导入一次；以后启动服务，再刷新同一个地址。
+              真实订阅只交给本机 Docker，换回一个固定的本地地址。客户端导入这一次；以后启动服务，刷新同一个地址就有新节点。
             </p>
           </div>
           <div className="privacy-seal">
             <span className="seal-icon" aria-hidden="true"><i /></span>
             <div>
-              <strong>不经过第三方转换站</strong>
-              <span>源地址只保存在本机 Docker 数据卷</span>
+              <strong>不经过第三方</strong>
+              <span>真实订阅只写在本机的 Docker 数据卷里，生成结果不留存</span>
             </div>
           </div>
         </div>
@@ -560,7 +753,10 @@ export default function HomePage() {
         <div className="route-strip" aria-label="本地订阅工作流程">
           <div className={`route-step ${sourceReady ? "is-ready" : ""}`}>
             <span className="step-number">01</span>
-            <div><strong>真实订阅</strong><small>仅本机保存</small></div>
+            <div>
+              <strong>真实订阅</strong>
+              <small>仅本机保存</small>
+            </div>
           </div>
           <span className="route-link" aria-hidden="true" />
           <div className={`route-step ${engineOk ? "is-ready" : ""} ${busy ? "is-active" : ""}`}>
@@ -570,16 +766,157 @@ export default function HomePage() {
           <span className="route-link" aria-hidden="true" />
           <div className={`route-step ${createdProfile ? "is-ready" : ""}`}>
             <span className="step-number">03</span>
-            <div><strong>固定地址</strong><small>客户端导入一次</small></div>
+            <div>
+              <strong>固定地址</strong>
+              <small>客户端导入一次</small>
+            </div>
           </div>
         </div>
+          </>
+        ) : (
+          <section className="open-hero" aria-labelledby="open-hero-title">
+            <div className="open-hero-copy">
+              <p className="open-eyebrow">开放转换 · 什么都不留</p>
+              <h1 id="open-hero-title">
+                <span>把订阅换成</span>
+                <em>整份配置。</em>
+              </h1>
+              <p className="open-lede">
+                节点、DNS、策略组、规则，一个文件全给你。链接在你的浏览器里拼成，
+                服务器不保存订阅，也不知道你生成过什么。
+              </p>
+            </div>
+
+            <div
+              className="open-link"
+              data-ready={sourceReady ? "true" : "false"}
+              aria-live="polite"
+            >
+              <div className="open-link-head">
+                <span className="open-link-label">你的订阅链接</span>
+                <button
+                  type="button"
+                  className="open-link-reveal"
+                  onClick={() => setRevealLink((current) => !current)}
+                  disabled={!sourceReady}
+                >
+                  {revealLink ? "隐藏订阅地址" : "显示订阅地址"}
+                </button>
+              </div>
+
+              <code className="open-link-body">
+                <span className="open-link-origin">
+                  {(subscriptionBaseUrl || "https://本站地址") + "/sub"}
+                </span>
+                {linkSegments.length ? (
+                  linkSegments.map((segment, index) => (
+                    <span
+                      className="open-link-param"
+                      data-role={
+                        segment.key === "url"
+                          ? "secret"
+                          : segment.key === "target" || segment.key === "config"
+                            ? "route"
+                            : "tune"
+                      }
+                      key={segment.key}
+                    >
+                      <i>
+                        {index === 0 ? "?" : "&"}
+                        {segment.key}=
+                      </i>
+                      <b>
+                        {segment.key === "url" && !revealLink
+                          ? "••••••••••••••••••••"
+                          : segment.value}
+                      </b>
+                    </span>
+                  ))
+                ) : (
+                  <span className="open-link-ghost">
+                    <i>?url=</i>
+                    <b>粘贴订阅地址后，这里会当场拼出来</b>
+                  </span>
+                )}
+              </code>
+
+              <div className="open-link-actions">
+                {/* Clients that register a scheme can take the subscription in
+                    one tap; the rest fall back to copying. */}
+                {sourceReady && supportsClientInstallQr(target) ? (
+                  <a
+                    className="open-action is-primary"
+                    href={qrImportValue(
+                      target,
+                      absoluteLocalUrl(`/sub?${statelessQuery}`, subscriptionBaseUrl),
+                      "install",
+                    )}
+                  >
+                    {clientInstallLabel(target)}
+                  </a>
+                ) : null}
+                <button
+                  type="button"
+                  className={`open-action ${
+                    sourceReady && supportsClientInstallQr(target) ? "" : "is-primary"
+                  }`}
+                  disabled={!sourceReady}
+                  onClick={() => void copyUrl(buildStatelessProfile())}
+                >
+                  {copying === "stateless" ? "已复制" : "复制链接"}
+                </button>
+                <button
+                  type="button"
+                  className="open-action"
+                  disabled={!sourceReady}
+                  onClick={() => openQr(buildStatelessProfile())}
+                >
+                  扫码导入
+                </button>
+              </div>
+            </div>
+
+            <dl className="open-facts">
+              <div data-role="direct">
+                <dt>留下的订阅</dt>
+                <dd>0 条</dd>
+              </div>
+              <div data-role="proxy">
+                <dt>可选规则</dt>
+                <dd>{remoteConfigOptions.length} 套</dd>
+              </div>
+              <div data-role="proxy">
+                <dt>客户端格式</dt>
+                <dd>{targets.length} 种</dd>
+              </div>
+              {health?.metrics ? (
+                <>
+                  <div>
+                    <dt>今日拉取</dt>
+                    <dd><Tally value={health.metrics.conversions_today} /></dd>
+                  </div>
+                  <div>
+                    <dt>累计拉取</dt>
+                    <dd><Tally value={health.metrics.conversions_total} /></dd>
+                  </div>
+                  <div>
+                    <dt>今日访问</dt>
+                    <dd><Tally value={health.metrics.visits_today} /></dd>
+                  </div>
+                </>
+              ) : null}
+            </dl>
+          </section>
+        )}
 
         <div className="content-grid">
           <form className="profile-form" onSubmit={createProfile}>
             <div className="section-heading">
               <div>
-                <p className="section-label">CREATE LOCAL PROFILE</p>
-                <h2>创建本地订阅</h2>
+                <p className="section-label">
+                  {storesProfiles ? "CREATE LOCAL PROFILE" : "BUILD YOUR LINK"}
+                </p>
+                <h2>{storesProfiles ? "创建本地订阅" : "生成订阅链接"}</h2>
               </div>
               <span className="format-badge">{targets.length} 种格式</span>
             </div>
@@ -587,7 +924,11 @@ export default function HomePage() {
             <label className="field" htmlFor="subscription-url">
               <span className="field-label">
                 <strong>真实订阅地址</strong>
-                <small>不会出现在生成的本地 URL 中</small>
+                <small>
+                  {storesProfiles
+                    ? "不会出现在生成的本地 URL 中"
+                    : "会写进生成的链接，请勿把链接分享给他人"}
+                </small>
               </span>
               <span className="input-shell has-action">
                 <input
@@ -626,6 +967,7 @@ export default function HomePage() {
                 </span>
               </label>
 
+              {storesProfiles ? (
               <label className="field" htmlFor="target-format">
                 <span className="field-label"><strong>输出客户端</strong><small>完整配置</small></span>
                 <span className="input-shell select-shell">
@@ -650,7 +992,33 @@ export default function HomePage() {
                   </select>
                 </span>
               </label>
+              ) : null}
             </div>
+
+            {storesProfiles ? null : (
+              <div className="field target-field">
+                <span className="field-label">
+                  <strong>输出客户端</strong>
+                  <small>每种都是完整配置，不是裸节点列表</small>
+                </span>
+                <div className="target-grid" role="radiogroup" aria-label="输出客户端">
+                  {targets.map((item) => (
+                    <button
+                      type="button"
+                      key={item.id}
+                      role="radio"
+                      aria-checked={target === item.id}
+                      className="target-chip"
+                      data-tier={item.tier}
+                      onClick={() => setTarget(item.id)}
+                    >
+                      <strong>{item.short_label}</strong>
+                      <small>{item.extension.toUpperCase()}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {health?.access_password_required ? (
               <div className="password-row">
@@ -679,6 +1047,8 @@ export default function HomePage() {
               </div>
             ) : null}
 
+            {storesProfiles ? (
+              <>
             <div className="target-note">
               <div>
                 <span className="target-icon">{selectedTarget.short_label.slice(0, 1)}</span>
@@ -701,12 +1071,18 @@ export default function HomePage() {
                 <span>{selectedTarget.protocol_note}</span>
               </div>
             </div>
+              </>
+            ) : null}
 
             <details className="advanced-panel">
               <summary>
                 <span>
                   <strong>高级选项</strong>
-                  <small>随固定地址保存，每次刷新继续生效</small>
+                  <small>
+                    {storesProfiles
+                      ? "随固定地址保存，每次刷新继续生效"
+                      : "写进链接本身，每次刷新继续生效"}
+                  </small>
                 </span>
                 <span className="advanced-count">{enabledOptionCount} 项启用</span>
               </summary>
@@ -907,20 +1283,115 @@ export default function HomePage() {
               </div>
             </details>
 
-            <button
-              type="submit"
-              className="primary-button"
-              disabled={busy || !sourceReady || !engineOk}
-            >
-              <span>
-                {busy
-                  ? "正在验证并创建"
-                  : createdProfile
-                    ? "按当前设置重新生成"
-                    : "创建本地订阅地址"}
-              </span>
-              <span aria-hidden="true">{busy ? "…" : "→"}</span>
-            </button>
+            {storesProfiles || remoteConfigOptions.length === 0 ? null : (
+              <div className="remote-config-field">
+                <label className="field" htmlFor="remote-config">
+                  <span className="field-label">
+                    <strong>远程配置</strong>
+                    <small>决定分组与规则，默认用本项目的 Ekko Rules</small>
+                  </span>
+                  <Picker
+                    id="remote-config"
+                    label="远程配置"
+                    value={remoteConfigId}
+                    onChange={setRemoteConfigId}
+                    options={[
+                      ...remoteConfigOptions.map((option) => ({
+                        value: option.id,
+                        label: option.label,
+                        hint: option.description,
+                        section: option.builtin ? "本项目" : "第三方规则",
+                      })),
+                      ...(allowCustomRemoteConfig
+                        ? [
+                            {
+                              value: "__custom__",
+                              label: "自定义地址",
+                              hint: "填入任意 https 配置地址",
+                              section: "第三方规则",
+                            },
+                          ]
+                        : []),
+                    ]}
+                  />
+                </label>
+                {usingCustomRemoteConfig ? (
+                  <input
+                    type="url"
+                    value={customRemoteConfig}
+                    onChange={(event) => setCustomRemoteConfig(event.target.value)}
+                    placeholder="https://example.com/your-config.ini"
+                    spellCheck={false}
+                    maxLength={512}
+                  />
+                ) : null}
+                {remoteConfigId !== "ekko" ? (
+                  <small className="remote-config-note">
+                    选择非 Ekko Rules 时，这次转换的分组、规则与基础配置全部来自对方项目。
+                  </small>
+                ) : null}
+              </div>
+            )}
+
+            {storesProfiles ? (
+              <button
+                type="submit"
+                className="primary-button"
+                disabled={busy || !sourceReady || !engineOk}
+              >
+                <span>
+                  {busy
+                    ? "正在验证并创建"
+                    : createdProfile
+                      ? "按当前设置重新生成"
+                      : "创建本地订阅地址"}
+                </span>
+                <span aria-hidden="true">{busy ? "…" : "→"}</span>
+              </button>
+            ) : (
+              /* The link is already live at the top of the page, so there is
+                 nothing to submit — but the actions belong here too, where the
+                 last option was just changed. */
+              <div className="open-tail" data-ready={sourceReady ? "true" : "false"}>
+                <p className="open-tail-note">
+                  {sourceReady
+                    ? "改任何一项，上面的链接都会立刻跟着变。"
+                    : "填入订阅地址，链接就会当场拼出来。"}
+                </p>
+                <div className="open-tail-actions">
+                  {sourceReady && supportsClientInstallQr(target) ? (
+                    <a
+                      className="open-action is-primary"
+                      href={qrImportValue(
+                        target,
+                        absoluteLocalUrl(`/sub?${statelessQuery}`, subscriptionBaseUrl),
+                        "install",
+                      )}
+                    >
+                      {clientInstallLabel(target)}
+                    </a>
+                  ) : null}
+                  <button
+                    type="button"
+                    className={`open-action ${
+                      sourceReady && supportsClientInstallQr(target) ? "" : "is-primary"
+                    }`}
+                    disabled={!sourceReady}
+                    onClick={() => void copyUrl(buildStatelessProfile())}
+                  >
+                    {copying === "stateless" ? "已复制" : "复制链接"}
+                  </button>
+                  <button
+                    type="button"
+                    className="open-action"
+                    disabled={!sourceReady}
+                    onClick={() => openQr(buildStatelessProfile())}
+                  >
+                    扫码导入
+                  </button>
+                </div>
+              </div>
+            )}
 
             {error ? (
               <div className="message is-error" role="alert">
@@ -929,21 +1400,26 @@ export default function HomePage() {
             ) : null}
           </form>
 
+          {storesProfiles ? (
           <aside className={`result-card ${createdProfile ? "has-result" : ""}`}>
             <div>
-              <p className="result-label">LOCAL SUBSCRIPTION URL</p>
-              <h2>{createdProfile ? "地址已就绪" : "等待创建"}</h2>
+              <p className="result-label">
+                {storesProfiles ? "LOCAL SUBSCRIPTION URL" : "YOUR SUBSCRIPTION URL"}
+              </p>
+              <h2>{createdProfile ? "地址已就绪" : "等待生成"}</h2>
               <p className="result-summary">
                 {createdProfile
                   ? "表单内容已保留；可以微调选项后重新生成一个地址。"
-                  : "创建后，这里会出现可重复刷新的固定地址。"}
+                  : storesProfiles
+                    ? "创建后，这里会出现可重复刷新的固定地址。"
+                    : "生成后，这里会出现可重复刷新的订阅地址。服务器不保存任何内容。"}
               </p>
             </div>
 
             {createdProfile ? (
               <div className="created-result">
                 <div className="url-ticket">
-                  <span>固定本地地址</span>
+                  <span>{storesProfiles ? "固定本地地址" : "你的订阅地址"}</span>
                   <code>{absoluteLocalUrl(createdProfile.subscriptionPath, subscriptionBaseUrl)}</code>
                 </div>
                 <button className="copy-button" type="button" onClick={() => void copyUrl(createdProfile)}>
@@ -953,10 +1429,23 @@ export default function HomePage() {
                   显示二维码
                 </button>
                 <a className="download-link" href={createdProfile.downloadPath}>下载当前配置</a>
+                {storesProfiles ? null : (
+                  <p className="stateless-warning">
+                    这个链接里包含你的真实订阅地址。它不会保存在服务器上，但也因此<strong>不要分享给别人</strong>。
+                  </p>
+                )}
               </div>
             ) : (
               <div className="empty-ticket" aria-hidden="true">
-                <span>{subscriptionBaseUrl ? `${subscriptionBaseUrl}/sub/` : "http://本机地址/sub/"}</span><i />
+                <span>
+                  {storesProfiles
+                    ? subscriptionBaseUrl
+                      ? `${subscriptionBaseUrl}/sub/`
+                      : "http://本机地址/sub/"
+                    : subscriptionBaseUrl
+                      ? `${subscriptionBaseUrl}/sub?url=…`
+                      : "https://本站地址/sub?url=…"}
+                </span><i />
               </div>
             )}
 
@@ -964,12 +1453,17 @@ export default function HomePage() {
               <div><dt>规则</dt><dd>Ekko Rules {health?.ekko_rules_version ?? "—"}</dd></div>
                <div><dt>引擎</dt><dd>{health?.subconverter_version ?? "—"}</dd></div>
                <div><dt>协议</dt><dd>自动识别 · 无需手选</dd></div>
-              <div><dt>重启后</dt><dd>地址仍然有效</dd></div>
+              <div>
+                <dt>{storesProfiles ? "重启后" : "服务器保存"}</dt>
+                <dd>{storesProfiles ? "地址仍然有效" : "不保存任何内容"}</dd>
+              </div>
               <div><dt>离线时</dt><dd>已有客户端配置照常使用</dd></div>
             </dl>
           </aside>
+          ) : null}
         </div>
 
+        {storesProfiles ? (
         <section className="profiles-section">
           <div className="profiles-heading">
             <div>
@@ -1133,6 +1627,66 @@ export default function HomePage() {
             </div>
           )}
         </section>
+        ) : null}
+
+        {storesProfiles ? null : (
+          <section className="privacy-panel">
+            <div className="privacy-heading">
+              <p className="section-label">PRIVACY</p>
+              <h2>这个站不保存你的订阅</h2>
+            </div>
+            <ul className="privacy-list">
+              <li>
+                <strong>没有账号，也没有档案列表</strong>
+                <span>
+                  服务器不保存订阅、节点或任何属于某个人的记录，也就没有可以被别人列出来的内容。你的链接只在你手上。
+                </span>
+              </li>
+              <li>
+                <strong>订阅正文不落盘</strong>
+                <span>
+                  转换时才去拉取你的订阅，内容只写进容器的内存文件系统，转换结束立即删除；节点、生成的配置和转换历史都不保留。
+                </span>
+              </li>
+              <li>
+                <strong>日志里没有你的订阅地址</strong>
+                <span>
+                  服务端日志只记录事件类型、目标格式和字节数；反向代理按本项目的配置只记录路径，不记录带着订阅地址的查询串。
+                </span>
+              </li>
+              <li>
+                <strong>唯一被记下来的是四个数字</strong>
+                <span>
+                  页面上的访问与转换计数是四个累加的整数，按日归零一次。它们不含
+                  地址、IP、Cookie 或任何能指向某个人的东西；关掉它只需要一个环境变量。
+                </span>
+              </li>
+              <li>
+                <strong>链接在你的浏览器里拼成</strong>
+                <span>
+                  点“生成订阅链接”不会向服务器提交任何东西，服务器并不知道你生成过什么。
+                </span>
+              </li>
+              <li className="is-caution">
+                <strong>但链接本身带着你的订阅凭据</strong>
+                <span>
+                  这是无状态转换的代价：任何拿到该链接的人都能取回你的节点。请只导入自己的客户端，不要转发、不要贴到公开场合。
+                </span>
+              </li>
+            </ul>
+            <p className="privacy-footnote">
+              不想让任何第三方经手，可以用同一套代码在自己的电脑或服务器上跑一份：
+              {siteLinks.length ? (
+                <a href={siteLinks[0].url} target="_blank" rel="noreferrer noopener">
+                  {siteLinks[0].label}
+                </a>
+              ) : (
+                "本项目开源"
+              )}
+              。本地部署的形态会把真实订阅留在本机，连链接里都不会出现。
+            </p>
+          </section>
+        )}
 
         {qrProfile ? (
           <div className="qr-dialog" role="dialog" aria-modal="true" aria-label="本地订阅二维码">
@@ -1198,9 +1752,21 @@ export default function HomePage() {
       </section>
 
       <footer className="footer-row">
-        <span>真实订阅仅存本机数据卷</span><span aria-hidden="true">/</span>
-        <span>生成结果不留存</span><span aria-hidden="true">/</span>
-        <span>docker compose down -v 可彻底删除</span>
+        <div className="footer-facts">
+          {storesProfiles ? (
+            <>
+              <span>真实订阅仅存本机数据卷</span><span aria-hidden="true">/</span>
+              <span>生成结果不留存</span><span aria-hidden="true">/</span>
+              <span>docker compose down -v 可彻底删除</span>
+            </>
+          ) : (
+            <>
+              <span>服务器不保存订阅、节点与转换记录</span><span aria-hidden="true">/</span>
+              <span>每个链接只属于生成它的人</span><span aria-hidden="true">/</span>
+              <span>可自行部署同一套服务</span>
+            </>
+          )}
+        </div>
       </footer>
     </main>
   );
