@@ -51,22 +51,87 @@ function proxyProviderSection(content: string): {
   return { lines, start, end: topLevelSectionEnd(lines, start) };
 }
 
+const URL_VALUE = /url:\s*("(?:\\.|[^"\\])*"|'(?:''|[^'])*'|[^,}]+)/;
+
 /**
- * Every http(s) `url:` inside `proxy-providers:`, in document order, without
- * duplicates. A `file:` provider is ignored: it names a path on whatever
- * machine wrote the config, which is not this one.
+ * Drops nested flow mappings so a `health-check: {url: …}` written on one line
+ * cannot be read as the provider's own download URL.
+ */
+function withoutNestedFlowMappings(line: string, keepDepth: number): string {
+  let depth = 0;
+  let kept = "";
+  for (const character of line) {
+    if (character === "{") {
+      depth += 1;
+      if (depth <= keepDepth) kept += character;
+      continue;
+    }
+    if (character === "}") {
+      if (depth <= keepDepth) kept += character;
+      depth = Math.max(0, depth - 1);
+      continue;
+    }
+    if (depth <= keepDepth) kept += character;
+  }
+  return kept;
+}
+
+function indentOf(line: string): number {
+  return line.length - line.trimStart().length;
+}
+
+/**
+ * Every provider's own download URL, in document order, without duplicates.
+ *
+ * Only a `url:` sitting at a provider's own key depth counts. The nested
+ * `health-check.url` that most real provider blocks carry is a probe endpoint,
+ * not a node source; fetching it would waste a slot and return nothing usable.
+ * A `file:` provider is ignored too: it names a path on whatever machine wrote
+ * the config, which is not this one.
  */
 export function findProxyProviderUrls(content: string): string[] {
   const section = proxyProviderSection(content);
   if (!section) return [];
 
+  const body = section.lines.slice(section.start + 1, section.end);
   const urls: string[] = [];
-  for (const line of section.lines.slice(section.start + 1, section.end)) {
-    // Both `url: https://…` and `{type: http, url: https://…}` appear in the
-    // wild, so match the key wherever it sits on the line.
-    const match = line.match(
-      /(?:^\s*|[,{]\s*)url:\s*("(?:\\.|[^"\\])*"|'(?:''|[^'])*'|[^,}]+)/,
-    );
+  let entryIndent: number | null = null;
+  let keyIndent: number | null = null;
+
+  for (const raw of body) {
+    if (!raw.trim()) continue;
+    const indent = indentOf(raw);
+
+    if (entryIndent === null) {
+      // The first content line under the section is a provider name.
+      entryIndent = indent;
+    }
+    if (indent === entryIndent) {
+      // A provider header. It may carry the whole definition inline.
+      // On a header the outermost braces are the provider's own mapping, so
+      // one level of them stays; a mapping inside that is health-check.
+      const inline = withoutNestedFlowMappings(raw, 1);
+      const match = inline.match(URL_VALUE);
+      if (match) {
+        const value = parseYamlScalar(match[1]);
+        if (/^https?:\/\//i.test(value) && !urls.includes(value)) {
+          urls.push(value);
+          if (urls.length >= MAX_PROXY_PROVIDERS) break;
+        }
+      }
+      keyIndent = null;
+      continue;
+    }
+    if (indent <= entryIndent) continue;
+
+    // The first line deeper than a header sets the depth of that provider's
+    // own keys; anything deeper belongs to a nested mapping.
+    if (keyIndent === null) keyIndent = indent;
+    if (indent !== keyIndent) continue;
+
+    // On one of the provider's own keys any braces are already a nested
+    // mapping, so none of them stay.
+    const match = withoutNestedFlowMappings(raw, 0).match(URL_VALUE);
     if (!match) continue;
     const value = parseYamlScalar(match[1]);
     if (!/^https?:\/\//i.test(value)) continue;

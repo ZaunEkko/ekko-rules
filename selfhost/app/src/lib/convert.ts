@@ -790,17 +790,23 @@ export async function convertSubscription(
   // subscription itself went through, so the engine receives the nodes rather
   // than a provider it cannot reach.
   const providerUrls = findProxyProviderUrls(subscriptionBody);
-  const providerBodies: string[] = [];
-  let providerFailure: string | null = null;
-  for (const providerUrl of providerUrls) {
-    try {
+  // All at once, under one shared slice of the conversion budget. Run in
+  // sequence at the full timeout each, a couple of unresponsive providers
+  // would outlast the reverse proxy in front of this service before the
+  // conversion itself had started.
+  const providerTimeoutMs = Math.max(
+    5_000,
+    Math.floor(runtime.timeoutMs / 2),
+  );
+  const providerResults = await Promise.allSettled(
+    providerUrls.map(async (providerUrl) => {
       const safeProviderUrl = parsePublicHttpUrl(providerUrl);
       const providerAddresses = await assertPublicHostname(
         safeProviderUrl.hostname,
       );
       const fetched = await requestTextWithLimits(safeProviderUrl.href, {
         method: "GET",
-        timeoutMs: runtime.timeoutMs,
+        timeoutMs: providerTimeoutMs,
         maxBytes: runtime.maxSubscriptionBytes,
         userAgent: upstreamUserAgent,
         requestLabel: "Proxy provider fetch",
@@ -809,13 +815,19 @@ export async function convertSubscription(
       if (!fetched.ok) {
         throw new Error(`HTTP ${fetched.status}`);
       }
-      if (!looksLikeSubscription(fetched.body)) continue;
-      providerBodies.push(fetched.body);
-    } catch (error) {
-      // One dead provider out of several is survivable; report the last
-      // reason only if none of them produced nodes.
-      providerFailure = publicErrorMessage(error);
+      return fetched.body;
+    }),
+  );
+  const providerBodies: string[] = [];
+  let providerFailure: string | null = null;
+  for (const result of providerResults) {
+    if (result.status === "rejected") {
+      // One dead provider out of several is survivable; the reason is only
+      // reported when none of them produced nodes.
+      providerFailure = publicErrorMessage(result.reason);
+      continue;
     }
+    if (looksLikeSubscription(result.value)) providerBodies.push(result.value);
   }
   if (providerUrls.length > 0 && providerBodies.length === 0) {
     throw new Error(

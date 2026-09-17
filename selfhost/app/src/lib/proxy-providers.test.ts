@@ -40,6 +40,36 @@ test("reads a url written inline in a flow mapping", () => {
   ]);
 });
 
+test("ignores the health-check probe next to a provider url", () => {
+  const withProbe = `proxy-providers:
+  airport:
+    type: http
+    url: https://upstream.example/nodes.yaml
+    interval: 3600
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 300
+  backup:
+    type: http
+    url: https://backup.example/nodes.yaml
+    health-check: {enable: true, url: http://www.gstatic.com/generate_204}
+`;
+  assert.deepEqual(findProxyProviderUrls(withProbe), [
+    "https://upstream.example/nodes.yaml",
+    "https://backup.example/nodes.yaml",
+  ]);
+});
+
+test("ignores a probe nested inside an inline provider definition", () => {
+  const inline = `proxy-providers:
+  airport: {type: http, url: https://upstream.example/nodes.yaml, health-check: {enable: true, url: http://probe.example/204}}
+`;
+  assert.deepEqual(findProxyProviderUrls(inline), [
+    "https://upstream.example/nodes.yaml",
+  ]);
+});
+
 test("ignores a provider that names a path on someone else's machine", () => {
   const local = `proxy-providers:
   airport:
@@ -69,6 +99,26 @@ test("stops collecting rather than following an unbounded list", () => {
         `  p${index}: {type: http, url: https://upstream.example/${index}.yaml}`,
     ).join("\n");
   assert.equal(findProxyProviderUrls(many).length, MAX_PROXY_PROVIDERS);
+});
+
+test("spends the whole budget on node urls, not on probes", () => {
+  // Every provider shares one health-check endpoint. Counting it would cost a
+  // slot and silently drop the last provider's nodes.
+  const withProbes =
+    "proxy-providers:\n" +
+    Array.from({ length: MAX_PROXY_PROVIDERS }, (_, index) =>
+      [
+        `  p${index}:`,
+        "    type: http",
+        `    url: https://upstream.example/${index}.yaml`,
+        "    health-check:",
+        "      enable: true",
+        "      url: http://www.gstatic.com/generate_204",
+      ].join("\n"),
+    ).join("\n");
+  const found = findProxyProviderUrls(withProbes);
+  assert.equal(found.length, MAX_PROXY_PROVIDERS);
+  assert.ok(found.every((url) => url.startsWith("https://upstream.example/")));
 });
 
 test("finds nothing in a document that has no providers", () => {
