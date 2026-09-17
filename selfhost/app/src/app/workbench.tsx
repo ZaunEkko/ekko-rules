@@ -1471,15 +1471,6 @@ export function Workbench({
                     这个链接里包含你的真实订阅地址。它不会保存在服务器上，但也因此<strong>不要分享给别人</strong>。
                   </p>
                 )}
-                {/* The other two copies sit in the stateless flow. This one
-                    reaches the personal deployment, whose import controls are
-                    here rather than next to the link. */}
-                <p className="open-client-note">
-                  <b>客户端里会改写配置的开关，不懂就别动。</b>
-                  「DNS 覆写」「Smart 内核 / 智能分组」「全局扩展脚本」这些都会改掉你刚
-                  导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
-                  确实清楚自己在调什么再接管。
-                </p>
               </div>
             ) : (
               <div className="empty-ticket" aria-hidden="true">
@@ -1511,6 +1502,15 @@ export function Workbench({
 
         {storesProfiles ? (
         <section className="profiles-section">
+            {/* Where the personal deployment actually imports from: the saved
+                list, on every visit, not just the session that created a
+                profile. */}
+            <p className="open-client-note">
+              <b>客户端里会改写配置的开关，不懂就别动。</b>
+              「DNS 覆写」「Smart 内核 / 智能分组」「全局扩展脚本」这些都会改掉你刚
+              导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
+              确实清楚自己在调什么再接管。
+            </p>
           <div className="profiles-heading">
             <div>
               <p className="section-label">SAVED LOCALLY</p>
