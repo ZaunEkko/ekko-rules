@@ -5,7 +5,7 @@
   "self": "manifest.json",
   "self_hash_included": false,
   "files": {
-    "Mihomo/reversed-template.yaml": "84bcace8f22ef76bd0a813ac811b15951837a081f1dc3c10660ee7a5e7e14c12",
+    "Mihomo/reversed-template.yaml": "b7643e58de74b0082ea2372eb37c386faa42ebe2a80a0d6ff2c2d35305c08ae1",
     "Providers/Ruleset/advertising.yaml": "2e32375b3f86af8e09771785c0e145a0371839a7fb5c128a0371fd6c83a858c3",
     "Providers/Ruleset/ai-developer.yaml": "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
     "Providers/Ruleset/ai-platforms.yaml": "2af6df159b121a558ddf74cfcb0321646d3388d0d2153c34d2c6e61fc50b1d6d",
@@ -141,6 +141,6 @@
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
     "analysis.json": "c76e3851a0689d68f98b412818c585ff4c377f0f2cff69b28b54bafe86f00308",
-    "config/ekko-rules.ini": "4deff08c2fba832ba962cf998023f04d9e573d311c6fb9bb2890a07791547553"
+    "config/ekko-rules.ini": "c794901254cc7dd79ac209c0db1480682296e57ecb98a2e9b6206edda3993820"
   }
 }

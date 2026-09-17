@@ -215,13 +215,13 @@ class CanonicalSourceTests(unittest.TestCase):
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🧩 微软服务": [
-                "DIRECT",
                 "♻️ 手动切换",
+                "DIRECT",
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🍎 苹果服务": [
-                "DIRECT",
                 "♻️ 手动切换",
+                "DIRECT",
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🎮 游戏平台": [
@@ -402,10 +402,13 @@ class CanonicalSourceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             source_copy = Path(temporary) / "sources"
             shutil.copytree(SOURCES, source_copy)
-            microsoft = source_copy / "rules" / "microsoft.list"
-            microsoft.write_text(
-                microsoft.read_text(encoding="utf-8")
-                + "DOMAIN-KEYWORD,microsoft\n",
+            # china-web targets the default-DIRECT mainland group. Microsoft
+            # used to serve as the example here, but ER-031 moved it to the
+            # manual group, where an unanchored matcher is not a leak.
+            china_web = source_copy / "rules" / "china-web.list"
+            china_web.write_text(
+                china_web.read_text(encoding="utf-8")
+                + "DOMAIN-KEYWORD,weibo\n",
                 encoding="utf-8",
                 newline="\n",
             )
@@ -955,10 +958,18 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         group_members = {
             group.name: list(group.members) for group in sources.proxy_groups
         }
+        # The recovery rulesets were restored to keep historical DIRECT-default
+        # behaviour. Microsoft and Apple were later moved to the manual group
+        # on purpose (ER-031), so their owners now lead with it too.
+        proxy_first_targets = {
+            "🎮 游戏平台",
+            "🧩 微软服务",
+            "🍎 苹果服务",
+        }
         for record in self.ledger["owners"].values():
             expected_default = (
                 "♻️ 手动切换"
-                if record["target"] == "🎮 游戏平台"
+                if record["target"] in proxy_first_targets
                 else "DIRECT"
             )
             self.assertEqual(group_members[record["target"]][0], expected_default)

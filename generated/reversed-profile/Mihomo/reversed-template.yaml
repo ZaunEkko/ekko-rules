@@ -232,15 +232,15 @@ proxy-groups:
 - name: 🧩 微软服务
   type: select
   proxies:
-  - DIRECT
   - ♻️ 手动切换
+  - DIRECT
   use:
   - subscription
 - name: 🍎 苹果服务
   type: select
   proxies:
-  - DIRECT
   - ♻️ 手动切换
+  - DIRECT
   use:
   - subscription
 - name: 🎮 游戏平台
