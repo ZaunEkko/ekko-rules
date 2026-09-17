@@ -170,12 +170,35 @@ function proxyEntries(lines: string[]): { start: number; end: number }[] {
  * untouched.
  */
 export function repairNodesForEngine(content: string): string {
+  return repair(content, { dropUnsupported: true });
+}
+
+/**
+ * The same quoting, applied to what the engine hands back.
+ *
+ * Getting a value safely *into* the engine is only half of it: the engine
+ * writes the config out unquoted again, and then the client's own YAML parser
+ * reads `short-id: 826209375e63` as a float. Mihomo refuses the whole profile
+ * with "invalid REALITY short ID" — measured on a real subscription whose
+ * upstream copy was perfectly fine and whose converted copy was not.
+ *
+ * Nothing is dropped here: the node set that came back is the node set that
+ * goes out.
+ */
+export function quoteCredentialsForClient(content: string): string {
+  return repair(content, { dropUnsupported: false });
+}
+
+function repair(
+  content: string,
+  { dropUnsupported }: { dropUnsupported: boolean },
+): string {
   const lines = content.replace(/\r\n/g, "\n").split("\n");
   const start = lines.findIndex((line) => /^proxies:\s*$/.test(line));
   if (start < 0) {
     // A bare list of entries with no `proxies:` header still reaches here from
     // a provider body, so treat the whole document as the block.
-    return applyToBlock(lines, 0, lines.length).join("\n");
+    return applyToBlock(lines, 0, lines.length, dropUnsupported).join("\n");
   }
   let end = lines.length;
   for (let index = start + 1; index < lines.length; index += 1) {
@@ -184,18 +207,25 @@ export function repairNodesForEngine(content: string): string {
       break;
     }
   }
-  return applyToBlock(lines, start + 1, end).join("\n");
+  return applyToBlock(lines, start + 1, end, dropUnsupported).join("\n");
 }
 
-function applyToBlock(lines: string[], from: number, to: number): string[] {
+function applyToBlock(
+  lines: string[],
+  from: number,
+  to: number,
+  dropUnsupported: boolean,
+): string[] {
   const block = lines.slice(from, to);
   const rewritten = new Map<number, string>();
   const dropped = new Set<number>();
 
   for (const entry of proxyEntries(block)) {
     const entryLines = block.slice(entry.start, entry.end);
-    // Quoting applies to every node; dropping fields only to Hysteria2.
-    const isHysteria2 = HYSTERIA2_TYPE.test(entryLines.join(" "));
+    // Quoting applies to every node; dropping fields only to Hysteria2, and
+    // only on the way in — what comes back must keep every node it has.
+    const isHysteria2 =
+      dropUnsupported && HYSTERIA2_TYPE.test(entryLines.join(" "));
 
     for (let index = entry.start; index < entry.end; index += 1) {
       const line = block[index];
