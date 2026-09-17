@@ -763,12 +763,24 @@ export async function convertSubscription(
     throw new Error("Node provider output is only available for Mihomo.");
   }
 
+  // CONVERT_TIMEOUT_MS is the budget for the whole conversion, not for each
+  // leg of it. A conversion can take four sequential network trips — the
+  // subscription, its providers, the config, the node pass — and granting each
+  // the full timeout would let a valid subscription outlast the reverse proxy
+  // in front of this service before the last one started.
+  const deadline = Date.now() + runtime.timeoutMs;
+  const remainingMs = (): number => {
+    const left = deadline - Date.now();
+    if (left <= 0) throw new Error("Conversion timed out.");
+    return left;
+  };
+
   const safeUrl = parsePublicHttpUrl(request.subscriptionUrl);
   const resolvedAddresses = await assertPublicHostname(safeUrl.hostname);
 
   const preflight = await requestTextWithLimits(safeUrl.href, {
     method: "GET",
-    timeoutMs: runtime.timeoutMs,
+    timeoutMs: remainingMs(),
     maxBytes: runtime.maxSubscriptionBytes,
     userAgent: upstreamUserAgent,
     requestLabel: "Subscription fetch",
@@ -790,13 +802,12 @@ export async function convertSubscription(
   // subscription itself went through, so the engine receives the nodes rather
   // than a provider it cannot reach.
   const providerUrls = findProxyProviderUrls(subscriptionBody);
-  // All at once, under one shared slice of the conversion budget. Run in
-  // sequence at the full timeout each, a couple of unresponsive providers
-  // would outlast the reverse proxy in front of this service before the
-  // conversion itself had started.
-  const providerTimeoutMs = Math.max(
-    5_000,
-    Math.floor(runtime.timeoutMs / 2),
+  // All at once, and never more than half the budget: the conversion still
+  // has to happen after this. Run in sequence instead, a couple of
+  // unresponsive providers would spend the whole budget on their own.
+  const providerTimeoutMs = Math.min(
+    remainingMs(),
+    Math.max(5_000, Math.floor(runtime.timeoutMs / 2)),
   );
   const providerResults = await Promise.allSettled(
     providerUrls.map(async (providerUrl) => {
@@ -897,7 +908,7 @@ export async function convertSubscription(
               const configAddresses = await assertPublicHostname(configHostname);
               const fetchedConfig = await requestTextWithLimits(configUrl, {
                 method: "GET",
-                timeoutMs: runtime.timeoutMs,
+                timeoutMs: remainingMs(),
                 maxBytes: REMOTE_CONFIG_MAX_BYTES,
                 requestLabel: "Remote config fetch",
                 resolvedAddresses: configAddresses,
@@ -953,7 +964,7 @@ export async function convertSubscription(
 
     const converted = await requestTextWithLimits(endpoint.toString(), {
       method: "GET",
-      timeoutMs: runtime.timeoutMs,
+      timeoutMs: remainingMs(),
       maxBytes: runtime.maxSubscriptionBytes * 4,
       requestLabel: "Complete conversion",
       headers: request.target === "clash" ? { "user-agent": "clash.meta" } : {},
@@ -972,7 +983,7 @@ export async function convertSubscription(
       nodeEndpoint.searchParams.set("list", "true");
       const nodeResponse = await requestTextWithLimits(nodeEndpoint.toString(), {
         method: "GET",
-        timeoutMs: runtime.timeoutMs,
+        timeoutMs: remainingMs(),
         maxBytes: runtime.maxSubscriptionBytes * 4,
         requestLabel: "Node conversion",
         headers: { "user-agent": "clash.meta" },
