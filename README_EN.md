@@ -55,6 +55,23 @@ disables it again. The URL still resolves, but what comes back is empty. Check
 that the subscription is enabled and that you copied the current link; reset it
 if in doubt.
 
+## Client switches that rewrite the profile
+
+What you import is a complete configuration — nodes, DNS, proxy groups and
+routing rules — and the parts depend on each other. The rules are only accurate
+because the DNS and the groups that ship with them are in place.
+
+Most clients offer switches that **replace** part of that with the client's own:
+
+| Switch | What it replaces |
+|---|---|
+| DNS override / DNS settings | the whole `dns:` section — split resolution, fake-ip, encrypted upstreams |
+| Smart core / smart groups | how the proxy groups are typed and select nodes |
+| Global merge / script | any part of the profile |
+
+**If you are not sure what they do, leave them off.** This side is already
+handled. Take it over only if you know exactly what you are changing.
+
 ## Run it yourself
 
 Rather not involve anyone else? The same code in its other shape: the real subscription goes only to your own Docker, **never appearing in a URL at all**, and you get a stable local address that your client keeps refreshing.

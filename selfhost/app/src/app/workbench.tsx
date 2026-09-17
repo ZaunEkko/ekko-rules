@@ -886,6 +886,17 @@ export function Workbench({
                   扫码导入
                 </button>
               </div>
+              {/* Clients ship switches that rewrite an imported profile —
+                  a DNS override, smart group selection, global merge/script
+                  hooks. Each one silently replaces part of what was just
+                  generated, and the routing depends on those parts. Say so
+                  where the import happens. */}
+              <p className="open-client-note">
+                <b>客户端里会改写配置的开关，不懂就别动。</b>
+                「DNS 覆写」「Smart 内核 / 智能分组」「全局扩展脚本」这些都会改掉你刚
+                导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
+                确实清楚自己在调什么再接管。
+              </p>
             </div>
 
             <dl className="open-facts">
@@ -1406,6 +1417,16 @@ export function Workbench({
                     扫码导入
                   </button>
                 </div>
+                {/* The generated file carries its own DNS section. Clients ship
+                    a DNS override that silently replaces it, and a visitor who
+                    turns it on loses the mainland/overseas split the rules
+                    depend on. Say so where the import happens. */}
+                <p className="open-client-note">
+                  <b>客户端里会改写配置的开关，不懂就别动。</b>
+                  「DNS 覆写」「Smart 内核 / 智能分组」「全局扩展脚本」这些都会改掉你刚
+                  导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
+                  确实清楚自己在调什么再接管。
+                </p>
               </div>
             )}
 
@@ -1481,6 +1502,15 @@ export function Workbench({
 
         {storesProfiles ? (
         <section className="profiles-section">
+            {/* Where the personal deployment actually imports from: the saved
+                list, on every visit, not just the session that created a
+                profile. */}
+            <p className="open-client-note">
+              <b>客户端里会改写配置的开关，不懂就别动。</b>
+              「DNS 覆写」「Smart 内核 / 智能分组」「全局扩展脚本」这些都会改掉你刚
+              导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
+              确实清楚自己在调什么再接管。
+            </p>
           <div className="profiles-heading">
             <div>
               <p className="section-label">SAVED LOCALLY</p>
