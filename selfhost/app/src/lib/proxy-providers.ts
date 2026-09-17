@@ -42,20 +42,29 @@ function parseYamlScalar(value: string): string {
   return trimmed.replace(/\s+#.*$/, "").trim();
 }
 
+/**
+ * The section key, however its value is written: on the lines below it, with a
+ * trailing comment, or as a flow mapping on the key's own line. Missing any of
+ * these sends the untouched document to the engine — the exact failure this
+ * module exists to prevent.
+ */
+const SECTION_HEADER = /^proxy-providers:\s*(?:\{.*|#.*)?$/;
+
 function proxyProviderSection(content: string): {
   lines: string[];
   start: number;
   end: number;
+  inlineMapping: boolean;
 } | null {
   const lines = content.replace(/\r\n/g, "\n").split("\n");
-  // `proxy-providers: # downloaded hourly` is a valid header, and missing it
-  // would send the untouched document to the engine — the exact failure this
-  // module exists to prevent.
-  const start = lines.findIndex((line) =>
-    /^proxy-providers:\s*(?:#.*)?$/.test(line),
-  );
+  const start = lines.findIndex((line) => SECTION_HEADER.test(line));
   if (start < 0) return null;
-  return { lines, start, end: topLevelSectionEnd(lines, start) };
+  return {
+    lines,
+    start,
+    end: topLevelSectionEnd(lines, start),
+    inlineMapping: /^proxy-providers:\s*\{/.test(lines[start]),
+  };
 }
 
 const URL_VALUE = /url:\s*("(?:\\.|[^"\\])*"|'(?:''|[^'])*'|[^,}]+)/;
@@ -100,8 +109,23 @@ export function findProxyProviderUrls(content: string): string[] {
   const section = proxyProviderSection(content);
   if (!section) return [];
 
-  const body = section.lines.slice(section.start + 1, section.end);
   const urls: string[] = [];
+
+  if (section.inlineMapping) {
+    // `proxy-providers: {airport: {type: http, url: …}}`. The outer mapping is
+    // the section, each provider is one level in and its own keys one more; a
+    // health-check sits deeper still and is dropped with everything below.
+    const flat = withoutNestedFlowMappings(section.lines[section.start], 2);
+    for (const match of flat.matchAll(new RegExp(URL_VALUE.source, "g"))) {
+      const value = parseYamlScalar(match[1]);
+      if (!/^https?:\/\//i.test(value)) continue;
+      if (!urls.includes(value)) urls.push(value);
+      if (urls.length >= MAX_PROXY_PROVIDERS) break;
+    }
+    return urls;
+  }
+
+  const body = section.lines.slice(section.start + 1, section.end);
   let entryIndent: number | null = null;
   let keyIndent: number | null = null;
 

@@ -166,6 +166,13 @@ function isTimeoutFailure(error: unknown): boolean {
 /** A rule template is text; anything this large is not one. */
 const REMOTE_CONFIG_MAX_BYTES = 1_048_576;
 const REMOTE_CONFIG_CACHE_TTL_MS = 30 * 60_000;
+/**
+ * A refresh is shared between everyone who wants the same config, so it cannot
+ * run on any one requester's clock: a caller that arrives with two seconds
+ * left would otherwise cancel the fetch that a caller with a full budget is
+ * waiting on. Each caller races its own budget against the shared work.
+ */
+const REMOTE_CONFIG_FETCH_TIMEOUT_MS = 15_000;
 const REMOTE_CONFIG_CACHE_MAX_ENTRIES = 8;
 
 /**
@@ -807,10 +814,13 @@ export async function convertSubscription(
   const resolveWithinDeadline = async (
     hostname: string,
     budgetMs: number,
+    { shared = false }: { shared?: boolean } = {},
   ): Promise<string[]> =>
     raceDeadline(
       assertPublicHostname(hostname),
-      Math.min(budgetMs, remainingMs()),
+      // Work shared with other conversions keeps its own clock; everything
+      // else may not outlive this request.
+      shared ? budgetMs : Math.min(budgetMs, remainingMs()),
     );
 
   const safeUrl = parsePublicHttpUrl(request.subscriptionUrl);
@@ -955,11 +965,12 @@ export async function convertSubscription(
             refresh = (async () => {
               const configAddresses = await resolveWithinDeadline(
                 configHostname,
-                remainingMs(),
+                REMOTE_CONFIG_FETCH_TIMEOUT_MS,
+                { shared: true },
               );
               const fetchedConfig = await requestTextWithLimits(configUrl, {
                 method: "GET",
-                timeoutMs: remainingMs(),
+                timeoutMs: REMOTE_CONFIG_FETCH_TIMEOUT_MS,
                 maxBytes: REMOTE_CONFIG_MAX_BYTES,
                 requestLabel: "Remote config fetch",
                 resolvedAddresses: configAddresses,

@@ -142,6 +142,20 @@ test("ends an unquoted url where its comment begins", () => {
   ]);
 });
 
+test("reads a section written as one flow mapping", () => {
+  const flowSection = `proxy-providers: {airport: {type: http, url: https://upstream.example/nodes.yaml, health-check: {enable: true, url: http://probe.example/204}}, backup: {type: http, url: https://backup.example/nodes.yaml}}
+rules:
+  - MATCH,DIRECT
+`;
+  assert.deepEqual(findProxyProviderUrls(flowSection), [
+    "https://upstream.example/nodes.yaml",
+    "https://backup.example/nodes.yaml",
+  ]);
+  const stripped = stripProxyProviders(flowSection);
+  assert.ok(!stripped.includes("proxy-providers"));
+  assert.ok(stripped.includes("rules:"));
+});
+
 test("finds nothing in a document that has no providers", () => {
   assert.deepEqual(findProxyProviderUrls("proxies:\n  - {name: a}\n"), []);
   assert.deepEqual(findProxyProviderUrls(""), []);
