@@ -341,7 +341,7 @@ segments:
 - order: 55
   kind: ruleset
   slug: apple-late-recovery
-  target: 🍎 苹果服务
+  target: DIRECT
   source: rules/apple-late-recovery.list
   scope: core
 - order: 56
@@ -371,7 +371,7 @@ segments:
 - order: 60
   kind: ruleset
   slug: microsoft-late-recovery
-  target: 🧩 微软服务
+  target: DIRECT
   source: rules/microsoft-late-recovery.list
   scope: core
 - order: 61

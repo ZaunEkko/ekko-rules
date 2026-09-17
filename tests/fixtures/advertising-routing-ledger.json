@@ -2,7 +2,7 @@
   "schema_version": 1,
   "policy": "Advertising intentionally precedes specialized services; only the frozen anchored advertising rules may capture the listed later matchers. Any additional capture requires review.",
   "count": 40,
-  "rows_sha256": "f7ed27997eb13fa04355a9a5c3ed530a0c30b9808ec58c43b12f4e8d9b5a67d6",
+  "rows_sha256": "12b4084375c0e21969d9b11e3d461f6a1589d9bfca3108ebcd398a1bca45b180",
   "rows": [
     {
       "later_slug": "openai",
@@ -72,13 +72,13 @@
     },
     {
       "later_slug": "microsoft-late-recovery",
-      "later_target": "🧩 微软服务",
+      "later_target": "DIRECT",
       "later_rule": "DOMAIN-SUFFIX,msads.net",
       "advertising_rule": "DOMAIN-SUFFIX,msads.net"
     },
     {
       "later_slug": "apple-late-recovery",
-      "later_target": "🍎 苹果服务",
+      "later_target": "DIRECT",
       "later_rule": "DOMAIN-SUFFIX,qwapi.com",
       "advertising_rule": "DOMAIN-SUFFIX,qwapi.com"
     },

@@ -35,6 +35,26 @@ Done. Flip UDP, XUDP and the rest under advanced options if you need them — th
 
 Rules default to this repository's Ekko Rules. The page can also switch to the common ACL4SSR sets, or take a remote configuration URL of your own.
 
+## Two reasons a conversion comes back empty
+
+**The provider blocked the converter.** A public converter fetches your
+subscription from its own server, so the provider sees an unfamiliar IP. Some
+refuse it outright; others only answer a specific client User-Agent. Try these
+in order of effort:
+
+1. Set a custom User-Agent under "advanced options" — often that is all the
+   provider checks.
+2. **Run it on your own computer** (the next section). The fetch then comes
+   from your home connection, the address the provider already sees from you.
+   Deploying to a VPS is not the same thing: that is still a datacenter IP and
+   can be blocked for the same reason.
+
+**The subscription is switched off in the provider's panel.** Plenty of
+providers keep it disabled by default, and changing plan or resetting the link
+disables it again. The URL still resolves, but what comes back is empty. Check
+that the subscription is enabled and that you copied the current link; reset it
+if in doubt.
+
 ## Run it yourself
 
 Rather not involve anyone else? The same code in its other shape: the real subscription goes only to your own Docker, **never appearing in a URL at all**, and you get a stable local address that your client keeps refreshing.
@@ -57,6 +77,7 @@ On Windows, `setup.cmd` additionally installs a login-time helper that tracks th
 | What you install | Nothing | Docker + Compose v2 |
 
 Both shapes emit eight client formats: Clash / Mihomo, sing-box, Surge 4+, Quantumult X, Loon, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry are passed through.
+
 
 ## Rules only, no conversion
 

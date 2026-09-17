@@ -215,13 +215,13 @@ class CanonicalSourceTests(unittest.TestCase):
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🧩 微软服务": [
-                "DIRECT",
                 "♻️ 手动切换",
+                "DIRECT",
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🍎 苹果服务": [
-                "DIRECT",
                 "♻️ 手动切换",
+                "DIRECT",
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🎮 游戏平台": [
@@ -402,10 +402,13 @@ class CanonicalSourceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             source_copy = Path(temporary) / "sources"
             shutil.copytree(SOURCES, source_copy)
-            microsoft = source_copy / "rules" / "microsoft.list"
-            microsoft.write_text(
-                microsoft.read_text(encoding="utf-8")
-                + "DOMAIN-KEYWORD,microsoft\n",
+            # china-web targets the default-DIRECT mainland group. Microsoft
+            # used to serve as the example here, but ER-031 moved it to the
+            # manual group, where an unanchored matcher is not a leak.
+            china_web = source_copy / "rules" / "china-web.list"
+            china_web.write_text(
+                china_web.read_text(encoding="utf-8")
+                + "DOMAIN-KEYWORD,weibo\n",
                 encoding="utf-8",
                 newline="\n",
             )
@@ -955,10 +958,18 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         group_members = {
             group.name: list(group.members) for group in sources.proxy_groups
         }
+        # The recovery rulesets were restored to keep historical DIRECT-default
+        # behaviour. Microsoft and Apple were later moved to the manual group
+        # on purpose (ER-031), so their owners now lead with it too.
+        proxy_first_targets = {
+            "🎮 游戏平台",
+            "🧩 微软服务",
+            "🍎 苹果服务",
+        }
         for record in self.ledger["owners"].values():
             expected_default = (
                 "♻️ 手动切换"
-                if record["target"] == "🎮 游戏平台"
+                if record["target"] in proxy_first_targets
                 else "DIRECT"
             )
             self.assertEqual(group_members[record["target"]][0], expected_default)
@@ -1124,7 +1135,7 @@ class AdvertisingImportTests(unittest.TestCase):
     def test_intentional_cross_segment_captures_are_frozen(self) -> None:
         self.assertEqual(
             hashlib.sha256(ADVERTISING_ROUTING_LEDGER.read_bytes()).hexdigest(),
-            "91dba828281abdf706baaf1cf7c55c0db757758e735ddb5727ef395cfefc7262",
+            "766c09c1144a857b011cae9718892b6910548d44679798cdf5ebccefab5e76c3",
         )
         ledger = json.loads(
             ADVERTISING_ROUTING_LEDGER.read_text(encoding="utf-8")
@@ -1493,7 +1504,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             (
                 (
                     "microsoft-late-recovery",
-                    "🧩 微软服务",
+                    "DIRECT",
                     "DOMAIN-SUFFIX,21vbc.com",
                 ),
                 "www.21vbc.com",
@@ -1501,7 +1512,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             (
                 (
                     "apple-late-recovery",
-                    "🍎 苹果服务",
+                    "DIRECT",
                     "DOMAIN-SUFFIX,100beatscheap.com",
                 ),
                 "www.100beatscheap.com",
