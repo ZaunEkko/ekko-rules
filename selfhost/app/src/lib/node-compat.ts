@@ -19,7 +19,8 @@
 /** Hysteria2 keys this engine version rejects the whole list over. */
 const HYSTERIA2_UNSUPPORTED = ["ports", "up", "down"];
 
-const HYSTERIA2_TYPE = /(?:^|[,{\s])type:\s*(?:hysteria2|hy2)\b/i;
+// The value may be quoted: some serialisers quote every string they emit.
+const HYSTERIA2_TYPE = /(?:^|[,{\s])type:\s*["']?(?:hysteria2|hy2)\b/i;
 
 function splitFlowFields(inner: string): string[] {
   const parts: string[] = [];
@@ -65,12 +66,23 @@ function stripFlowFields(line: string, keys: string[]): string {
  * is only removed from the node that declared it.
  */
 function proxyEntries(lines: string[]): { start: number; end: number }[] {
+  // A node's own fields may include a nested sequence — `alpn:` followed by
+  // `- h3` is ordinary in a Hysteria2 entry. Only the shallowest `- ` in the
+  // block starts a node; anything deeper belongs to the node above it, and
+  // treating it as a new entry would cut that node in half and leave the
+  // fields below it unfiltered.
+  const itemIndents = lines
+    .filter((line) => /^\s*-\s/.test(line))
+    .map((line) => line.length - line.trimStart().length);
+  if (!itemIndents.length) return [];
+  const entryIndent = Math.min(...itemIndents);
+
   const entries: { start: number; end: number }[] = [];
   for (const [index, line] of lines.entries()) {
-    if (/^\s*-\s/.test(line)) {
-      if (entries.length) entries.at(-1)!.end = index;
-      entries.push({ start: index, end: lines.length });
-    }
+    if (!/^\s*-\s/.test(line)) continue;
+    if (line.length - line.trimStart().length !== entryIndent) continue;
+    if (entries.length) entries.at(-1)!.end = index;
+    entries.push({ start: index, end: lines.length });
   }
   return entries;
 }
@@ -119,7 +131,16 @@ function applyToBlock(lines: string[], from: number, to: number): string[] {
       // Block style: the field owns its own line, unless it is the line that
       // opens the entry — removing that would take the whole node with it.
       const key = line.match(/^\s+([a-z0-9-]+):/i)?.[1];
-      if (key && HYSTERIA2_UNSUPPORTED.includes(key)) dropped.add(absolute);
+      if (!key || !HYSTERIA2_UNSUPPORTED.includes(key)) continue;
+      dropped.add(absolute);
+      // The field may itself open a nested block; take what belongs to it.
+      const keyIndent = line.length - line.trimStart().length;
+      for (let next = index + 1; next < entry.end; next += 1) {
+        const following = block[next];
+        if (!following.trim()) continue;
+        if (following.length - following.trimStart().length <= keyIndent) break;
+        dropped.add(from + next);
+      }
     }
   }
 

@@ -82,3 +82,33 @@ test("leaves a base64 subscription untouched", () => {
   const encoded = Buffer.from("ss://abc@example.com:443#a\n").toString("base64");
   assert.equal(dropUnsupportedNodeFields(encoded), encoded);
 });
+
+test("keeps a nested sequence with the node that owns it", () => {
+  // `alpn:` + `- h3` is ordinary here. Reading `- h3` as a new entry would cut
+  // the node in half and leave the fields below it in place.
+  const withAlpn = `proxies:
+  - name: hy-1
+    type: hysteria2
+    server: b.example
+    port: 39121
+    alpn:
+      - h3
+    ports: 39101-39199
+    up: "50"
+    down: "200"
+    password: y
+`;
+  const cleaned = dropUnsupportedNodeFields(withAlpn);
+  assert.ok(!/^\s+ports:/m.test(cleaned));
+  assert.ok(!/^\s+up:/m.test(cleaned));
+  assert.ok(!/^\s+down:/m.test(cleaned));
+  assert.ok(cleaned.includes("- h3"));
+  assert.ok(cleaned.includes("password: y"));
+});
+
+test("recognizes a quoted type value", () => {
+  const quoted = `proxies:
+  - {name: h, server: b.example, port: 443, type: "hysteria2", password: y, ports: 1-2}
+`;
+  assert.ok(!dropUnsupportedNodeFields(quoted).includes("ports:"));
+});
