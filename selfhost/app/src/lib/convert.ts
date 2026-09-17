@@ -22,7 +22,10 @@ import {
 } from "./options";
 import { applyTargetOutputOptions } from "./output-options";
 import { evaluateDeployment, type DeployMode } from "./deployment";
-import { repairNodesForEngine } from "./node-compat";
+import {
+  quoteCredentialsForClient,
+  repairNodesForEngine,
+} from "./node-compat";
 import {
   findProxyProviderUrls,
   stripProxyProviders,
@@ -1070,6 +1073,11 @@ export async function convertSubscription(
     }
     assertConvertedBody(body, request.target, outputMode);
     body = applyTargetOutputOptions(body, request.target, convertOptions);
+    if (request.target === "clash") {
+      // Last stop before the client parses it. A credential the engine wrote
+      // back unquoted would be reinterpreted there instead of here.
+      body = quoteCredentialsForClient(body);
+    }
     assertConvertedBody(body, request.target, outputMode);
 
     return {
