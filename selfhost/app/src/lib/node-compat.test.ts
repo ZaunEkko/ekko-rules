@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { repairNodesForEngine } from "./node-compat";
+import {
+  quoteCredentialsForClient,
+  repairNodesForEngine,
+} from "./node-compat";
 
 const FLOW = `proxies:
   - {name: tj-1, server: a.example, port: 443, type: trojan, password: x}
@@ -177,4 +180,21 @@ test("quotes a credential that carries a trailing comment", () => {
 `;
   const repaired = repairNodesForEngine(commented);
   assert.ok(repaired.includes('password: "0123" # provider credential'));
+});
+
+test("quotes what the engine hands back, without dropping anything", () => {
+  // The engine writes credentials out unquoted again. Left alone, the client's
+  // own YAML parser is the one that destroys them.
+  const engineOutput = `proxies:
+  - {name: r1, type: vless, server: a.example, port: 443, reality-opts: {short-id: 826209375e63}}
+  - {name: h1, type: hysteria2, server: c.example, port: 443, password: y, ports: 1000-2000, up: "50"}
+proxy-groups:
+  - {name: PROXY, type: select, proxies: [r1, h1]}
+`;
+  const out = quoteCredentialsForClient(engineOutput);
+  assert.ok(out.includes('short-id: "826209375e63"'));
+  // The way out keeps every field it was given: this pass only adds quotes.
+  assert.ok(out.includes("ports: 1000-2000"));
+  assert.ok(out.includes('up: "50"'));
+  assert.ok(out.includes("name: h1"));
 });
