@@ -599,7 +599,9 @@ Current verified canonical target:
 
 `🧩 微软服务` and `🍎 苹果服务` are `select` groups that listed `DIRECT` first, so an untouched profile sent Microsoft and Apple traffic direct. Both now lead with `♻️ 手动切换`, matching `☁️ 海外云服务` and `🎮 游戏平台`. Members and order are otherwise unchanged, and `DIRECT` remains one selection away.
 
-Two consequences are recorded rather than hidden. The late-recovery rulesets for these two vendors were restored to preserve historical DIRECT-default behaviour; that purpose no longer applies to them. And the guard that forbids unanchored `DOMAIN-KEYWORD` matchers in DIRECT-default groups no longer covers these rulesets, because the groups are no longer DIRECT-default.
+`microsoft-late-recovery` and `apple-late-recovery` do not follow. Those two rulesets were restored only to reproduce a historical DIRECT action and explicitly do not assert current vendor ownership; between them they carry 1,897 entries including generic Akamai infrastructure (`akadns.net`, `edgesuite.net`, `g.akamaiedge.net`) and strays such as `21vbc.com` and `100beatscheap.com`. Letting them follow the new default would have sent a large amount of unrelated traffic through the selected proxy. They now target `DIRECT` directly, which is what they were kept for, so the change reaches Microsoft and Apple themselves and nothing else.
+
+The two routing ledgers record the new target for the rows those rulesets capture, and are re-sealed. The guard that forbids unanchored `DOMAIN-KEYWORD` matchers in DIRECT-default groups no longer covers the `microsoft` and `apple` rulesets, because their groups are no longer DIRECT-default; neither ruleset uses one, and the guard is still exercised against a default-DIRECT group.
 
 No rule, ruleset segment, or proxy group is added or removed.
 

@@ -1135,7 +1135,7 @@ class AdvertisingImportTests(unittest.TestCase):
     def test_intentional_cross_segment_captures_are_frozen(self) -> None:
         self.assertEqual(
             hashlib.sha256(ADVERTISING_ROUTING_LEDGER.read_bytes()).hexdigest(),
-            "91dba828281abdf706baaf1cf7c55c0db757758e735ddb5727ef395cfefc7262",
+            "766c09c1144a857b011cae9718892b6910548d44679798cdf5ebccefab5e76c3",
         )
         ledger = json.loads(
             ADVERTISING_ROUTING_LEDGER.read_text(encoding="utf-8")
@@ -1504,7 +1504,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             (
                 (
                     "microsoft-late-recovery",
-                    "🧩 微软服务",
+                    "DIRECT",
                     "DOMAIN-SUFFIX,21vbc.com",
                 ),
                 "www.21vbc.com",
@@ -1512,7 +1512,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             (
                 (
                     "apple-late-recovery",
-                    "🍎 苹果服务",
+                    "DIRECT",
                     "DOMAIN-SUFFIX,100beatscheap.com",
                 ),
                 "www.100beatscheap.com",

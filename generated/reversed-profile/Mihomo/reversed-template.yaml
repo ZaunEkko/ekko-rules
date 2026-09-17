@@ -783,12 +783,12 @@ rules:
 - RULE-SET,game-platform-late-recovery,🎮 游戏平台
 - RULE-SET,bilibili-hmt-late-recovery,🎬 B站港澳台
 - RULE-SET,iqiyi-late-recovery,🎬 爱奇艺
-- RULE-SET,apple-late-recovery,🍎 苹果服务
+- RULE-SET,apple-late-recovery,DIRECT
 - RULE-SET,china-media-late-recovery,🌏 国内流媒体
 - RULE-SET,overseas-cloud,☁️ 海外云服务
 - RULE-SET,china-cloud,☁️ 国内云服务
 - RULE-SET,microsoft,🧩 微软服务
-- RULE-SET,microsoft-late-recovery,🧩 微软服务
+- RULE-SET,microsoft-late-recovery,DIRECT
 - RULE-SET,google,🔎 Google
 - RULE-SET,china-domains-direct,🌏 国内网站
 - RULE-SET,china-geoip-direct,DIRECT
