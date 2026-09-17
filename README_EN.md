@@ -37,11 +37,17 @@ Rules default to this repository's Ekko Rules. The page can also switch to the c
 
 ## Two reasons a conversion comes back empty
 
-**The provider blocked the station's address.** A public converter fetches your
+**The provider blocked the converter.** A public converter fetches your
 subscription from its own server, so the provider sees an unfamiliar IP. Some
-refuse it outright; others only answer a specific client User-Agent. Switching
-to another public station changes nothing. Run your own (the next section) and
-the fetch comes from your network instead, which usually just works.
+refuse it outright; others only answer a specific client User-Agent. Try these
+in order of effort:
+
+1. Set a custom User-Agent under "advanced options" — often that is all the
+   provider checks.
+2. **Run it on your own computer** (the next section). The fetch then comes
+   from your home connection, the address the provider already sees from you.
+   Deploying to a VPS is not the same thing: that is still a datacenter IP and
+   can be blocked for the same reason.
 
 **The subscription is switched off in the provider's panel.** Plenty of
 providers keep it disabled by default, and changing plan or resetting the link
