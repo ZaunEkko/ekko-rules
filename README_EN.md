@@ -48,6 +48,7 @@ providers keep it disabled by default, and changing plan or resetting the link
 disables it again. The URL still resolves, but what comes back is empty. Check
 that the subscription is enabled and that you copied the current link; reset it
 if in doubt.
+
 ## Run it yourself
 
 Rather not involve anyone else? The same code in its other shape: the real subscription goes only to your own Docker, **never appearing in a URL at all**, and you get a stable local address that your client keeps refreshing.
