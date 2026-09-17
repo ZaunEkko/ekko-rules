@@ -58,6 +58,16 @@ Windows 首次部署可以改用 `setup.cmd`，它顺带安装一个随登录运
 
 两种形态都输出 8 种客户端格式：Clash / Mihomo、sing-box、Surge 4+、Quantumult X、Loon、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会透传流量、容量与到期时间。
 
+## 转不出来的两种常见原因
+
+**机场把转换站的 IP 挡了。** 公开转换站是从站点服务器去拉你的订阅，机场看到的是一个
+陌生 IP，可能直接拒绝，也可能只认特定客户端的 User-Agent。换哪个公开站都一样。
+自己跑一份（上面那一节）就从你自己的网络去拉，通常直接就好了。
+
+**机场后台没开启订阅。** 不少机场默认关着订阅功能，换套餐或重置链接之后也会停用。
+这时地址是通的，内容却是空的。去用户中心确认订阅已启用、链接是当前那条，必要时重置
+一次再复制。
+
 ## 只要规则，不要转换
 
 ### Mihomo 原生模板

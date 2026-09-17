@@ -58,6 +58,20 @@ On Windows, `setup.cmd` additionally installs a login-time helper that tracks th
 
 Both shapes emit eight client formats: Clash / Mihomo, sing-box, Surge 4+, Quantumult X, Loon, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry are passed through.
 
+## Two reasons a conversion comes back empty
+
+**The provider blocked the station's address.** A public converter fetches your
+subscription from its own server, so the provider sees an unfamiliar IP. Some
+refuse it outright; others only answer a specific client User-Agent. Switching
+to another public station changes nothing. Run your own (the section above) and
+the fetch comes from your network instead, which usually just works.
+
+**The subscription is switched off in the provider's panel.** Plenty of
+providers keep it disabled by default, and changing plan or resetting the link
+disables it again. The URL still resolves, but what comes back is empty. Check
+that the subscription is enabled and that you copied the current link; reset it
+if in doubt.
+
 ## Rules only, no conversion
 
 ### Native Mihomo template
