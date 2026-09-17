@@ -157,3 +157,24 @@ test("does not quote a port or any other number that really is one", () => {
   assert.ok(repaired.includes("port: 8388"));
   assert.ok(repaired.includes('password: "0123"'));
 });
+
+test("returns a line with nothing to repair byte for byte", () => {
+  // Rejoining a flow mapping normalises whitespace; a line that needs no
+  // change must not be reformatted, least of all one holding a credential
+  // with a quote and a comma in it.
+  const tricky =
+    'proxies:\n  - {name: t,type: trojan,  server: a.example, port: 443, password: "abc\\",def"}\n';
+  assert.equal(repairNodesForEngine(tricky), tricky);
+});
+
+test("quotes a credential that carries a trailing comment", () => {
+  const commented = `proxies:
+  - name: t1
+    type: trojan
+    server: b.example
+    port: 443
+    password: 0123 # provider credential
+`;
+  const repaired = repairNodesForEngine(commented);
+  assert.ok(repaired.includes('password: "0123" # provider credential'));
+});

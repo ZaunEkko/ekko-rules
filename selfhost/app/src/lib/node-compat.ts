@@ -60,10 +60,21 @@ function splitFlowFields(inner: string): string[] {
   const parts: string[] = [];
   let depth = 0;
   let quote: string | null = null;
+  let escaped = false;
   let current = "";
   for (const character of inner) {
     if (quote) {
       current += character;
+      // A double-quoted scalar may escape its own quote; the field does not
+      // end there, and splitting on it would cut a credential in half.
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (quote === '"' && character === "\\") {
+        escaped = true;
+        continue;
+      }
       if (character === quote) quote = null;
       continue;
     }
@@ -93,10 +104,14 @@ function rewriteFlowFields(
   const close = line.lastIndexOf("}");
   if (open < 0 || close <= open) return line;
   const kept: string[] = [];
+  let changed = false;
   for (const part of splitFlowFields(line.slice(open + 1, close))) {
     const separator = part.indexOf(":");
     const key = (separator < 0 ? part : part.slice(0, separator)).trim();
-    if (drop.includes(key)) continue;
+    if (drop.includes(key)) {
+      changed = true;
+      continue;
+    }
     if (separator < 0) {
       kept.push(part);
       continue;
@@ -104,15 +119,22 @@ function rewriteFlowFields(
     const value = part.slice(separator + 1).trim();
     if (value.startsWith("{")) {
       // `reality-opts: {short-id: …}` — the credential lives one level in.
-      kept.push(`${key}: ${rewriteFlowFields(value, { quote })}`);
+      const nested = rewriteFlowFields(value, { quote });
+      if (nested !== value) changed = true;
+      kept.push(`${key}: ${nested}`);
       continue;
     }
     if (quote && MUST_STAY_STRING.includes(key)) {
-      kept.push(`${key}: ${quotedIfAmbiguous(value)}`);
+      const repaired = quotedIfAmbiguous(value);
+      if (repaired !== value) changed = true;
+      kept.push(`${key}: ${repaired}`);
       continue;
     }
     kept.push(part);
   }
+  // Rejoining normalises whitespace, so a line with nothing to change is
+  // returned untouched rather than reformatted.
+  if (!changed) return line;
   return `${line.slice(0, open + 1)}${kept.join(", ")}${line.slice(close)}`;
 }
 
@@ -191,12 +213,17 @@ function applyToBlock(lines: string[], from: number, to: number): string[] {
       const key = line.match(/^\s+([a-z0-9-]+):/i)?.[1];
       if (key && MUST_STAY_STRING.includes(key)) {
         const separator = line.indexOf(":");
-        const value = line.slice(separator + 1).trim();
+        const rest = line.slice(separator + 1);
+        // A trailing comment is not part of the value. Testing it along with
+        // the scalar would hide the very thing this looks for.
+        const comment = rest.match(/(\s+#.*)$/)?.[1] ?? "";
+        const value = rest.slice(0, rest.length - comment.length).trim();
         // An empty value means the key opens a nested block; leave it be.
-        if (value) {
+        const repaired = value ? quotedIfAmbiguous(value) : "";
+        if (value && repaired !== value) {
           rewritten.set(
             absolute,
-            `${line.slice(0, separator + 1)} ${quotedIfAmbiguous(value)}`,
+            `${line.slice(0, separator + 1)} ${repaired}${comment}`,
           );
         }
         continue;
