@@ -310,6 +310,19 @@ test("recognizes modern raw node-link subscriptions before conversion", () => {
   assert.equal(looksLikeSubscription(""), false);
 });
 
+test("recognizes a subscription that keeps its nodes in proxy-providers", () => {
+  // No inline `proxies:` anywhere — the nodes are behind a second URL, which
+  // the gateway follows before the engine sees anything.
+  const providerBacked = `proxy-providers:
+  airport:
+    type: http
+    url: https://upstream.example/nodes.yaml
+rules:
+  - MATCH,DIRECT
+`;
+  assert.equal(looksLikeSubscription(providerBacked), true);
+});
+
 test("cleans only orphaned conversion request directories", async () => {
   const root = await mkdtemp(path.join(tmpdir(), "ekko-convert-cleanup-"));
   const orphan = path.join(root, "123e4567-e89b-42d3-a456-426614174000");
@@ -346,6 +359,13 @@ test("maps client validation failures without hiding upstream failures", () => {
   assert.equal(
     publicErrorStatus("Subscription fetch failed with HTTP 500."),
     502,
+  );
+  // The shape of the visitor's subscription is theirs, not a gateway fault.
+  assert.equal(
+    publicErrorStatus(
+      "This subscription keeps its nodes in proxy-providers, and none could be read (HTTP 403).",
+    ),
+    400,
   );
 });
 
