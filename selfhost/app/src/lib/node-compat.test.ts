@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { dropUnsupportedNodeFields } from "./node-compat";
+import { repairNodesForEngine } from "./node-compat";
 
 const FLOW = `proxies:
   - {name: tj-1, server: a.example, port: 443, type: trojan, password: x}
@@ -10,7 +10,7 @@ proxy-groups:
 `;
 
 test("removes only the Hysteria2 extras the engine rejects", () => {
-  const cleaned = dropUnsupportedNodeFields(FLOW);
+  const cleaned = repairNodesForEngine(FLOW);
   assert.ok(!cleaned.includes("ports:"));
   assert.ok(!cleaned.includes("up:"));
   assert.ok(!cleaned.includes("down:"));
@@ -23,7 +23,7 @@ test("removes only the Hysteria2 extras the engine rejects", () => {
 });
 
 test("leaves other node types alone", () => {
-  const cleaned = dropUnsupportedNodeFields(FLOW);
+  const cleaned = repairNodesForEngine(FLOW);
   assert.ok(
     cleaned.includes(
       "- {name: tj-1, server: a.example, port: 443, type: trojan, password: x}",
@@ -32,7 +32,7 @@ test("leaves other node types alone", () => {
 });
 
 test("does not touch a proxy-groups entry that happens to share a key", () => {
-  const cleaned = dropUnsupportedNodeFields(FLOW);
+  const cleaned = repairNodesForEngine(FLOW);
   assert.ok(cleaned.includes("proxies: [tj-1, hy-1]"));
 });
 
@@ -52,7 +52,7 @@ test("handles block-style entries", () => {
     port: 443
     password: x
 `;
-  const cleaned = dropUnsupportedNodeFields(block);
+  const cleaned = repairNodesForEngine(block);
   assert.ok(!/^\s+ports:/m.test(cleaned));
   assert.ok(!/^\s+up:/m.test(cleaned));
   assert.ok(!/^\s+down:/m.test(cleaned));
@@ -68,19 +68,19 @@ test("keeps an up: that belongs to some other node type", () => {
   - {name: t, server: a.example, port: 443, type: trojan, password: x, up: "1"}
   - {name: h, server: b.example, port: 443, type: hysteria2, password: y, up: "2"}
 `;
-  const cleaned = dropUnsupportedNodeFields(mixed);
+  const cleaned = repairNodesForEngine(mixed);
   assert.ok(cleaned.includes('type: trojan, password: x, up: "1"'));
   assert.ok(cleaned.includes("type: hysteria2, password: y}"));
 });
 
 test("returns a document with no Hysteria2 unchanged", () => {
   const plain = "proxies:\n  - {name: a, type: ss, server: s, port: 1}\n";
-  assert.equal(dropUnsupportedNodeFields(plain), plain);
+  assert.equal(repairNodesForEngine(plain), plain);
 });
 
 test("leaves a base64 subscription untouched", () => {
   const encoded = Buffer.from("ss://abc@example.com:443#a\n").toString("base64");
-  assert.equal(dropUnsupportedNodeFields(encoded), encoded);
+  assert.equal(repairNodesForEngine(encoded), encoded);
 });
 
 test("keeps a nested sequence with the node that owns it", () => {
@@ -98,7 +98,7 @@ test("keeps a nested sequence with the node that owns it", () => {
     down: "200"
     password: y
 `;
-  const cleaned = dropUnsupportedNodeFields(withAlpn);
+  const cleaned = repairNodesForEngine(withAlpn);
   assert.ok(!/^\s+ports:/m.test(cleaned));
   assert.ok(!/^\s+up:/m.test(cleaned));
   assert.ok(!/^\s+down:/m.test(cleaned));
@@ -110,5 +110,50 @@ test("recognizes a quoted type value", () => {
   const quoted = `proxies:
   - {name: h, server: b.example, port: 443, type: "hysteria2", password: y, ports: 1-2}
 `;
-  assert.ok(!dropUnsupportedNodeFields(quoted).includes("ports:"));
+  assert.ok(!repairNodesForEngine(quoted).includes("ports:"));
+});
+
+test("quotes a credential that YAML would read as a number", () => {
+  const ambiguous = `proxies:
+  - {name: r1, type: vless, server: a.example, port: 443, uuid: 00000000-0000-4000-8000-000000000001, reality-opts: {public-key: abc, short-id: 00112233}}
+  - {name: t1, type: trojan, server: b.example, port: 443, password: 0123}
+  - {name: h1, type: hysteria2, server: c.example, port: 443, password: 1e5}
+`;
+  const repaired = repairNodesForEngine(ambiguous);
+  assert.ok(repaired.includes('short-id: "00112233"'));
+  assert.ok(repaired.includes('password: "0123"'));
+  assert.ok(repaired.includes('password: "1e5"'));
+});
+
+test("leaves an unambiguous credential exactly as written", () => {
+  const plain = `proxies:
+  - {name: r1, type: vless, server: a.example, port: 443, reality-opts: {short-id: a1b2c3d4}}
+  - {name: t1, type: trojan, server: b.example, port: 443, password: s3cret-pass}
+  - {name: t2, type: trojan, server: c.example, port: 443, password: "00112233"}
+`;
+  const repaired = repairNodesForEngine(plain);
+  assert.ok(repaired.includes("short-id: a1b2c3d4"));
+  assert.ok(repaired.includes("password: s3cret-pass"));
+  assert.ok(repaired.includes('password: "00112233"'));
+  assert.ok(!repaired.includes('""'));
+});
+
+test("quotes a block-style credential too", () => {
+  const block = `proxies:
+  - name: t1
+    type: trojan
+    server: b.example
+    port: 443
+    password: 00112233
+`;
+  const repaired = repairNodesForEngine(block);
+  assert.ok(repaired.includes('password: "00112233"'));
+});
+
+test("does not quote a port or any other number that really is one", () => {
+  const repaired = repairNodesForEngine(
+    "proxies:\n  - {name: a, type: ss, server: s.example, port: 8388, password: 0123}\n",
+  );
+  assert.ok(repaired.includes("port: 8388"));
+  assert.ok(repaired.includes('password: "0123"'));
 });
