@@ -675,6 +675,16 @@ html[data-shell] body {
 }
 [data-shell] .open-facts div[data-role="direct"] dd { color: var(--blue); }
 
+[data-shell] .open-client-note {
+  margin: 1rem 0 0;
+  padding-top: .8rem;
+  border-top: 1px solid var(--rule-soft);
+  font-size: .78rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+[data-shell] .open-client-note b { color: var(--ink); }
+
 /* the form, read as a config document ------------------------------------- */
 
 [data-shell] .content-grid { display: block; padding: 0; }
