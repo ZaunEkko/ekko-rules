@@ -14,10 +14,44 @@
  *
  *   as sent by the provider          list=400, 0 nodes
  *   with these three fields removed  list=200, 47 nodes
+ *
+ * The second repair is about values, not fields. A credential that happens to
+ * look like a number — `short-id: 00112233`, `password: 0123` — is read as one
+ * somewhere in the conversion and comes back as a different string:
+ *
+ *   00112233 -> 38043      (read as octal)
+ *   0123     -> 83         (read as octal)
+ *   1e5      -> 100000     (read as a float)
+ *   00       -> 0
+ *   "00112233" -> 00112233 (quoted, survives)
+ *
+ * A mangled `short-id` at least fails loudly: Mihomo refuses the whole profile
+ * with "invalid REALITY short ID". A mangled password is worse — the profile
+ * loads and the node simply never connects. Quoting these values on the way in
+ * leaves nothing to reinterpret.
  */
 
 /** Hysteria2 keys this engine version rejects the whole list over. */
 const HYSTERIA2_UNSUPPORTED = ["ports", "up", "down"];
+
+/** Credentials. Every one of these is a string, whatever it looks like. */
+const MUST_STAY_STRING = ["password", "short-id", "auth", "auth-str"];
+
+/**
+ * Values YAML would read as a number: plain integers (including the leading
+ * zeros that make them octal), floats, and exponents. A value with any other
+ * character in it is already unambiguous and is left alone.
+ */
+const READS_AS_NUMBER =
+  /^[+-]?(?:[0-9][0-9_]*(?:\.[0-9_]*)?(?:[eE][+-]?[0-9]+)?|0[xXbBoO][0-9a-fA-F_]+)$/;
+
+function quotedIfAmbiguous(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return value;
+  if (/^["']/.test(trimmed)) return value;
+  if (!READS_AS_NUMBER.test(trimmed)) return value;
+  return `"${trimmed}"`;
+}
 
 // The value may be quoted: some serialisers quote every string they emit.
 const HYSTERIA2_TYPE = /(?:^|[,{\s])type:\s*["']?(?:hysteria2|hy2)\b/i;
@@ -26,10 +60,21 @@ function splitFlowFields(inner: string): string[] {
   const parts: string[] = [];
   let depth = 0;
   let quote: string | null = null;
+  let escaped = false;
   let current = "";
   for (const character of inner) {
     if (quote) {
       current += character;
+      // A double-quoted scalar may escape its own quote; the field does not
+      // end there, and splitting on it would cut a credential in half.
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (quote === '"' && character === "\\") {
+        escaped = true;
+        continue;
+      }
       if (character === quote) quote = null;
       continue;
     }
@@ -51,13 +96,45 @@ function splitFlowFields(inner: string): string[] {
   return parts;
 }
 
-function stripFlowFields(line: string, keys: string[]): string {
+function rewriteFlowFields(
+  line: string,
+  { drop = [] as string[], quote = false } = {},
+): string {
   const open = line.indexOf("{");
   const close = line.lastIndexOf("}");
   if (open < 0 || close <= open) return line;
-  const kept = splitFlowFields(line.slice(open + 1, close)).filter(
-    (part) => !keys.includes(part.split(":")[0].trim()),
-  );
+  const kept: string[] = [];
+  let changed = false;
+  for (const part of splitFlowFields(line.slice(open + 1, close))) {
+    const separator = part.indexOf(":");
+    const key = (separator < 0 ? part : part.slice(0, separator)).trim();
+    if (drop.includes(key)) {
+      changed = true;
+      continue;
+    }
+    if (separator < 0) {
+      kept.push(part);
+      continue;
+    }
+    const value = part.slice(separator + 1).trim();
+    if (value.startsWith("{")) {
+      // `reality-opts: {short-id: …}` — the credential lives one level in.
+      const nested = rewriteFlowFields(value, { quote });
+      if (nested !== value) changed = true;
+      kept.push(`${key}: ${nested}`);
+      continue;
+    }
+    if (quote && MUST_STAY_STRING.includes(key)) {
+      const repaired = quotedIfAmbiguous(value);
+      if (repaired !== value) changed = true;
+      kept.push(`${key}: ${repaired}`);
+      continue;
+    }
+    kept.push(part);
+  }
+  // Rejoining normalises whitespace, so a line with nothing to change is
+  // returned untouched rather than reformatted.
+  if (!changed) return line;
   return `${line.slice(0, open + 1)}${kept.join(", ")}${line.slice(close)}`;
 }
 
@@ -92,9 +169,7 @@ function proxyEntries(lines: string[]): { start: number; end: number }[] {
  * else — other node types, other fields, the surrounding config — is returned
  * untouched.
  */
-export function dropUnsupportedNodeFields(content: string): string {
-  if (!HYSTERIA2_TYPE.test(content)) return content;
-
+export function repairNodesForEngine(content: string): string {
   const lines = content.replace(/\r\n/g, "\n").split("\n");
   const start = lines.findIndex((line) => /^proxies:\s*$/.test(line));
   if (start < 0) {
@@ -119,19 +194,43 @@ function applyToBlock(lines: string[], from: number, to: number): string[] {
 
   for (const entry of proxyEntries(block)) {
     const entryLines = block.slice(entry.start, entry.end);
-    if (!HYSTERIA2_TYPE.test(entryLines.join(" "))) continue;
+    // Quoting applies to every node; dropping fields only to Hysteria2.
+    const isHysteria2 = HYSTERIA2_TYPE.test(entryLines.join(" "));
 
     for (let index = entry.start; index < entry.end; index += 1) {
       const line = block[index];
       const absolute = from + index;
       if (line.includes("{")) {
-        rewritten.set(absolute, stripFlowFields(line, HYSTERIA2_UNSUPPORTED));
+        rewritten.set(
+          absolute,
+          rewriteFlowFields(line, {
+            drop: isHysteria2 ? HYSTERIA2_UNSUPPORTED : [],
+            quote: true,
+          }),
+        );
+        continue;
+      }
+      const key = line.match(/^\s+([a-z0-9-]+):/i)?.[1];
+      if (key && MUST_STAY_STRING.includes(key)) {
+        const separator = line.indexOf(":");
+        const rest = line.slice(separator + 1);
+        // A trailing comment is not part of the value. Testing it along with
+        // the scalar would hide the very thing this looks for.
+        const comment = rest.match(/(\s+#.*)$/)?.[1] ?? "";
+        const value = rest.slice(0, rest.length - comment.length).trim();
+        // An empty value means the key opens a nested block; leave it be.
+        const repaired = value ? quotedIfAmbiguous(value) : "";
+        if (value && repaired !== value) {
+          rewritten.set(
+            absolute,
+            `${line.slice(0, separator + 1)} ${repaired}${comment}`,
+          );
+        }
         continue;
       }
       // Block style: the field owns its own line, unless it is the line that
       // opens the entry — removing that would take the whole node with it.
-      const key = line.match(/^\s+([a-z0-9-]+):/i)?.[1];
-      if (!key || !HYSTERIA2_UNSUPPORTED.includes(key)) continue;
+      if (!isHysteria2 || !key || !HYSTERIA2_UNSUPPORTED.includes(key)) continue;
       dropped.add(absolute);
       // The field may itself open a nested block; take what belongs to it.
       const keyIndent = line.length - line.trimStart().length;
