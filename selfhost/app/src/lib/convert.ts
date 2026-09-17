@@ -22,6 +22,7 @@ import {
 } from "./options";
 import { applyTargetOutputOptions } from "./output-options";
 import { evaluateDeployment, type DeployMode } from "./deployment";
+import { dropUnsupportedNodeFields } from "./node-compat";
 import {
   findProxyProviderUrls,
   stripProxyProviders,
@@ -926,15 +927,16 @@ export async function convertSubscription(
     const inputBody = providerBodies.length
       ? stripProxyProviders(subscriptionBody)
       : subscriptionBody;
-    await writeFile(inputPath, normalizeSubscriptionContent(inputBody), {
-      encoding: "utf8",
-      mode: 0o600,
-    });
+    await writeFile(
+      inputPath,
+      normalizeSubscriptionContent(dropUnsupportedNodeFields(inputBody)),
+      { encoding: "utf8", mode: 0o600 },
+    );
     for (const [index, body] of providerBodies.entries()) {
       const name = `provider-${index + 1}.input`;
       await writeFile(
         path.join(workDir, name),
-        normalizeSubscriptionContent(body),
+        normalizeSubscriptionContent(dropUnsupportedNodeFields(body)),
         { encoding: "utf8", mode: 0o600 },
       );
       engineInputUrls.push(`${sharedPrefix}/${requestId}/${name}`);
