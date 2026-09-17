@@ -812,7 +812,7 @@
           "start": 3744,
           "end": 5207,
           "count": 1464,
-          "target": "🍎 苹果服务",
+          "target": "DIRECT",
           "slug": "apple-late-recovery",
           "scope": "core",
           "rule_types": {
@@ -882,7 +882,7 @@
           "start": 5865,
           "end": 6297,
           "count": 433,
-          "target": "🧩 微软服务",
+          "target": "DIRECT",
           "slug": "microsoft-late-recovery",
           "scope": "core",
           "rule_types": {
