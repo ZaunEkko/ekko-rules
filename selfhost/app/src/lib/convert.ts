@@ -22,6 +22,10 @@ import {
 } from "./options";
 import { applyTargetOutputOptions } from "./output-options";
 import { evaluateDeployment, type DeployMode } from "./deployment";
+import {
+  findProxyProviderUrls,
+  stripProxyProviders,
+} from "./proxy-providers";
 import { parseRemoteConfigPresets } from "./remote-configs";
 
 export type ConvertRequest = {
@@ -512,6 +516,8 @@ export function looksLikeSubscription(content: string): boolean {
   const trimmed = content.trim();
   if (!trimmed) return false;
   if (trimmed.includes("proxies:") || trimmed.includes("Proxy,")) return true;
+  // Nodes behind a second URL rather than in the body. The gateway follows it.
+  if (trimmed.includes("proxy-providers:")) return true;
   // base64-ish subscription dumps
   if (/^[A-Za-z0-9+/=\r\n]+$/.test(trimmed) && trimmed.length > 32) return true;
   if (
@@ -779,19 +785,74 @@ export async function convertSubscription(
     throw new Error("Subscription content is empty or unsupported.");
   }
 
+  // A subscription that keeps its nodes in `proxy-providers:` hands over a
+  // config, not nodes. Follow those URLs here, under the same checks the
+  // subscription itself went through, so the engine receives the nodes rather
+  // than a provider it cannot reach.
+  const providerUrls = findProxyProviderUrls(subscriptionBody);
+  const providerBodies: string[] = [];
+  let providerFailure: string | null = null;
+  for (const providerUrl of providerUrls) {
+    try {
+      const safeProviderUrl = parsePublicHttpUrl(providerUrl);
+      const providerAddresses = await assertPublicHostname(
+        safeProviderUrl.hostname,
+      );
+      const fetched = await requestTextWithLimits(safeProviderUrl.href, {
+        method: "GET",
+        timeoutMs: runtime.timeoutMs,
+        maxBytes: runtime.maxSubscriptionBytes,
+        userAgent: upstreamUserAgent,
+        requestLabel: "Proxy provider fetch",
+        resolvedAddresses: providerAddresses,
+      });
+      if (!fetched.ok) {
+        throw new Error(`HTTP ${fetched.status}`);
+      }
+      if (!looksLikeSubscription(fetched.body)) continue;
+      providerBodies.push(fetched.body);
+    } catch (error) {
+      // One dead provider out of several is survivable; report the last
+      // reason only if none of them produced nodes.
+      providerFailure = publicErrorMessage(error);
+    }
+  }
+  if (providerUrls.length > 0 && providerBodies.length === 0) {
+    throw new Error(
+      `This subscription keeps its nodes in proxy-providers, and none could be read${
+        providerFailure ? ` (${providerFailure})` : ""
+      }.`,
+    );
+  }
+
   const requestId = randomUUID();
   const workDir = path.join(runtime.sharedDir, requestId);
   const inputName = "subscription.input";
   const inputPath = path.join(workDir, inputName);
   const sharedPrefix = runtime.sharedUrlPrefix.replace(/\/$/, "");
-  const engineInputUrl = `${sharedPrefix}/${requestId}/${inputName}`;
+  const engineInputUrls = [`${sharedPrefix}/${requestId}/${inputName}`];
 
   await mkdir(workDir, { recursive: true, mode: 0o700 });
   try {
-    await writeFile(inputPath, normalizeSubscriptionContent(subscriptionBody), {
+    // The stripped document still carries any inline proxies; the providers'
+    // contents follow as inputs of their own. The engine merges several inputs
+    // when they are joined with a pipe.
+    const inputBody = providerBodies.length
+      ? stripProxyProviders(subscriptionBody)
+      : subscriptionBody;
+    await writeFile(inputPath, normalizeSubscriptionContent(inputBody), {
       encoding: "utf8",
       mode: 0o600,
     });
+    for (const [index, body] of providerBodies.entries()) {
+      const name = `provider-${index + 1}.input`;
+      await writeFile(
+        path.join(workDir, name),
+        normalizeSubscriptionContent(body),
+        { encoding: "utf8", mode: 0o600 },
+      );
+      engineInputUrls.push(`${sharedPrefix}/${requestId}/${name}`);
+    }
 
     // A pasted config URL is fetched here rather than by the engine: this
     // client pins DNS to the addresses assertPublicHostname just checked, so
@@ -868,7 +929,7 @@ export async function convertSubscription(
     for (const [name, value] of Object.entries(definition.engineParams)) {
       endpoint.searchParams.set(name, value);
     }
-    endpoint.searchParams.set("url", engineInputUrl);
+    endpoint.searchParams.set("url", engineInputUrls.join("|"));
     endpoint.searchParams.set("config", configValue);
     endpoint.searchParams.set("emoji", String(convertOptions.emoji));
     endpoint.searchParams.set(
@@ -1036,7 +1097,7 @@ export function publicErrorStatus(error: unknown): number {
     /^(?:Request body|subscriptionUrl|A supported target|accessPassword|remoteConfig|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
       message,
     ) ||
-    /^(?:Invalid subscription URL|Only http and https subscription URLs|Subscription URLs must not include credentials|Subscription URL is too long|Subscription host (?:is not allowed|resolves to a blocked address)|Encoded hostnames are not allowed|Subscription content is empty or unsupported|Node provider output is only available)/i.test(
+    /^(?:Invalid subscription URL|Only http and https subscription URLs|Subscription URLs must not include credentials|Subscription URL is too long|Subscription host (?:is not allowed|resolves to a blocked address)|Encoded hostnames are not allowed|Subscription content is empty or unsupported|This subscription keeps its nodes in proxy-providers|Node provider output is only available)/i.test(
       message,
     )
   ) {
