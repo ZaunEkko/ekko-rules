@@ -92,6 +92,30 @@ function withoutNestedFlowMappings(line: string, keepDepth: number): string {
   return kept;
 }
 
+/**
+ * A line with its YAML comment removed, so a provider that was commented out
+ * is not fetched and does not spend one of the slots. Quoted text is left
+ * alone: a `#` inside quotes is part of the value.
+ */
+function withoutComment(line: string): string {
+  let quote: string | null = null;
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index];
+    if (quote) {
+      if (character === quote) quote = null;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+      continue;
+    }
+    if (character === "#" && (index === 0 || /\s/.test(line[index - 1]))) {
+      return line.slice(0, index);
+    }
+  }
+  return line;
+}
+
 function indentOf(line: string): number {
   return line.length - line.trimStart().length;
 }
@@ -115,7 +139,10 @@ export function findProxyProviderUrls(content: string): string[] {
     // `proxy-providers: {airport: {type: http, url: …}}`. The outer mapping is
     // the section, each provider is one level in and its own keys one more; a
     // health-check sits deeper still and is dropped with everything below.
-    const flat = withoutNestedFlowMappings(section.lines[section.start], 2);
+    const flat = withoutNestedFlowMappings(
+      withoutComment(section.lines[section.start]),
+      2,
+    );
     for (const match of flat.matchAll(new RegExp(URL_VALUE.source, "g"))) {
       const value = parseYamlScalar(match[1]);
       if (!/^https?:\/\//i.test(value)) continue;
@@ -130,7 +157,7 @@ export function findProxyProviderUrls(content: string): string[] {
   let keyIndent: number | null = null;
 
   for (const raw of body) {
-    if (!raw.trim()) continue;
+    if (!raw.trim() || raw.trimStart().startsWith("#")) continue;
     const indent = indentOf(raw);
 
     if (entryIndent === null) {
@@ -141,7 +168,7 @@ export function findProxyProviderUrls(content: string): string[] {
       // A provider header. It may carry the whole definition inline.
       // On a header the outermost braces are the provider's own mapping, so
       // one level of them stays; a mapping inside that is health-check.
-      const inline = withoutNestedFlowMappings(raw, 1);
+      const inline = withoutNestedFlowMappings(withoutComment(raw), 1);
       const match = inline.match(URL_VALUE);
       if (match) {
         const value = parseYamlScalar(match[1]);
@@ -162,7 +189,9 @@ export function findProxyProviderUrls(content: string): string[] {
 
     // On one of the provider's own keys any braces are already a nested
     // mapping, so none of them stay.
-    const match = withoutNestedFlowMappings(raw, 0).match(URL_VALUE);
+    const match = withoutNestedFlowMappings(withoutComment(raw), 0).match(
+      URL_VALUE,
+    );
     if (!match) continue;
     const value = parseYamlScalar(match[1]);
     if (!/^https?:\/\//i.test(value)) continue;

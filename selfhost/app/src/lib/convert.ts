@@ -889,8 +889,12 @@ export async function convertSubscription(
   );
   const providerBodies: string[] = [];
   let providerFailure: string | null = null;
+  let providerTimedOut = false;
   for (const result of providerResults) {
     if (result.status === "rejected") {
+      // A spent budget is this server running out of time, not the visitor
+      // handing over a bad subscription; wrapping it would answer 400.
+      if (isTimeoutFailure(result.reason)) providerTimedOut = true;
       // One dead provider out of several is survivable; the reason is only
       // reported when none of them produced nodes.
       providerFailure = publicErrorMessage(result.reason);
@@ -899,6 +903,7 @@ export async function convertSubscription(
     if (looksLikeSubscription(result.value)) providerBodies.push(result.value);
   }
   if (providerUrls.length > 0 && providerBodies.length === 0) {
+    if (providerTimedOut) throw new Error(CONVERSION_TIMED_OUT);
     throw new Error(
       `This subscription keeps its nodes in proxy-providers, and none could be read${
         providerFailure ? ` (${providerFailure})` : ""

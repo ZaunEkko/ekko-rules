@@ -156,6 +156,18 @@ rules:
   assert.ok(stripped.includes("rules:"));
 });
 
+test("ignores a provider url that was commented out", () => {
+  const commentedOut = `proxy-providers:
+  airport:
+    # url: https://old.example/nodes.yaml
+    type: http
+    url: https://new.example/nodes.yaml
+`;
+  assert.deepEqual(findProxyProviderUrls(commentedOut), [
+    "https://new.example/nodes.yaml",
+  ]);
+});
+
 test("finds nothing in a document that has no providers", () => {
   assert.deepEqual(findProxyProviderUrls("proxies:\n  - {name: a}\n"), []);
   assert.deepEqual(findProxyProviderUrls(""), []);
