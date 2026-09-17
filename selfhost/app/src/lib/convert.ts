@@ -22,6 +22,10 @@ import {
 } from "./options";
 import { applyTargetOutputOptions } from "./output-options";
 import { evaluateDeployment, type DeployMode } from "./deployment";
+import {
+  findProxyProviderUrls,
+  stripProxyProviders,
+} from "./proxy-providers";
 import { parseRemoteConfigPresets } from "./remote-configs";
 
 export type ConvertRequest = {
@@ -150,9 +154,25 @@ function envInt(name: string, fallback: number): number {
 }
 
 const FIXED_CONFIG_PATH = "config/ekko-rules-selfhost.ini";
+const CONVERSION_TIMED_OUT = "Conversion timed out.";
+
+/**
+ * `requestTextWithLimits` words its own timeout after the request label, so a
+ * spent budget reaches a caller as either that or the conversion deadline.
+ */
+function isTimeoutFailure(error: unknown): boolean {
+  return / timed out\.$/.test(publicErrorMessage(error));
+}
 /** A rule template is text; anything this large is not one. */
 const REMOTE_CONFIG_MAX_BYTES = 1_048_576;
 const REMOTE_CONFIG_CACHE_TTL_MS = 30 * 60_000;
+/**
+ * A refresh is shared between everyone who wants the same config, so it cannot
+ * run on any one requester's clock: a caller that arrives with two seconds
+ * left would otherwise cancel the fetch that a caller with a full budget is
+ * waiting on. Each caller races its own budget against the shared work.
+ */
+const REMOTE_CONFIG_FETCH_TIMEOUT_MS = 15_000;
 const REMOTE_CONFIG_CACHE_MAX_ENTRIES = 8;
 
 /**
@@ -512,6 +532,8 @@ export function looksLikeSubscription(content: string): boolean {
   const trimmed = content.trim();
   if (!trimmed) return false;
   if (trimmed.includes("proxies:") || trimmed.includes("Proxy,")) return true;
+  // Nodes behind a second URL rather than in the body. The gateway follows it.
+  if (trimmed.includes("proxy-providers:")) return true;
   // base64-ish subscription dumps
   if (/^[A-Za-z0-9+/=\r\n]+$/.test(trimmed) && trimmed.length > 32) return true;
   if (
@@ -757,12 +779,59 @@ export async function convertSubscription(
     throw new Error("Node provider output is only available for Mihomo.");
   }
 
+  // CONVERT_TIMEOUT_MS is the budget for the whole conversion, not for each
+  // leg of it. A conversion can take four sequential network trips — the
+  // subscription, its providers, the config, the node pass — and granting each
+  // the full timeout would let a valid subscription outlast the reverse proxy
+  // in front of this service before the last one started.
+  const deadline = Date.now() + runtime.timeoutMs;
+  const remainingMs = (): number => {
+    const left = deadline - Date.now();
+    if (left <= 0) throw new Error(CONVERSION_TIMED_OUT);
+    return left;
+  };
+  /**
+   * A name lookup has no timeout of its own, and every stage starts with one.
+   * Without this a stalled resolver outlasts the budget the rest of the
+   * conversion is being held to.
+   */
+  const raceDeadline = async <T,>(work: Promise<T>, budgetMs: number): Promise<T> => {
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      return await Promise.race([
+        work,
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(
+            () => reject(new Error(CONVERSION_TIMED_OUT)),
+            Math.max(1, budgetMs),
+          );
+        }),
+      ]);
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  };
+  const resolveWithinDeadline = async (
+    hostname: string,
+    budgetMs: number,
+    { shared = false }: { shared?: boolean } = {},
+  ): Promise<string[]> =>
+    raceDeadline(
+      assertPublicHostname(hostname),
+      // Work shared with other conversions keeps its own clock; everything
+      // else may not outlive this request.
+      shared ? budgetMs : Math.min(budgetMs, remainingMs()),
+    );
+
   const safeUrl = parsePublicHttpUrl(request.subscriptionUrl);
-  const resolvedAddresses = await assertPublicHostname(safeUrl.hostname);
+  const resolvedAddresses = await resolveWithinDeadline(
+    safeUrl.hostname,
+    remainingMs(),
+  );
 
   const preflight = await requestTextWithLimits(safeUrl.href, {
     method: "GET",
-    timeoutMs: runtime.timeoutMs,
+    timeoutMs: remainingMs(),
     maxBytes: runtime.maxSubscriptionBytes,
     userAgent: upstreamUserAgent,
     requestLabel: "Subscription fetch",
@@ -779,19 +848,97 @@ export async function convertSubscription(
     throw new Error("Subscription content is empty or unsupported.");
   }
 
+  // A subscription that keeps its nodes in `proxy-providers:` hands over a
+  // config, not nodes. Follow those URLs here, under the same checks the
+  // subscription itself went through, so the engine receives the nodes rather
+  // than a provider it cannot reach.
+  const providerUrls = findProxyProviderUrls(subscriptionBody);
+  // All at once, and never more than half the budget: the conversion still
+  // has to happen after this. Run in sequence instead, a couple of
+  // unresponsive providers would spend the whole budget on their own.
+  const providerStageMs = Math.min(
+    remainingMs(),
+    Math.max(5_000, Math.floor(remainingMs() / 2)),
+  );
+  // One deadline for the stage, not one per operation: the lookup and the
+  // fetch happen in sequence, so granting the allowance to each would let a
+  // slow provider spend twice what the stage reserved.
+  const providerDeadline = Date.now() + providerStageMs;
+  const providerRemainingMs = (): number =>
+    Math.min(remainingMs(), Math.max(1, providerDeadline - Date.now()));
+  const providerResults = await Promise.allSettled(
+    providerUrls.map(async (providerUrl) => {
+      const safeProviderUrl = parsePublicHttpUrl(providerUrl);
+      const providerAddresses = await resolveWithinDeadline(
+        safeProviderUrl.hostname,
+        providerRemainingMs(),
+      );
+      const fetched = await requestTextWithLimits(safeProviderUrl.href, {
+        method: "GET",
+        timeoutMs: providerRemainingMs(),
+        maxBytes: runtime.maxSubscriptionBytes,
+        userAgent: upstreamUserAgent,
+        requestLabel: "Proxy provider fetch",
+        resolvedAddresses: providerAddresses,
+      });
+      if (!fetched.ok) {
+        throw new Error(`HTTP ${fetched.status}`);
+      }
+      return fetched.body;
+    }),
+  );
+  const providerBodies: string[] = [];
+  let providerFailure: string | null = null;
+  let providerTimedOut = false;
+  for (const result of providerResults) {
+    if (result.status === "rejected") {
+      // A spent budget is this server running out of time, not the visitor
+      // handing over a bad subscription; wrapping it would answer 400.
+      if (isTimeoutFailure(result.reason)) providerTimedOut = true;
+      // One dead provider out of several is survivable; the reason is only
+      // reported when none of them produced nodes.
+      providerFailure = publicErrorMessage(result.reason);
+      continue;
+    }
+    if (looksLikeSubscription(result.value)) providerBodies.push(result.value);
+  }
+  if (providerUrls.length > 0 && providerBodies.length === 0) {
+    if (providerTimedOut) throw new Error(CONVERSION_TIMED_OUT);
+    throw new Error(
+      `This subscription keeps its nodes in proxy-providers, and none could be read${
+        providerFailure ? ` (${providerFailure})` : ""
+      }.`,
+    );
+  }
+
   const requestId = randomUUID();
   const workDir = path.join(runtime.sharedDir, requestId);
   const inputName = "subscription.input";
   const inputPath = path.join(workDir, inputName);
   const sharedPrefix = runtime.sharedUrlPrefix.replace(/\/$/, "");
-  const engineInputUrl = `${sharedPrefix}/${requestId}/${inputName}`;
+  const engineInputUrls = [`${sharedPrefix}/${requestId}/${inputName}`];
 
   await mkdir(workDir, { recursive: true, mode: 0o700 });
   try {
-    await writeFile(inputPath, normalizeSubscriptionContent(subscriptionBody), {
+    // The stripped document still carries any inline proxies; the providers'
+    // contents follow as inputs of their own. The engine merges several inputs
+    // when they are joined with a pipe.
+    const inputBody = providerBodies.length
+      ? stripProxyProviders(subscriptionBody)
+      : subscriptionBody;
+    await writeFile(inputPath, normalizeSubscriptionContent(inputBody), {
       encoding: "utf8",
       mode: 0o600,
     });
+    for (const [index, body] of providerBodies.entries()) {
+      const name = `provider-${index + 1}.input`;
+      await writeFile(
+        path.join(workDir, name),
+        normalizeSubscriptionContent(body),
+        { encoding: "utf8", mode: 0o600 },
+      );
+      engineInputUrls.push(`${sharedPrefix}/${requestId}/${name}`);
+    }
 
     // A pasted config URL is fetched here rather than by the engine: this
     // client pins DNS to the addresses assertPublicHostname just checked, so
@@ -821,10 +968,14 @@ export async function convertSubscription(
           let refresh = remoteConfigRefreshes.get(configUrl);
           if (!refresh) {
             refresh = (async () => {
-              const configAddresses = await assertPublicHostname(configHostname);
+              const configAddresses = await resolveWithinDeadline(
+                configHostname,
+                REMOTE_CONFIG_FETCH_TIMEOUT_MS,
+                { shared: true },
+              );
               const fetchedConfig = await requestTextWithLimits(configUrl, {
                 method: "GET",
-                timeoutMs: runtime.timeoutMs,
+                timeoutMs: REMOTE_CONFIG_FETCH_TIMEOUT_MS,
                 maxBytes: REMOTE_CONFIG_MAX_BYTES,
                 requestLabel: "Remote config fetch",
                 resolvedAddresses: configAddresses,
@@ -842,8 +993,13 @@ export async function convertSubscription(
               .catch(() => undefined)
               .finally(() => remoteConfigRefreshes.delete(configUrl));
           }
-          configBody = await refresh;
+          // The refresh is shared, so its own deadline belongs to whoever
+          // started it. Each caller waits only as long as its own budget.
+          configBody = await raceDeadline(refresh, remainingMs());
         } catch (error) {
+          // Running out of budget says nothing about the host, and reporting
+          // it as one would answer 400 to what is really a timeout.
+          if (isTimeoutFailure(error)) throw error;
           if (!cachedConfig) {
             // Nothing cached and nothing fetched: the host is the problem.
             throw new Error("remoteConfig host is not allowed.");
@@ -868,7 +1024,7 @@ export async function convertSubscription(
     for (const [name, value] of Object.entries(definition.engineParams)) {
       endpoint.searchParams.set(name, value);
     }
-    endpoint.searchParams.set("url", engineInputUrl);
+    endpoint.searchParams.set("url", engineInputUrls.join("|"));
     endpoint.searchParams.set("config", configValue);
     endpoint.searchParams.set("emoji", String(convertOptions.emoji));
     endpoint.searchParams.set(
@@ -880,7 +1036,7 @@ export async function convertSubscription(
 
     const converted = await requestTextWithLimits(endpoint.toString(), {
       method: "GET",
-      timeoutMs: runtime.timeoutMs,
+      timeoutMs: remainingMs(),
       maxBytes: runtime.maxSubscriptionBytes * 4,
       requestLabel: "Complete conversion",
       headers: request.target === "clash" ? { "user-agent": "clash.meta" } : {},
@@ -899,7 +1055,7 @@ export async function convertSubscription(
       nodeEndpoint.searchParams.set("list", "true");
       const nodeResponse = await requestTextWithLimits(nodeEndpoint.toString(), {
         method: "GET",
-        timeoutMs: runtime.timeoutMs,
+        timeoutMs: remainingMs(),
         maxBytes: runtime.maxSubscriptionBytes * 4,
         requestLabel: "Node conversion",
         headers: { "user-agent": "clash.meta" },
@@ -1036,7 +1192,7 @@ export function publicErrorStatus(error: unknown): number {
     /^(?:Request body|subscriptionUrl|A supported target|accessPassword|remoteConfig|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
       message,
     ) ||
-    /^(?:Invalid subscription URL|Only http and https subscription URLs|Subscription URLs must not include credentials|Subscription URL is too long|Subscription host (?:is not allowed|resolves to a blocked address)|Encoded hostnames are not allowed|Subscription content is empty or unsupported|Node provider output is only available)/i.test(
+    /^(?:Invalid subscription URL|Only http and https subscription URLs|Subscription URLs must not include credentials|Subscription URL is too long|Subscription host (?:is not allowed|resolves to a blocked address)|Encoded hostnames are not allowed|Subscription content is empty or unsupported|This subscription keeps its nodes in proxy-providers|Node provider output is only available)/i.test(
       message,
     )
   ) {

@@ -5,8 +5,17 @@ import { getRuntimeConfig } from "@/lib/convert";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** The only two files the engine is ever handed. */
+/**
+ * The only files the engine is ever handed: the subscription, the rule
+ * template, and — when the subscription kept its nodes in `proxy-providers:` —
+ * the bodies the gateway fetched from those providers.
+ */
 const HANDOFF_FILES = new Set(["subscription.input", "remote.ini"]);
+const PROVIDER_FILE_PATTERN = /^provider-[1-8]\.input$/;
+
+function isHandoffFile(name: string): boolean {
+  return HANDOFF_FILES.has(name) || PROVIDER_FILE_PATTERN.test(name);
+}
 
 const REQUEST_ID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -44,7 +53,7 @@ export async function GET(
   context: { params: Promise<{ requestId: string; filename: string }> },
 ) {
   const { requestId, filename } = await context.params;
-  if (!REQUEST_ID_PATTERN.test(requestId) || !HANDOFF_FILES.has(filename)) {
+  if (!REQUEST_ID_PATTERN.test(requestId) || !isHandoffFile(filename)) {
     return new Response("Not found.", { status: 404 });
   }
   const runtimeConfig = getRuntimeConfig();
