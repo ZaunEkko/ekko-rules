@@ -121,6 +121,16 @@ test("spends the whole budget on node urls, not on probes", () => {
   assert.ok(found.every((url) => url.startsWith("https://upstream.example/")));
 });
 
+test("reads a section header that carries a comment", () => {
+  const annotated = `proxy-providers: # downloaded hourly
+  airport: {type: http, url: https://upstream.example/nodes.yaml}
+`;
+  assert.deepEqual(findProxyProviderUrls(annotated), [
+    "https://upstream.example/nodes.yaml",
+  ]);
+  assert.equal(stripProxyProviders(annotated).includes("proxy-providers"), false);
+});
+
 test("finds nothing in a document that has no providers", () => {
   assert.deepEqual(findProxyProviderUrls("proxies:\n  - {name: a}\n"), []);
   assert.deepEqual(findProxyProviderUrls(""), []);

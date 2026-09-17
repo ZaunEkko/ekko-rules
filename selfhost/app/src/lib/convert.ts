@@ -154,6 +154,7 @@ function envInt(name: string, fallback: number): number {
 }
 
 const FIXED_CONFIG_PATH = "config/ekko-rules-selfhost.ini";
+const CONVERSION_TIMED_OUT = "Conversion timed out.";
 /** A rule template is text; anything this large is not one. */
 const REMOTE_CONFIG_MAX_BYTES = 1_048_576;
 const REMOTE_CONFIG_CACHE_TTL_MS = 30 * 60_000;
@@ -771,12 +772,39 @@ export async function convertSubscription(
   const deadline = Date.now() + runtime.timeoutMs;
   const remainingMs = (): number => {
     const left = deadline - Date.now();
-    if (left <= 0) throw new Error("Conversion timed out.");
+    if (left <= 0) throw new Error(CONVERSION_TIMED_OUT);
     return left;
+  };
+  /**
+   * A name lookup has no timeout of its own, and every stage starts with one.
+   * Without this a stalled resolver outlasts the budget the rest of the
+   * conversion is being held to.
+   */
+  const resolveWithinDeadline = async (
+    hostname: string,
+    budgetMs: number,
+  ): Promise<string[]> => {
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      return await Promise.race([
+        assertPublicHostname(hostname),
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(
+            () => reject(new Error(CONVERSION_TIMED_OUT)),
+            Math.min(budgetMs, remainingMs()),
+          );
+        }),
+      ]);
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
   };
 
   const safeUrl = parsePublicHttpUrl(request.subscriptionUrl);
-  const resolvedAddresses = await assertPublicHostname(safeUrl.hostname);
+  const resolvedAddresses = await resolveWithinDeadline(
+    safeUrl.hostname,
+    remainingMs(),
+  );
 
   const preflight = await requestTextWithLimits(safeUrl.href, {
     method: "GET",
@@ -807,13 +835,14 @@ export async function convertSubscription(
   // unresponsive providers would spend the whole budget on their own.
   const providerTimeoutMs = Math.min(
     remainingMs(),
-    Math.max(5_000, Math.floor(runtime.timeoutMs / 2)),
+    Math.max(5_000, Math.floor(remainingMs() / 2)),
   );
   const providerResults = await Promise.allSettled(
     providerUrls.map(async (providerUrl) => {
       const safeProviderUrl = parsePublicHttpUrl(providerUrl);
-      const providerAddresses = await assertPublicHostname(
+      const providerAddresses = await resolveWithinDeadline(
         safeProviderUrl.hostname,
+        providerTimeoutMs,
       );
       const fetched = await requestTextWithLimits(safeProviderUrl.href, {
         method: "GET",
@@ -905,7 +934,10 @@ export async function convertSubscription(
           let refresh = remoteConfigRefreshes.get(configUrl);
           if (!refresh) {
             refresh = (async () => {
-              const configAddresses = await assertPublicHostname(configHostname);
+              const configAddresses = await resolveWithinDeadline(
+                configHostname,
+                remainingMs(),
+              );
               const fetchedConfig = await requestTextWithLimits(configUrl, {
                 method: "GET",
                 timeoutMs: remainingMs(),
@@ -928,6 +960,9 @@ export async function convertSubscription(
           }
           configBody = await refresh;
         } catch (error) {
+          // Running out of budget says nothing about the host, and reporting
+          // it as one would answer 400 to what is really a timeout.
+          if (publicErrorMessage(error) === CONVERSION_TIMED_OUT) throw error;
           if (!cachedConfig) {
             // Nothing cached and nothing fetched: the host is the problem.
             throw new Error("remoteConfig host is not allowed.");

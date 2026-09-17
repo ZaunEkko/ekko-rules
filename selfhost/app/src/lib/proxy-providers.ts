@@ -46,7 +46,12 @@ function proxyProviderSection(content: string): {
   end: number;
 } | null {
   const lines = content.replace(/\r\n/g, "\n").split("\n");
-  const start = lines.findIndex((line) => /^proxy-providers:\s*$/.test(line));
+  // `proxy-providers: # downloaded hourly` is a valid header, and missing it
+  // would send the untouched document to the engine — the exact failure this
+  // module exists to prevent.
+  const start = lines.findIndex((line) =>
+    /^proxy-providers:\s*(?:#.*)?$/.test(line),
+  );
   if (start < 0) return null;
   return { lines, start, end: topLevelSectionEnd(lines, start) };
 }
