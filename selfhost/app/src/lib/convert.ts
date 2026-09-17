@@ -155,6 +155,14 @@ function envInt(name: string, fallback: number): number {
 
 const FIXED_CONFIG_PATH = "config/ekko-rules-selfhost.ini";
 const CONVERSION_TIMED_OUT = "Conversion timed out.";
+
+/**
+ * `requestTextWithLimits` words its own timeout after the request label, so a
+ * spent budget reaches a caller as either that or the conversion deadline.
+ */
+function isTimeoutFailure(error: unknown): boolean {
+  return / timed out\.$/.test(publicErrorMessage(error));
+}
 /** A rule template is text; anything this large is not one. */
 const REMOTE_CONFIG_MAX_BYTES = 1_048_576;
 const REMOTE_CONFIG_CACHE_TTL_MS = 30 * 60_000;
@@ -780,18 +788,15 @@ export async function convertSubscription(
    * Without this a stalled resolver outlasts the budget the rest of the
    * conversion is being held to.
    */
-  const resolveWithinDeadline = async (
-    hostname: string,
-    budgetMs: number,
-  ): Promise<string[]> => {
+  const raceDeadline = async <T,>(work: Promise<T>, budgetMs: number): Promise<T> => {
     let timer: NodeJS.Timeout | undefined;
     try {
       return await Promise.race([
-        assertPublicHostname(hostname),
+        work,
         new Promise<never>((_, reject) => {
           timer = setTimeout(
             () => reject(new Error(CONVERSION_TIMED_OUT)),
-            Math.min(budgetMs, remainingMs()),
+            Math.max(1, budgetMs),
           );
         }),
       ]);
@@ -799,6 +804,14 @@ export async function convertSubscription(
       if (timer) clearTimeout(timer);
     }
   };
+  const resolveWithinDeadline = async (
+    hostname: string,
+    budgetMs: number,
+  ): Promise<string[]> =>
+    raceDeadline(
+      assertPublicHostname(hostname),
+      Math.min(budgetMs, remainingMs()),
+    );
 
   const safeUrl = parsePublicHttpUrl(request.subscriptionUrl);
   const resolvedAddresses = await resolveWithinDeadline(
@@ -833,20 +846,26 @@ export async function convertSubscription(
   // All at once, and never more than half the budget: the conversion still
   // has to happen after this. Run in sequence instead, a couple of
   // unresponsive providers would spend the whole budget on their own.
-  const providerTimeoutMs = Math.min(
+  const providerStageMs = Math.min(
     remainingMs(),
     Math.max(5_000, Math.floor(remainingMs() / 2)),
   );
+  // One deadline for the stage, not one per operation: the lookup and the
+  // fetch happen in sequence, so granting the allowance to each would let a
+  // slow provider spend twice what the stage reserved.
+  const providerDeadline = Date.now() + providerStageMs;
+  const providerRemainingMs = (): number =>
+    Math.min(remainingMs(), Math.max(1, providerDeadline - Date.now()));
   const providerResults = await Promise.allSettled(
     providerUrls.map(async (providerUrl) => {
       const safeProviderUrl = parsePublicHttpUrl(providerUrl);
       const providerAddresses = await resolveWithinDeadline(
         safeProviderUrl.hostname,
-        providerTimeoutMs,
+        providerRemainingMs(),
       );
       const fetched = await requestTextWithLimits(safeProviderUrl.href, {
         method: "GET",
-        timeoutMs: providerTimeoutMs,
+        timeoutMs: providerRemainingMs(),
         maxBytes: runtime.maxSubscriptionBytes,
         userAgent: upstreamUserAgent,
         requestLabel: "Proxy provider fetch",
@@ -958,11 +977,13 @@ export async function convertSubscription(
               .catch(() => undefined)
               .finally(() => remoteConfigRefreshes.delete(configUrl));
           }
-          configBody = await refresh;
+          // The refresh is shared, so its own deadline belongs to whoever
+          // started it. Each caller waits only as long as its own budget.
+          configBody = await raceDeadline(refresh, remainingMs());
         } catch (error) {
           // Running out of budget says nothing about the host, and reporting
           // it as one would answer 400 to what is really a timeout.
-          if (publicErrorMessage(error) === CONVERSION_TIMED_OUT) throw error;
+          if (isTimeoutFailure(error)) throw error;
           if (!cachedConfig) {
             // Nothing cached and nothing fetched: the host is the problem.
             throw new Error("remoteConfig host is not allowed.");

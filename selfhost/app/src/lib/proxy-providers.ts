@@ -37,7 +37,9 @@ function parseYamlScalar(value: string): string {
   if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
     return trimmed.slice(1, -1).replace(/''/g, "'");
   }
-  return trimmed;
+  // An unquoted scalar ends where a comment begins. Carrying ` # downloaded
+  // hourly` into the URL turns a valid provider into a 404.
+  return trimmed.replace(/\s+#.*$/, "").trim();
 }
 
 function proxyProviderSection(content: string): {

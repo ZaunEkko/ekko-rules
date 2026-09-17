@@ -131,6 +131,17 @@ test("reads a section header that carries a comment", () => {
   assert.equal(stripProxyProviders(annotated).includes("proxy-providers"), false);
 });
 
+test("ends an unquoted url where its comment begins", () => {
+  const commented = `proxy-providers:
+  airport:
+    type: http
+    url: https://upstream.example/nodes.yaml # downloaded hourly
+`;
+  assert.deepEqual(findProxyProviderUrls(commented), [
+    "https://upstream.example/nodes.yaml",
+  ]);
+});
+
 test("finds nothing in a document that has no providers", () => {
   assert.deepEqual(findProxyProviderUrls("proxies:\n  - {name: a}\n"), []);
   assert.deepEqual(findProxyProviderUrls(""), []);
