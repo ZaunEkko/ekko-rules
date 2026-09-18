@@ -599,3 +599,16 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: A regression check found static.zdassets.com routed to the Korean media policy because Watcha runs its help centre on Zendesk, while zdassets.com is Zendesk's global asset CDN. An audit of all service-specific rulesets found 50 references to shared infrastructure, of which 44 correctly name a single tenant. The six that did not - zdassets.com, launches.appsflyer.com, sdk.iad-05.braze.com, the two Conviva collectors, braze.com, conviva.com and js-agent.newrelic.com - are telemetry or marketing services no streaming product needs in order to play, and are removed. Three AWS regional endpoints are kept deliberately because the tenant is identified by credentials rather than hostname and viuTV's sign-in depends on Cognito. js-agent.newrelic.com was already unreachable behind the advertising import, so the intentional capture count falls from 40 to 39 and the routing ledger is re-sealed. First-match coverage falls from 146 to 145, which the gate permits.
+- id: wider-vendor-certificate-sample
+  status: accepted
+  scope: routing-policy
+  summary: crt.sh answers a throttled client with an empty body, which the first vendor sample read as an organisation having no certificates.
+  evidence:
+  - docs/evidence/cn-vendors-2026-09-19.txt
+  - scripts/vendor_domain_discovery.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The organisation list grows from 46 to 118 across carriers, handset makers, game studios, AI companies, cloud providers and platform sub-brands, and the tool retries with a growing pause so throttling is no longer mistaken for absence - 72 organisations that appeared empty returned results. The wider sample attests 2,338 roots, 1,394 uncovered, 74 mainland-hosted beyond what is already shipped; one measurement root is removed as belonging to the advertising policy and the remaining 73 take china-web to 3,269 rules with first-match coverage unchanged. Measured against the full independent pool, 31.8 percent of the mainland import's live entries and 28.1 percent of the advertising import's are independently attested, so neither can be retired and the attribution stands.

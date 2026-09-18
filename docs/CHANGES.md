@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-042 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-043 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -890,6 +890,31 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 11,088 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-043 — Wider vendor sample for Certificate Transparency discovery
+
+**Type:** extension of an existing segment from the same evidence source
+
+ER-041 queried 46 organisations. A wider list of 118 covers telecommunications carriers, handset makers, game studios, AI companies, cloud providers and the sub-brands of the large platforms. crt.sh throttles bursts and answers an over-eager client with an empty body, which is indistinguishable from an organisation having no certificates, so the tool now retries with a growing pause; 72 organisations that appeared to have nothing returned results on retry.
+
+The wider sample attests 2,338 registrable roots. 1,394 match no existing rule, of which 74 are mainland-hosted — the earlier 480 are already in the ruleset. One measurement root is removed as belonging to the advertising policy. The remaining 73 take `china-web` to 3,269 rules with first-match coverage unchanged at union 145.
+
+Both imports are now measured against the full independent evidence pool:
+
+| Import | Live entries | Independently attested | Still missing |
+|---|---:|---:|---:|
+| `china-domains-direct.list` | 1,448 | 461 (31.8%) | 987 |
+| `advertising.list` | 765 | 215 (28.1%) | 550 |
+
+Neither import can be retired, so the `Copyright (c) 2018-2019 V2Ray` attribution stands. What has changed is that the product no longer depends on them for quality: the curated segments outperform the advertising import on every measured axis and cover mainland services it never held.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,161 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.

@@ -33,13 +33,13 @@ from collections import defaultdict
 from pathlib import Path
 
 CRT_SH = "https://crt.sh/"
-TIMEOUT = 180
-WORKERS = 2
+TIMEOUT = 45
+WORKERS = 3
 # crt.sh throttles bursts and answers an over-eager client with an empty body,
 # which is indistinguishable from "this organisation has no certificates".
 # Retrying with a growing pause tells the two apart.
-ATTEMPTS = 4
-BACKOFF_SECONDS = 6
+ATTEMPTS = 2
+BACKOFF_SECONDS = 8
 
 MULTI_LABEL_SUFFIXES = frozenset(
     {
