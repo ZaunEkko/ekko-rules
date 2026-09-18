@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-038 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-039 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -793,6 +793,32 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 8,270 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-039 — Observation-derived mainland direct curation
+
+**Type:** extension of an existing segment from a new evidence source
+
+Major mainland services were reaching the proxy fallback. `zol.com.cn`, `ifeng.com`, `eastmoney.com`, `csdn.net`, `ithome.com`, `cnblogs.com`, `suning.com` and `dangdang.com` matched no rule in the product, so their traffic left the country and came back. The pinned mainland import is 1,482 entries and did not cover them.
+
+Browser capture cannot reach the breadth this needs, so `scripts/page_host_scan.py` reads the hostnames an origin's markup references instead. It is far less precise — it misses anything a script builds at runtime — but it scales to hundreds of origins, and for deciding which services a site belongs to that is the trade worth making. 182 of 245 mainland origins were scanned, yielding 5,118 distinct hostnames across 1,269 registrable roots, 922 of them matching no existing rule.
+
+Observation supplies candidates; it cannot decide them, because a mainland page also references foreign fonts, libraries and advertising. The decision comes from a primary source. APNIC publishes the registry's own delegation records, so the ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root only when every A record falls inside them. Of the 922 candidates, 600 are mainland-hosted, 255 foreign, 4 mixed and 63 do not resolve.
+
+Review then removed 11 mainland advertising and analytics roots — `umeng.com`, `growingio.com`, `admaster.com.cn`, `analysys.cn`, `cmgadx.com` among them — because they belong to the advertising policy rather than a direct one, 4 malformed roots the scanner produced, and `pplive.com`, which would have shadowed `afp.pplive.com` in `china-media-late-recovery`. The remaining 584 join `china-web`, taking it from 370 to 954 rules.
+
+A first attempt at filtering also flagged long domain labels as random strings and would have dropped `cankaoxiaoxi.com`, `wallstreetcn.com` and `yingjiesheng.com`. The heuristic was wrong and was replaced by an explicit list.
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133.
+
+The mainland import remains untouched, and so does its attribution. This curation is additive: it covers what the import missed rather than reproducing what it holds.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 8,854 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.

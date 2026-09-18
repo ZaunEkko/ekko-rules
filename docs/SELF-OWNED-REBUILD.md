@@ -90,7 +90,14 @@ Criterion 3 is the bottleneck and is not automatable from reach data.
 
 ## Status
 
-`advertising-curated` carries 327 rules, all derived from this repository's own evidence. Against the same evidence, coverage of hosts reviewed as advertising went from 16.4 percent with the pinned import alone to 99.1 percent; coverage of advertising systems declared by two or more publishers went from 1.7 to 51.2 percent. First-match coverage is unchanged throughout.
+Two segments now carry rules derived entirely from this repository's own evidence:
+
+| Segment | Rules | Evidence |
+|---|---:|---|
+| `advertising-curated` | 452 | traffic capture, publisher ads.txt declarations, delivery probe |
+| `china-web` additions | 584 | markup scan of mainland origins, APNIC delegation records |
+
+Against the same evidence, coverage of hosts reviewed as advertising went from 16.5 percent with the pinned import alone to 100 percent, and coverage of advertising systems declared by two or more publishers from 1.3 to 44.9 percent. On the mainland side the curation is purely additive — eight major services that reached the proxy fallback before it are direct after it. First-match coverage is unchanged throughout at union 146, same-segment 13, cross-segment 133.
 
 The pinned imports and their ledgers remain untouched, so the `Copyright (c) 2018-2019 V2Ray` attribution still stands. It can only be retired once the imports no longer ship.
 
@@ -98,7 +105,7 @@ Remaining work to reach that point:
 
 | Target | Remaining |
 |---|---|
-| `advertising.list` (849) | the curated segment now outperforms it on every measured axis, but retiring it needs a coverage comparison over its own 849 entries: which are still live, still relevant to this audience, and not already covered here. That audit is mechanical and is the next round. |
-| `china-domains-direct.list` (1,403 load-bearing) | not observable by browsing, and ads.txt has no equivalent — it answers "which services belong on DIRECT". It needs a vendor-documentation pass per service category, the method ER-023 used for cloud endpoints. |
+| `advertising.list` (849) | 761 entries still carry live coverage not reproduced here. Only 5.9 percent appear in the widened ads.txt declarations, because the import's remaining strength is mobile SDK and platform-native endpoints — `app-measurement.com`, `admob.com`, `2mdn.net`, `ads-twitter.com`, ByteDance's `zijieapi.com`, Kuaishou's `adkwai.com` — plus 96 Russian and 68 mainland Chinese entries. Reaching those needs a third source: vendor allowlist documentation, the method ER-023 used for cloud endpoints. |
+| `china-domains-direct.list` (1,403 load-bearing) | the scan and APNIC probe now derive mainland rules independently, so this is a matter of volume: more origins scanned until the import's live coverage is reproduced, then a swap that retires it. |
 
-Each batch lands as its own ER with its evidence committed alongside. The segment budget for the eventual swap is already available: retiring an import frees the segment it occupies.
+Each batch lands as its own ER with its evidence committed alongside. The segment budget for either swap is already available: retiring an import frees the segment it occupies.
