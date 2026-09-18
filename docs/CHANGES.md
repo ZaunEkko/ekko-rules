@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-037 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-038 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -763,6 +763,36 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 8,145 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-038 — Wider publisher sample for the curated advertising corpus
+
+**Type:** extension of an existing segment from the same evidence source
+
+ER-037 polled 57 publishers. Publisher choice is not derived from any rule list — publishers are public entities — so the sample can widen freely. It now spans 235 publishers across news, technology, sport, finance, entertainment, lifestyle and gaming in North America, the United Kingdom, western Europe, greater China, Japan, Korea, India, Oceania and Latin America. 198 served an `ads.txt`, declaring 1,194 advertising systems, 910 of them by two or more publishers.
+
+Of 638 candidates the curated segment did not already cover, the delivery probe found 239 with live infrastructure, 371 with a corporate website only, and 28 that do not resolve. Review then removed 38 mixed-business roots whose non-advertising functions a `REJECT` would break, 28 publishers and media groups, 6 agency and holding companies, and 36 video and audio player platforms. The remaining 131 roots bring the segment to 452 rules.
+
+Six of those initially duplicated entries already in the pinned import. The round's coverage check compared candidates against the curated segment but not against the import, so the duplicates were only caught by the first-match metric afterwards. Future rounds compare against both.
+
+Measured against the same evidence, with the pinned import alone and then with the import plus this segment:
+
+| Target | Import | Import and curated |
+|---|---:|---:|
+| Third-party hosts observed on 21 origins | 7.3% | 42.3% |
+| Hosts this repository reviewed as advertising | 16.5% | 100.0% |
+| Advertising systems declared by two or more publishers | 1.3% | 44.9% |
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133.
+
+An audit of the import establishes what retiring it would still cost. Of its 849 entries, 84 no longer resolve and 4 are already covered here, so 761 carry live coverage this segment does not yet reproduce. Only 5.9 percent of those appear in the widened declarations, because the two sources describe different slices: `ads.txt` maps the programmatic supply chain, while the import's remaining strength is mobile SDK and platform-native advertising endpoints — `app-measurement.com`, `admob.com`, `2mdn.net`, `ads-twitter.com`, ByteDance's `zijieapi.com`, Kuaishou's `adkwai.com` — plus 96 Russian and 68 mainland Chinese entries. Reaching those needs a third evidence source, so the import stays and the attribution with it.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 8,270 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.

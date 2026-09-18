@@ -540,3 +540,17 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: 49 of 57 publishers served an ads.txt, declaring 826 advertising systems and 545 by two or more publishers. A declaration names the company selling inventory rather than the domain delivering advertising at runtime, so each candidate root is admitted only after a probe resolves conventional delivery hostnames beneath it and finds live infrastructure - 267 of 453 did. Removed before and after the probe were publishers declaring themselves, mixed-business roots whose non-advertising functions a REJECT would break, agency holding companies, roots with a corporate website only, and video and audio player platforms where blocking removes content rather than advertising. The segment reaches 327 rules and raises coverage of hosts reviewed as advertising from 16.4 to 99.1 percent without changing first-match coverage. The pinned import and its ledger are untouched.
+- id: widened-publisher-sample
+  status: accepted
+  scope: routing-policy
+  summary: Publisher choice is not derived from any rule list, so the ads.txt sample can widen freely to reach breadth the first sample missed.
+  evidence:
+  - docs/evidence/publishers-2026-09-19.txt
+  - docs/evidence/ads-txt-2026-09-19.json
+  - sources/rules/advertising-curated.list
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The sample now spans 235 publishers across ten regions and eight categories; 198 served an ads.txt declaring 1,194 advertising systems, 910 by two or more. Of 638 uncovered candidates the delivery probe found 239 serving, and review removed mixed-business roots, publishers and media groups, agency holding companies, and video and audio player platforms, leaving 131 and bringing the segment to 452 rules. Coverage of hosts reviewed as advertising reaches 100 percent and of declared advertising systems 44.9 percent, against 16.5 and 1.3 percent for the import alone, with first-match coverage unchanged. An audit shows 761 of the import's 849 entries still carry coverage this segment does not reproduce, only 5.9 percent of which the declarations reach, because the import's remaining strength is mobile SDK and platform-native endpoints plus Russian and mainland Chinese ecosystems. A third evidence source is needed before the import can be retired.
