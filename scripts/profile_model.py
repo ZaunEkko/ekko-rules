@@ -739,7 +739,7 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
                 "cross_segment_dependencies_must_not_increase": True,
                 "direct_default_to_final_violations": 0,
                 "recovery_ledger": "tests/fixtures/phase-3-recovery-ledger.json",
-                "intentional_advertising_capture_count": 40,
+                "intentional_advertising_capture_count": 39,
                 "advertising_routing_ledger": "tests/fixtures/advertising-routing-ledger.json",
                 "intentional_cloud_capture_count": 71,
                 "cloud_routing_ledger": "tests/fixtures/cloud-routing-ledger.json",

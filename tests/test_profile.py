@@ -382,9 +382,9 @@ class CanonicalSourceTests(unittest.TestCase):
         ]
         current = coverage_metrics(self.sources, product="core")
         self.assertEqual(current, baseline)
-        self.assertEqual(current["global"]["union"], 146)
+        self.assertEqual(current["global"]["union"], 145)
         self.assertEqual(current["within_same_segment"]["union"], 13)
-        self.assertEqual(current["cross_segment_only"]["union"], 133)
+        self.assertEqual(current["cross_segment_only"]["union"], 132)
 
     def test_direct_default_domain_keyword_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1007,7 +1007,7 @@ class AdvertisingImportTests(unittest.TestCase):
     def test_intentional_cross_segment_captures_are_frozen(self) -> None:
         self.assertEqual(
             hashlib.sha256(ADVERTISING_ROUTING_LEDGER.read_bytes()).hexdigest(),
-            "766c09c1144a857b011cae9718892b6910548d44679798cdf5ebccefab5e76c3",
+            "2c896c2e3ab7503c81699116ba73f76e8890420c0849d05c9448dfc654fef456",
         )
         ledger = json.loads(
             ADVERTISING_ROUTING_LEDGER.read_text(encoding="utf-8")

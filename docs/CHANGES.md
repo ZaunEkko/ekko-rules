@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-041 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-042 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -862,3 +862,34 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-042 — Shared SaaS narrowed out of single-service policies
+
+**Type:** overbreadth removal, no new rules
+
+A regression check over functional hostnames found `static.zdassets.com` routed to `🎬 韩国媒体`. The rule sits beside `watcha.zendesk.com`, so its origin is clear — Watcha runs its help centre on Zendesk — but `zdassets.com` is Zendesk's global asset CDN. Every site using Zendesk was being pulled into a Korean streaming policy.
+
+An audit of the same shape across all service-specific rulesets found 50 references to shared third-party infrastructure. Most are correctly scoped: `bahamut.akamaized.net`, `hboasialive.akamaized.net`, `disney.my.sentry.io` and the CloudFront distributions name one tenant each. Six were not, and all six are telemetry or marketing services the streaming product does not need in order to play:
+
+| Removed | From | Shared with |
+|---|---|---|
+| `zdassets.com` | `media-korea` | every Zendesk help centre |
+| `launches.appsflyer.com` | `media-korea` | every app using AppsFlyer attribution |
+| `sdk.iad-05.braze.com` | `media-korea` | every app using Braze messaging |
+| `ipv4.cws.conviva.com`, `ipv6.cws.conviva.com` | `media-korea` | every streamer using Conviva |
+| `braze.com`, `conviva.com` | `disney-plus` | as above, at root scope |
+| `js-agent.newrelic.com` | `disney-plus` | every site using New Relic browser monitoring |
+
+Three further shared endpoints are kept deliberately. `execute-api.us-east-1.amazonaws.com`, `cognito-identity.us-east-1.amazonaws.com` and `mobileanalytics.us-east-1.amazonaws.com` are AWS regional endpoints where the tenant is identified by credentials rather than by hostname, so no narrower form exists, and viuTV's sign-in depends on Cognito. The overbreadth is real and unavoidable; removing them would break the services these rulesets exist to serve.
+
+`js-agent.newrelic.com` was already unreachable — the pinned advertising import covers it and runs first — so removing it takes the intentional cross-segment capture count from 40 to 39 and the advertising routing ledger is re-sealed, the mechanism ER-031 established. First-match coverage falls from 146 to 145 accordingly, which the gate permits: it may not increase.
+
+This round also repairs a defect ER-039 introduced. Rewriting `china-web.list` dropped its trailing newline, which broke `test_direct_default_domain_keyword_is_rejected` — the test appends a matcher and the missing newline fused it onto the last rule. The failure went unnoticed for three commits because the verification command printed the test count without the pass or fail line. Trailing newlines now match what each file carried on `main`.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,088 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
