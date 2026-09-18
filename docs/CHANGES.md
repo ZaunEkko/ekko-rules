@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-039 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-040 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -819,6 +819,24 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 8,854 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-040 — Second mainland crawl round
+
+**Type:** extension of an existing segment from the same evidence source
+
+ER-039 scanned 245 mainland origins chosen directly. The roots it confirmed are themselves mainland services, so they seed the next round without leaving this repository's own observation. 373 of 528 such origins were scanned, yielding 8,347 hostnames across 2,790 registrable roots, 2,018 of them matching no existing rule.
+
+The APNIC probe found 1,253 mainland-hosted, 592 foreign, 10 mixed and 163 unresolved. Review removed seven mainland advertising and measurement roots — `umeng.com`, `growingio.com`, `analysys.cn`, `miaozhen.com`, `irs01.com`, `sensorsdata.cn` and `tagtic.cn` — because they belong to the advertising policy, and `pplive.com`, which would have shadowed `afp.pplive.com`. The remaining 1,245 take `china-web` from 954 to 2,199 rules.
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133. The additions are disjoint from the pinned import by construction: a candidate is only considered when no existing rule covers it, and the import is an existing rule. That is also why retiring the import would still cost 1,448 live entries. Reaching those is a matter of crawling further, not of method.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 10,099 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.

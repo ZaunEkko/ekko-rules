@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 8,854 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 10,099 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,7 +21,7 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 8,853 file rules are partitioned by evidence boundary:
+The 10,098 file rules are partitioned by evidence boundary:
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
@@ -29,7 +29,7 @@ The 8,853 file rules are partitioned by evidence boundary:
 | Advertising import | 849 | Direct pinned MIT input with immutable selection and capture ledgers |
 | Current late recovery | 2,684 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
 | Observation-derived advertising curation | 452 | Derived solely from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
-| Observation-derived mainland direct curation | 584 | Derived from this repository's own scan of mainland origins, each root confirmed mainland-hosted against APNIC delegation records |
+| Observation-derived mainland direct curation | 1,829 | Derived from this repository's own scan of mainland origins, each root confirmed mainland-hosted against APNIC delegation records |
 | Specialized, private/local, and service corpus | 2,802 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
 The final 2,802-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
@@ -46,7 +46,7 @@ Six late-recovery rulesets derive from frozen Phase 2 repository evidence. They 
 
 584 of `sources/rules/china-web.list` come from this repository's own measurement rather than the pinned import. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup references, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. The decision comes from a primary source: APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root only when every A record falls inside them.
 
-Of 922 roots observed across 182 mainland origins and not already covered, 600 are mainland-hosted, 255 foreign, 4 mixed and 63 unresolved. Mainland advertising and analytics infrastructure is excluded because it belongs to the advertising policy rather than a direct one, as are malformed roots. The result changes real behaviour: `zol.com.cn`, `ifeng.com`, `eastmoney.com`, `csdn.net`, `ithome.com`, `cnblogs.com`, `suning.com` and `dangdang.com` all reached the proxy fallback before this curation and are direct after it.
+A second round seeded its origins from the roots the first confirmed, an expansion that stays inside this repository's own observation. Across both rounds 555 mainland origins were scanned; of 2,940 roots not already covered, 1,853 are mainland-hosted. Mainland advertising and analytics infrastructure is excluded because it belongs to the advertising policy rather than a direct one, as are malformed roots. The result changes real behaviour: `zol.com.cn`, `ifeng.com`, `eastmoney.com`, `csdn.net`, `ithome.com`, `cnblogs.com`, `suning.com` and `dangdang.com` all reached the proxy fallback before this curation and are direct after it.
 
 ### Classic mainland-domain import
 
