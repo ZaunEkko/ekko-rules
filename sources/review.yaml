@@ -570,3 +570,18 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: A markup scan of 182 mainland origins yielded 1,269 registrable roots, 922 matching no existing rule. Observation supplies candidates only, so the verdict comes from APNIC delegation records - a primary registry source - and a root is admitted only when every A record falls inside the ranges allocated to CN. 600 qualified. Review removed 11 mainland advertising and analytics roots belonging to the advertising policy, 4 malformed roots, and pplive.com which would have shadowed afp.pplive.com in china-media-late-recovery. The remaining 584 take china-web from 370 to 954 rules with first-match coverage unchanged. The pinned mainland import is untouched; this curation covers what it missed rather than reproducing what it holds.
+- id: certificate-transparency-vendor-discovery
+  status: accepted
+  scope: routing-policy
+  summary: Homepage scanning cannot reach the backend and sub-brand domains large vendors operate, which is where the pinned mainland import's remaining strength lies.
+  evidence:
+  - docs/evidence/cn-vendors-2026-09-19.txt
+  - scripts/vendor_domain_discovery.py
+  - scripts/mainland_hosting_probe.py
+  - https://crt.sh/
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Certificate Transparency logs every publicly trusted certificate with the organisation it was issued to, so a query by organisation returns domains the vendor itself proved control of to a certificate authority - a primary source rather than a third party's compilation. 46 mainland vendors attest 1,711 roots, 1,333 uncovered, 480 of them mainland-hosted by the APNIC probe. A third crawl round contributes 526 roots referenced by two or more independent origins, a threshold that keeps long-tail bloat out. Six mainland measurement roots were removed as belonging to the advertising policy. The remaining 997 take china-web to 3,196 rules with first-match coverage unchanged. Of the import's 1,448 live entries 408 are now independently attested, 28.2 percent; the rest are vendor-affiliated domains under obscure names that the same method reaches with a wider organisation list.

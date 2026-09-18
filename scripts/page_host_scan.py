@@ -17,7 +17,6 @@ Usage::
 from __future__ import annotations
 
 import concurrent.futures
-import gzip
 import json
 import re
 import sys
@@ -44,19 +43,20 @@ HOST_PATTERN = re.compile(
 
 
 def decode(raw: bytes, encoding: str | None) -> str:
-    if encoding == "gzip":
-        try:
-            raw = gzip.decompress(raw)
-        except OSError:
-            pass
-    elif encoding in {"deflate", "zlib"}:
-        try:
-            raw = zlib.decompress(raw)
-        except zlib.error:
+    """Decode a body, tolerating a stream cut short by the read limit.
+
+    Reading at most MAX_BYTES routinely truncates a compressed response, so the
+    one-shot decompressors raise. An incremental decompressor keeps whatever it
+    managed to inflate, which is all this scan needs.
+    """
+    if encoding in {"gzip", "deflate", "zlib"}:
+        wbits = 47 if encoding == "gzip" else zlib.MAX_WBITS
+        for bits in (wbits, -zlib.MAX_WBITS):
             try:
-                raw = zlib.decompress(raw, -zlib.MAX_WBITS)
+                raw = zlib.decompressobj(bits).decompress(raw)
+                break
             except zlib.error:
-                pass
+                continue
     return raw.decode("utf-8", errors="replace")
 
 

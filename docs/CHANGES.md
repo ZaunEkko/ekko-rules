@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-040 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-041 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -837,6 +837,28 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 10,099 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-041 — Certificate Transparency reaches vendor infrastructure
+
+**Type:** extension of an existing segment from a new evidence source
+
+Crawling further stopped paying. A third crawl round scanned 855 origins and confirmed 3,450 mainland roots, but an audit showed why that does not retire the pinned import: the import's remaining strength is the backend, sub-brand and infrastructure domains large vendors operate — `servicewechat.com`, `byteacct.com`, `alipaylog.com`, `jdcloud-oss.com`, `bytedns5.com` — and no homepage links to those, so no amount of homepage scanning reaches them.
+
+Certificate Transparency does. Every publicly trusted certificate is logged together with the organisation it was issued to, so querying the log by organisation returns the domains a vendor proved control of to a certificate authority. That is the vendor's own attestation, obtained from a primary source, not a third party's compilation. `scripts/vendor_domain_discovery.py` performs the query; the verdict on whether a discovered root belongs on a direct policy still comes from the APNIC probe.
+
+46 mainland vendors attest 1,711 registrable roots. 1,333 match no existing rule, and of those 480 are mainland-hosted. Separately, the third crawl round contributes 526 roots referenced by two or more independent origins — the threshold exists because at this depth a crawl reaches long-tail links whose marginal value does not justify the bloat. Six mainland measurement roots were removed as belonging to the advertising policy. The remaining 997 take `china-web` from 2,199 to 3,196 rules.
+
+The audit that motivated the change also measures progress against it. Of the import's 1,448 live entries, 279 are now independently attested through Certificate Transparency and 216 through this repository's own crawl, 408 once deduplicated — 28.2 percent. The remaining 1,040 are vendor-affiliated domains under obscure names, which the same method reaches with a wider organisation list.
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,096 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
