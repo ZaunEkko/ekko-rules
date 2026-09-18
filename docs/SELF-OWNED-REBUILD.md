@@ -90,22 +90,43 @@ Criterion 3 is the bottleneck and is not automatable from reach data.
 
 ## Status
 
-Two segments now carry rules derived entirely from this repository's own evidence:
+Rules derived entirely from this repository's own evidence:
 
 | Segment | Rules | Evidence |
 |---|---:|---|
 | `advertising-curated` | 452 | traffic capture, publisher ads.txt declarations, delivery probe |
-| `china-web` additions | 584 | markup scan of mainland origins, APNIC delegation records |
+| `china-web` additions | 2,899 | markup scan of mainland origins, Certificate Transparency vendor attestation, APNIC delegation records |
 
-Against the same evidence, coverage of hosts reviewed as advertising went from 16.5 percent with the pinned import alone to 100 percent, and coverage of advertising systems declared by two or more publishers from 1.3 to 44.9 percent. On the mainland side the curation is purely additive — eight major services that reached the proxy fallback before it are direct after it. First-match coverage is unchanged throughout at union 146, same-segment 13, cross-segment 133.
+Measured improvement, with the pinned import alone and then with the import plus the curation:
 
-The pinned imports and their ledgers remain untouched, so the `Copyright (c) 2018-2019 V2Ray` attribution still stands. It can only be retired once the imports no longer ship.
+| Target | Import | Import and curated |
+|---|---:|---:|
+| Third-party hosts observed on 21 origins | 7.3% | 42.3% |
+| Hosts this repository reviewed as advertising | 16.5% | 100.0% |
+| Advertising systems declared by two or more publishers | 1.3% | 44.9% |
 
-Remaining work to reach that point:
+On the mainland side the curation is purely additive. Eight major services — `zol.com.cn`, `ifeng.com`, `eastmoney.com`, `csdn.net`, `ithome.com`, `cnblogs.com`, `suning.com`, `dangdang.com` — reached the proxy fallback before it and are direct after it. First-match coverage never increased across any round.
 
-| Target | Remaining |
-|---|---|
-| `advertising.list` (849) | 761 entries still carry live coverage not reproduced here. Only 5.9 percent appear in the widened ads.txt declarations, because the import's remaining strength is mobile SDK and platform-native endpoints — `app-measurement.com`, `admob.com`, `2mdn.net`, `ads-twitter.com`, ByteDance's `zijieapi.com`, Kuaishou's `adkwai.com` — plus 96 Russian and 68 mainland Chinese entries. Reaching those needs a third source: vendor allowlist documentation, the method ER-023 used for cloud endpoints. |
-| `china-domains-direct.list` (1,403 load-bearing) | the scan and APNIC probe now derive mainland rules independently, so this is a matter of volume: more origins scanned until the import's live coverage is reproduced, then a swap that retires it. |
+## What retiring the imports still needs
+
+The attribution can only be retired once the imports no longer ship, and neither can be retired yet:
+
+| Import | Live entries | Independently attested | Still missing |
+|---|---:|---:|---:|
+| `china-domains-direct.list` | 1,448 | 461 (31.8%) | 987 |
+| `advertising.list` | 765 | 215 (28.1%) | 550 |
+
+The remaining mainland entries are vendor-affiliated domains under obscure names — `byte00.net`, `bdurl.net`, `jcloud-cache.net`, `360os.com` — which the Certificate Transparency method reaches as the organisation list grows. The remaining advertising entries are mobile SDK and platform-native endpoints — `app-measurement.com`, `admob.com`, `2mdn.net`, `ads-twitter.com` — plus Russian and mainland ecosystems, which need a fourth source: vendor allowlist documentation, the method ER-023 used for cloud endpoints.
 
 Each batch lands as its own ER with its evidence committed alongside. The segment budget for either swap is already available: retiring an import frees the segment it occupies.
+
+## Status of the evidence tools
+
+| Script | Role |
+|---|---|
+| `rule_evidence.py` | traffic capture to per-host evidence |
+| `page_host_scan.py` | markup scan for breadth |
+| `ads_txt_evidence.py` | publisher advertising-system declarations |
+| `ad_serving_probe.py` | does a candidate root actually deliver advertising |
+| `vendor_domain_discovery.py` | vendor domain portfolio from Certificate Transparency |
+| `mainland_hosting_probe.py` | is a root served from mainland China, per APNIC |
