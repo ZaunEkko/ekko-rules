@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-035 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -604,6 +604,100 @@ Current verified canonical target:
 The two routing ledgers record the new target for the rows those rulesets capture, and are re-sealed. The guard that forbids unanchored `DOMAIN-KEYWORD` matchers in DIRECT-default groups no longer covers the `microsoft` and `apple` rulesets, because their groups are no longer DIRECT-default; neither ruleset uses one, and the guard is still exercised against a default-DIRECT group.
 
 No rule, ruleset segment, or proxy group is added or removed.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-032 — HoYoverse international game routing
+
+**Type:** single-service extension of two existing segments
+
+The HoYoverse international surface had no anchored placement, so the global Honkai: Star Rail client fell through to `🐟 漏网之鱼` while the mainland roots `mihoyo.com`, `bhsr.com`, and `yuanshen.com` were already DIRECT under `🌏 国内网站`.
+
+`game-platform` gains three anchored suffix rules — `hoyoverse.com` for account, SDK, and game API hosts; `hoyoplay.com` for the launcher; and `hoyolab.com` for the embedded community surface — plus six exact hosts that the broad mainland `mihoyo.com` root would otherwise capture into a DIRECT policy: `api-account-os`, `api-os-takumi`, `hk4e-api-os`, `hk4e-sdk-os`, `sdk-os-static`, and `webstatic-sea`. Three further `-os` candidates under `mihoyo.com` resolved NXDOMAIN at review time and are not added.
+
+`starrails.com` goes to `game-download`, not `game-platform`. Every host under that root except `autopatchos.starrails.com` resolved NXDOMAIN at review time, so the root is a patch-delivery domain only. `game-download` precedes `game-platform` and its group leads with `DIRECT`, so multi-gigabyte client updates stay off the selected proxy.
+
+The mainland roots are untouched and keep their earlier `china-web` placement. `advertising` still precedes both segments and its anchored `log-upload-os.hoyoverse.com` and `log-upload.mihoyo.com` telemetry rules continue to win first match; no later ruleset repeats either matcher, so the frozen advertising routing ledger and its capture count are unchanged.
+
+No policy group, ruleset segment, keyword matcher, destination-IP rule, or generic CDN suffix is introduced.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-033 — iQIYI group renamed to `🎬 爱奇艺国际`
+
+**Type:** group rename, no rule edits
+
+`🎬 爱奇艺` did not say why it exists separately from `🌏 国内流媒体`. Both default to `DIRECT` and behave identically until the user moves one, so the group read as redundant. Its actual purpose is that iQIYI publishes an international catalogue at `iq.com` that needs an overseas exit, while the rest of mainland streaming must stay direct; a shared group could not serve both. The group is renamed `🎬 爱奇艺国际` to state that.
+
+Members and order are unchanged and the group still leads with `DIRECT`, because the ruleset also carries the mainland iQIYI roots and mainland playback must keep working untouched. The international catalogue depends on `iqiyi.com`, `qy.net`, and `iqiyipic.com` — `intl-rcd.iqiyi.com`, `intl-subscription.iqiyi.com`, `intl.iqiyi.com`, and `msg-intl.qy.net` were all observed live — so those roots are deliberately not split out to `china-media`; doing so would send the international session through two exits.
+
+`tests/fixtures/phase-3-recovery-ledger.json` is sealed by SHA-256 and records the historical group name. It is not edited. The recovery test now maps the historical name to the current one so the ledger stays immutable. `scripts/reverse_profile.py` keeps the historical name in its importer vocabulary, which exists to recognise older and third-party profiles.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-034 — Retired exact hosts removed
+
+**Type:** stale-entry removal, no first-match behavior change
+
+Ten exact `DOMAIN` matchers in repository-maintained rulesets no longer resolve. Each was confirmed NXDOMAIN against three independent resolvers — Google, AliDNS, and Cloudflare — before removal.
+
+| Ruleset | Removed |
+|---|---:|
+| `game-download` | 7 |
+| `bilibili-sea` | 1 |
+| `hbo-go` | 1 |
+| `kktv` | 1 |
+
+The removed hosts are `gog-cdn-lumen.secure2.footprint.net`, `ssl-lvlt.cdn.ea.com`, `st-bak.viv.wanwang.space`, `steam.eca.qtlglb.com`, `steam.naeu.qtlglb.com`, `steam.ru.qtlglb.com`, `steampipe.steamcontent.tnkjmec.com`, `apm-misaka.biliapi.net`, `hbounify-prod.evergent.com`, and `kktv-theater.kk.stream`.
+
+The four LAN administration hosts in `private` — `router.asus.com`, `www.asusrouter.com`, `instant.arubanetworks.com`, and `setmeup.arubanetworks.com` — also return NXDOMAIN publicly and are deliberately kept. They resolve only on the local network, which is exactly why they carry a DIRECT rule.
+
+The pinned `advertising` import and the frozen late-recovery rulesets contain further non-resolving hosts. Neither is edited: both are sealed by immutable ledgers and their contents are evidence, not maintained curation.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-035 — Reconstruction scaffolding retired
+
+**Type:** infrastructure retirement, no rule edits
+
+The project now maintains and iterates its own corpus, so the tooling kept only to reconstruct and migrate the original profile no longer earns its place.
+
+Removed:
+
+- `scripts/reverse_profile.py`. The legacy importer had no remaining input: the credential-bearing expanded profile left the repository in ER-001, no profile ships in the tree, and no document presents the importer as a supported tool. Its `py_compile` step is dropped from CI and `LegacyImporterTests` (5 tests) goes with it.
+- `tests/fixtures/phase-2-before.json`, `phase-2-after.json`, and `phase-2-migration-ledger.json`, with `PhaseTwoMigrationBaselineTests` (3 tests). These froze the ER-001 canonical-source migration and constrain nothing about the current product.
+
+`test_first_match_coverage_metrics_are_frozen` keeps its real guard. Only the three "must be below the Phase 2 historical baseline" comparisons are dropped; the equality against the quality baseline and the explicit 146 / 13 / 133 assertions remain, so first-match coverage is still frozen.
+
+Phase 3 is deliberately kept. `phase-3-recovery-ledger.json` is a required `next_gate` key in the quality-baseline contract enforced by `scripts/profile_model.py`, `PhaseThreeDirectRecoveryTests` validates the six late-recovery rulesets — 2,684 rules, 34.3 percent of the product — against a frozen selection replayed from a pinned commit, and `docs/PROVENANCE.md` cites `phase-3-after.json` and the recovery ledger as that corpus's evidence boundary. Removing them would retire a production guard and weaken a provenance record, not clear away scaffolding.
+
+The two pinned MIT imports are likewise untouched. `china-domains-direct.list` and `advertising.list` carry 2,331 rules of `v2fly/domain-list-community` data; while that data ships, `NOTICE.md` and the two import ledgers discharge the `Copyright (c) 2018-2019 V2Ray` attribution and remain mandatory.
+
+The suite goes from 61 to 53 tests. No rule, ruleset segment, proxy group, or generated artifact changes.
 
 Current verified canonical target:
 

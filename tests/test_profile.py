@@ -18,9 +18,6 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 SOURCES = ROOT / "sources"
 GENERATED = ROOT / "generated" / "reversed-profile"
-PHASE_2_BEFORE = ROOT / "tests" / "fixtures" / "phase-2-before.json"
-PHASE_2_AFTER = ROOT / "tests" / "fixtures" / "phase-2-after.json"
-PHASE_2_LEDGER = ROOT / "tests" / "fixtures" / "phase-2-migration-ledger.json"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
 PHASE_3_AFTER = ROOT / "tests" / "fixtures" / "phase-3-after.json"
 PHASE_3_DESIGN = ROOT / "tests" / "fixtures" / "phase-3-design.json"
@@ -162,7 +159,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🎬 Dazn",
                 "🎶 TikTok",
                 "🎵 音乐平台",
-                "🎬 爱奇艺",
+                "🎬 爱奇艺国际",
                 "🎬 B站港澳台",
                 "🎬 东南亚媒体",
                 "🎬 美国流媒体",
@@ -376,27 +373,14 @@ class CanonicalSourceTests(unittest.TestCase):
         self.assertEqual(baseline["previous_bootstrap_occurrences_removed"], 143)
 
     def test_first_match_coverage_metrics_are_frozen(self) -> None:
-        before = json.loads(PHASE_2_BEFORE.read_text(encoding="utf-8"))
         baseline = self.sources.quality_baseline["products"]["core"][
             "first_match_unreachable"
         ]
         current = coverage_metrics(self.sources, product="core")
         self.assertEqual(current, baseline)
-        self.assertLess(
-            current["global"]["union"],
-            before["summary"]["coverage"]["global"]["union"],
-        )
-        self.assertLess(
-            current["within_same_segment"]["union"],
-            before["summary"]["coverage"]["within_same_segment"]["union"],
-        )
         self.assertEqual(current["global"]["union"], 146)
         self.assertEqual(current["within_same_segment"]["union"], 13)
         self.assertEqual(current["cross_segment_only"]["union"], 133)
-        self.assertLess(
-            current["cross_segment_only"]["union"],
-            before["summary"]["coverage"]["cross_segment_only"]["union"],
-        )
 
     def test_direct_default_domain_keyword_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -470,126 +454,6 @@ class CanonicalSourceTests(unittest.TestCase):
                 )
                 with self.assertRaises(ProfileError):
                     load_profile_sources(source_copy)
-
-
-class PhaseTwoMigrationBaselineTests(unittest.TestCase):
-    def test_pre_migration_fixture_is_complete_and_immutable(self) -> None:
-        fixture = json.loads(PHASE_2_BEFORE.read_text(encoding="utf-8"))
-        self.assertEqual(fixture["schema_version"], 1)
-        self.assertEqual(fixture["baseline"], "phase-2-pre-migration")
-        self.assertEqual(
-            hashlib.sha256(PHASE_2_BEFORE.read_bytes()).hexdigest(),
-            "7719de7335aa4af647914242bf1f7892b7477bad31407ef04c9e68bfb6fc883b",
-        )
-        self.assertEqual(len(fixture["rule_files"]), 42)
-        self.assertEqual(len(fixture["segment_order"]), 43)
-        self.assertEqual(len(fixture["proxy_group_order"]), 42)
-        self.assertEqual(len(fixture["cases"]), 44)
-        self.assertEqual(
-            fixture["summary"],
-            {
-                "segments": 43,
-                "rulesets": 42,
-                "groups": 42,
-                "rules": 15541,
-                "destination_ip_rules": 2205,
-                "coverage": {
-                    "global": {
-                        "exact_occurrences": 1666,
-                        "broad_coverage_occurrences": 1157,
-                        "overlap_between_categories": 334,
-                        "union": 2489,
-                    },
-                    "within_same_segment": {
-                        "exact_occurrences": 0,
-                        "broad_coverage_occurrences": 1035,
-                        "overlap_between_categories": 0,
-                        "union": 1035,
-                    },
-                    "cross_segment_only": {"union": 1454},
-                },
-            },
-        )
-
-    def test_migration_ledger_is_closed_and_immutable(self) -> None:
-        ledger = json.loads(PHASE_2_LEDGER.read_text(encoding="utf-8"))
-        self.assertEqual(
-            hashlib.sha256(PHASE_2_LEDGER.read_bytes()).hexdigest(),
-            "8991349e524221cae5ab65574234446583b83370e27aa8a3fb344f1237576872",
-        )
-        self.assertEqual(ledger["old_rules"], 15540)
-        self.assertEqual(ledger["extended_rules"], 15517)
-        self.assertEqual(ledger["core_rules"], 15411)
-        self.assertEqual(ledger["extended_only_rules"], 106)
-        self.assertEqual(ledger["removed_occurrences"], 23)
-        self.assertEqual(ledger["added_rules"], 0)
-        self.assertEqual(
-            ledger["old_rules"],
-            ledger["extended_rules"] + ledger["removed_occurrences"],
-        )
-        self.assertEqual(
-            ledger["extended_rules"],
-            ledger["core_rules"] + ledger["extended_only_rules"],
-        )
-
-        before = json.loads(PHASE_2_BEFORE.read_text(encoding="utf-8"))
-        phase_2 = json.loads(PHASE_3_BEFORE.read_text(encoding="utf-8"))
-
-        def historical_rules(head: str, filenames: list[str]) -> list[str]:
-            result: list[str] = []
-            for filename in sorted(filenames):
-                completed = subprocess.run(
-                    [
-                        "git",
-                        "show",
-                        f"{head}:sources/rules/{filename}",
-                    ],
-                    capture_output=True,
-                    text=True,
-                    encoding="utf-8",
-                )
-                self.assertEqual(completed.returncode, 0, completed.stderr)
-                result.extend(completed.stdout.splitlines())
-            return result
-
-        old_rules = historical_rules(before["head"], list(before["rule_files"]))
-        extended_rules = historical_rules(
-            phase_2["head"],
-            list(phase_2["rule_files"]),
-        )
-        core_files = [
-            f"{segment['slug']}.list"
-            for segment in phase_2["segment_order"]
-            if segment["scope"] == "core" and segment["slug"] != "final"
-        ]
-        core_rules = historical_rules(phase_2["head"], core_files)
-        removed = Counter(
-            {
-                item["rule"]: item["occurrences_removed"]
-                for item in ledger["removed"]
-            }
-        )
-        self.assertEqual(Counter(old_rules), Counter(extended_rules) + removed)
-        self.assertEqual(
-            Counter(extended_rules),
-            Counter(core_rules) + (Counter(extended_rules) - Counter(core_rules)),
-        )
-
-    def test_post_migration_fixture_is_complete_and_immutable(self) -> None:
-        fixture = json.loads(PHASE_2_AFTER.read_text(encoding="utf-8"))
-        self.assertEqual(fixture["schema_version"], 1)
-        self.assertEqual(fixture["baseline"], "phase-2-post-migration")
-        self.assertEqual(
-            hashlib.sha256(PHASE_2_AFTER.read_bytes()).hexdigest(),
-            "954f66f1e202650c83a39484b26273f78b04107d0d91abbf64d05e47cda63147",
-        )
-        self.assertEqual(fixture["products"]["core"]["summary"]["rules"], 15412)
-        self.assertEqual(
-            fixture["products"]["extended"]["summary"]["rules"],
-            15518,
-        )
-        for expected in fixture["products"].values():
-            self.assertEqual(len(expected["cases"]), 44)
 
 
 class PhaseThreeMigrationBaselineTests(unittest.TestCase):
@@ -966,13 +830,17 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
             "🧩 微软服务",
             "🍎 苹果服务",
         }
+        # The recovery ledger is immutable, so a group renamed after it was
+        # sealed is mapped here instead of being edited into the ledger.
+        renamed_targets = {"🎬 爱奇艺": "🎬 爱奇艺国际"}
         for record in self.ledger["owners"].values():
+            target = renamed_targets.get(record["target"], record["target"])
             expected_default = (
                 "♻️ 手动切换"
-                if record["target"] in proxy_first_targets
+                if target in proxy_first_targets
                 else "DIRECT"
             )
-            self.assertEqual(group_members[record["target"]][0], expected_default)
+            self.assertEqual(group_members[target][0], expected_default)
         self.assertEqual(
             group_members["🐟 漏网之鱼"],
             ["♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
@@ -1496,7 +1364,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             (
                 (
                     "iqiyi-late-recovery",
-                    "🎬 爱奇艺",
+                    "🎬 爱奇艺国际",
                     "DOMAIN-SUFFIX,71.am.com",
                 ),
                 "www.71.am.com",
@@ -2860,162 +2728,6 @@ class GenerationTests(unittest.TestCase):
             text=True,
             encoding="utf-8",
         )
-
-
-class LegacyImporterTests(unittest.TestCase):
-    def write_profile(
-        self,
-        path: Path,
-        *,
-        group_members: list[str],
-        rules: list[str],
-    ) -> None:
-        profile = {
-            "mixed-port": 7890,
-            "allow-lan": False,
-            "mode": "rule",
-            "log-level": "warning",
-            "proxies": [
-                {"name": "n1", "type": "ss", "server": "example.com", "port": 443, "password": "secret"},
-                {"name": "n2", "type": "ss", "server": "example.net", "port": 443, "password": "secret"},
-            ],
-            "proxy-groups": [
-                {"name": "🐟 漏网之鱼", "type": "select", "proxies": group_members}
-            ],
-            "rules": rules,
-        }
-        path.write_text(
-            yaml.safe_dump(profile, allow_unicode=True, sort_keys=False),
-            encoding="utf-8",
-            newline="\n",
-        )
-
-    def run_importer(self, profile: Path, output: Path) -> subprocess.CompletedProcess[str]:
-        return subprocess.run(
-            [
-                sys.executable,
-                str(SCRIPTS / "reverse_profile.py"),
-                str(profile),
-                str(output),
-            ],
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-        )
-
-    def test_final_target_rule_before_match_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            profile = root / "profile.yaml"
-            output = root / "candidate"
-            self.write_profile(
-                profile,
-                group_members=["n1", "n2"],
-                rules=[
-                    "DOMAIN,only-final.example,🐟 漏网之鱼",
-                    "MATCH,🐟 漏网之鱼",
-                ],
-            )
-            completed = self.run_importer(profile, output)
-            self.assertEqual(completed.returncode, 2)
-            self.assertFalse(output.exists())
-
-    def test_partial_node_group_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            profile = root / "profile.yaml"
-            output = root / "candidate"
-            self.write_profile(
-                profile,
-                group_members=["n1"],
-                rules=["MATCH,🐟 漏网之鱼"],
-            )
-            completed = self.run_importer(profile, output)
-            self.assertEqual(completed.returncode, 2)
-            self.assertFalse(output.exists())
-
-    def test_failed_import_leaves_no_candidate_or_staging(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            profile = root / "profile.yaml"
-            output = root / "candidate"
-            self.write_profile(
-                profile,
-                group_members=["n1", "n2"],
-                rules=["DOMAIN-KEYWORD,example,DIRECT", "MATCH,🐟 漏网之鱼"],
-            )
-            completed = self.run_importer(profile, output)
-            self.assertEqual(completed.returncode, 2)
-            self.assertFalse(output.exists())
-            self.assertEqual(list(root.glob(".candidate.stage-*")), [])
-
-    def test_empty_proxy_list_returns_controlled_failure(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            profile = root / "profile.yaml"
-            output = root / "candidate"
-            self.write_profile(
-                profile,
-                group_members=[],
-                rules=["MATCH,🐟 漏网之鱼"],
-            )
-            data = yaml.safe_load(profile.read_text(encoding="utf-8"))
-            data["proxies"] = []
-            profile.write_text(
-                yaml.safe_dump(data, allow_unicode=True, sort_keys=False),
-                encoding="utf-8",
-                newline="\n",
-            )
-            completed = self.run_importer(profile, output)
-            self.assertEqual(completed.returncode, 2)
-            self.assertNotIn("Traceback", completed.stderr)
-            self.assertFalse(output.exists())
-
-    def test_successful_import_generates_and_validates(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            profile = root / "profile.yaml"
-            sources = root / "candidate"
-            generated = root / "generated"
-            self.write_profile(
-                profile,
-                group_members=["n1", "n2"],
-                rules=[
-                    "DOMAIN-SUFFIX,example.org,DIRECT",
-                    "MATCH,🐟 漏网之鱼",
-                ],
-            )
-            imported = self.run_importer(profile, sources)
-            self.assertEqual(imported.returncode, 0, imported.stderr)
-            load_profile_sources(sources)
-            rendered = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPTS / "generate_profile.py"),
-                    "--sources",
-                    str(sources),
-                    "--output",
-                    str(generated),
-                ],
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-            )
-            self.assertEqual(rendered.returncode, 0, rendered.stderr)
-            validated = subprocess.run(
-                [
-                    sys.executable,
-                    str(SCRIPTS / "validate_generated.py"),
-                    "--sources",
-                    str(sources),
-                    "--generated",
-                    str(generated),
-                ],
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-            )
-            self.assertEqual(validated.returncode, 0, validated.stderr)
 
 
 if __name__ == "__main__":

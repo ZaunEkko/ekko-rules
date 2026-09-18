@@ -442,3 +442,69 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The two Spotify source segments are concatenated without reordering under their existing Music policy, and OneDrive plus iCloud are concatenated under the existing Cloud Storage policy. These are physical ruleset consolidations only; matcher order and policy targets remain unchanged. Generated-only onedrive, icloud, and spotify-2 compatibility copies preserve the retired Raw URLs and their original pre-merge matcher subsets through frozen list/provider hashes, without re-entering the canonical source manifest, Subconverter config, Mihomo template, rule count, or coverage model. HBO GO and Max remain separate rulesets, all groups remain manually switchable, and the public product stays at 63 rulesets plus one FINAL segment.
+- id: hoyoverse-international-game-routing
+  status: accepted
+  scope: routing-policy
+  summary: HoYoverse international game hosts had no anchored placement and fell through to the fallback group while mainland HoYoverse roots were already DIRECT.
+  evidence:
+  - sources/rules/game-platform.list
+  - sources/rules/game-download.list
+  - sources/rules/china-web.list
+  - sources/rules/advertising.list
+  - https://www.hoyoverse.com/
+  - https://hsr.hoyoverse.com/
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Three anchored suffix rules place the HoYoverse international surface under the existing manually switchable game platform policy - hoyoverse.com for account, SDK, and game API hosts, hoyoplay.com for the launcher, and hoyolab.com for the embedded community surface - together with six exact hosts that the broad mainland mihoyo.com root would otherwise capture into a DIRECT policy. Three further -os candidates under mihoyo.com resolved NXDOMAIN at review time and are excluded. starrails.com goes to game-download rather than game-platform because every host under it except autopatchos.starrails.com resolved NXDOMAIN, making it a patch-delivery domain only; game-download precedes game-platform and leads with DIRECT, so client updates stay off the selected proxy. The mainland mihoyo.com, bhsr.com, and yuanshen.com roots keep their earlier china-web placement. Advertising continues to precede both segments and its anchored log-upload telemetry rules still win first match; no later ruleset repeats them, so the frozen advertising routing ledger is unchanged. No keyword, destination-IP, generic CDN suffix, proxy group, or ruleset segment is added.
+- id: iqiyi-international-group-naming
+  status: accepted
+  scope: routing-policy
+  summary: The iQIYI group did not state why it exists separately from mainland streaming, so it read as redundant while both groups defaulted to DIRECT.
+  evidence:
+  - sources/proxy-groups.yaml
+  - sources/manifest.yaml
+  - sources/rules/iqiyi.list
+  - sources/rules/china-media.list
+  - tests/fixtures/phase-3-recovery-ledger.json
+  - https://www.iq.com/
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The group is renamed to state its purpose - iQIYI publishes an international catalogue at iq.com that needs an overseas exit while the rest of mainland streaming stays direct. Members and order are unchanged and the group still leads with DIRECT because the ruleset also carries the mainland iQIYI roots. The international catalogue was observed to depend on iqiyi.com, qy.net, and iqiyipic.com through intl-rcd.iqiyi.com, intl-subscription.iqiyi.com, intl.iqiyi.com, and msg-intl.qy.net, so those shared roots are deliberately not split out to china-media; splitting them would send one international session through two exits. The sealed phase 3 recovery ledger is not edited - the recovery test maps its historical group name to the current one - and reverse_profile.py keeps the historical name in its importer vocabulary.
+- id: retired-exact-host-removal
+  status: accepted
+  scope: all
+  summary: Ten exact DOMAIN matchers in repository-maintained rulesets no longer resolve anywhere.
+  evidence:
+  - sources/rules/game-download.list
+  - sources/rules/bilibili-sea.list
+  - sources/rules/hbo-go.list
+  - sources/rules/kktv.list
+  - sources/rules/private.list
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Every removed host was confirmed NXDOMAIN against Google, AliDNS, and Cloudflare before deletion, so no first-match behavior changes. The four LAN administration hosts in private - router.asus.com, www.asusrouter.com, instant.arubanetworks.com, and setmeup.arubanetworks.com - also return NXDOMAIN publicly and are deliberately kept, because they resolve only on the local network and that is precisely why they carry a DIRECT rule. Non-resolving hosts inside the pinned advertising import and the frozen late-recovery rulesets are left untouched; both are sealed by immutable ledgers and their contents are evidence rather than maintained curation.
+- id: reconstruction-scaffolding-retirement
+  status: accepted
+  scope: product-boundary
+  summary: The legacy importer and the Phase 2 migration fixtures no longer constrain the current product and had no remaining input.
+  evidence:
+  - docs/CHANGES.md
+  - docs/PROVENANCE.md
+  - tests/test_profile.py
+  - sources/quality-baseline.yaml
+  - NOTICE.md
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: reverse_profile.py and the three Phase 2 fixtures are removed together with LegacyImporterTests and PhaseTwoMigrationBaselineTests, taking the suite from 61 to 53 tests. The first-match coverage test keeps its equality check against the quality baseline and its explicit 146/13/133 assertions; only the historical Phase 2 comparisons are dropped. Phase 3 is deliberately retained because phase-3-recovery-ledger.json is a required next_gate key in the quality-baseline contract, PhaseThreeDirectRecoveryTests validates 2,684 late-recovery rules against a frozen selection replayed from a pinned commit, and PROVENANCE cites phase-3-after.json and that ledger as the corpus evidence boundary. The two pinned MIT imports and their ledgers are untouched; while that v2fly data ships, NOTICE.md and the import ledgers discharge a mandatory attribution.

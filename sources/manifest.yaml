@@ -251,7 +251,7 @@ segments:
 - order: 40
   kind: ruleset
   slug: iqiyi
-  target: 🎬 爱奇艺
+  target: 🎬 爱奇艺国际
   source: rules/iqiyi.list
   scope: core
 - order: 41
@@ -335,7 +335,7 @@ segments:
 - order: 54
   kind: ruleset
   slug: iqiyi-late-recovery
-  target: 🎬 爱奇艺
+  target: 🎬 爱奇艺国际
   source: rules/iqiyi-late-recovery.list
   scope: core
 - order: 55

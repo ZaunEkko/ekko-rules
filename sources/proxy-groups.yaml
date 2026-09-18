@@ -193,7 +193,7 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 24
-  name: 🎬 爱奇艺
+  name: 🎬 爱奇艺国际
   type: select
   scope: core
   members:

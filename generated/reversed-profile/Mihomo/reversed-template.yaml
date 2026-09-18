@@ -166,7 +166,7 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
-- name: 🎬 爱奇艺
+- name: 🎬 爱奇艺国际
   type: select
   proxies:
   - DIRECT
@@ -768,7 +768,7 @@ rules:
 - RULE-SET,apple-tv-plus,🎬 AppleTV+
 - RULE-SET,bilibili-sea,🎬 东南亚媒体
 - RULE-SET,bilibili-hmt,🎬 B站港澳台
-- RULE-SET,iqiyi,🎬 爱奇艺
+- RULE-SET,iqiyi,🎬 爱奇艺国际
 - RULE-SET,spotify,🎵 音乐平台
 - RULE-SET,qobuz,🎵 音乐平台
 - RULE-SET,apple-music,🎵 音乐平台
@@ -782,7 +782,7 @@ rules:
 - RULE-SET,china-web,🌏 国内网站
 - RULE-SET,game-platform-late-recovery,🎮 游戏平台
 - RULE-SET,bilibili-hmt-late-recovery,🎬 B站港澳台
-- RULE-SET,iqiyi-late-recovery,🎬 爱奇艺
+- RULE-SET,iqiyi-late-recovery,🎬 爱奇艺国际
 - RULE-SET,apple-late-recovery,DIRECT
 - RULE-SET,china-media-late-recovery,🌏 国内流媒体
 - RULE-SET,overseas-cloud,☁️ 海外云服务
