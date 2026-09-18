@@ -248,7 +248,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 "private",
                 "remote-streaming",
                 "advertising",
-                "openai",
+                "advertising-curated",
             ],
         )
         self.assertFalse((SOURCES / "rules" / "direct-override.list").exists())
@@ -279,7 +279,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 for segment in self.sources.segments
                 if segment.target == "🎬 HBO GO/MAX"
             ],
-            ["hbo-go", "hbo-max"],
+            ["hbo-go"],
         )
         self.assertEqual(
             [
@@ -2410,6 +2410,13 @@ class GenerationTests(unittest.TestCase):
                     81,
                     "a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
                     "b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
+                ),
+                "hbo-max": (
+                    "hbo-go",
+                    26,
+                    42,
+                    "76a309cf767328e4b45f4e7f92a0974a3203e450e36ac24d54b40038f1e94464",
+                    "80b025db9fd58216c1becee57c65c3f8facf3352f15993ed1be522cf12f5efee",
                 ),
                 "spotify-2": (
                     "spotify",

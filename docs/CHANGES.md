@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-035 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-036 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -703,6 +703,34 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-036 — Observation-derived advertising curation
+
+**Type:** new ruleset segment funded by a same-policy consolidation
+
+The pinned advertising import does not block what pages actually load. Measured against this repository's own observation of 21 origins, `advertising.list` covers 19 of the 260 observed third-party hosts — 7.3 percent. It misses the entire contemporary programmatic stack: Taboola, PubMatic, Magnite, OpenX, Index Exchange, TripleLift, Sharethrough, Equativ, Criteo, The Trade Desk, ID5, LiveRamp, LiveIntent, IntentIQ, Lotame, DoubleVerify, Integral Ad Science, Comscore, Permutive, and Tencent GDT. Separately, 84 of its 849 entries — 9.9 percent — no longer resolve anywhere, and 180 serve a Russian audience this product does not have.
+
+`advertising-curated` is the first ruleset built entirely from this repository's own measurement. All 260 observed third-party hosts were reviewed one by one against the admission criteria; the verdicts and their reasons are committed in `docs/evidence/admission-review-2026-09-19.json` as 110 admit, 137 reject, 13 hold. The 68 emitted rules carry the admitted hosts, consolidated to a registrable root only where the root is unambiguously advertising infrastructure.
+
+Three findings from the review changed the output and are worth recording:
+
+- A curated suffix must never shadow an existing rule. `baidustatic.com` and `mmstat.com` would have, so they are narrowed to the observed hosts; `baidustatic.com` also serves general Baidu static assets, and a root-level `REJECT` would have broken those pages.
+- `logx.optimizely.com` is dropped. `dazn` already routes it to `🎬 Dazn`, so a `REJECT` would have broken Dazn.
+- Twelve entries the import already covers are dropped as redundant.
+
+The segment sits immediately after the import and shares its `🛑 广告拦截` policy, so ordering and default `REJECT` behavior are unchanged. First-match coverage is identical to before this change — union 146, same-segment 13, cross-segment 133 — because every rule that would have increased it was narrowed or removed.
+
+The Subconverter 64-segment ceiling funds the new segment through a same-policy consolidation, the mechanism ER-023 established. `hbo-max` is concatenated into `hbo-go` without reordering under their shared `🎬 HBO GO/MAX` policy; the retired `hbo-max` Raw URL survives as a generated-only compatibility copy carrying its original 16 matchers behind frozen list and provider hashes, exactly as `spotify-2`, `onedrive`, and `icloud` do. Rule count, matcher order, and policy targets are unchanged by the merge.
+
+The pinned import, its ledger, and its `emitted_sha256` are untouched. The `Copyright (c) 2018-2019 V2Ray` attribution therefore still stands: that data still ships. Retiring it requires replacing it, which this segment starts rather than completes.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,886 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.

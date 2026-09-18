@@ -315,6 +315,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/advertising.yaml
     path: ./ruleset/advertising.yaml
     interval: 86400
+  advertising-curated:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/advertising-curated.yaml
+    path: ./ruleset/advertising-curated.yaml
+    interval: 86400
   openai:
     type: http
     behavior: classical
@@ -525,13 +532,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/hbo-go.yaml
     path: ./ruleset/hbo-go.yaml
     interval: 86400
-  hbo-max:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/hbo-max.yaml
-    path: ./ruleset/hbo-max.yaml
-    interval: 86400
   dazn:
     type: http
     behavior: classical
@@ -733,6 +733,7 @@ rules:
 - RULE-SET,private,DIRECT
 - RULE-SET,remote-streaming,🖥️ 远程串流
 - RULE-SET,advertising,🛑 广告拦截
+- RULE-SET,advertising-curated,🛑 广告拦截
 - RULE-SET,openai,🧲 OpenAI
 - RULE-SET,claude,🧲 Claude
 - RULE-SET,google-ai,🧲 海外 AI
@@ -763,7 +764,6 @@ rules:
 - RULE-SET,tidal,🎵 音乐平台
 - RULE-SET,disney-plus,🎬 DisneyPlus
 - RULE-SET,hbo-go,🎬 HBO GO/MAX
-- RULE-SET,hbo-max,🎬 HBO GO/MAX
 - RULE-SET,dazn,🎬 Dazn
 - RULE-SET,apple-tv-plus,🎬 AppleTV+
 - RULE-SET,bilibili-sea,🎬 东南亚媒体

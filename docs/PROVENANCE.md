@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 7,818 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 7,886 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,13 +21,14 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 7,817 file rules are partitioned by evidence boundary:
+The 7,885 file rules are partitioned by evidence boundary:
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
 | Classic mainland-domain import | 1,482 | Direct pinned MIT input with immutable selection ledger |
 | Advertising import | 849 | Direct pinned MIT input with immutable selection and capture ledgers |
 | Current late recovery | 2,684 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
+| Observation-derived advertising curation | 68 | Derived solely from this repository's own observation captures with a per-host admission review |
 | Specialized, private/local, and service corpus | 2,802 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
 The final 2,802-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
@@ -55,6 +56,12 @@ The emitted file contains 1,482 anchored matchers: 1,481 `DOMAIN-SUFFIX` entries
 The upstream category resolves to 850 entries: 677 domain roots, 172 exact full domains, and one regexp. The regexp is excluded; the emitted file contains 849 anchored matchers—677 `DOMAIN-SUFFIX` and 172 `DOMAIN`—with no keyword, regexp, single-label, or destination-IP rules.
 
 `category-ads-all` is deliberately excluded because it additionally pulls provider-company, analytics, messaging, and other broader service roots. Input/dependency hashes, parser hash, selection counts, output hash, and representative cases are frozen in `tests/fixtures/advertising-import-ledger.json`.
+
+### Observation-derived advertising curation
+
+`sources/rules/advertising-curated.list` is the first segment of the corpus this repository derived entirely from its own measurement. It consumes no upstream rule list. Hostnames come from observation captures committed under `docs/evidence/`, and every entry passed the per-host admission review recorded in `docs/evidence/admission-review-2026-09-19.json`: the host was observed third-party to a capture origin, review established it serves advertising, attribution or behavioural tracking, and review recorded why a `REJECT` cannot break first-party behaviour.
+
+The segment sits immediately after the pinned advertising import and shares its `🛑 广告拦截` policy. It deliberately introduces no new first-match coverage: a curated suffix that would shadow an existing rule is narrowed to the observed hosts instead, and entries the import already covers are dropped. The frozen import, its ledger, and its `emitted_sha256` are untouched, so the attribution obligation on that data is unaffected. Method, admission criteria, and the measured reasons this curation exists are in `docs/SELF-OWNED-REBUILD.md`.
 
 Advertising precedes specialized service segments, so 40 later telemetry/advertising matchers intentionally become unreachable. That exact capture set is frozen in `tests/fixtures/advertising-routing-ledger.json`; any additional capture requires review. The independent `🛑 广告拦截` group defaults to `REJECT` but remains manually switchable.
 

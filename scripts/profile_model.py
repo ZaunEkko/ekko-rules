@@ -45,6 +45,13 @@ GENERATED_RULESET_ALIASES = {
         list_sha256="a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
         provider_sha256="b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
     ),
+    "hbo-max": GeneratedRulesetAlias(
+        canonical="hbo-go",
+        start=26,
+        end=42,
+        list_sha256="76a309cf767328e4b45f4e7f92a0974a3203e450e36ac24d54b40038f1e94464",
+        provider_sha256="80b025db9fd58216c1becee57c65c3f8facf3352f15993ed1be522cf12f5efee",
+    ),
     "spotify-2": GeneratedRulesetAlias(
         canonical="spotify",
         start=7,

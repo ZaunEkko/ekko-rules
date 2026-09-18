@@ -5,7 +5,8 @@
   "self": "manifest.json",
   "self_hash_included": false,
   "files": {
-    "Mihomo/reversed-template.yaml": "845cc3dcc560ef8da565560c4f66dd6973a95d6609db2a83c1e8fb1c1a4cde35",
+    "Mihomo/reversed-template.yaml": "052daeedf45dbf42df45e08bab8eef6f8c37dca0761276046461c5078a0e7dc8",
+    "Providers/Ruleset/advertising-curated.yaml": "9f1b301553f870649bd1a1752ed181012bcc2153978d7b35e2c5f1ca98653f49",
     "Providers/Ruleset/advertising.yaml": "2e32375b3f86af8e09771785c0e145a0371839a7fb5c128a0371fd6c83a858c3",
     "Providers/Ruleset/ai-developer.yaml": "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
     "Providers/Ruleset/ai-platforms.yaml": "2af6df159b121a558ddf74cfcb0321646d3388d0d2153c34d2c6e61fc50b1d6d",
@@ -36,7 +37,7 @@
     "Providers/Ruleset/global-media.yaml": "25b983455e6154a286afd101cf6d09e6347f7092e420cc9ab51ec9c7002e5d1d",
     "Providers/Ruleset/google-ai.yaml": "c0079aae9295158c2c2b6acfa75f9af896b1841deb0d678c096fb94a544ccd6e",
     "Providers/Ruleset/google.yaml": "b1958f652ddfd176bca6d861d250e70c834922852ddd75a31d5928e79f619434",
-    "Providers/Ruleset/hbo-go.yaml": "4bbc7843c9cd1cd02e0e2d2603ef31d0e597c4a2e3982d984999186a2d66cb37",
+    "Providers/Ruleset/hbo-go.yaml": "e7fc15f9a8afce374e6365985d9b3ab6df1c181e4c2fb83ee40884e237214254",
     "Providers/Ruleset/hbo-max.yaml": "80b025db9fd58216c1becee57c65c3f8facf3352f15993ed1be522cf12f5efee",
     "Providers/Ruleset/icloud.yaml": "b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
     "Providers/Ruleset/instagram.yaml": "585816ec77939570e4fee6d48c748b8f69b9004e1d5846cb115f7dc359cb3085",
@@ -74,6 +75,7 @@
     "Providers/Ruleset/youtube.yaml": "d214401b85f98da6f5168ca1f16420c9c0a753f4538b109a4ff844d5e8b38e90",
     "README.md": "b936d84e6cd395e67b0b1f7f5ea58b03d3bcdae76f7c70586a9d00e9c2b5f75d",
     "README_EN.md": "e7737741d830cda5ff77a0d9eeff234516726f3f0d8c599b61ff6ae11752c3cf",
+    "Ruleset/advertising-curated.list": "0a345e62215bd47c3d9432b91338eba12bcc0164445c11056ef8aeb5f18b60e9",
     "Ruleset/advertising.list": "fc65062129d120ee2921b78b9ffd95444b694662192c05541e68bc28d559f900",
     "Ruleset/ai-developer.list": "064c45c6b25dfd29ce123eb9147f4e46466e355462f34dde01fcec98ce5e7934",
     "Ruleset/ai-platforms.list": "6e30f1d18e26b41785a0046b6813f57fd2ae1f829773534aec2ed9ee43346311",
@@ -104,7 +106,7 @@
     "Ruleset/global-media.list": "c7fd957197cc25a26dc66fb2887d78ed2a07ccc65600b39043206636c2061456",
     "Ruleset/google-ai.list": "bfdb1ca3fb4d5c8357ebc47112d95bd84813a748e755c6ab7762c77d5a9d8ccc",
     "Ruleset/google.list": "2681db65f61b9ea132d86ec3f1f1fac02804162b41727d9c9fec401385b80ade",
-    "Ruleset/hbo-go.list": "85ebea00c2a47e2e8797a8e534c4bdcdfc411080fa4beeda04bab5de5b02fcd6",
+    "Ruleset/hbo-go.list": "d32c4ea5de559ea2538527a8b1554849d807591a491ce6f5d8b1aa322953a061",
     "Ruleset/hbo-max.list": "76a309cf767328e4b45f4e7f92a0974a3203e450e36ac24d54b40038f1e94464",
     "Ruleset/icloud.list": "a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
     "Ruleset/instagram.list": "2c53e50d9ace34812d766055953f1bd4211d2cf1260bcef42959f470bf4469fa",
@@ -140,7 +142,7 @@
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "d61ed32f3145523aa2f10f579c88ba6ddc759967cd636776654cde0a77414a81",
-    "config/ekko-rules.ini": "effa6e2e44861fd3eae1733f5274e7943369193113ed98f7a5c8687d4dc61ece"
+    "analysis.json": "c394f7adbffc2bc482eb080cc66fe0f423517389fe3393088c6f86ca4ed56743",
+    "config/ekko-rules.ini": "fc21f8c54811060cdc9c60df6c9390b13c0d4b17c3c5141dfad1f54321d92bb7"
   }
 }

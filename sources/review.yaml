@@ -508,3 +508,19 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: reverse_profile.py and the three Phase 2 fixtures are removed together with LegacyImporterTests and PhaseTwoMigrationBaselineTests, taking the suite from 61 to 53 tests. The first-match coverage test keeps its equality check against the quality baseline and its explicit 146/13/133 assertions; only the historical Phase 2 comparisons are dropped. Phase 3 is deliberately retained because phase-3-recovery-ledger.json is a required next_gate key in the quality-baseline contract, PhaseThreeDirectRecoveryTests validates 2,684 late-recovery rules against a frozen selection replayed from a pinned commit, and PROVENANCE cites phase-3-after.json and that ledger as the corpus evidence boundary. The two pinned MIT imports and their ledgers are untouched; while that v2fly data ships, NOTICE.md and the import ledgers discharge a mandatory attribution.
+- id: observation-derived-advertising-curation
+  status: accepted
+  scope: routing-policy
+  summary: The pinned advertising import blocks 7.3 percent of what observed pages actually load and carries 9.9 percent non-resolving entries.
+  evidence:
+  - docs/evidence/observation-2026-09-19.json
+  - docs/evidence/admission-review-2026-09-19.json
+  - docs/SELF-OWNED-REBUILD.md
+  - sources/rules/advertising-curated.list
+  - sources/rules/hbo-go.list
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: A new advertising-curated segment carries 68 rules derived solely from this repository's own observation of 21 origins, with all 260 observed third-party hosts reviewed per host against the admission criteria and the verdicts committed as evidence. It sits immediately after the pinned import under the same advertising policy and introduces no new first-match coverage - curated suffixes that would shadow an existing rule are narrowed to observed hosts, entries the import already covers are dropped, and logx.optimizely.com is dropped because dazn routes it to its own policy. The Subconverter segment ceiling is funded by concatenating hbo-max into hbo-go under their shared policy, with the retired hbo-max Raw URL preserved as a generated-only compatibility copy behind frozen hashes. The pinned import, its ledger and its emitted hash are untouched, so the v2fly attribution still stands; retiring it requires replacing the import outright, which this segment begins rather than completes.

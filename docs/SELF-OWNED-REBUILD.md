@@ -84,6 +84,15 @@ Criterion 3 is the bottleneck and is not automatable from reach data.
 
 ## Status
 
-Round 1 delivered the harness, the first capture, and the scale estimate. No rule has been added or removed yet; the two pinned imports and their ledgers are untouched, and the attribution stands.
+Rounds 1 and 2 delivered the harness, two observation captures, the scale estimate, and the measured false-positive rate. Round 3 turned the reviewed admissions into the `advertising-curated` segment: 260 observed third-party hosts reviewed per host, 110 admitted, 68 rules emitted, landed as ER-036 without increasing first-match coverage.
 
-Remaining work is the volume implied above: roughly 87 further origins for the advertising candidate pool, per-host functional review of each candidate, and a separate vendor-documentation pass for the 1,403 load-bearing mainland direct rules. Each batch should land as its own ER with its capture committed alongside.
+The pinned imports and their ledgers remain untouched, so the `Copyright (c) 2018-2019 V2Ray` attribution still stands. It can only be retired once the imports no longer ship.
+
+Remaining work to reach that point:
+
+| Target | Remaining |
+|---|---|
+| `advertising.list` (849) | roughly 90 further origins for the candidate pool, per-host review of each candidate, then a swap that retires the import and its ledger |
+| `china-domains-direct.list` (1,403 load-bearing) | not observable by browsing — it answers "which services belong on DIRECT", so it needs a vendor-documentation pass per service category, the method ER-023 used for cloud endpoints |
+
+Each batch lands as its own ER with its capture committed alongside. The segment budget for the eventual swap is already available: retiring an import frees the segment it occupies.
