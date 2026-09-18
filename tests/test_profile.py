@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
+sys.path.insert(0, str(ROOT / "scripts"))
+import rule_evidence  # noqa: E402
+
 SOURCES = ROOT / "sources"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
@@ -2728,6 +2732,45 @@ class GenerationTests(unittest.TestCase):
             text=True,
             encoding="utf-8",
         )
+
+
+class RuleEvidenceTests(unittest.TestCase):
+    def test_registrable_root_handles_multi_label_suffixes(self) -> None:
+        cases = {
+            "sax.sina.com.cn": "sina.com.cn",
+            "i0.sinaimg.cn": "sinaimg.cn",
+            "securepubads.g.doubleclick.net": "doubleclick.net",
+            "assets.guim.co.uk": "guim.co.uk",
+            "example.com": "example.com",
+            "cn": "cn",
+        }
+        for host, expected in cases.items():
+            with self.subTest(host=host):
+                self.assertEqual(rule_evidence.registrable_root(host), expected)
+
+    def test_capture_becomes_reviewable_evidence_without_upstream_input(self) -> None:
+        capture = {
+            "https://a.example": ["a.example", "tracker.vendor.example"],
+            "https://b.example": ["b.example", "tracker.vendor.example"],
+        }
+        with mock.patch.object(
+            rule_evidence, "resolve", return_value={"status": 0, "resolves": True, "chain": []}
+        ):
+            records = rule_evidence.build_evidence(capture)
+        summary = rule_evidence.summarise(records)
+        self.assertEqual(summary["hosts"], 3)
+        self.assertEqual(summary["third_party_hosts"], 1)
+        reach = {row["root"]: row["site_count"] for row in summary["roots_by_reach"]}
+        self.assertEqual(reach, {"vendor.example": 2})
+
+    def test_committed_observation_capture_is_well_formed(self) -> None:
+        for path in sorted((ROOT / "docs" / "evidence").glob("observation-*.json")):
+            with self.subTest(capture=path.name):
+                capture = rule_evidence.load_capture(path)
+                self.assertTrue(capture)
+                for origin, hosts in capture.items():
+                    self.assertTrue(origin.startswith("https://"))
+                    self.assertTrue(hosts)
 
 
 if __name__ == "__main__":
