@@ -524,3 +524,19 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: A new advertising-curated segment carries 68 rules derived solely from this repository's own observation of 21 origins, with all 260 observed third-party hosts reviewed per host against the admission criteria and the verdicts committed as evidence. It sits immediately after the pinned import under the same advertising policy and introduces no new first-match coverage - curated suffixes that would shadow an existing rule are narrowed to observed hosts, entries the import already covers are dropped, and logx.optimizely.com is dropped because dazn routes it to its own policy. The Subconverter segment ceiling is funded by concatenating hbo-max into hbo-go under their shared policy, with the retired hbo-max Raw URL preserved as a generated-only compatibility copy behind frozen hashes. The pinned import, its ledger and its emitted hash are untouched, so the v2fly attribution still stands; retiring it requires replacing the import outright, which this segment begins rather than completes.
+- id: adstxt-declared-advertising-systems
+  status: accepted
+  scope: routing-policy
+  summary: Traffic observation alone reaches breadth slowly, and publisher ads.txt files declare the advertising ecosystem behind the pages directly.
+  evidence:
+  - docs/evidence/ads-txt-2026-09-19.json
+  - docs/evidence/publishers-2026-09-19.txt
+  - docs/evidence/adstxt-candidates-2026-09-19.txt
+  - scripts/ads_txt_evidence.py
+  - scripts/ad_serving_probe.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: 49 of 57 publishers served an ads.txt, declaring 826 advertising systems and 545 by two or more publishers. A declaration names the company selling inventory rather than the domain delivering advertising at runtime, so each candidate root is admitted only after a probe resolves conventional delivery hostnames beneath it and finds live infrastructure - 267 of 453 did. Removed before and after the probe were publishers declaring themselves, mixed-business roots whose non-advertising functions a REJECT would break, agency holding companies, roots with a corporate website only, and video and audio player platforms where blocking removes content rather than advertising. The segment reaches 327 rules and raises coverage of hosts reviewed as advertising from 16.4 to 99.1 percent without changing first-match coverage. The pinned import and its ledger are untouched.

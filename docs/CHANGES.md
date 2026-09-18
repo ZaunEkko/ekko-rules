@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-036 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-037 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -731,6 +731,38 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 7,886 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-037 — Publisher declarations widen the curated advertising corpus
+
+**Type:** extension of an existing segment from a second first-party evidence source
+
+ER-036 built `advertising-curated` from traffic observation alone. Observation shows what a page loaded but reaches breadth slowly: 21 origins yielded 141 third-party roots, and new roots per origin had not begun to saturate.
+
+IAB ads.txt closes that gap. A publisher serves the file from its own root and lists every advertising system it authorises to sell its inventory, so the file is the publisher's own statement that a domain is advertising infrastructure. `scripts/ads_txt_evidence.py` collects them: 49 of 57 publishers served one, declaring 826 advertising systems, 545 of them by two or more publishers.
+
+Declarations are candidates, not admissions, because the declared domain is the company selling inventory and often not the domain delivering advertising at runtime — OpenX declares `openx.com` but bids from `openx.net`, Xandr declares `appnexus.com` but serves from `adnxs.com`. A rule on a corporate website stops nothing, and rules that stop nothing are the defect this rebuild exists to remove. `scripts/ad_serving_probe.py` therefore resolves the delivery-shaped hostnames an advertising platform conventionally runs beneath each candidate root. Of 453 probed roots, 267 have live delivery infrastructure, 172 answer only on their apex, and 14 do not resolve.
+
+Filtering before and after the probe removed, in order: 56 candidates that are publishers declaring themselves, mixed-business roots whose non-advertising functions a `REJECT` would break, or agency holding companies; then the 186 roots without live delivery; then 24 video and audio player platforms, because blocking those removes content rather than advertising and the fourth admission criterion cannot be satisfied for them. The remaining 243 roots plus 16 already-specific advertising hosts bring the segment to 327 rules.
+
+Measured against the same evidence, with the pinned import alone and then with the import plus this segment:
+
+| Target | Import | Import and curated |
+|---|---:|---:|
+| Third-party hosts observed on 21 origins | 7.3% | 42.3% |
+| Hosts this repository reviewed as advertising | 16.4% | 99.1% |
+| Advertising systems declared by two or more publishers | 1.7% | 51.2% |
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133. Not one of the 283 candidates shadowed an existing rule or was shadowed by one, so nothing needed narrowing this round. `logx.optimizely.com` is reclassified from admit to hold in the review record so the evidence matches what shipped; ER-036 dropped it because `dazn` routes it to its own policy.
+
+The pinned import, its ledger and its `emitted_sha256` remain untouched, so the `Copyright (c) 2018-2019 V2Ray` attribution still stands.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 8,145 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.

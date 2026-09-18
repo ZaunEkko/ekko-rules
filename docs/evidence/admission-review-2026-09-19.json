@@ -3,8 +3,8 @@
   "capture": "docs/evidence/observation-2026-09-19.json",
   "method": "per-host review against the admission criteria in docs/SELF-OWNED-REBUILD.md",
   "counts": {
-    "hold": 13,
-    "admit": 110,
+    "hold": 14,
+    "admit": 109,
     "reject": 137
   },
   "records": [
@@ -1293,8 +1293,8 @@
     },
     {
       "host": "logx.optimizely.com",
-      "verdict": "admit",
-      "reason": "Optimizely event collection",
+      "verdict": "hold",
+      "reason": "Optimizely event collection, but dazn routes logx.optimizely.com to its own policy; a REJECT would break Dazn",
       "seen_on": [
         "https://www.bbc.com"
       ],

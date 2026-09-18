@@ -24,12 +24,18 @@ A fifth of the imported ad corpus is Yandex, Ozon, Wildberries, VK, Sberbank, an
 
 ## Method
 
-`scripts/rule_evidence.py` turns an observation capture into reviewable evidence. A capture maps an observed origin to the hostnames its page requested; the tool records where each host was seen, how many unrelated sites requested it, whether it is first-party to any of them, and how it resolves. It consumes no upstream rule list.
+Two first-party evidence sources feed the same per-host review. Neither admits a rule on its own.
 
-Captures live in `docs/evidence/observation-<date>.json` and are the evidence of record. Running the tool over one reproduces the derived analysis, so only the capture is committed.
+`scripts/rule_evidence.py` turns a traffic observation capture into reviewable evidence: where each host was seen, how many unrelated sites requested it, whether it is first-party to any of them, and how it resolves. Captures live in `docs/evidence/observation-<date>.json`.
+
+`scripts/ads_txt_evidence.py` collects IAB ads.txt files. A publisher serves the file from its own root listing every advertising system it authorises to sell inventory, so each line is the publisher's own statement that a domain is advertising infrastructure. Declarations live in `docs/evidence/ads-txt-<date>.json`.
+
+A declaration names the company selling inventory, which is often not the domain that delivers advertising at runtime — OpenX declares `openx.com` but bids from `openx.net`. `scripts/ad_serving_probe.py` closes that gap by resolving the delivery-shaped hostnames an advertising platform conventionally runs beneath a candidate root. A root with live delivery infrastructure earns a rule that does something; a root answering only on its apex is a corporate website and is excluded.
 
 ```
 python scripts/rule_evidence.py docs/evidence/observation-2026-09-19.json evidence.json
+python scripts/ads_txt_evidence.py docs/evidence/publishers-2026-09-19.txt declarations.json
+python scripts/ad_serving_probe.py docs/evidence/adstxt-candidates-2026-09-19.txt probe.json
 ```
 
 ## Round 1 — 2026-09-19
@@ -84,7 +90,7 @@ Criterion 3 is the bottleneck and is not automatable from reach data.
 
 ## Status
 
-Rounds 1 and 2 delivered the harness, two observation captures, the scale estimate, and the measured false-positive rate. Round 3 turned the reviewed admissions into the `advertising-curated` segment: 260 observed third-party hosts reviewed per host, 110 admitted, 68 rules emitted, landed as ER-036 without increasing first-match coverage.
+`advertising-curated` carries 327 rules, all derived from this repository's own evidence. Against the same evidence, coverage of hosts reviewed as advertising went from 16.4 percent with the pinned import alone to 99.1 percent; coverage of advertising systems declared by two or more publishers went from 1.7 to 51.2 percent. First-match coverage is unchanged throughout.
 
 The pinned imports and their ledgers remain untouched, so the `Copyright (c) 2018-2019 V2Ray` attribution still stands. It can only be retired once the imports no longer ship.
 
@@ -92,7 +98,7 @@ Remaining work to reach that point:
 
 | Target | Remaining |
 |---|---|
-| `advertising.list` (849) | roughly 90 further origins for the candidate pool, per-host review of each candidate, then a swap that retires the import and its ledger |
-| `china-domains-direct.list` (1,403 load-bearing) | not observable by browsing — it answers "which services belong on DIRECT", so it needs a vendor-documentation pass per service category, the method ER-023 used for cloud endpoints |
+| `advertising.list` (849) | the curated segment now outperforms it on every measured axis, but retiring it needs a coverage comparison over its own 849 entries: which are still live, still relevant to this audience, and not already covered here. That audit is mechanical and is the next round. |
+| `china-domains-direct.list` (1,403 load-bearing) | not observable by browsing, and ads.txt has no equivalent — it answers "which services belong on DIRECT". It needs a vendor-documentation pass per service category, the method ER-023 used for cloud endpoints. |
 
-Each batch lands as its own ER with its capture committed alongside. The segment budget for the eventual swap is already available: retiring an import frees the segment it occupies.
+Each batch lands as its own ER with its evidence committed alongside. The segment budget for the eventual swap is already available: retiring an import frees the segment it occupies.
