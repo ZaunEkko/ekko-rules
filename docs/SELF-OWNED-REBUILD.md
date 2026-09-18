@@ -34,17 +34,42 @@ python scripts/rule_evidence.py docs/evidence/observation-2026-09-19.json eviden
 
 ## Round 1 — 2026-09-19
 
-Thirteen origins were observed: sina, 163, ifeng, csdn, zhihu, jd, bilibili, sohu, youku, theguardian, forbes, imdb, speedtest.
+Thirteen origins: sina, 163, ifeng, csdn, zhihu, jd, bilibili, sohu, youku, theguardian, forbes, imdb, speedtest.
 
-- 251 distinct hostnames, 169 of them third-party, across 92 registrable roots
-- every host resolved
+- 251 distinct hostnames, 169 third-party, across 92 registrable roots
 - 9 roots appeared on two or more unrelated sites
 
-**Cross-site reach alone is not a safe admission criterion.** The nine cross-site roots include `googleapis.com`, `qq.com`, and `126.net`, which carry functional traffic — captcha, payment, CDN, platform APIs. A `REJECT` on any of them breaks services. Reach identifies third-party infrastructure; it does not establish that the infrastructure is advertising. A second, per-host functional judgement is mandatory before a rule enters `advertising.list`.
+## Round 2 — 2026-09-19
+
+Eight further origins covering categories round 1 missed — tech news, casual gaming, mainland and international video, weather, and long-form news: ithome, 4399, v.qq, techcrunch, bbc, weather, cnbeta, mgtv.
+
+Twenty-one origins in total:
+
+- 387 distinct hostnames, 259 third-party, across 141 registrable roots
+- every host resolved
+- 20 roots on two or more unrelated sites, 9 on three or more
+
+### Cross-site reach is not a safe admission criterion
+
+Round 1 showed this qualitatively. Round 2 measures it. Of the 20 roots reaching two or more sites, seven carry functional traffic that a `REJECT` would break:
+
+| Root | Sites | Why it must not be blocked |
+|---|---:|---|
+| `googleapis.com` | 3 | platform and Firebase APIs |
+| `google.com` | 4 | reCAPTCHA challenge delivery |
+| `gstatic.com` | 2 | reCAPTCHA and shared static assets |
+| `baidu.com` | 4 | mainland platform APIs share the root with `hm.baidu.com` analytics |
+| `qq.com` | 2 | login, payment, and platform APIs share the root with beacon hosts |
+| `126.net` | 2 | NetEase captcha and CDN |
+| `speedcurve.com` | 2 | performance monitoring, not ad delivery |
+
+That is a 35 percent false-positive rate at root granularity. The remaining thirteen — `amazon-adsystem.com`, `doubleclick.net`, `googletagmanager.com`, `criteo.com`, `baidustatic.com`, `id5-sync.com`, `eu-1-id5-sync.com`, `adnxs.com`, `doubleverify.com`, `dv.tech`, `media.net`, `rubiconproject.com`, `scorecardresearch.com` — are advertising or measurement infrastructure, but that determination is a reviewer's judgement, not an output of the reach data.
+
+Two consequences. Admission must be per-host, not per-root, because functional and advertising hosts share roots. And the judgement is manual.
 
 ### Scale
 
-New roots discovered per site stays roughly flat rather than saturating: 4.5 per site over the first four origins, 8.8 over the last four. At the observed rate, reaching an 849-scale candidate pool needs on the order of 87 more origins — and that produces candidates only, before any functional judgement.
+Discovery has not saturated across 21 origins: 4.2 new roots per site over the first five, 7.8 over the last five. Reaching an 849-scale candidate pool still needs on the order of 90 further origins, and every candidate then needs the review above.
 
 ## Admission criteria
 
