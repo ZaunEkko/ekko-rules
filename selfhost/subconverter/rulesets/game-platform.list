@@ -70,4 +70,4 @@ DOMAIN-SUFFIX,xbox.com
 DOMAIN-SUFFIX,xboxgamepass.com
 DOMAIN-SUFFIX,xboxlive.com
 DOMAIN-SUFFIX,xboxservices.com
-IP-CIDR,8.209.192.0/18,no-resolve
+IP-CIDR,8.208.0.0/12,no-resolve

@@ -8,8 +8,8 @@ products:
       rule_segments: 63
       terminal_segments: 1
       proxy_groups: 42
-      rules_in_files: 10027
-      rules_with_terminal: 10028
+      rules_in_files: 10028
+      rules_with_terminal: 10029
       destination_ip_rules: 207
       destination_ip_rules_without_no_resolve: 0
     first_match_unreachable:
@@ -31,8 +31,8 @@ products:
       rule_segments: 63
       terminal_segments: 1
       proxy_groups: 10
-      rules_in_files: 10027
-      rules_with_terminal: 10028
+      rules_in_files: 10028
+      rules_with_terminal: 10029
       destination_ip_rules: 207
       destination_ip_rules_without_no_resolve: 0
     first_match_unreachable:
