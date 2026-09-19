@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-051 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-052 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1161,3 +1161,31 @@ That is the second criterion this PR has had to amend after finding the corpus o
 ### Rationales contradicted their own verdicts
 
 The three records restored in ER-050 kept the reason string from their brief withdrawal, so each said "criterion 2 of the admission rules is not met" beside an `admit` verdict and an own-endpoint route. The regeneration carried the prior reason forward without checking it still applied. Reasons are now regenerated from the route, every admitted record carries a `first_party_safety` rationale, and the route test asserts all three agree rather than merely checking the field is non-empty.
+
+## ER-052 — Seeds are not verdicts, and two ad roots were hiding behind the import
+
+**Type:** defect fix; 2 rules reclassified, 1 narrowed, evidence tightened
+
+Auditing the three areas flagged for the fourth review found three defects, one of which is a routing regression this PR introduced.
+
+### DoubleClick and Firebase were reaching mainland direct
+
+`DOMAIN-SUFFIX,2mdn.net` and `DOMAIN-SUFFIX,app-measurement.com` have been in `china-web` since `f1adf15`, the repository's first commit. They never mattered, because the retired import's advertising segment ran at position 4 and captured them long before `china-web` at 49. Retiring the import removed the mask and left Google Ad Manager creative delivery and Firebase Analytics collection routed to 🌏 国内网站 as ordinary mainland websites.
+
+Both move to `advertising-curated`, where their function has always belonged. The search that found them is bounded and was run over the whole product: exactly four rules in `china-web` and `china-direct-curated` were covered by the retired import's advertising list. The other two, `51y5.net` and `qhupdate.com`, are correct as they stand — the specific advertising hosts beneath them, `lpms.51y5.net` and `s.qhupdate.com`, are blocked while the roots stay direct, which is the per-host granularity this repository has applied since round 2.
+
+### A reviewed host does not justify blocking its root
+
+ER-051's mapping test accepted a suffix rule when any reviewed or declared host sat beneath it. `mi.gdt.qq.com` is reviewed, so that rule would have accepted `DOMAIN-SUFFIX,qq.com` — the exact over-block the per-host principle exists to prevent. 25 shipped rules relied on that fallback.
+
+The test now requires the rule's own value to be evidenced. 24 of the 25 are roots whose whole registrable root is advertising infrastructure, and each gets a record in the new `ad-root-review-2026-09-19.json` saying why no other service lives under it. The 25th, `app-us1.com`, is narrowed to the two hosts the admission review actually examined: its apex does not resolve but `www` does, and ActiveCampaign infrastructure could not be shown to be advertising-only.
+
+### Seeds and candidates were being read as evidence
+
+The mapping test counted `ad-vendors-2026-09-19.txt` and `adstxt-candidates-2026-09-19.txt` as evidence that a domain serves advertising. Neither is. The first is the seed list for Certificate Transparency queries — it names `bytedance.com`, whose general API infrastructure is plainly not advertising — and the second is a candidate list, which is what the delivery probe exists to adjudicate. Counting them made the test look stronger than it was.
+
+Both are removed from the evidence set. What replaces them is the verdict the pipeline always produced but never committed: `ad-serving-probe-2026-09-19.json`, 1,995 roots with 791 confirmed serving, 767 corporate-site-only and 437 not resolving. Publisher declarations now count only at the two-or-more threshold this repository uses elsewhere.
+
+That left 19 rules unmapped, all of them the canonical case the probe was written for — a platform's delivery domain is not the domain its publishers declare. Publishers declare `google.com` and the creatives arrive from `doubleclick.net`; `appnexus.com` is declared and `adnxs.com` bids. Each of the 19 now carries a root record naming the declared seller alongside the delivery root.
+
+`china-web` and `china-direct-curated` remain outside this mapping. Their evidence is the APNIC delegation record and Certificate Transparency, and 3,770 of their 4,215 rules have a committed APNIC verdict; extending the test to them needs those verdicts committed as one consolidated file, which is a separate change.

@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "method": "Root-level review for suffix rules whose registrable root is itself advertising infrastructure. A per-host record beneath a root does not justify blocking the whole root - mi.gdt.qq.com does not justify DOMAIN-SUFFIX,qq.com - so each root here is reviewed on its own and states why no non-advertising service lives under it. app-us1.com was narrowed to its two reviewed hosts instead, because its www host resolves and the root could not be shown to be advertising-only. Roots carrying an advertising platform's delivery infrastructure are recorded with the seller domain that publishers actually declare, because a declaration names the company selling inventory and rarely the domain that delivers it - publishers declare google.com and the creatives arrive from doubleclick.net.",
+  "counts": {
+    "roots": 45
+  },
+  "records": [
+    {
+      "root": "2mdn.net",
+      "verdict": "admit-root",
+      "reason": "Google Ad Manager creative and video ad delivery",
+      "declared_seller": "google.com",
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery or analytics collection only",
+      "note": "carried in china-web since commit f1adf15 and masked by the retired import's advertising segment, which ran earlier; retiring the import exposed it as mainland direct, so it moves to the policy its function has always belonged to"
+    },
+    {
+      "root": "3lift.com",
+      "verdict": "admit-root",
+      "reason": "TripleLift bidding and delivery",
+      "declared_seller": "triplelift.com",
+      "declared_by_publishers": 175,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "adnxs.com",
+      "verdict": "admit-root",
+      "reason": "Xandr bidding and delivery",
+      "declared_seller": "appnexus.com",
+      "declared_by_publishers": 180,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "adsafeprotected.com",
+      "verdict": "admit-root",
+      "reason": "Integral Ad Science verification",
+      "declared_seller": "integralads.com",
+      "declared_by_publishers": 0,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "adsrvr.org",
+      "verdict": "admit-root",
+      "reason": "The Trade Desk bidding and identity syncing",
+      "declared_seller": "thetradedesk.com",
+      "declared_by_publishers": 3,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "app-measurement.com",
+      "verdict": "admit-root",
+      "reason": "Google Firebase Analytics collection endpoint",
+      "declared_seller": "google.com",
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery or analytics collection only",
+      "note": "carried in china-web since commit f1adf15 and masked by the retired import's advertising segment, which ran earlier; retiring the import exposed it as mainland direct, so it moves to the policy its function has always belonged to"
+    },
+    {
+      "root": "ay.delivery",
+      "verdict": "admit-root",
+      "reason": "advertising creative delivery network; the root exists to serve ad payloads",
+      "reviewed_hosts_beneath": [
+        "hq2zc2zefnwmg3wcm.ay.delivery"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "casalemedia.com",
+      "verdict": "admit-root",
+      "reason": "Index Exchange bidding",
+      "declared_seller": "indexexchange.com",
+      "declared_by_publishers": 180,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "cnzz.com",
+      "verdict": "admit-root",
+      "reason": "CNZZ analytics, now Alibaba UMeng+; every host under it is collection",
+      "reviewed_hosts_beneath": [
+        "w.cnzz.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "crwdcntrl.net",
+      "verdict": "admit-root",
+      "reason": "Lotame data collection and syncing",
+      "declared_seller": "lotame.com",
+      "declared_by_publishers": 0,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "cxense.com",
+      "verdict": "admit-root",
+      "reason": "Cxense audience data and personalisation platform",
+      "reviewed_hosts_beneath": [
+        "cdn.cxense.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "doubleclick.net",
+      "verdict": "admit-root",
+      "reason": "Google Ad Manager delivery and click-tracking domain",
+      "declared_seller": "google.com",
+      "declared_by_publishers": 191,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "doubleverify.com",
+      "verdict": "admit-root",
+      "reason": "DoubleVerify verification and measurement",
+      "declared_seller": "doubleverify.com",
+      "declared_by_publishers": 0,
+      "delivery_domain_differs_from_seller": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "dv.tech",
+      "verdict": "admit-root",
+      "reason": "DoubleVerify ad verification and measurement",
+      "reviewed_hosts_beneath": [
+        "vtrk.dv.tech"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "eu-1-id5-sync.com",
+      "verdict": "admit-root",
+      "reason": "ID5 identity-sync endpoints for the EU region; the root exists only for cookie syncing",
+      "reviewed_hosts_beneath": [
+        "lb.eu-1-id5-sync.com",
+        "lbs.eu-1-id5-sync.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "fastapi.net",
+      "verdict": "admit-root",
+      "reason": "cookie-matching infrastructure for advertising exchanges",
+      "reviewed_hosts_beneath": [
+        "cm.fastapi.net"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "gdtimg.com",
+      "verdict": "admit-root",
+      "reason": "Tencent GDT creative image hosting; the root serves advertising assets only",
+      "reviewed_hosts_beneath": [
+        "qzs.gdtimg.com",
+        "qzsdk.gdtimg.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "google-analytics.com",
+      "verdict": "admit-root",
+      "reason": "Google Analytics collection",
+      "declared_seller": "google.com",
+      "declared_by_publishers": 191,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "googleadservices.com",
+      "verdict": "admit-root",
+      "reason": "Google Ads click and conversion tracking",
+      "declared_seller": "google.com",
+      "declared_by_publishers": 191,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "googlesyndication.com",
+      "verdict": "admit-root",
+      "reason": "Google AdSense and Ad Manager creative delivery",
+      "declared_seller": "google.com",
+      "declared_by_publishers": 191,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "googletagmanager.com",
+      "verdict": "admit-root",
+      "reason": "Google Tag Manager container delivery, which loads advertising and analytics tags",
+      "declared_seller": "google.com",
+      "declared_by_publishers": 191,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "googletagservices.com",
+      "verdict": "admit-root",
+      "reason": "Google Publisher Tag delivery; the root has no non-advertising service",
+      "reviewed_hosts_beneath": [
+        "www.googletagservices.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "idsequoia.ai",
+      "verdict": "admit-root",
+      "reason": "identity resolution for advertising",
+      "reviewed_hosts_beneath": [
+        "api.idsequoia.ai"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "indexww.com",
+      "verdict": "admit-root",
+      "reason": "Index Exchange wrapper delivery",
+      "declared_seller": "indexexchange.com",
+      "declared_by_publishers": 180,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "intentiq.com",
+      "verdict": "admit-root",
+      "reason": "Intent IQ identity graph and cookie syncing",
+      "reviewed_hosts_beneath": [
+        "sync.intentiq.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "ipinyou.com",
+      "verdict": "admit-root",
+      "reason": "iPinYou demand-side platform",
+      "reviewed_hosts_beneath": [
+        "stats.ipinyou.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "liadm.com",
+      "verdict": "admit-root",
+      "reason": "LiveIntent identity and delivery",
+      "declared_seller": "liveintent.com",
+      "declared_by_publishers": 59,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "mediav.com",
+      "verdict": "admit-root",
+      "reason": "MediaV advertising exchange",
+      "declared_seller": "mediav.com",
+      "declared_by_publishers": 0,
+      "delivery_domain_differs_from_seller": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "ml314.com",
+      "verdict": "admit-root",
+      "reason": "Bombora intent-data collection",
+      "reviewed_hosts_beneath": [
+        "vi.ml314.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "openx.net",
+      "verdict": "admit-root",
+      "reason": "OpenX bidding and delivery",
+      "declared_seller": "openx.com",
+      "declared_by_publishers": 180,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "optaim.com",
+      "verdict": "admit-root",
+      "reason": "OptAim programmatic advertising",
+      "reviewed_hosts_beneath": [
+        "clk.optaim.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "outin.cn",
+      "verdict": "admit-root",
+      "reason": "Revive-based advertising delivery for a mainland publisher network",
+      "reviewed_hosts_beneath": [
+        "revive.outin.cn",
+        "static.outin.cn"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "panxo.ai",
+      "verdict": "admit-root",
+      "reason": "Panxo advertising stack delivery",
+      "declared_seller": "panxostack.com",
+      "declared_by_publishers": 0,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "panxostack.com",
+      "verdict": "admit-root",
+      "reason": "advertising delivery stack",
+      "reviewed_hosts_beneath": [
+        "media.panxostack.com",
+        "srv.panxostack.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "permutive.com",
+      "verdict": "admit-root",
+      "reason": "Permutive audience platform; the root serves its SDK and collection API only",
+      "reviewed_hosts_beneath": [
+        "api.permutive.com",
+        "cdn.permutive.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "prmutv.co",
+      "verdict": "admit-root",
+      "reason": "Permutive's short collection domain, per-tenant subdomains only",
+      "reviewed_hosts_beneath": [
+        "e488cdb0-e7cb-4d91-9648-60d437d8e491.prmutv.co"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "rlcdn.com",
+      "verdict": "admit-root",
+      "reason": "LiveRamp identity syncing",
+      "declared_seller": "liveramp.com",
+      "declared_by_publishers": 0,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "rtpge.com",
+      "verdict": "admit-root",
+      "reason": "real-time personalisation and advertising delivery",
+      "reviewed_hosts_beneath": [
+        "rcp.rtpge.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "sail-horizon.com",
+      "verdict": "admit-root",
+      "reason": "Sailthru behavioural tracking",
+      "reviewed_hosts_beneath": [
+        "ak.sail-horizon.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "sail-personalize.com",
+      "verdict": "admit-root",
+      "reason": "Sailthru personalisation and collection API",
+      "reviewed_hosts_beneath": [
+        "api.sail-personalize.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "scorecardresearch.com",
+      "verdict": "admit-root",
+      "reason": "Comscore audience measurement",
+      "declared_seller": "comscore.com",
+      "declared_by_publishers": 0,
+      "delivery_domain_differs_from_seller": true,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery, bidding or measurement only"
+    },
+    {
+      "root": "servenobid.com",
+      "verdict": "admit-root",
+      "reason": "header-bidding delivery",
+      "reviewed_hosts_beneath": [
+        "public.servenobid.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "tagtic.cn",
+      "verdict": "admit-root",
+      "reason": "mainland advertising and attribution SDK backend",
+      "reviewed_hosts_beneath": [
+        "ad-static-xg.tagtic.cn"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "webcontentassessor.com",
+      "verdict": "admit-root",
+      "reason": "content classification for advertising targeting",
+      "reviewed_hosts_beneath": [
+        "scripts.webcontentassessor.com"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    },
+    {
+      "root": "yellowblue.io",
+      "verdict": "admit-root",
+      "reason": "header-bidding and identity syncing",
+      "reviewed_hosts_beneath": [
+        "hb.yellowblue.io"
+      ],
+      "declared_in_ads_txt": false,
+      "first_party_safety": "no service under this root is reached by a user directly; a REJECT removes advertising delivery only"
+    }
+  ]
+}

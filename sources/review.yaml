@@ -725,3 +725,18 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: Walking the review records only proves the records that still exist are honoured; walking the published rules is what proves no rule ships without a committed reason. Enumerating them found 28 advertising rules with no record in any review file, among them clarity.ms, sensorsdata.cn, zhugeio.com, 51.la, wwads.cn and the Alibaba adashx tracking endpoints, all introduced by commit 78c939c and audited at the time but never recorded per host. A legacy review file now carries all 28 with what each endpoint is and why a REJECT is safe, and a new test maps every published rule to an admitted record or a publisher declaration. adash.man.aliyuncs.com was briefly removed as dead because it has no A record, which broke the cloud ordering test - the rule holds an ordering contract against the aliyuncs.com cloud policy, so resolvability is evidence about a host and not about what a rule is for. Criterion 1 named only the traffic-observation route although 421 shipped rules arrive through ads.txt and the delivery probe and most of china-web through Certificate Transparency and APNIC, so it now names every route the Method section describes. The three records restored in ER-050 had carried a withdrawal-era reason contradicting their own verdict; reasons are regenerated from the admission route and the test asserts route, reason and rationale agree.
+- id: evidence-grade-and-import-masking
+  status: accepted
+  scope: routing-policy
+  summary: Two advertising roots reached mainland direct once the import stopped masking them, a reviewed host was accepted as justification for blocking its whole root, and query seeds were being counted as verdicts.
+  evidence:
+  - docs/evidence/ad-root-review-2026-09-19.json
+  - docs/evidence/ad-serving-probe-2026-09-19.json
+  - sources/rules/china-web.list
+  - tests/test_profile.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: 2mdn.net and app-measurement.com have been in china-web since the repository's first commit and never mattered because the retired import's advertising segment ran at position 4 and captured them before china-web at 49; retiring the import left Google Ad Manager delivery and Firebase Analytics routed as ordinary mainland websites, so both move to advertising-curated. The search is bounded and was run over the whole product - exactly four rules were covered by the retired advertising list, and the other two are correct as they stand because the specific advertising hosts beneath them are blocked while the roots stay direct. The mapping test accepted a suffix rule when any reviewed host sat beneath it, which would have accepted DOMAIN-SUFFIX,qq.com on the strength of mi.gdt.qq.com; it now requires the rule's own value to be evidenced, 24 roots gain an explicit record saying no other service lives under them, and app-us1.com is narrowed to its two reviewed hosts because ActiveCampaign infrastructure could not be shown to be advertising-only. The test also counted the Certificate Transparency seed list and the ads.txt candidate list as evidence although the first names bytedance.com and the second is what the delivery probe adjudicates; both are removed and the probe's verdicts are committed for the first time, 1,995 roots with 791 serving. The 19 rules left unmapped are the case the probe exists for - publishers declare google.com and creatives arrive from doubleclick.net - and each now records its declared seller beside the delivery root.

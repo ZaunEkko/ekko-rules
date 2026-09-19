@@ -25,9 +25,9 @@ EVIDENCE = ROOT / "docs" / "evidence"
 ADMISSION_REVIEW = EVIDENCE / "admission-review-2026-09-19.json"
 MAINLAND_AD_REVIEW = EVIDENCE / "cn-ad-review-2026-09-19.json"
 LEGACY_AD_REVIEW = EVIDENCE / "legacy-ad-review-2026-09-19.json"
+AD_ROOT_REVIEW = EVIDENCE / "ad-root-review-2026-09-19.json"
+AD_SERVING_PROBE = EVIDENCE / "ad-serving-probe-2026-09-19.json"
 ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
-AD_VENDORS = EVIDENCE / "ad-vendors-2026-09-19.txt"
-ADS_TXT_CANDIDATES = EVIDENCE / "adstxt-candidates-2026-09-19.txt"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
 PHASE_3_AFTER = ROOT / "tests" / "fixtures" / "phase-3-after.json"
@@ -2721,16 +2721,20 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
         legacy = json.loads(LEGACY_AD_REVIEW.read_text(encoding="utf-8"))
         reviewed |= {record["host"].lower() for record in legacy["records"]}
 
+        # Only verdicts count. ad-vendors-2026-09-19.txt and
+        # adstxt-candidates-2026-09-19.txt are query seeds and candidate lists -
+        # the vendor file names bytedance.com, whose general API infrastructure is
+        # not advertising - so neither is evidence that a domain serves ads.
         declared = {
             record["system"].lower()
             for record in json.loads(ADS_TXT_EVIDENCE.read_text(encoding="utf-8"))["records"]
+            if len(record.get("declared_by", [])) >= 2
         }
-        for path in (AD_VENDORS, ADS_TXT_CANDIDATES):
-            declared |= {
-                line.strip().lower()
-                for line in path.read_text(encoding="utf-8").splitlines()
-                if line.strip() and not line.startswith("#")
-            }
+        declared |= {
+            record["root"].lower()
+            for record in json.loads(AD_SERVING_PROBE.read_text(encoding="utf-8"))["records"]
+            if record["serves_advertising"]
+        }
         return reviewed, declared
 
     def test_every_published_advertising_rule_maps_to_committed_evidence(self) -> None:
@@ -2741,15 +2745,17 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
         what proves no rule ships without a committed reason for it.
         """
         reviewed, declared = self.evidenced_hosts()
+        roots = {
+            record["root"].lower()
+            for record in json.loads(AD_ROOT_REVIEW.read_text(encoding="utf-8"))["records"]
+        }
 
         def evidenced(value: str) -> bool:
-            if value in reviewed or value in declared:
-                return True
-            # A suffix rule is evidenced by any reviewed or declared host beneath it.
-            suffix = f".{value}"
-            return any(
-                host.endswith(suffix) for host in reviewed
-            ) or any(system.endswith(suffix) for system in declared)
+            # The rule's own value has to be evidenced. A reviewed host beneath a
+            # root does not justify blocking the root: mi.gdt.qq.com is reviewed
+            # and does not make DOMAIN-SUFFIX,qq.com admissible. Blocking a whole
+            # root needs its own record saying no other service lives under it.
+            return value in reviewed or value in declared or value in roots
 
         unmapped = [
             entry

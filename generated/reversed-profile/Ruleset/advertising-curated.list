@@ -60,6 +60,7 @@ DOMAIN,connect.facebook.net
 DOMAIN,cpro.baidu.com
 DOMAIN,cpro.baidustatic.com
 DOMAIN,cpro.zol.com.cn
+DOMAIN,diffuser-cdn.app-us1.com
 DOMAIN,dn-growing.qbox.me
 DOMAIN,dsp.youdao.com
 DOMAIN,dup.baidustatic.com
@@ -87,6 +88,7 @@ DOMAIN,p.tanx.com
 DOMAIN,pgdt.gtimg.cn
 DOMAIN,pmp.adcrew.co
 DOMAIN,pos.baidu.com
+DOMAIN,prism.app-us1.com
 DOMAIN,publishers.logicad.jp
 DOMAIN,pv.sohu.com
 DOMAIN,px.ads.linkedin.com
@@ -124,6 +126,7 @@ DOMAIN,x.fidelity-media.com
 DOMAIN,yt-adp.ws.126.net
 DOMAIN,zz.bdstatic.com
 DOMAIN-SUFFIX,152media.com
+DOMAIN-SUFFIX,2mdn.net
 DOMAIN-SUFFIX,33across.com
 DOMAIN-SUFFIX,3lift.com
 DOMAIN-SUFFIX,4strokemedia.com
@@ -201,7 +204,7 @@ DOMAIN-SUFFIX,amxrtb.com
 DOMAIN-SUFFIX,andbeyond.media
 DOMAIN-SUFFIX,aniview.com
 DOMAIN-SUFFIX,anymanager.io
-DOMAIN-SUFFIX,app-us1.com
+DOMAIN-SUFFIX,app-measurement.com
 DOMAIN-SUFFIX,app.readpeak.com
 DOMAIN-SUFFIX,appads.in
 DOMAIN-SUFFIX,appbroda.com
