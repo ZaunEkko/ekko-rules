@@ -248,9 +248,10 @@ Mihomo 固定地址每次被客户端刷新时，都会在本机即时拉取真�
 
 ## 远程配置
 
-转换时使用哪套规则由 `config` 决定，默认且永远排在第一位的是本仓库的 Ekko Rules。页面另外内置了 ACL4SSR 的常用几套（全分组 / 无测速 / 去广告 / 精简 / 多国家等），通过短 id 选择，例如：
+转换时使用哪套规则由 `config` 决定。本仓库的两套永远排在最前：`ekko` 是完整版（42 个策略组），`ekko-lite` 是精简版（10 个策略组，分流行为与完整版完全一致，代价是不能按服务分别挑节点）。不传 `config` 时用完整版。页面另外内置了 ACL4SSR 的常用几套（全分组 / 无测速 / 去广告 / 精简 / 多国家等），同样通过短 id 选择：
 
 ```text
+/sub?url=<真实订阅>&target=clash&config=ekko-lite
 /sub?url=<真实订阅>&target=clash&config=acl4ssr-full
 ```
 
@@ -258,7 +259,7 @@ Mihomo 固定地址每次被客户端刷新时，都会在本机即时拉取真�
 
 | 变量 | 作用 |
 |---|---|
-| `THIRD_PARTY_REMOTE_CONFIGS=0` | 移除内置的第三方预设，只留 Ekko Rules |
+| `THIRD_PARTY_REMOTE_CONFIGS=0` | 移除内置的第三方预设，只留 Ekko Rules 的完整版与精简版 |
 | `REMOTE_CONFIGS` | 追加自己的预设，`[{"id":"mine","label":"My rules","url":"https://..."}]` |
 | `ALLOW_CUSTOM_REMOTE_CONFIG=0` | 禁止访客直接粘贴配置地址 |
 

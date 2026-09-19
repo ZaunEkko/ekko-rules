@@ -76,12 +76,14 @@ test("a link carries only the choices that differ from the defaults", () => {
     buildStatelessConvertQuery({
       subscriptionUrl: "https://example.test/sub",
       target: "clash",
-      options: { udp: true },
+      // udp is on by default, so asking for it again must not widen the link.
+      options: { tfo: true, udp: true },
     }),
   );
   assert.equal(params.get("url"), "https://example.test/sub");
   assert.equal(params.get("target"), "clash");
-  assert.equal(params.get("udp"), "true");
+  assert.equal(params.get("tfo"), "true");
+  assert.equal(params.get("udp"), null);
   assert.equal(params.get("emoji"), null);
   assert.equal(params.get("interval"), null);
   assert.equal(params.get("config"), null);

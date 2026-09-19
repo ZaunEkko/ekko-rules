@@ -17,11 +17,15 @@ export type ConvertOptions = {
   singboxIpv6: boolean;
 };
 
+// The four switches most people are better off with. They are defaults rather
+// than hints because a visitor who changes nothing should still get them: each
+// one either adds information (emoji, type) or prevents a client from choking
+// on an entry it cannot use, and none of them reaches back to the airport.
 export const DEFAULT_CONVERT_OPTIONS: ConvertOptions = {
   autoUpdate: false,
   emoji: true,
-  udp: false,
-  xudp: false,
+  udp: true,
+  xudp: true,
   tfo: false,
   skipCertVerify: false,
   tls13: false,
