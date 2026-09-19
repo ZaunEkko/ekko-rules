@@ -1,8 +1,14 @@
 payload:
+- DOMAIN,api-account-os.mihoyo.com
+- DOMAIN,api-os-takumi.mihoyo.com
 - DOMAIN,asia.battle.net
 - DOMAIN,europe.battle.net
+- DOMAIN,hk4e-api-os.mihoyo.com
+- DOMAIN,hk4e-sdk-os.mihoyo.com
+- DOMAIN,sdk-os-static.mihoyo.com
 - DOMAIN,useast.battle.net
 - DOMAIN,uswest.battle.net
+- DOMAIN,webstatic-sea.mihoyo.com
 - DOMAIN-SUFFIX,apexlegends.com
 - DOMAIN-SUFFIX,battle.net
 - DOMAIN-SUFFIX,battlenet.com
@@ -19,6 +25,9 @@ payload:
 - DOMAIN-SUFFIX,gamepass.com
 - DOMAIN-SUFFIX,geforce.com
 - DOMAIN-SUFFIX,gog.com
+- DOMAIN-SUFFIX,hoyolab.com
+- DOMAIN-SUFFIX,hoyoplay.com
+- DOMAIN-SUFFIX,hoyoverse.com
 - DOMAIN-SUFFIX,leagueoflegends.com
 - DOMAIN-SUFFIX,minecraft.net
 - DOMAIN-SUFFIX,mojang.com

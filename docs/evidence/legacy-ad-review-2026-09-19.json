@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "method": "Per-host review of the advertising rules that predate the self-owned rebuild. These entered in commit 78c939c, audited at the time but without a machine-readable record. Their criterion 1 and 2 evidence — which capture observed them, and whether they were third-party to an observing origin — was never committed and cannot be reconstructed after the fact, so claiming an admission route for them would be an assertion, not evidence. Each is instead re-reviewed here against criteria 3 and 4 only, and this file is a closed grandfathered set: it may shrink, never grow. A new rule cannot be admitted through it, because the mapping test treats membership here as evidence only for the exact hosts enumerated below. adash.man.aliyuncs.com is kept although it does not resolve, because it holds an ordering contract against the aliyuncs.com cloud policy that the test suite asserts.",
+  "counts": {
+    "records": 28
+  },
+  "records": [
+    {
+      "host": "51.la",
+      "verdict": "admit",
+      "reason": "51.LA website analytics",
+      "first_party_safety": "a visitor-counting service; a page renders identically without it",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "acjs.aliyun.com",
+      "verdict": "admit",
+      "reason": "Alibaba Cloud analytics script",
+      "first_party_safety": "telemetry collection; no page function depends on the response",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "adash.man.aliyuncs.com",
+      "verdict": "admit",
+      "reason": "Alibaba mobile analytics endpoint under the Alibaba Cloud service domain",
+      "first_party_safety": "a log sink; no page function depends on the response",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "note": "no A record resolves today, but the rule is not dead: it holds an ordering contract asserted by test_domestic_and_overseas_cloud_routing_is_region_aware, keeping this host out of the aliyuncs.com cloud policy if it returns",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "adashx.ut.amap.com",
+      "verdict": "admit",
+      "reason": "Alibaba UT tracking endpoint for AMap",
+      "first_party_safety": "a fire-and-forget log upload; the client does not read the reply",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "adashx.ut.ele.me",
+      "verdict": "admit",
+      "reason": "Alibaba UT tracking endpoint for Ele.me",
+      "first_party_safety": "a fire-and-forget log upload; the client does not read the reply",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "adhigh.net",
+      "verdict": "admit",
+      "reason": "real-time bidding platform",
+      "first_party_safety": "an ad exchange with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "byyd.me",
+      "verdict": "admit",
+      "reason": "Byyd mobile advertising platform",
+      "first_party_safety": "an ad network with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "clarity.ms",
+      "verdict": "admit",
+      "reason": "Microsoft Clarity session recording and behavioural analytics",
+      "first_party_safety": "recording is passive; the page does not wait on it",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "clickonometrics.pl",
+      "verdict": "admit",
+      "reason": "advertising technology platform",
+      "first_party_safety": "an ad network with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "getintent.com",
+      "verdict": "admit",
+      "reason": "GetIntent demand-side platform",
+      "first_party_safety": "an ad exchange with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "googleoptimize.com",
+      "verdict": "admit",
+      "reason": "Google Optimize experimentation and analytics",
+      "first_party_safety": "the service was retired upstream in 2023; a blocked request leaves the default variant, which is the documented fallback",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "h-adashx.ut.ele.me",
+      "verdict": "admit",
+      "reason": "Alibaba UT tracking endpoint for Ele.me",
+      "first_party_safety": "a fire-and-forget log upload; the client does not read the reply",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "log-upload.mihoyo.com",
+      "verdict": "admit",
+      "reason": "miHoYo telemetry upload",
+      "first_party_safety": "a log sink; game and site function do not depend on the response",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "mobads-pre-config.cdn.bcebos.com",
+      "verdict": "admit",
+      "reason": "Baidu mobile advertising configuration",
+      "first_party_safety": "advertising configuration only; content delivery uses other hosts",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "mobuppsrtb.com",
+      "verdict": "admit",
+      "reason": "real-time bidding platform",
+      "first_party_safety": "an ad exchange with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "persona.ly",
+      "verdict": "admit",
+      "reason": "Persona.ly mobile advertising network",
+      "first_party_safety": "an ad network with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "redllama.ru",
+      "verdict": "admit",
+      "reason": "advertising network",
+      "first_party_safety": "an ad network with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "relap.io",
+      "verdict": "admit",
+      "reason": "Relap content recommendation and advertising widgets",
+      "first_party_safety": "a recommendation widget; the surrounding article renders without it",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "rtbsape.com",
+      "verdict": "admit",
+      "reason": "real-time bidding platform",
+      "first_party_safety": "an ad exchange with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "sensorsdata.cn",
+      "verdict": "admit",
+      "reason": "Sensors Data behavioural analytics",
+      "first_party_safety": "an analytics collector; no page function depends on the response",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "syh.zybang.com",
+      "verdict": "admit",
+      "reason": "Zuoyebang advertising endpoint",
+      "first_party_safety": "a dedicated advertising host on its operator's domain; the study product uses other hosts",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "tds.bid",
+      "verdict": "admit",
+      "reason": "real-time bidding platform",
+      "first_party_safety": "an ad exchange with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "totalmediasolutions.com",
+      "verdict": "admit",
+      "reason": "advertising network",
+      "first_party_safety": "an ad network with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "upravel.com",
+      "verdict": "admit",
+      "reason": "advertising network",
+      "first_party_safety": "an ad network with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "v6-adashx.ut.ele.me",
+      "verdict": "admit",
+      "reason": "Alibaba UT tracking endpoint for Ele.me over IPv6",
+      "first_party_safety": "a fire-and-forget log upload; the client does not read the reply",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "wwads.cn",
+      "verdict": "admit",
+      "reason": "万维广告 advertising network",
+      "first_party_safety": "an ad network with no first-party role",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "youdaoads.com",
+      "verdict": "admit",
+      "reason": "Youdao advertising",
+      "first_party_safety": "a dedicated advertising domain; Youdao's dictionary and study services use other hosts",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    },
+    {
+      "host": "zhugeio.com",
+      "verdict": "admit",
+      "reason": "诸葛IO behavioural analytics",
+      "first_party_safety": "an analytics collector; no page function depends on the response",
+      "origin": "predates the self-owned rebuild; introduced by commit 78c939c and re-reviewed per host in ER-051",
+      "criteria_satisfied": [
+        3,
+        4
+      ],
+      "criterion_1_and_2_evidence": "not preserved"
+    }
+  ],
+  "status": "grandfathered"
+}

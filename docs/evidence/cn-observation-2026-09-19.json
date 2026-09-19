@@ -1,0 +1,1665 @@
+{
+  "schema_version": 1,
+  "capture": "docs/evidence/cn-origins-2026-09-19.txt",
+  "method": "Roots this repository's own markup and script scan of 2,017 mainland origins referenced, for which the APNIC probe returned no mainland verdict - typically because the service sits on a global CDN. Admission for these was per-host review, recorded in docs/CHANGES.md under the ER that added them.",
+  "counts": {
+    "roots": 177
+  },
+  "records": [
+    {
+      "root": "100tal.com",
+      "observed_on_origins": [
+        "gaokao.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "12306.cn",
+      "observed_on_origins": [
+        "12306.cn",
+        "1234wu.com",
+        "95572.com",
+        "chinaso.com",
+        "duba.com",
+        "hao123.com",
+        "qhnews.com",
+        "sogou.com"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "178.com",
+      "observed_on_origins": [
+        "tgbus.com",
+        "zhanqi.tv"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "25pp.com",
+      "observed_on_origins": [
+        "996.com",
+        "9game.cn",
+        "biubiu001.com",
+        "uzzf.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "265.com",
+      "observed_on_origins": [
+        "autohome.com.cn",
+        "autoimg.cn"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "360.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "kuaijianji.com",
+        "so.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "360kan.com",
+      "observed_on_origins": [
+        "le.com",
+        "so.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "360totalsecurity.com",
+      "observed_on_origins": [
+        "360.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "3839.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "4399.com",
+        "ali213.net"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "3839video.com",
+      "observed_on_origins": [
+        "ldmnq.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "4399.cn",
+      "observed_on_origins": [
+        "37.com",
+        "3dmgame.com",
+        "4399.com",
+        "996.com",
+        "9game.cn",
+        "ali213.net",
+        "chinaz.com",
+        "gamersky.com"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "4399.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "4399.com",
+        "962.net",
+        "cr173.com",
+        "duba.com",
+        "fxxz.com",
+        "hao123.com"
+      ],
+      "origin_count": 11
+    },
+    {
+      "root": "51job.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "51job.com",
+        "gaodun.com",
+        "gwy.com",
+        "hao123.com",
+        "ijiandao.com",
+        "yingjiesheng.com"
+      ],
+      "origin_count": 7
+    },
+    {
+      "root": "51jobcdn.com",
+      "observed_on_origins": [
+        "51job.com",
+        "yingjiesheng.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "51ping.com",
+      "observed_on_origins": [
+        "dianping.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "51y5.net",
+      "observed_on_origins": [
+        "ku6.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "abchina.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "abc-ca.com",
+        "abchina.com",
+        "cj-pension.com.cn",
+        "dahe.cn",
+        "duba.com",
+        "fund001.com",
+        "gddpf.org.cn"
+      ],
+      "origin_count": 13
+    },
+    {
+      "root": "abchina.com.cn",
+      "observed_on_origins": [
+        "abchina.com",
+        "hao123.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "alibabagroup.com",
+      "observed_on_origins": [
+        "aliyun.com",
+        "fliggy.com",
+        "uc.cn",
+        "umeng.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "aliexpress-media.com",
+      "observed_on_origins": [
+        "996.com",
+        "9game.cn",
+        "chandashi.com",
+        "taobao.com",
+        "tmall.com",
+        "tudou.com",
+        "youku.com",
+        "yzmg.com"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "alimebot.com",
+      "observed_on_origins": [
+        "lazada.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "alipayplus.com",
+      "observed_on_origins": [
+        "worldfirst.com.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "aliyundrive.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "aliyun.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "amap.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "597.com",
+        "aigrow.cn",
+        "aliyun.com",
+        "btime.com",
+        "cainiao.com",
+        "dongchedi.com",
+        "haofangdp.com"
+      ],
+      "origin_count": 16
+    },
+    {
+      "root": "atomgit.com",
+      "observed_on_origins": [
+        "infoq.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "autohome.com.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "21rv.com",
+        "2345.com",
+        "360che.com",
+        "3imx.cn",
+        "agicamp.com",
+        "autohome.com.cn",
+        "autoimg.cn"
+      ],
+      "origin_count": 22
+    },
+    {
+      "root": "autonavi.com",
+      "observed_on_origins": [
+        "17u.cn",
+        "ly.com",
+        "uc.cn"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "baifubao.com",
+      "observed_on_origins": [
+        "cosmoplat.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "bankcomm.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "51job.com",
+        "bocim.com",
+        "cj-pension.com.cn",
+        "gwy.com",
+        "hao123.com",
+        "orient-fund.com",
+        "thfund.com.cn"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "blizzard.cn",
+      "observed_on_origins": [
+        "18183.cn",
+        "18183.com",
+        "te5.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "boc.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "bankofchina.com",
+        "boc-leasing.com",
+        "boc.cn",
+        "bocfullertonbank.com",
+        "bocim.com",
+        "duba.com"
+      ],
+      "origin_count": 10
+    },
+    {
+      "root": "byted-static.com",
+      "observed_on_origins": [
+        "hundun.cn",
+        "ixigua.com",
+        "juejin.cn",
+        "toutiao.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "bytednsdoc.com",
+      "observed_on_origins": [
+        "juejin.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "bytegoofy.com",
+      "observed_on_origins": [
+        "3dmgame.com",
+        "996.com",
+        "9game.cn",
+        "ccpc360.com",
+        "chooseauto.com.cn",
+        "cmeii.com",
+        "cnblogs.com",
+        "dianxiaomi.com"
+      ],
+      "origin_count": 33
+    },
+    {
+      "root": "byteimg.com",
+      "observed_on_origins": [
+        "dongchedi.com",
+        "juejin.cn",
+        "pedaily.cn",
+        "qichezhuanye.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "bytescm.com",
+      "observed_on_origins": [
+        "agicamp.com",
+        "dongchedi.com",
+        "infoq.cn",
+        "ixigua.com",
+        "juejin.cn"
+      ],
+      "origin_count": 5
+    },
+    {
+      "root": "bytetos.com",
+      "observed_on_origins": [
+        "coze.cn",
+        "dongchedi.com",
+        "ixigua.com",
+        "juejin.cn"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "c-ctrip.com",
+      "observed_on_origins": [
+        "ctrip.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "ccb.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "51job.com",
+        "bocim.com",
+        "cj-pension.com.cn",
+        "duba.com",
+        "fund001.com",
+        "hao123.com",
+        "orient-fund.com"
+      ],
+      "origin_count": 9
+    },
+    {
+      "root": "chanjing.cc",
+      "observed_on_origins": [
+        "agicamp.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "chaoxing.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "sslibrary.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "chatglm.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "aibase.cn",
+        "aibase.com",
+        "faxianai.com",
+        "newrank.cn"
+      ],
+      "origin_count": 5
+    },
+    {
+      "root": "citicbank.com",
+      "observed_on_origins": [
+        "citicbank.com",
+        "thfund.com.cn"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "cmbchina.cn",
+      "observed_on_origins": [
+        "cmbchina.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "cmbchina.com",
+      "observed_on_origins": [
+        "bocim.com",
+        "cmbchina.com",
+        "duba.com",
+        "fund001.com",
+        "hao123.com",
+        "orient-fund.com",
+        "shixiseng.com",
+        "thfund.com.cn"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "cmbimg.cn",
+      "observed_on_origins": [
+        "cmbchina.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "cmbimg.com",
+      "observed_on_origins": [
+        "cmbchina.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "ctrip.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "17u.cn",
+        "ctrip.com",
+        "duba.com",
+        "hao123.com",
+        "ly.com",
+        "qyer.com",
+        "sogou.com"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "dcarimg.com",
+      "observed_on_origins": [
+        "dongchedi.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "dcarstatic.com",
+      "observed_on_origins": [
+        "dongchedi.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "deepseek.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "baklib.cn",
+        "chinaso.com",
+        "faxianai.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "dingtalk.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "aliyun.com",
+        "cjfx.cn",
+        "gaoding.com",
+        "ijiandao.com",
+        "lazada.cn",
+        "processon.com",
+        "uc.cn"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "dingtalkcloud.com",
+      "observed_on_origins": [
+        "ldmnq.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "dongchedi.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "dongchedi.com",
+        "jiakaobaodian.com",
+        "pcauto.com.cn",
+        "superstreet.cn"
+      ],
+      "origin_count": 6
+    },
+    {
+      "root": "doubao.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "aibase.cn",
+        "aibase.com",
+        "baklib.cn",
+        "chinaso.com",
+        "duba.com",
+        "hao123.com"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "douyinec.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "douyu.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "cr173.com",
+        "gamersky.com",
+        "hao123.com",
+        "sonkwo.cn"
+      ],
+      "origin_count": 5
+    },
+    {
+      "root": "dpfile.com",
+      "observed_on_origins": [
+        "dianping.com",
+        "meituan.com",
+        "meituan.org.cn"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "duokan.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "dxy.cn",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "ecitic.com",
+      "observed_on_origins": [
+        "citicbank.com",
+        "citics.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "ele.me",
+      "observed_on_origins": [
+        "aliyun.com",
+        "cainiao.com",
+        "koubei.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "elemecdn.com",
+      "observed_on_origins": [
+        "gdkjb.com",
+        "xzjy365.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "esign.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "fxiaoke.com",
+        "ijiandao.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "fadada.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "ijiandao.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "feishu.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "agicamp.com",
+        "aibase.cn",
+        "aibase.com",
+        "aicpb.com",
+        "bt.cn",
+        "cjfx.cn",
+        "compshare.cn"
+      ],
+      "origin_count": 23
+    },
+    {
+      "root": "gamersky.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "18183.com",
+        "37.com",
+        "3dmgame.com",
+        "52pk.com",
+        "ali213.net",
+        "gamersky.com",
+        "pc6.com"
+      ],
+      "origin_count": 11
+    },
+    {
+      "root": "gaode.com",
+      "observed_on_origins": [
+        "lazada.cn",
+        "maiche.com",
+        "zuche.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "geetest.com",
+      "observed_on_origins": [
+        "baihe.com",
+        "cda.cn",
+        "oneapm.com",
+        "weiwenjia.com",
+        "woshipm.com",
+        "zhanqi.tv",
+        "zhiyeapp.com"
+      ],
+      "origin_count": 7
+    },
+    {
+      "root": "getui.com",
+      "observed_on_origins": [
+        "dydata.io",
+        "infoq.cn",
+        "qidianla.com",
+        "woshipm.com",
+        "zjol.com.cn"
+      ],
+      "origin_count": 5
+    },
+    {
+      "root": "gitcode.com",
+      "observed_on_origins": [
+        "agicamp.com",
+        "csdn.net"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "gitee.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "gitee.com",
+        "moark.com",
+        "sdk.cn"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "gtimg.cn",
+      "observed_on_origins": [
+        "37wan.net",
+        "cosmoplat.cn",
+        "dnspod.cn",
+        "greentech.com.cn",
+        "istv.cn",
+        "lrts.me",
+        "mogu.com",
+        "mogucdn.com"
+      ],
+      "origin_count": 14
+    },
+    {
+      "root": "gtimg.com",
+      "observed_on_origins": [
+        "chaboshi.cn",
+        "chexiu.cn",
+        "diandian.com",
+        "eefocus.com",
+        "fkw.com",
+        "hongxiu.com",
+        "huishoubao.com",
+        "jikexiu.com"
+      ],
+      "origin_count": 19
+    },
+    {
+      "root": "haodf.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "haosou.com",
+      "observed_on_origins": [
+        "chanjingnet.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "heytap.com",
+      "observed_on_origins": [
+        "myoas.com",
+        "oneplus.com",
+        "oneplusbbs.com",
+        "oppo.com",
+        "wanyol.com"
+      ],
+      "origin_count": 5
+    },
+    {
+      "root": "hhtravel.com",
+      "observed_on_origins": [
+        "ctrip.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "hicloud.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "hupu.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "hao123.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "ibytedapm.com",
+      "observed_on_origins": [
+        "coze.cn",
+        "dongchedi.com",
+        "ixigua.com",
+        "juejin.cn",
+        "toutiao.com"
+      ],
+      "origin_count": 5
+    },
+    {
+      "root": "icbc.com.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "bocim.com",
+        "duba.com",
+        "fund001.com",
+        "hao123.com",
+        "imachina.org.cn",
+        "orient-fund.com",
+        "thfund.com.cn"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "idqqimg.com",
+      "observed_on_origins": [
+        "mogucdn.com",
+        "shafa.com",
+        "yinhangzhaopin.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "iflyrec.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "faxianai.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "img4399.com",
+      "observed_on_origins": [
+        "3387.com",
+        "4399.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "jddglobal.com",
+      "observed_on_origins": [
+        "jd.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "jianying.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "aibase.cn",
+        "aibase.com",
+        "hao123.com",
+        "mydown.com"
+      ],
+      "origin_count": 5
+    },
+    {
+      "root": "jiguang.cn",
+      "observed_on_origins": [
+        "infoq.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "jingdong.com",
+      "observed_on_origins": [
+        "jd.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "kada.com",
+      "observed_on_origins": [
+        "163.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "kanzhun.com",
+      "observed_on_origins": [
+        "1010jiajiao.com",
+        "114piaowu.com",
+        "1234wu.com",
+        "64365.com",
+        "hualv.com",
+        "koolearn.com",
+        "loupan.com",
+        "maiche.com"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "kdocs.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "kingpdf.cn",
+        "ksyun.com",
+        "wps.cn"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "ke.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "leju.com",
+        "lianjia.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "klingai.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "kskwai.com",
+      "observed_on_origins": [
+        "sparknexa.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "ksmobile.com",
+      "observed_on_origins": [
+        "drivergenius.com",
+        "duba.com",
+        "duba.net",
+        "ijinshan.com",
+        "keniu.com",
+        "kingpdf.cn"
+      ],
+      "origin_count": 6
+    },
+    {
+      "root": "kuaidi100.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "lanhuapp.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "lazada.com",
+      "observed_on_origins": [
+        "lazada.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "lianjia.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "hao123.com",
+        "jiwu.com",
+        "leju.com",
+        "lianjia.com"
+      ],
+      "origin_count": 5
+    },
+    {
+      "root": "liblib.art",
+      "observed_on_origins": [
+        "1234wu.com",
+        "aibase.cn",
+        "aibase.com",
+        "faxianai.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "liepin.com",
+      "observed_on_origins": [
+        "chinapp.com",
+        "dongao.cn",
+        "dongao.com",
+        "duba.com",
+        "hao123.com",
+        "huangye88.com",
+        "ijiandao.com",
+        "liepin.com"
+      ],
+      "origin_count": 13
+    },
+    {
+      "root": "ljcdn.com",
+      "observed_on_origins": [
+        "lianjia.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "lofter.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "163.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "lol.qq.com",
+      "observed_on_origins": [
+        "3dmgame.com",
+        "qq.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "meituan.com",
+      "observed_on_origins": [
+        "dianping.com",
+        "hao123.com",
+        "meituan.com",
+        "meituan.org.cn"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "mi-img.com",
+      "observed_on_origins": [
+        "mi.com",
+        "xiaomi.com",
+        "xiaomiyoupin.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "mi.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "hao123.com",
+        "it168.com",
+        "jiakaobaodian.com",
+        "ldmnq.com",
+        "lumverse.com",
+        "mi.com",
+        "xiaomi.com"
+      ],
+      "origin_count": 9
+    },
+    {
+      "root": "mmstat.com",
+      "observed_on_origins": [
+        "996.com",
+        "9game.cn",
+        "aliyun.com",
+        "biubiu001.com",
+        "cainiao.com",
+        "dongchedi.com",
+        "fliggy.com",
+        "taobao.com"
+      ],
+      "origin_count": 13
+    },
+    {
+      "root": "modelscope.cn",
+      "observed_on_origins": [
+        "aibase.cn",
+        "aibase.com",
+        "faxianai.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "moonshot.cn",
+      "observed_on_origins": [
+        "aibase.cn",
+        "aibase.com",
+        "faxianai.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "nga.cn",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "ngacn.cc",
+      "observed_on_origins": [
+        "tgbus.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "nvidia.cn",
+      "observed_on_origins": [
+        "kkj.cn",
+        "mydrivers.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "oceanengine.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "faxianai.com",
+        "newrank.cn",
+        "shoujihao.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "oppoer.me",
+      "observed_on_origins": [
+        "myoas.com",
+        "wanyol.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "pinduoduo.com",
+      "observed_on_origins": [
+        "pinduoduo.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "pingan.com",
+      "observed_on_origins": [
+        "1234567.com.cn",
+        "autohome.com.cn",
+        "autoimg.cn",
+        "imachina.org.cn",
+        "jk.cn",
+        "mingyuanfund.com",
+        "pacfc.com",
+        "pajk.com.cn"
+      ],
+      "origin_count": 16
+    },
+    {
+      "root": "pingan.com.cn",
+      "observed_on_origins": [
+        "jk.cn",
+        "pacfc.com",
+        "pajk.com.cn",
+        "pajkb.com",
+        "ph.com.cn",
+        "pingan.cn",
+        "pingan.com"
+      ],
+      "origin_count": 7
+    },
+    {
+      "root": "pixso.cn",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "pp.cn",
+      "observed_on_origins": [
+        "996.com",
+        "9game.cn"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "psbc.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "hao123.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "pstatp.com",
+      "observed_on_origins": [
+        "123.com.cn",
+        "21rv.com",
+        "cosmoplat.cn",
+        "ihuaben.com",
+        "jia.com",
+        "ruanmei.com"
+      ],
+      "origin_count": 6
+    },
+    {
+      "root": "qhres.com",
+      "observed_on_origins": [
+        "123.com.cn",
+        "ppsport.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "qhupdate.com",
+      "observed_on_origins": [
+        "kuaijianji.com",
+        "so.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "qianwen.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "faxianai.com",
+        "hao123.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "qlogo.cn",
+      "observed_on_origins": [
+        "agicamp.com",
+        "fang.com",
+        "jiakaobaodian.com",
+        "yzmg.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "qualcomm.cn",
+      "observed_on_origins": [
+        "kkj.cn",
+        "mydrivers.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "qzone.com",
+      "observed_on_origins": [
+        "qq.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "realme.com",
+      "observed_on_origins": [
+        "oppo.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "rednotecdn.com",
+      "observed_on_origins": [
+        "xiaohongshu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "runninghub.cn",
+      "observed_on_origins": [
+        "faxianai.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "sensetime.com",
+      "observed_on_origins": [
+        "faxianai.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "sf-express.com",
+      "observed_on_origins": [
+        "xiaomiyoupin.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "shanjian.tv",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "shimo.im",
+      "observed_on_origins": [
+        "1234wu.com",
+        "huodongxing.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "sina.com",
+      "observed_on_origins": [
+        "bjnews.com.cn",
+        "chinairn.com",
+        "sina.com.cn"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "sinaapp.com",
+      "observed_on_origins": [
+        "17house.com",
+        "caixin.com",
+        "shafa.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "sinajs.cn",
+      "observed_on_origins": [
+        "17house.com",
+        "caixin.com",
+        "fund001.com",
+        "gdghg.com",
+        "hangyun.com.cn",
+        "helipay.com",
+        "investorchina.cn",
+        "mrjjxw.com"
+      ],
+      "origin_count": 14
+    },
+    {
+      "root": "so.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "360.cn",
+        "duba.com",
+        "jiakaobaodian.com",
+        "mfk.com",
+        "okcis.cn",
+        "so.com"
+      ],
+      "origin_count": 8
+    },
+    {
+      "root": "sogou.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "289.com",
+        "autohome.com.cn",
+        "autoimg.cn",
+        "baihe.com",
+        "cbi360.net",
+        "centv.cn",
+        "chanjingnet.com"
+      ],
+      "origin_count": 19
+    },
+    {
+      "root": "soso.com",
+      "observed_on_origins": [
+        "baihe.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "sto.cn",
+      "observed_on_origins": [
+        "sto.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "taobao.net",
+      "observed_on_origins": [
+        "cainiao.com",
+        "fliggy.com",
+        "koubei.com",
+        "taopiaopiao.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "taptap.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "shafa.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "taptap.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "tb.cn",
+      "observed_on_origins": [
+        "dongao.cn",
+        "dongao.com",
+        "fliggy.com",
+        "qiqixue.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "tieyou.com",
+      "observed_on_origins": [
+        "17house.com",
+        "ctrip.com",
+        "mapbar.com",
+        "qianzhan.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "toutiaoapi.com",
+      "observed_on_origins": [
+        "duba.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "toutiaoimg.com",
+      "observed_on_origins": [
+        "cyfengchao.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "tripcdn.cn",
+      "observed_on_origins": [
+        "ctrip.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "tripcdn.com",
+      "observed_on_origins": [
+        "ctrip.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "tusiart.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "unionpay.com",
+      "observed_on_origins": [
+        "unionpay.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "wanmei.com",
+      "observed_on_origins": [
+        "3dmgame.com",
+        "gamersky.com",
+        "lumverse.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "wegame.com.cn",
+      "observed_on_origins": [
+        "zhanyi.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "wps.cn",
+      "observed_on_origins": [
+        "1234wu.com",
+        "aibase.cn",
+        "aibase.com",
+        "faxianai.com",
+        "ijiandao.com",
+        "jinshuju.net",
+        "jsj.top",
+        "kingsoft.com"
+      ],
+      "origin_count": 10
+    },
+    {
+      "root": "wps.com",
+      "observed_on_origins": [
+        "wps.cn"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "wpscdn.cn",
+      "observed_on_origins": [
+        "downza.cn",
+        "wps.cn"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "wujieai.com",
+      "observed_on_origins": [
+        "1234wu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "xhscdn.com",
+      "observed_on_origins": [
+        "58pic.com",
+        "xiaohongshu.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "xhscdn.net",
+      "observed_on_origins": [
+        "xiaohongshu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "xhslink.com",
+      "observed_on_origins": [
+        "lipro.com",
+        "samsung.com.cn",
+        "sspai.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "xiaohongshu.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "52by.com",
+        "58pic.com",
+        "91miaoshou.com",
+        "aieva.cn",
+        "baidu.com",
+        "beisen.com"
+      ],
+      "origin_count": 33
+    },
+    {
+      "root": "xmcdn.com",
+      "observed_on_origins": [
+        "qingting.fm",
+        "qingxuetang.com",
+        "ximalaya.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "xueersi.com",
+      "observed_on_origins": [
+        "gaokao.com",
+        "zhongkao.com",
+        "zuowen.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "xuetangx.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "xuetangx.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "yhgfb-cn-static.com",
+      "observed_on_origins": [
+        "dongchedi.com",
+        "juejin.cn"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "yuanfudao.com",
+      "observed_on_origins": [
+        "haitunzixi.com",
+        "yuansouti.com"
+      ],
+      "origin_count": 2
+    },
+    {
+      "root": "yuketang.cn",
+      "observed_on_origins": [
+        "xuetangx.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "yundaex.com",
+      "observed_on_origins": [
+        "dongputech.com",
+        "yunda56.com",
+        "yundaex.com",
+        "yundagongyi.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "yundasys.com",
+      "observed_on_origins": [
+        "dongputech.com",
+        "yunda56.com",
+        "yundaex.com",
+        "yundagongyi.com"
+      ],
+      "origin_count": 4
+    },
+    {
+      "root": "zhihu.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "analysys.cn",
+        "analysysdata.com",
+        "bbtnews.com.cn",
+        "beisen.com",
+        "biketo.com",
+        "chinajoy.net"
+      ],
+      "origin_count": 34
+    },
+    {
+      "root": "zhihuishu.com",
+      "observed_on_origins": [
+        "zhihuishu.com"
+      ],
+      "origin_count": 1
+    },
+    {
+      "root": "zhipin.com",
+      "observed_on_origins": [
+        "1234wu.com",
+        "2345.com",
+        "58pic.com",
+        "chinapp.com",
+        "cls.cn",
+        "cnhnb.com",
+        "cnmo.com",
+        "csdn.net"
+      ],
+      "origin_count": 14
+    },
+    {
+      "root": "zijieapi.com",
+      "observed_on_origins": [
+        "coze.cn",
+        "dongchedi.com",
+        "ixigua.com"
+      ],
+      "origin_count": 3
+    },
+    {
+      "root": "zuoyebang.com",
+      "observed_on_origins": [
+        "aibase.cn",
+        "aibase.com"
+      ],
+      "origin_count": 2
+    }
+  ]
+}

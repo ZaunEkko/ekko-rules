@@ -1,0 +1,2389 @@
+{
+  "schema_version": 1,
+  "capture": "docs/evidence/observation-2026-09-19.json",
+  "method": "per-host review against the admission criteria in docs/SELF-OWNED-REBUILD.md",
+  "counts": {
+    "hold": 14,
+    "admit": 109,
+    "reject": 137
+  },
+  "records": [
+    {
+      "host": "a4621041136.cdn.optimizely.com",
+      "verdict": "hold",
+      "reason": "experiment SDK delivery; same risk as above",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "aax-eu.amazon-adsystem.com",
+      "verdict": "admit",
+      "reason": "Amazon ad exchange",
+      "seen_on": [
+        "https://www.imdb.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "aax.amazon-adsystem.com",
+      "verdict": "admit",
+      "reason": "Amazon ad exchange",
+      "seen_on": [
+        "https://techcrunch.com",
+        "https://weather.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "accounts.google.com",
+      "verdict": "reject",
+      "reason": "Google sign-in",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ad.vidoomy.com",
+      "verdict": "admit",
+      "reason": "Vidoomy ad serving",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ads.pubmatic.com",
+      "verdict": "admit",
+      "reason": "PubMatic ad serving",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ads.vidoomy.com",
+      "verdict": "admit",
+      "reason": "Vidoomy ad serving",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ak.sail-horizon.com",
+      "verdict": "admit",
+      "reason": "Sailthru behavioural profiling",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "api-js.datadome.co",
+      "verdict": "reject",
+      "reason": "DataDome bot defence",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "api.id5-sync.com",
+      "verdict": "admit",
+      "reason": "ID5 identity API",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "api.idsequoia.ai",
+      "verdict": "admit",
+      "reason": "identity and ad targeting",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "api.lab.amplitude.com",
+      "verdict": "admit",
+      "reason": "Amplitude product analytics",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "api.panxo.ai",
+      "verdict": "admit",
+      "reason": "Panxo ad stack",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "api.permutive.com",
+      "verdict": "admit",
+      "reason": "Permutive audience profiling",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "api.rlcdn.com",
+      "verdict": "admit",
+      "reason": "LiveRamp identity resolution",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "api.sail-personalize.com",
+      "verdict": "admit",
+      "reason": "Sailthru personalisation tracking",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "assets.guim.co.uk",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.theguardian.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "beacon.cdn.qq.com",
+      "verdict": "admit",
+      "reason": "Tencent beacon telemetry",
+      "seen_on": [
+        "https://www.163.com",
+        "https://www.youku.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "browsertdidticket.m.qq.com",
+      "verdict": "admit",
+      "reason": "Tencent device identifier issuance",
+      "seen_on": [
+        "https://www.163.com",
+        "https://www.youku.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "btlr.sharethrough.com",
+      "verdict": "admit",
+      "reason": "Sharethrough bid requests",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "c.dun.163.com",
+      "verdict": "reject",
+      "reason": "NetEase captcha",
+      "seen_on": [
+        "https://www.zhihu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "c0.ifengimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.ifeng.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.adsafeprotected.com",
+      "verdict": "admit",
+      "reason": "Integral Ad Science verification",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.cookielaw.org",
+      "verdict": "reject",
+      "reason": "OneTrust consent management",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.cxense.com",
+      "verdict": "admit",
+      "reason": "Piano/Cxense behavioural profiling",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.id5-sync.com",
+      "verdict": "admit",
+      "reason": "ID5 tag delivery",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "cdn.ketchjs.com",
+      "verdict": "reject",
+      "reason": "Ketch consent management",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.optimizely.com",
+      "verdict": "hold",
+      "reason": "experiment SDK; blocking can leave pages in a loading state",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.p-n.io",
+      "verdict": "admit",
+      "reason": "push notification and ad delivery",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.permutive.com",
+      "verdict": "admit",
+      "reason": "Permutive tag delivery",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.privacy-mgmt.com",
+      "verdict": "reject",
+      "reason": "Sourcepoint consent management",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.speedcurve.com",
+      "verdict": "hold",
+      "reason": "real-user monitoring, not ad delivery; low value to block",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.forbes.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "cdn.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola tag delivery",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.tinypass.com",
+      "verdict": "reject",
+      "reason": "Piano paywall and subscription gate",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cdn.ziffstatic.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cds.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola content delivery",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "challenges.cloudflare.com",
+      "verdict": "reject",
+      "reason": "Cloudflare Turnstile challenge",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "client.aps.amazon-adsystem.com",
+      "verdict": "admit",
+      "reason": "Amazon Publisher Services header bidding",
+      "seen_on": [
+        "https://weather.com",
+        "https://www.forbes.com",
+        "https://www.speedtest.net"
+      ],
+      "site_count": 3
+    },
+    {
+      "host": "cm.fastapi.net",
+      "verdict": "admit",
+      "reason": "cookie matching endpoint",
+      "seen_on": [
+        "https://www.ifeng.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cms-bucket.ws.126.net",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "config.aps.amazon-adsystem.com",
+      "verdict": "admit",
+      "reason": "Amazon Publisher Services header bidding",
+      "seen_on": [
+        "https://weather.com",
+        "https://www.forbes.com",
+        "https://www.speedtest.net"
+      ],
+      "site_count": 3
+    },
+    {
+      "host": "connect.facebook.net",
+      "verdict": "admit",
+      "reason": "Meta Pixel and SDK",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cpro.baidustatic.com",
+      "verdict": "admit",
+      "reason": "Baidu advertising delivery",
+      "seen_on": [
+        "https://www.163.com",
+        "https://www.ifeng.com",
+        "https://www.sohu.com"
+      ],
+      "site_count": 3
+    },
+    {
+      "host": "csdnimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.csdn.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "cstaticdun.126.net",
+      "verdict": "reject",
+      "reason": "NetEase captcha assets",
+      "seen_on": [
+        "https://www.zhihu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "d.ifengimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.ifeng.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "dat.ruanmei.com",
+      "verdict": "hold",
+      "reason": "publisher-owned telemetry; needs a breakage check",
+      "seen_on": [
+        "https://www.ithome.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "diffuser-cdn.app-us1.com",
+      "verdict": "admit",
+      "reason": "ActiveCampaign tag delivery",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "dqpnq362acqdi.cloudfront.net",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.imdb.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "e488cdb0-e7cb-4d91-9648-60d437d8e491.prmutv.co",
+      "verdict": "admit",
+      "reason": "Permutive collection endpoint",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "e8aeb8bbdbbd7.cdn.sohucs.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sohu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "eb2.3lift.com",
+      "verdict": "admit",
+      "reason": "TripleLift bid requests",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "edigitalsurvey.com",
+      "verdict": "admit",
+      "reason": "survey and behavioural tracking",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "emp.bbci.co.uk",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ess.leju.com",
+      "verdict": "admit",
+      "reason": "Leju advertising",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "eus.rubiconproject.com",
+      "verdict": "admit",
+      "reason": "Magnite user sync",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "experiments.parsely.com",
+      "verdict": "admit",
+      "reason": "Parse.ly audience analytics",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "fastlane.rubiconproject.com",
+      "verdict": "admit",
+      "reason": "Magnite bid requests",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "federated-id.live.api.bbc.co.uk",
+      "verdict": "reject",
+      "reason": "BBC account federation",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "firebaseinstallations.googleapis.com",
+      "verdict": "reject",
+      "reason": "Firebase platform API",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "fls-na.amazon.com",
+      "verdict": "hold",
+      "reason": "Amazon telemetry; shares infrastructure with functional calls",
+      "seen_on": [
+        "https://www.imdb.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "flysec.m.qq.com",
+      "verdict": "reject",
+      "reason": "Tencent security verification",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "fourier.alibaba.com",
+      "verdict": "reject",
+      "reason": "Alibaba platform API",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "fundingchoicesmessages.google.com",
+      "verdict": "admit",
+      "reason": "Google Funding Choices, ad-block detection and consent for ads",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "g.alicdn.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "g.csdnimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.csdn.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "g1.itc.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sohu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "galileotelemetry.tencent.com",
+      "verdict": "admit",
+      "reason": "Tencent telemetry collection",
+      "seen_on": [
+        "https://v.qq.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "game.weixin.qq.com",
+      "verdict": "reject",
+      "reason": "WeChat platform",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "gatherer.m.qq.com",
+      "verdict": "admit",
+      "reason": "Tencent telemetry collection",
+      "seen_on": [
+        "https://www.163.com",
+        "https://www.youku.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "geolocation.onetrust.com",
+      "verdict": "reject",
+      "reason": "OneTrust consent geolocation",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "gk.sina.cn",
+      "verdict": "reject",
+      "reason": "Sina platform configuration",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "global.ketchcdn.com",
+      "verdict": "reject",
+      "reason": "Ketch consent management",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "gm.mmstat.com",
+      "verdict": "admit",
+      "reason": "Alibaba analytics collection",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "goddesslamps.com",
+      "verdict": "hold",
+      "reason": "unidentified single-site third party; no basis to classify",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "gum.criteo.com",
+      "verdict": "admit",
+      "reason": "Criteo user matching",
+      "seen_on": [
+        "https://weather.com",
+        "https://www.cnbeta.com.tw",
+        "https://www.forbes.com",
+        "https://www.speedtest.net"
+      ],
+      "site_count": 4
+    },
+    {
+      "host": "gw.alicdn.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "h5.analytics.126.net",
+      "verdict": "admit",
+      "reason": "NetEase analytics collection",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "hb.trustedstack.com",
+      "verdict": "admit",
+      "reason": "header bidding wrapper",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "hb.yellowblue.io",
+      "verdict": "admit",
+      "reason": "header bidding wrapper",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "hbopenbid.pubmatic.com",
+      "verdict": "admit",
+      "reason": "PubMatic OpenBid",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "hm.baidu.com",
+      "verdict": "admit",
+      "reason": "Baidu Tongji analytics collection",
+      "seen_on": [
+        "https://www.4399.com",
+        "https://www.cnbeta.com.tw",
+        "https://www.ithome.com",
+        "https://www.zhihu.com"
+      ],
+      "site_count": 4
+    },
+    {
+      "host": "hq.sinajs.cn",
+      "verdict": "reject",
+      "reason": "Sina quote data",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "hq2zc2zefnwmg3wcm.ay.delivery",
+      "verdict": "admit",
+      "reason": "programmatic ad delivery endpoint",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "htlb.casalemedia.com",
+      "verdict": "admit",
+      "reason": "Index Exchange bid requests",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "hudong.alicdn.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i-avatar.csdnimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.csdn.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i-operation.csdnimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.csdn.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i.forbesimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i.guim.co.uk",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.theguardian.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i0.hdslb.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bilibili.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i0.sinaimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i1.hdslb.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bilibili.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i1.sinaimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i2.hdslb.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bilibili.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i2.sinaimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "i3.sinaimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ib.adnxs.com",
+      "verdict": "admit",
+      "reason": "Xandr bid requests",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.speedtest.net"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "ichef.bbci.co.uk",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "id.crwdcntrl.net",
+      "verdict": "admit",
+      "reason": "Lotame data management",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "id5-sync.com",
+      "verdict": "admit",
+      "reason": "ID5 identity syncing",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.cnbeta.com.tw",
+        "https://www.speedtest.net"
+      ],
+      "site_count": 3
+    },
+    {
+      "host": "idx.liadm.com",
+      "verdict": "admit",
+      "reason": "LiveIntent identity syncing",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "image.sinajs.cn",
+      "verdict": "reject",
+      "reason": "Sina script assets",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "images-na.ssl-images-amazon.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.imdb.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "images.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola ad creatives",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "imasdk.googleapis.com",
+      "verdict": "reject",
+      "reason": "Google IMA SDK, video players gate playback on it",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img-bss.csdnimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.csdn.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img-home.csdnimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.csdn.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img.alicdn.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img0.hitv.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.mgtv.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img1.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img1.hitv.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.mgtv.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img10.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img11.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img12.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img13.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img14.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img2.hitv.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.mgtv.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img20.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img3.hitv.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.mgtv.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "img4.hitv.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.mgtv.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "imga.5054399.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "imga1.5054399.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "imga2.5054399.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "imga3.5054399.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "imga4.5054399.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "imga5.5054399.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "imprtymp.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola impression tracking",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "interface.sina.cn",
+      "verdict": "reject",
+      "reason": "Sina platform API",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ipservice.ws.126.net",
+      "verdict": "reject",
+      "reason": "NetEase region service",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "js-agent.newrelic.com",
+      "verdict": "hold",
+      "reason": "application monitoring; blocking is safe but it is not advertising",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "js-sec.indexww.com",
+      "verdict": "admit",
+      "reason": "Index Exchange tag",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "js.datadome.co",
+      "verdict": "reject",
+      "reason": "DataDome bot defence",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "k.sinaimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "kunpeng-render.csdnimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.csdn.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "lb.eu-1-id5-sync.com",
+      "verdict": "admit",
+      "reason": "ID5 identity syncing",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "lbs.eu-1-id5-sync.com",
+      "verdict": "admit",
+      "reason": "ID5 identity syncing",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "liangcang-material.alicdn.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "log.mmstat.com",
+      "verdict": "admit",
+      "reason": "Alibaba analytics collection",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "logs.guardianapis.com",
+      "verdict": "hold",
+      "reason": "publisher-owned telemetry; needs a first-party breakage check",
+      "seen_on": [
+        "https://www.theguardian.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "logx.optimizely.com",
+      "verdict": "hold",
+      "reason": "Optimizely event collection, but dazn routes logx.optimizely.com to its own policy; a REJECT would break Dazn",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ltsyz.gtimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://v.qq.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "m.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "m.media-amazon.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.imdb.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "match.adsrvr.org",
+      "verdict": "admit",
+      "reason": "The Trade Desk cookie matching",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "media.panxostack.com",
+      "verdict": "admit",
+      "reason": "Panxo ad creatives",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "mi.gdt.qq.com",
+      "verdict": "admit",
+      "reason": "Tencent GDT advertising",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "micro.rubiconproject.com",
+      "verdict": "admit",
+      "reason": "Magnite bid requests",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "misc.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "mjs.sinaimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "n.sinaimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "navvy.media.net",
+      "verdict": "admit",
+      "reason": "Media.net ad serving",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "nimg.ws.126.net",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "open-api.spot.im",
+      "verdict": "reject",
+      "reason": "OpenWeb comment platform",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ossimg.hitv.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.mgtv.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "p0.ifengimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.ifeng.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "p1.ifengimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.ifeng.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "p4.itc.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sohu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pagead2.googlesyndication.com",
+      "verdict": "admit",
+      "reason": "AdSense ad serving",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "panxo-sys.com",
+      "verdict": "admit",
+      "reason": "Panxo ad stack",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pdb.5hte21mz.com",
+      "verdict": "hold",
+      "reason": "opaque single-site third party; probable ad delivery but unproven",
+      "seen_on": [
+        "https://www.ifeng.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pgdt.gtimg.cn",
+      "verdict": "admit",
+      "reason": "Tencent GDT ad creatives",
+      "seen_on": [
+        "https://v.qq.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pic-bucket.ws.126.net",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pic2.zhimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.zhihu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pic3.zhimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.zhihu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "picx.zhimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.zhihu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pixel.rubiconproject.com",
+      "verdict": "admit",
+      "reason": "Magnite tracking pixel",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "plain.hitv.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.mgtv.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pluto.sina.cn",
+      "verdict": "reject",
+      "reason": "Sina platform API",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "prebid-server.rubiconproject.com",
+      "verdict": "admit",
+      "reason": "Magnite Prebid Server",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "prebid.media.net",
+      "verdict": "admit",
+      "reason": "Media.net Prebid",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "prebid.the-ozone-project.com",
+      "verdict": "admit",
+      "reason": "Ozone Prebid Server",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "prism.app-us1.com",
+      "verdict": "admit",
+      "reason": "ActiveCampaign site tracking",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "profile-avatar.csdnimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.csdn.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ptlogin.3304399.net",
+      "verdict": "reject",
+      "reason": "4399 login",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pub.doubleverify.com",
+      "verdict": "admit",
+      "reason": "DoubleVerify ad verification",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.forbes.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "public.servenobid.com",
+      "verdict": "admit",
+      "reason": "NoBid supply-side platform",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "puui.qpic.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://v.qq.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "pxlrtpge-a.akamaihd.net",
+      "verdict": "admit",
+      "reason": "RTPGE tracking pixel",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "q4.itc.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sohu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "q7.itc.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sohu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "qzs.gdtimg.com",
+      "verdict": "admit",
+      "reason": "Tencent GDT ad delivery",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "r.cdnst.net",
+      "verdict": "reject",
+      "reason": "Ookla platform assets",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "rcp.rtpge.com",
+      "verdict": "admit",
+      "reason": "RTPGE tracking",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "redmillgroup.com",
+      "verdict": "hold",
+      "reason": "unidentified single-site third party; no basis to classify",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "revive.outin.cn",
+      "verdict": "admit",
+      "reason": "Revive Adserver instance",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "rp.liadm.com",
+      "verdict": "admit",
+      "reason": "LiveIntent identity syncing",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "rtb.openx.net",
+      "verdict": "admit",
+      "reason": "OpenX real-time bidding",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "s.w-x.co",
+      "verdict": "reject",
+      "reason": "The Weather Company assets",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "s.weibo.com",
+      "verdict": "reject",
+      "reason": "Weibo platform",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "s1.hdslb.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bilibili.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "s4.zstatic.net",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.ithome.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sb.scorecardresearch.com",
+      "verdict": "admit",
+      "reason": "Comscore audience measurement",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.imdb.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "scripts.webcontentassessor.com",
+      "verdict": "admit",
+      "reason": "content classification for ad targeting",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sdk.e.qq.com",
+      "verdict": "admit",
+      "reason": "Tencent advertising SDK",
+      "seen_on": [
+        "https://www.163.com",
+        "https://www.youku.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "securepubads.g.doubleclick.net",
+      "verdict": "admit",
+      "reason": "Google Ad Manager ad serving",
+      "seen_on": [
+        "https://weather.com",
+        "https://www.bbc.com",
+        "https://www.cnbeta.com.tw",
+        "https://www.forbes.com",
+        "https://www.speedtest.net"
+      ],
+      "site_count": 5
+    },
+    {
+      "host": "specials-images.forbesimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "srv.panxostack.com",
+      "verdict": "admit",
+      "reason": "Panxo ad serving",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ssa.7fresh.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ssbsync-global.smartadserver.com",
+      "verdict": "admit",
+      "reason": "Equativ user sync",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ssl.google-analytics.com",
+      "verdict": "admit",
+      "reason": "Google Analytics collection",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.jdcloud.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.jddj.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.jdh.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.jdl.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.jdpay.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.jhscm.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.jingdong.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.jingxi.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.vipmro.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sso.yiyaojd.com",
+      "verdict": "reject",
+      "reason": "cross-brand single sign-on",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ssp.api.tappx.com",
+      "verdict": "admit",
+      "reason": "Tappx supply-side platform",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.bbci.co.uk",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.cloudflareinsights.com",
+      "verdict": "admit",
+      "reason": "Cloudflare analytics beacon",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.cnbetacdn.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.criteo.net",
+      "verdict": "admit",
+      "reason": "Criteo tag delivery",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.files.bbci.co.uk",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.hitv.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.mgtv.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.mediav.com",
+      "verdict": "admit",
+      "reason": "MediaV advertising",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.outin.cn",
+      "verdict": "admit",
+      "reason": "Revive Adserver assets",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.qovani.com",
+      "verdict": "hold",
+      "reason": "unidentified single-site third party; no basis to classify",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "static.ws.126.net",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "statics.itc.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sohu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "stats.wp.com",
+      "verdict": "admit",
+      "reason": "WordPress.com statistics collection",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "storage.360buyimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.jd.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "storage.googleapis.com",
+      "verdict": "reject",
+      "reason": "Google Cloud Storage asset delivery",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "sync.intentiq.com",
+      "verdict": "admit",
+      "reason": "IntentIQ identity syncing",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "trackcmp.net",
+      "verdict": "admit",
+      "reason": "ActiveCampaign visitor tracking",
+      "seen_on": [
+        "https://www.speedtest.net"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "trc.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola tracking and recommendations",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "tv.puui.qpic.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://v.qq.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ty-match.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola user matching",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ty-trc-events.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola event tracking",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ty-vid-events.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola video event tracking",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "unagi.amazon.com",
+      "verdict": "hold",
+      "reason": "Amazon telemetry; shares infrastructure with functional calls",
+      "seen_on": [
+        "https://www.imdb.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "unpkg.zhimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.zhihu.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "urswebzj.nosdn.127.net",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "vfiles.gtimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://v.qq.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "vi.ml314.com",
+      "verdict": "admit",
+      "reason": "Bombora intent data",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "vidstat.taboola.com",
+      "verdict": "admit",
+      "reason": "Taboola video statistics",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "vip.image.video.qpic.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://v.qq.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "vm.gtimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://v.qq.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "vmonitor.ws.netease.com",
+      "verdict": "admit",
+      "reason": "NetEase behavioural monitoring",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "vpaid.vidoomy.com",
+      "verdict": "admit",
+      "reason": "Vidoomy VPAID video ads",
+      "seen_on": [
+        "https://www.cnbeta.com.tw"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "vtrk.dv.tech",
+      "verdict": "admit",
+      "reason": "DoubleVerify tracking",
+      "seen_on": [
+        "https://www.bbc.com",
+        "https://www.forbes.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "w.cnzz.com",
+      "verdict": "admit",
+      "reason": "CNZZ analytics collection",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "warp.media.net",
+      "verdict": "admit",
+      "reason": "Media.net ad serving",
+      "seen_on": [
+        "https://www.forbes.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "weather-channel.solutions.cdn.optable.co",
+      "verdict": "admit",
+      "reason": "Optable data collaboration for advertising",
+      "seen_on": [
+        "https://weather.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "www.bbc.co.uk",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.bbc.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "www.btd-cmh.tq-tungsten.com",
+      "verdict": "hold",
+      "reason": "opaque verification beacon; probable but unproven",
+      "seen_on": [
+        "https://www.imdb.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "www.google.com",
+      "verdict": "reject",
+      "reason": "reCAPTCHA challenge delivery",
+      "seen_on": [
+        "https://techcrunch.com",
+        "https://www.forbes.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "www.googletagmanager.com",
+      "verdict": "admit",
+      "reason": "tag manager, loads advertising and analytics tags",
+      "seen_on": [
+        "https://techcrunch.com",
+        "https://www.cnbeta.com.tw",
+        "https://www.forbes.com",
+        "https://www.ifeng.com",
+        "https://www.speedtest.net"
+      ],
+      "site_count": 5
+    },
+    {
+      "host": "www.googletagservices.com",
+      "verdict": "admit",
+      "reason": "Google Publisher Tag loader",
+      "seen_on": [
+        "https://techcrunch.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "www.gstatic.com",
+      "verdict": "reject",
+      "reason": "reCAPTCHA and shared static assets",
+      "seen_on": [
+        "https://techcrunch.com",
+        "https://www.forbes.com"
+      ],
+      "site_count": 2
+    },
+    {
+      "host": "www.sinaimg.cn",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.sina.com.cn"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "www.zxwyouxi.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.4399.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "x0.ifengimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.ifeng.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "x2.ifengimg.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.ifeng.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "ykimg.alicdn.com",
+      "verdict": "reject",
+      "reason": "first-party or shared static asset delivery",
+      "seen_on": [
+        "https://www.youku.com"
+      ],
+      "site_count": 1
+    },
+    {
+      "host": "yt-adp.ws.126.net",
+      "verdict": "admit",
+      "reason": "NetEase advertising delivery",
+      "seen_on": [
+        "https://www.163.com"
+      ],
+      "site_count": 1
+    }
+  ]
+}

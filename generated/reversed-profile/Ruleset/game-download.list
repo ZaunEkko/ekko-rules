@@ -18,10 +18,8 @@ DOMAIN,epicgames-download1-1251447533.file.myqcloud.com
 DOMAIN,game.gtimg.cn
 DOMAIN,gstore.val.manlaxy.com
 DOMAIN,lv.queniujq.cn
-DOMAIN,st-bak.viv.wanwang.space
 DOMAIN,st.dl.bscstorage.net
 DOMAIN,st.dl.eccdnx.com
-DOMAIN,steampipe.steamcontent.tnkjmec.com
 DOMAIN,tlu.dl.delivery.mp.microsoft.com
 DOMAIN,trts.baishancdnx.cn
 DOMAIN,uplaypc-s-ubisoft.cdn.ubionline.com.cn
@@ -56,17 +54,12 @@ DOMAIN,gamedownloads-rockstargames-com.akamaized.net
 DOMAIN,gog-cdn-fastly-cp77.gog.com
 DOMAIN,gog-cdn-fastly.gog.com
 DOMAIN,gog-cdn.akamaized.net
-DOMAIN,gog-cdn-lumen.secure2.footprint.net
 DOMAIN,kr.cdn.blizzard.com
 DOMAIN,level3.blizzard.com
 DOMAIN,level3.ssl.blizzard.com
 DOMAIN,origin-a.akamaihd.net
 DOMAIN,packagespc.xboxlive.com
 DOMAIN,prod.cloudflare.cdn.ea.com
-DOMAIN,ssl-lvlt.cdn.ea.com
-DOMAIN,steam.eca.qtlglb.com
-DOMAIN,steam.naeu.qtlglb.com
-DOMAIN,steam.ru.qtlglb.com
 DOMAIN,steampipe-kr.akamaized.net
 DOMAIN,steampipe-partner.akamaized.net
 DOMAIN,steampipe.akamaized.net
@@ -78,4 +71,5 @@ DOMAIN,xvcf2.xboxlive.com
 DOMAIN-SUFFIX,cdn.ubi.com
 DOMAIN-SUFFIX,dl.playstation.net
 DOMAIN-SUFFIX,dyn.riotcdn.net
+DOMAIN-SUFFIX,starrails.com
 DOMAIN-SUFFIX,steamcontent.com

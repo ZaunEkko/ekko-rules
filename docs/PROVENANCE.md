@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 7,473 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 62 rule files, 63 ordered segments including FINAL, 40 proxy groups, and 9,831 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,16 +21,18 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 7,472 file rules are partitioned by evidence boundary:
+The 9,830 file rules are partitioned by evidence boundary:
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
-| Classic mainland-domain import | 1,482 | Direct pinned MIT input with immutable selection ledger |
-| Advertising import | 849 | Direct pinned MIT input with immutable selection and capture ledgers |
-| Current late recovery | 2,721 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
-| Specialized, private/local, and service corpus | 2,420 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
+| Current late recovery | 2,684 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
+| Observation-derived mainland direct curation | 3,858 | Derived from this repository's own markup and script scans of mainland origins, Certificate Transparency vendor attestation, and APNIC delegation records |
+| Observation-derived advertising curation | 494 | Derived from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
+| Specialized, private/local, and service corpus | 2,794 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
-The final 2,420-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
+No component of the current product derives from a third-party rule list. ER-047 retired the two pinned `v2fly/domain-list-community` imports that once carried 2,331 rules, and with them the `Copyright (c) 2018-2019 V2Ray` attribution they required.
+
+The final 2,794-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
 
 ## Direct canonical inputs
 
@@ -40,23 +42,23 @@ Most current rules, targets, group structure, ordering, and filters are maintain
 
 Six late-recovery rulesets derive from frozen Phase 2 repository evidence. They restore historical DIRECT-default behavior after the Phase 3 reduction, but do not reassert current vendor ownership. `tests/fixtures/public-rule-exclusions.json` further removes non-general entries from the public product while immutable Phase 2/3 fixtures and `phase-3-recovery-ledger.json` remain unchanged as historical evidence.
 
-### Classic mainland-domain import
+### Observation-derived mainland direct curation
 
-`sources/rules/china-domains-direct.list` is a one-time deterministic import from `v2fly/domain-list-community` revision `660198a50bac2ab10c567d95a472a7b33915d1b0`, licensed under MIT (`Copyright (c) 2018-2019 V2Ray`).
+`sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 3,858 rules derived entirely from this repository's own measurement. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
 
-The selection reads direct `domain` and `full` entries from 31 named mainland service categories without recursively expanding includes. It excludes `!cn` entries, keywords, regular expressions, single-label suffixes, coverage within the selected bundle, and matchers already covered by earlier canonical rules.
+The decision comes from a primary source wherever it can: APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root when its A records fall inside them. Where that test cannot answer — a mainland service on a global CDN, or a root whose apex carries no address — admission falls back to per-host review recorded against the observation that found it.
 
-The emitted file contains 1,482 anchored matchers: 1,481 `DOMAIN-SUFFIX` entries and one `DOMAIN` entry. Revision, category list, input hashes, counts, output digest, and license digest are frozen in `tests/fixtures/china-domain-import-ledger.json`.
+`china-direct-curated` exists because ordering is semantics. Seven broad vendor roots plus two CDN roots must not run ahead of the cloud, media and AI segments that name specific hosts beneath them, so they sit in their own segment immediately before the GEOIP fallback, where the retired mainland import used to sit.
 
-### Advertising import
+### Observation-derived advertising curation
 
-`sources/rules/advertising.list` is a one-time deterministic import from `category-ads` at the same pinned MIT revision. The import reproduces the upstream parser's include and attribute-filter semantics, including selective `@ads` includes, and then applies Ekko Rules' anchored-rule boundary.
+`sources/rules/advertising-curated.list` is the first segment of the corpus this repository derived entirely from its own measurement. It consumes no upstream rule list. Candidates come from two first-party evidence sources committed under `docs/evidence/`: traffic captures of what observed pages actually requested, and IAB ads.txt files in which publishers themselves declare the advertising systems they authorise. Neither admits a rule alone. Traffic-observed hosts passed the per-host review recorded in `docs/evidence/admission-review-2026-09-19.json`: the host was observed third-party to a capture origin, review established it serves advertising, attribution or behavioural tracking, and review recorded why a `REJECT` cannot break first-party behaviour.
 
-The upstream category resolves to 850 entries: 677 domain roots, 172 exact full domains, and one regexp. The regexp is excluded; the emitted file contains 849 anchored matchers—677 `DOMAIN-SUFFIX` and 172 `DOMAIN`—with no keyword, regexp, single-label, or destination-IP rules.
+An ads.txt declaration names the company selling inventory, which is often not the domain that delivers advertising at runtime, so a declared root enters only after `scripts/ad_serving_probe.py` resolves conventional delivery hostnames beneath it and finds live infrastructure. Roots answering only on their apex are corporate websites and are excluded, as are publishers declaring themselves, mixed-business roots whose non-advertising functions a `REJECT` would break, and video and audio player platforms where blocking would remove content rather than advertising.
 
-`category-ads-all` is deliberately excluded because it additionally pulls provider-company, analytics, messaging, and other broader service roots. Input/dependency hashes, parser hash, selection counts, output hash, and representative cases are frozen in `tests/fixtures/advertising-import-ledger.json`.
+The segment is the whole advertising policy since ER-047 retired the pinned import; nothing sits between `private`, `remote-streaming` and it. It introduces no new first-match coverage: a curated suffix that would shadow an existing rule is narrowed to the observed hosts instead. Every published rule maps to a committed verdict — a per-host review, a root review, a publisher declaration made by two or more publishers, or a delivery-probe confirmation — and `AdvertisingAdmissionContractTests` asserts that mapping in both directions. Method, admission criteria, and the measured reasons this curation exists are in `docs/SELF-OWNED-REBUILD.md`.
 
-Advertising precedes specialized service segments, so 40 later telemetry/advertising matchers intentionally become unreachable. That exact capture set is frozen in `tests/fixtures/advertising-routing-ledger.json`; any additional capture requires review. The independent `🛑 广告拦截` group defaults to `REJECT` but remains manually switchable.
+Advertising precedes specialized service segments, so a small number of later telemetry and advertising matchers intentionally become unreachable; they are counted in the frozen first-match coverage figures in `sources/quality-baseline.yaml` rather than in a separate ledger, which ER-047 deleted along with the import it described. The independent `🛑 广告拦截` group defaults to `REJECT` but remains manually switchable.
 
 ### Domestic and overseas cloud routing
 
@@ -64,7 +66,7 @@ ER-023 adds repository-maintained `china-cloud` and `overseas-cloud` rulesets. A
 
 Generated-only `onedrive`, `icloud`, and `spotify-2` compatibility copies keep previously published Raw ruleset/provider URLs available with their original pre-merge matcher subsets and frozen list/provider hashes. They are derived deterministically from the consolidated `cloud-storage` or `spotify` source, included in the generated SHA-256 manifest, and are not canonical segments, rule-count inputs, or active Subconverter/Mihomo references.
 
-No cloud CIDR, ASN, `GEOSITE`, regular expression, or broad consumer-company root is added. The 71 intentional later-rule captures created by the cloud ownership layer are frozen in `tests/fixtures/cloud-routing-ledger.json`; concrete business rules such as Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili's Kingsoft hosts remain ahead of the cloud layer.
+No cloud CIDR, ASN, `GEOSITE`, regular expression, or broad consumer-company root is added. The 19 intentional later-rule captures created by the cloud ownership layer are frozen in `tests/fixtures/cloud-routing-ledger.json`; concrete business rules such as Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili's Kingsoft hosts remain ahead of the cloud layer.
 
 ## Immutable reconstruction and compatibility evidence
 

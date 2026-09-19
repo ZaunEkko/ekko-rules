@@ -1,0 +1,3515 @@
+{
+  "schema_version": 2,
+  "capture": "docs/evidence/cn-origins-2026-09-19.txt",
+  "method": "Two passes over the hostnames this repository's own scan of 2,017 mainland origins collected: leading labels matching advertising-delivery conventions, and leading labels matching tracking and analytics conventions, plus hostnames surfaced under roots the product still routes direct. Every verdict is derived from the shipped corpus - admit means advertising-curated is what the host first-matches - so this file cannot disagree with the product. Admission requires per-host review, a live A record, and criterion 2 of docs/SELF-OWNED-REBUILD.md: third-party to an observing origin, or a dedicated advertising or tracking endpoint of the operator whose site referenced it. admission_route records which of the two applies.",
+  "counts": {
+    "delivery_pass": {
+      "candidates": 249,
+      "reject": 151,
+      "admit": 71,
+      "dead": 27,
+      "admitted_third_party": 42,
+      "admitted_own_endpoint": 29
+    },
+    "tracking_pass": {
+      "candidates": 133,
+      "reject": 90,
+      "admit": 37,
+      "dead": 6,
+      "admitted_third_party": 34,
+      "admitted_own_endpoint": 3
+    }
+  },
+  "delivery_records": [
+    {
+      "host": "11.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "12.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "13.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "14.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "15.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "21.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "22.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "221.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "23.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "31.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "32.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "33.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "34.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "35.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "36.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "37.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "41.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "42.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "43.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "44.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "45.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "46.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "50.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "51.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "52.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "53.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "54.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "61.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "62.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "63.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "64.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "65.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "71.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "81.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "a.gdt.qq.com",
+      "third_party_to": [
+        "ssjj.cn",
+        "weiwenjia.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ad-img.fengniao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad-static-xg.tagtic.cn",
+      "third_party_to": [
+        "tgbus.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,tagtic.cn: mainland advertising and attribution SDK backend",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,tagtic.cn"
+    },
+    {
+      "host": "ad-zpub.leju.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.360yield.com",
+      "third_party_to": [
+        "cnbeta.com.tw"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ad.3elife.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.caijing.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.cnki.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.cyzone.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.doubleclick.net",
+      "third_party_to": [
+        "prometric.com.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,doubleclick.net: Google Ad Manager delivery and click-tracking domain",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,doubleclick.net"
+    },
+    {
+      "host": "ad.eepw.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.eqxiu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.hqew.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.jschina.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.ofweek.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.sohu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.southcn.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.wanfangdata.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.weather.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ad.xibojiaoyu.com",
+      "third_party_to": [
+        "xibojiaoyu.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "ad.ximalaya.com",
+      "third_party_to": [
+        "xibojiaoyu.cn",
+        "xibojiaoyu.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ad.yqxiu.cn",
+      "third_party_to": [
+        "eqxiu.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ad.yslcw.com",
+      "third_party_to": [
+        "21jingji.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ada.baidu.com",
+      "third_party_to": [
+        "weiling.cn",
+        "xdfyz.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "reviewed, not advertising delivery infrastructure"
+    },
+    {
+      "host": "adadm.dangdang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "adam.co",
+      "third_party_to": [
+        "bscea.org"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "adant.ai",
+      "third_party_to": [
+        "faxianai.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "adapi.fang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "adc.a6air.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "addons.mozilla.org",
+      "third_party_to": [
+        "howxm.com",
+        "lkong.com"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "ade.googlesyndication.com",
+      "third_party_to": [
+        "prometric.com.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,googlesyndication.com: Google AdSense and Ad Manager creative delivery",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,googlesyndication.com"
+    },
+    {
+      "host": "adeff.com",
+      "third_party_to": [
+        "miaozhen.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "adimg.cqnews.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "adincontent.init",
+      "third_party_to": [
+        "bjnews.com.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "adjs.pxto.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "adm2.autoimg.cn",
+      "third_party_to": [
+        "autohome.com.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "adm3.autoimg.cn",
+      "third_party_to": [
+        "autohome.com.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "admin.chinanev.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "admin.cmnews.duba.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "admin.etm.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "admin.juejin.id",
+      "third_party_to": [
+        "juejin.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "admin.people78.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "admin.qidian.qq.com",
+      "third_party_to": [
+        "cbi360.net",
+        "juhe.cn",
+        "yunpan.com"
+      ],
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
+    },
+    {
+      "host": "admin.qingting.fm",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "admin.wangxiao.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "admin.xiaoe-tech.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "admin1.sojson.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "adminapi.hqwx.com",
+      "third_party_to": [
+        "linkon.org.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
+    },
+    {
+      "host": "adobe.ly",
+      "third_party_to": [
+        "eainfor.com",
+        "flyme.cn",
+        "flyme.com",
+        "samsung.com.cn"
+      ],
+      "third_party_count": 4,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
+    },
+    {
+      "host": "adomas.org",
+      "third_party_to": [
+        "changyou.com",
+        "cy.com",
+        "pumch.cn"
+      ],
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "adqunar.qunar.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ads.cecb2b.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ads.staff.xdf.cn",
+      "third_party_to": [
+        "neworiental.org"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "ads.taobao.com",
+      "third_party_to": [
+        "duba.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ads.vidoomy.com",
+      "third_party_to": [
+        "cnbeta.com.tw"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by DOMAIN-SUFFIX,vidoomy.com, a reviewed advertising rule covering this host",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,vidoomy.com"
+    },
+    {
+      "host": "adsame.cyol.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "adservice.google.com",
+      "third_party_to": [
+        "prometric.com.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "adservice.kugou.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "adshow.fang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "adtool.cdown",
+      "third_party_to": [
+        "dongao.cn",
+        "dongao.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "adtrace.5054399.com",
+      "third_party_to": [
+        "4399.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "advancep.cn.goepe.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "adventure-x.org",
+      "third_party_to": [
+        "infoq.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "advertnew.wanfangdata.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ady.dongyingnews.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "afp.jinkaoedu.com",
+      "third_party_to": [
+        "zhiyeapp.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "reviewed, not advertising delivery infrastructure"
+    },
+    {
+      "host": "ah.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "amp.ad.sina.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "assets.adobedtm.com",
+      "third_party_to": [
+        "audi-faw-nev.com.cn",
+        "hp.com.cn",
+        "samsung.com.cn"
+      ],
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
+    },
+    {
+      "host": "beijing.bidchance.com",
+      "third_party_to": [
+        "beijingbaomu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "biaoshu.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "bid.ename.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "bidcard.alltobid.com",
+      "third_party_to": [
+        "zrdp.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "bidding.hqew.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "bj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "cdn-static.sspai.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "cdnfile.sspai.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "ckmap.mediav.com",
+      "third_party_to": [
+        "ifeng.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
+    },
+    {
+      "host": "click.union.vip.com",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "cm.adform.net",
+      "third_party_to": [
+        "cnbeta.com.tw"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "cm.mediav.com",
+      "third_party_to": [
+        "so.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
+    },
+    {
+      "host": "cms.tanx.com",
+      "third_party_to": [
+        "pingan.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "cn.unionpay.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "color.adobe.com",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
+    },
+    {
+      "host": "cpro.baidu.com",
+      "third_party_to": [
+        "jumei.com",
+        "lu.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "cpro.baidustatic.com",
+      "third_party_to": [
+        "1ting.com",
+        "2345.com",
+        "7k7k.com",
+        "962.net",
+        "baidu.com",
+        "bitauto.com"
+      ],
+      "third_party_count": 23,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or tracking endpoint reviewed per host",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN,cpro.baidustatic.com"
+    },
+    {
+      "host": "cpro.zol.com.cn",
+      "third_party_to": [
+        "zol.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "cq.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "credit.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "dfhs.tanx.com",
+      "third_party_to": [
+        "taobao.com",
+        "tmall.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "dsp.youdao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ecpm.tanx.com",
+      "third_party_to": [
+        "taobao.com",
+        "tmall.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "el.addeventlistener",
+      "third_party_to": [
+        "galaxyclub.cn",
+        "samsungmembers.cn"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "esg.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "fabu.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "fenlei.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "firefly.adobe.com",
+      "third_party_to": [
+        "faxianai.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
+    },
+    {
+      "host": "fj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "gd.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "gdtoday.newsgd.com",
+      "third_party_to": [
+        "southcn.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通"
+    },
+    {
+      "host": "get.adobe.com",
+      "third_party_to": [
+        "chinaz.com",
+        "geeknev.com",
+        "ifengimg.com",
+        "weathertv.cn",
+        "zhanqi.tv"
+      ],
+      "third_party_count": 5,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
+    },
+    {
+      "host": "gs.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "guess.mediav.com",
+      "third_party_to": [
+        "duba.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
+    },
+    {
+      "host": "gx.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "gz.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "h5.gdt.qq.com",
+      "third_party_to": [
+        "pajkb.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "h5.ssp.qq.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "hain.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "hb.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "hbs.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "hlj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "hn.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "hns.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "ib.adnxs.com",
+      "third_party_to": [
+        "cnbeta.com.tw"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,adnxs.com: Xandr bidding and delivery",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,adnxs.com"
+    },
+    {
+      "host": "image.bidchance.com",
+      "third_party_to": [
+        "zhaobiao.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "img.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "interface.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "jl.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "job.adquan.com",
+      "third_party_to": [
+        "faxianai.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure"
+    },
+    {
+      "host": "js.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "jx.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "kmh.addeventlistener",
+      "third_party_to": [
+        "qianlong.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "kmhyd.addeventlistener",
+      "third_party_to": [
+        "qianlong.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "kuajing.admin5.com",
+      "third_party_to": [
+        "a5.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "ln.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "m.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "mail.gdtfair.com",
+      "third_party_to": [
+        "gdghg.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通"
+    },
+    {
+      "host": "manual.sspai.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "marketing.adobe.com",
+      "third_party_to": [
+        "blackrock.com.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
+    },
+    {
+      "host": "mi.gdt.qq.com",
+      "third_party_to": [
+        "163.com",
+        "youku.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or tracking endpoint reviewed per host",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN,mi.gdt.qq.com"
+    },
+    {
+      "host": "nmg.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "ns.adobe.com",
+      "third_party_to": [
+        "ctzg.com",
+        "samsung.com.cn"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "nx.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "p.tanx.com",
+      "third_party_to": [
+        "2345.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "post.sspai.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "px.ads.linkedin.com",
+      "third_party_to": [
+        "diandian.com",
+        "kingdee.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "qh.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "qzs.gdtimg.com",
+      "third_party_to": [
+        "iqiyi.com",
+        "tgbus.com",
+        "youku.com"
+      ],
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,gdtimg.com: Tencent GDT creative image hosting; the root serves advertising assets only",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,gdtimg.com"
+    },
+    {
+      "host": "qzsdk.gdtimg.com",
+      "third_party_to": [
+        "163.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,gdtimg.com: Tencent GDT creative image hosting; the root serves advertising assets only",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,gdtimg.com"
+    },
+    {
+      "host": "restprops.addon",
+      "third_party_to": [
+        "chinajoy.net"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "s.ad.smaato.net",
+      "third_party_to": [
+        "cnbeta.com.tw"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "s.union.360.cn",
+      "third_party_to": [
+        "21cnjy.com",
+        "analysysdata.com",
+        "beisen.com",
+        "chooseauto.com.cn",
+        "cmeii.com",
+        "downza.cn"
+      ],
+      "third_party_count": 26,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "sa.bid.default",
+      "third_party_to": [
+        "suning.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "sa.bid.event",
+      "third_party_to": [
+        "suning.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "sa.bid.fun",
+      "third_party_to": [
+        "suning.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "sc.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "sd.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "search.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "seo.admin5.com",
+      "third_party_to": [
+        "destoon.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "sh.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "show-g.mediav.com",
+      "third_party_to": [
+        "duba.com",
+        "ihuaben.com",
+        "so.com"
+      ],
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
+    },
+    {
+      "host": "shuju.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "sso.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "ssp-sync.criteo.com",
+      "third_party_to": [
+        "cnbeta.com.tw"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by DOMAIN-SUFFIX,criteo.com, a reviewed advertising rule covering this host",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,criteo.com"
+    },
+    {
+      "host": "ssp.21ic.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "ssp.360.cn",
+      "third_party_to": [
+        "so.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ssp.pd.xibojiaoyu.local",
+      "third_party_to": [
+        "xibojiaoyu.cn",
+        "xibojiaoyu.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "ssp.test.xibojiaoyu.com",
+      "third_party_to": [
+        "xibojiaoyu.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "non-production test environment"
+    },
+    {
+      "host": "ssp.uat.xibojiaoyu.com",
+      "third_party_to": [
+        "xibojiaoyu.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "ssp.uat.xibojiaoyu.local",
+      "third_party_to": [
+        "xibojiaoyu.cn",
+        "xibojiaoyu.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "ssp.xibojiaoyu.com",
+      "third_party_to": [
+        "xibojiaoyu.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "sspai.com",
+      "third_party_to": [
+        "1234wu.com",
+        "newrank.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "少数派 technology publication; matches ssp by coincidence"
+    },
+    {
+      "host": "ssports.iqiyi.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "static-ssl.mediav.com",
+      "third_party_to": [
+        "hao86.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
+    },
+    {
+      "host": "static.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "static.mediav.com",
+      "third_party_to": [
+        "163.com",
+        "2345.com",
+        "7k7k.com",
+        "duba.com",
+        "hao86.com",
+        "le.com"
+      ],
+      "third_party_count": 6,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
+    },
+    {
+      "host": "storage-cdn.bidizhaobiao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "sx.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "sxs.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "tj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "toolitembar.addclass",
+      "third_party_to": [
+        "kf5.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "trans.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "union-click.jd.com",
+      "third_party_to": [
+        "1234wu.com",
+        "zol.com",
+        "zol.com.cn"
+      ],
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "union.114piaowu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "union.151files.goldhoe.com",
+      "third_party_to": [
+        "jinchutou.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "affiliate programme portal a user visits, not a delivery endpoint"
+    },
+    {
+      "host": "union.153files.goldhoe.com",
+      "third_party_to": [
+        "jinchutou.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "affiliate programme portal a user visits, not a delivery endpoint"
+    },
+    {
+      "host": "union.bokecc.com",
+      "third_party_to": [
+        "cifm.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "affiliate programme portal a user visits, not a delivery endpoint"
+    },
+    {
+      "host": "union.dangdang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "union.gad.netease.com",
+      "third_party_to": [
+        "harrypottermagicawakened.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "union.jd.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "union.koolearn.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "union.yingjiesheng.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "user.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "v.admaster.com.cn",
+      "third_party_to": [
+        "597.com",
+        "guancha.cn"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "v.gdt.qq.com",
+      "third_party_to": [
+        "163.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "vipinfo.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "vr.gdt.qq.com",
+      "third_party_to": [
+        "163.com",
+        "youku.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "www.adbc.com.cn",
+      "third_party_to": [
+        "ceweekly.cn",
+        "imachina.org.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "www.addlink.cn",
+      "third_party_to": [
+        "35.com",
+        "west.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "www.adguider.com",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure"
+    },
+    {
+      "host": "www.admaimai.com",
+      "third_party_to": [
+        "114piaowu.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "www.admin10000.com",
+      "third_party_to": [
+        "oneapm.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
+    },
+    {
+      "host": "www.admin5.cn",
+      "third_party_to": [
+        "a5.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "www.admin5.com",
+      "third_party_to": [
+        "a5.cn",
+        "appchina.com",
+        "askci.com",
+        "cifnews.com",
+        "destoon.com",
+        "epwk.com"
+      ],
+      "third_party_count": 19,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
+    },
+    {
+      "host": "www.adminbuy.cn",
+      "third_party_to": [
+        "zhujib.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
+    },
+    {
+      "host": "www.adobe.com",
+      "third_party_to": [
+        "163.com",
+        "aibase.cn",
+        "aibase.com",
+        "blackrock.com.cn",
+        "btime.com",
+        "buycar.cn"
+      ],
+      "third_party_count": 22,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
+    },
+    {
+      "host": "www.adquan.com",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure"
+    },
+    {
+      "host": "www.adspower.net",
+      "third_party_to": [
+        "1234wu.com",
+        "anestcang.com",
+        "diandian.com",
+        "goluckyvip.com"
+      ],
+      "third_party_count": 4,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
+    },
+    {
+      "host": "www.adtchrome.com",
+      "third_party_to": [
+        "ofweek.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure"
+    },
+    {
+      "host": "www.bida24.com",
+      "third_party_to": [
+        "666666.com.cn",
+        "stockstar.com"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "www.bidcenter.com.cn",
+      "third_party_to": [
+        "1234wu.com",
+        "64365.com",
+        "cbi360.net",
+        "chinapp.com",
+        "hualv.com",
+        "loupan.com"
+      ],
+      "third_party_count": 10,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "www.bidchance.com",
+      "third_party_to": [
+        "114piaowu.com",
+        "1234wu.com",
+        "55.la",
+        "acc5.com",
+        "cbi360.net",
+        "chem17.com"
+      ],
+      "third_party_count": 15,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "www.bidianer.com",
+      "third_party_to": [
+        "1ai.net",
+        "pcsoft.com.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "www.bidizhaobiao.com",
+      "third_party_to": [
+        "1234wu.com",
+        "1mishu.com",
+        "afzhan.com",
+        "chem17.com",
+        "chinairn.com",
+        "cnhnb.com"
+      ],
+      "third_party_count": 11,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "www.bidnews.cn",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
+    },
+    {
+      "host": "www.gdtex.com",
+      "third_party_to": [
+        "gdghg.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通"
+    },
+    {
+      "host": "www.gdtv.cn",
+      "third_party_to": [
+        "gddpf.org.cn",
+        "gdwomen.org.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通"
+    },
+    {
+      "host": "x.bidswitch.net",
+      "third_party_to": [
+        "cnbeta.com.tw"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "xj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "xm.admin5.com",
+      "third_party_to": [
+        "a5.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
+    },
+    {
+      "host": "xz.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "yn.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "zbwj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "zj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "zone.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    }
+  ],
+  "tracking_records": [
+    {
+      "host": "analysis.chinabgao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "analysis.huanqiu.com",
+      "third_party_to": [
+        "lifetimes.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "analytics.163.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "dedicated analytics or click-tracking endpoint of its operator",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "analytics.ahrefs.com",
+      "third_party_to": [
+        "gamepp.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "analytics.alright.network",
+      "third_party_to": [
+        "ijiandao.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "analytics.juhe.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "analytics.meituan.net",
+      "third_party_to": [
+        "meituan.org.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "analytics.mshare.cn",
+      "third_party_to": [
+        "shixiseng.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "analytics.oceanengine.com",
+      "third_party_to": [
+        "shoujihao.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "analytics.ooopic.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "analytics.s4.udesk.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "analytics.tuhu.com",
+      "third_party_to": [
+        "tuhu.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "beacon.cdn.qq.com",
+      "third_party_to": [
+        "163.com",
+        "dnspod.cn",
+        "youku.com"
+      ],
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "beacon.jk.cn",
+      "third_party_to": [
+        "pajk.com.cn",
+        "pajkb.com"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "beacon.sina.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "beacon.test.pajkdc.com",
+      "third_party_to": [
+        "jk.cn",
+        "pajk.com.cn",
+        "pajkb.com"
+      ],
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "non-production environment"
+    },
+    {
+      "host": "beaconcdn.qq.com",
+      "third_party_to": [
+        "dnspod.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "btrace.qq.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "dedicated analytics or click-tracking endpoint of its operator",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "bzclk.baidu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "admit",
+      "reason": "dedicated analytics or click-tracking endpoint of its operator",
+      "first_party_safety": "a dedicated advertising or tracking endpoint of its operator; a REJECT removes the collection without removing any function the page needs, because the response is never read by the page"
+    },
+    {
+      "host": "cbjs.baidu.com",
+      "third_party_to": [
+        "1010jiajiao.com",
+        "chinakaoyan.com",
+        "chinaz.com",
+        "downza.cn",
+        "nbd.com.cn",
+        "shafa.com"
+      ],
+      "third_party_count": 7,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "click.5054399.com",
+      "third_party_to": [
+        "4399.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "click.ali213.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "click.aliyun.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "click.baihe.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "click.ctyun.cn",
+      "third_party_to": [
+        "kkj.cn",
+        "mydrivers.com"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "click.dangdang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "click.gamersky.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "click.hm.baidu.com",
+      "third_party_to": [
+        "cqmmgo.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "click.suning.cn",
+      "third_party_to": [
+        "suning.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "click.union.vip.com",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "clk.optaim.com",
+      "third_party_to": [
+        "56.com",
+        "56img.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "cm.e.qq.com",
+      "third_party_to": [
+        "lejucaijing.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "cm.pos.baidu.com",
+      "third_party_to": [
+        "lejucaijing.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "cnzz.mmstat.com",
+      "third_party_to": [
+        "dongchedi.com",
+        "zqc1.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "collect.alipay.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "collect.cqnews.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "collect.mybank.cn",
+      "third_party_to": [
+        "alipay.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "payment or banking endpoint; a REJECT could stall checkout and first-party safety cannot be established"
+    },
+    {
+      "host": "collect.zjtcn.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "count.eepw.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "counter.mydown.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "dn-growing.qbox.me",
+      "third_party_to": [
+        "zhenai.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "dup.baidustatic.com",
+      "third_party_to": [
+        "123.com.cn",
+        "17k.com",
+        "caixin.com",
+        "cehome.com",
+        "cngold.com.cn",
+        "co188.com"
+      ],
+      "third_party_count": 18,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "e.qq.com",
+      "third_party_to": [
+        "sogou.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "the Tencent advertising platform's own website, which a user visits deliberately"
+    },
+    {
+      "host": "eclick.baidu.com",
+      "third_party_to": [
+        "114piaowu.com",
+        "chinaz.com",
+        "jiakaobaodian.com",
+        "lietou-static.com",
+        "xiaozhu2.com"
+      ],
+      "third_party_count": 5,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ecmb.bdimg.com",
+      "third_party_to": [
+        "baidu.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "fclog.baidu.com",
+      "third_party_to": [
+        "aiqicha.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "fourier.taobao.com",
+      "third_party_to": [
+        "996.com",
+        "9game.cn",
+        "fliggy.com",
+        "tmall.com"
+      ],
+      "third_party_count": 4,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "h.trace.qq.com",
+      "third_party_to": [
+        "dnspod.cn",
+        "sogou.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "hm.aidu.com",
+      "third_party_to": [
+        "cmeii.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "hm.baidu.com",
+      "third_party_to": [
+        "1010jiajiao.com",
+        "11467.com",
+        "120ask.com",
+        "123.com.cn",
+        "12321.cn",
+        "12365auto.com"
+      ],
+      "third_party_count": 604,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "hm.bendibao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "hm.hualv.com",
+      "third_party_to": [
+        "64365.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "hm.loupan.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "log.66law.cn",
+      "third_party_to": [
+        "hualv.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "log.cmbchina.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "log.diandian.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "log.kuwo.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "log.mmstat.com",
+      "third_party_to": [
+        "aliyun.com",
+        "fliggy.com",
+        "taobao.com",
+        "taopiaopiao.com",
+        "tmall.com"
+      ],
+      "third_party_count": 5,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "log.mogu.com",
+      "third_party_to": [
+        "mogucdn.com",
+        "mogujie.com"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "log.study.163.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "log.youpin.mi.com",
+      "third_party_to": [
+        "xiaomiyoupin.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "log.yunduocrm.com",
+      "third_party_to": [
+        "open.com.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "logs.17house.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "logs.dutenews.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "logs.szdute.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "lpms.51y5.net",
+      "third_party_to": [
+        "ku6.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "oth.str.beacon.qq.com",
+      "third_party_to": [
+        "dnspod.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "otheve.beacon.qq.com",
+      "third_party_to": [
+        "dnspod.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "pos.baidu.com",
+      "third_party_to": [
+        "2345.com",
+        "jiakaobaodian.com",
+        "xiaozhu2.com"
+      ],
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "pv.fengniao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "pv.sohu.com",
+      "third_party_to": [
+        "125yan.com",
+        "cmgadx.com",
+        "eoffcn.com",
+        "sxgov.cn",
+        "toyeebuy.com",
+        "xzjy365.com"
+      ],
+      "third_party_count": 6,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "pv.zhiding.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "pv.zol.com.cn",
+      "third_party_to": [
+        "zol.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "report.12377.cn",
+      "third_party_to": [
+        "962.net",
+        "koubei.com",
+        "uzzf.com"
+      ],
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "report.aliyun.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "report.bjjubao.org.cn",
+      "third_party_to": [
+        "9xiu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer"
+    },
+    {
+      "host": "report.cei.cn",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "report.cnblogs.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "report.hebccw.cn",
+      "third_party_to": [
+        "hebei.com.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "report.huatuo.qq.com",
+      "third_party_to": [
+        "juhe.cn",
+        "yunpan.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "report.iimedia.cn",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "report.meituan.com",
+      "third_party_to": [
+        "meituan.org.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "report.meituan.net",
+      "third_party_to": [
+        "meituan.org.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "report.qcloud.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "report.seedsufe.com",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "retcode.taobao.com",
+      "third_party_to": [
+        "koubei.com",
+        "xuexi.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "browser error monitoring; this repository classifies monitoring as neither advertising nor tracking, consistent with the newrelic.com hold"
+    },
+    {
+      "host": "s.360.cn",
+      "third_party_to": [
+        "163.com",
+        "ibiling.cn",
+        "kuaijianji.com",
+        "ppsport.com",
+        "so.com"
+      ],
+      "third_party_count": 5,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "s.qhupdate.com",
+      "third_party_to": [
+        "kuaijianji.com",
+        "so.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "sensors.h5.xed.plus",
+      "third_party_to": [
+        "xiaoe-tech.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "non-production environment"
+    },
+    {
+      "host": "sensors.ibreader.com",
+      "third_party_to": [
+        "jianshu.com",
+        "jianshu.io"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "sensors.qiniu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "sensors.woa.com",
+      "third_party_to": [
+        "dnspod.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "sensors.xeknow.com",
+      "third_party_to": [
+        "xiaoe-tech.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "sensors.xiaoeknow.com",
+      "third_party_to": [
+        "xiaoe-tech.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "stat.58che.com",
+      "third_party_to": [
+        "cnmo.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "stat.ihuaben.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "stat.it168.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "stat.qf.v-56.com",
+      "third_party_to": [
+        "56.com",
+        "56img.com"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "stat.vip.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "stat.www.gov.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "stat.y.qq.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "stat.youpin.mi.com",
+      "third_party_to": [
+        "xiaomiyoupin.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "stat.zol.com.cn",
+      "third_party_to": [
+        "zol.com",
+        "zolauto.com"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "statistic.live.126.net",
+      "third_party_to": [
+        "cnhnb.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "stats.12365auto.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "stats.21jingji.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "stats.customs.gov.cn",
+      "third_party_to": [
+        "1234wu.com",
+        "myce.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer"
+    },
+    {
+      "host": "stats.g.doubleclick.net",
+      "third_party_to": [
+        "huize.com",
+        "vbkr.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "stats.gd.gov.cn",
+      "third_party_to": [
+        "gddpf.org.cn",
+        "gdftu.org.cn",
+        "gdszjgdj.org"
+      ],
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer"
+    },
+    {
+      "host": "stats.ipinyou.com",
+      "third_party_to": [
+        "163.com",
+        "fkw.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "stats.shafa.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "ta.597.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "ta.bendibao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "ta.lianjia.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "ta.trs.cn",
+      "third_party_to": [
+        "bast.net.cn",
+        "bocfullertonbank.com",
+        "cgws.com",
+        "cicpa.org.cn",
+        "cnjiwang.com",
+        "idcpc.org.cn"
+      ],
+      "third_party_count": 11,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "ta.wikipedia.org",
+      "third_party_to": [
+        "xuetangx.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Tamil Wikipedia; ta is a language code, not 统计分析"
+    },
+    {
+      "host": "tce.alicdn.com",
+      "third_party_to": [
+        "fliggy.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "content widget delivery, not advertising"
+    },
+    {
+      "host": "tongji.baidu.com",
+      "third_party_to": [
+        "maiche.com",
+        "qunar.com",
+        "wanfangdata.com.cn",
+        "xdfyz.cn",
+        "xiaozhu2.com",
+        "zw.cn"
+      ],
+      "third_party_count": 6,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "tongji.dcloud.net.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "tongji.leju.com",
+      "third_party_to": [
+        "lejucaijing.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "tongji.meizu.com",
+      "third_party_to": [
+        "meizu.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "tongji.pc6.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "tongji.scol.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "trace.inlong.qq.com",
+      "third_party_to": [
+        "sogou.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "trace.suning.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "track.58.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "track.csc.com.cn",
+      "third_party_to": [
+        "csc108.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "track.sfccn.com",
+      "third_party_to": [
+        "yslcw.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "track.sohu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "tracker.1ting.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "verdict": "reject",
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "tracking.eiceducation.com.cn",
+      "third_party_to": [
+        "eic.org.cn"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "wlog.kuaishou.com",
+      "third_party_to": [
+        "acfun.cn"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    },
+    {
+      "host": "zz.bdstatic.com",
+      "third_party_to": [
+        "123.com.cn",
+        "163.com",
+        "17k.com",
+        "19lou.com",
+        "21ic.com",
+        "21jingji.com"
+      ],
+      "third_party_count": 118,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+    }
+  ]
+}

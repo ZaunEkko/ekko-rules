@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-053 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -612,3 +612,614 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-032 — HoYoverse international game routing
+
+**Type:** single-service extension of two existing segments
+
+The HoYoverse international surface had no anchored placement, so the global Honkai: Star Rail client fell through to `🐟 漏网之鱼` while the mainland roots `mihoyo.com`, `bhsr.com`, and `yuanshen.com` were already DIRECT under `🌏 国内网站`.
+
+`game-platform` gains three anchored suffix rules — `hoyoverse.com` for account, SDK, and game API hosts; `hoyoplay.com` for the launcher; and `hoyolab.com` for the embedded community surface — plus six exact hosts that the broad mainland `mihoyo.com` root would otherwise capture into a DIRECT policy: `api-account-os`, `api-os-takumi`, `hk4e-api-os`, `hk4e-sdk-os`, `sdk-os-static`, and `webstatic-sea`. Three further `-os` candidates under `mihoyo.com` resolved NXDOMAIN at review time and are not added.
+
+`starrails.com` goes to `game-download`, not `game-platform`. Every host under that root except `autopatchos.starrails.com` resolved NXDOMAIN at review time, so the root is a patch-delivery domain only. `game-download` precedes `game-platform` and its group leads with `DIRECT`, so multi-gigabyte client updates stay off the selected proxy.
+
+The mainland roots are untouched and keep their earlier `china-web` placement. `advertising` still precedes both segments and its anchored `log-upload-os.hoyoverse.com` and `log-upload.mihoyo.com` telemetry rules continue to win first match; no later ruleset repeats either matcher, so the frozen advertising routing ledger and its capture count are unchanged.
+
+No policy group, ruleset segment, keyword matcher, destination-IP rule, or generic CDN suffix is introduced.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-033 — iQIYI group renamed to `🎬 爱奇艺国际`
+
+**Type:** group rename, no rule edits
+
+`🎬 爱奇艺` did not say why it exists separately from `🌏 国内流媒体`. Both default to `DIRECT` and behave identically until the user moves one, so the group read as redundant. Its actual purpose is that iQIYI publishes an international catalogue at `iq.com` that needs an overseas exit, while the rest of mainland streaming must stay direct; a shared group could not serve both. The group is renamed `🎬 爱奇艺国际` to state that.
+
+Members and order are unchanged and the group still leads with `DIRECT`, because the ruleset also carries the mainland iQIYI roots and mainland playback must keep working untouched. The international catalogue depends on `iqiyi.com`, `qy.net`, and `iqiyipic.com` — `intl-rcd.iqiyi.com`, `intl-subscription.iqiyi.com`, `intl.iqiyi.com`, and `msg-intl.qy.net` were all observed live — so those roots are deliberately not split out to `china-media`; doing so would send the international session through two exits.
+
+`tests/fixtures/phase-3-recovery-ledger.json` is sealed by SHA-256 and records the historical group name. It is not edited. The recovery test now maps the historical name to the current one so the ledger stays immutable. `scripts/reverse_profile.py` keeps the historical name in its importer vocabulary, which exists to recognise older and third-party profiles.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-034 — Retired exact hosts removed
+
+**Type:** stale-entry removal, no first-match behavior change
+
+Ten exact `DOMAIN` matchers in repository-maintained rulesets no longer resolve. Each was confirmed NXDOMAIN against three independent resolvers — Google, AliDNS, and Cloudflare — before removal.
+
+| Ruleset | Removed |
+|---|---:|
+| `game-download` | 7 |
+| `bilibili-sea` | 1 |
+| `hbo-go` | 1 |
+| `kktv` | 1 |
+
+The removed hosts are `gog-cdn-lumen.secure2.footprint.net`, `ssl-lvlt.cdn.ea.com`, `st-bak.viv.wanwang.space`, `steam.eca.qtlglb.com`, `steam.naeu.qtlglb.com`, `steam.ru.qtlglb.com`, `steampipe.steamcontent.tnkjmec.com`, `apm-misaka.biliapi.net`, `hbounify-prod.evergent.com`, and `kktv-theater.kk.stream`.
+
+The four LAN administration hosts in `private` — `router.asus.com`, `www.asusrouter.com`, `instant.arubanetworks.com`, and `setmeup.arubanetworks.com` — also return NXDOMAIN publicly and are deliberately kept. They resolve only on the local network, which is exactly why they carry a DIRECT rule.
+
+The pinned `advertising` import and the frozen late-recovery rulesets contain further non-resolving hosts. Neither is edited: both are sealed by immutable ledgers and their contents are evidence, not maintained curation.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-035 — Reconstruction scaffolding retired
+
+**Type:** infrastructure retirement, no rule edits
+
+The project now maintains and iterates its own corpus, so the tooling kept only to reconstruct and migrate the original profile no longer earns its place.
+
+Removed:
+
+- `scripts/reverse_profile.py`. The legacy importer had no remaining input: the credential-bearing expanded profile left the repository in ER-001, no profile ships in the tree, and no document presents the importer as a supported tool. Its `py_compile` step is dropped from CI and `LegacyImporterTests` (5 tests) goes with it.
+- `tests/fixtures/phase-2-before.json`, `phase-2-after.json`, and `phase-2-migration-ledger.json`, with `PhaseTwoMigrationBaselineTests` (3 tests). These froze the ER-001 canonical-source migration and constrain nothing about the current product.
+
+`test_first_match_coverage_metrics_are_frozen` keeps its real guard. Only the three "must be below the Phase 2 historical baseline" comparisons are dropped; the equality against the quality baseline and the explicit 146 / 13 / 133 assertions remain, so first-match coverage is still frozen.
+
+Phase 3 is deliberately kept. `phase-3-recovery-ledger.json` is a required `next_gate` key in the quality-baseline contract enforced by `scripts/profile_model.py`, `PhaseThreeDirectRecoveryTests` validates the six late-recovery rulesets — 2,684 rules, 34.3 percent of the product — against a frozen selection replayed from a pinned commit, and `docs/PROVENANCE.md` cites `phase-3-after.json` and the recovery ledger as that corpus's evidence boundary. Removing them would retire a production guard and weaken a provenance record, not clear away scaffolding.
+
+The two pinned MIT imports are likewise untouched. `china-domains-direct.list` and `advertising.list` carry 2,331 rules of `v2fly/domain-list-community` data; while that data ships, `NOTICE.md` and the two import ledgers discharge the `Copyright (c) 2018-2019 V2Ray` attribution and remain mandatory.
+
+The suite goes from 61 to 53 tests. No rule, ruleset segment, proxy group, or generated artifact changes.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,818 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-036 — Observation-derived advertising curation
+
+**Type:** new ruleset segment funded by a same-policy consolidation
+
+The pinned advertising import does not block what pages actually load. Measured against this repository's own observation of 21 origins, `advertising.list` covers 19 of the 260 observed third-party hosts — 7.3 percent. It misses the entire contemporary programmatic stack: Taboola, PubMatic, Magnite, OpenX, Index Exchange, TripleLift, Sharethrough, Equativ, Criteo, The Trade Desk, ID5, LiveRamp, LiveIntent, IntentIQ, Lotame, DoubleVerify, Integral Ad Science, Comscore, Permutive, and Tencent GDT. Separately, 84 of its 849 entries — 9.9 percent — no longer resolve anywhere, and 180 serve a Russian audience this product does not have.
+
+`advertising-curated` is the first ruleset built entirely from this repository's own measurement. All 260 observed third-party hosts were reviewed one by one against the admission criteria; the verdicts and their reasons are committed in `docs/evidence/admission-review-2026-09-19.json` as 110 admit, 137 reject, 13 hold. The 68 emitted rules carry the admitted hosts, consolidated to a registrable root only where the root is unambiguously advertising infrastructure.
+
+Three findings from the review changed the output and are worth recording:
+
+- A curated suffix must never shadow an existing rule. `baidustatic.com` and `mmstat.com` would have, so they are narrowed to the observed hosts; `baidustatic.com` also serves general Baidu static assets, and a root-level `REJECT` would have broken those pages.
+- `logx.optimizely.com` is dropped. `dazn` already routes it to `🎬 Dazn`, so a `REJECT` would have broken Dazn.
+- Twelve entries the import already covers are dropped as redundant.
+
+The segment sits immediately after the import and shares its `🛑 广告拦截` policy, so ordering and default `REJECT` behavior are unchanged. First-match coverage is identical to before this change — union 146, same-segment 13, cross-segment 133 — because every rule that would have increased it was narrowed or removed.
+
+The Subconverter 64-segment ceiling funds the new segment through a same-policy consolidation, the mechanism ER-023 established. `hbo-max` is concatenated into `hbo-go` without reordering under their shared `🎬 HBO GO/MAX` policy; the retired `hbo-max` Raw URL survives as a generated-only compatibility copy carrying its original 16 matchers behind frozen list and provider hashes, exactly as `spotify-2`, `onedrive`, and `icloud` do. Rule count, matcher order, and policy targets are unchanged by the merge.
+
+The pinned import, its ledger, and its `emitted_sha256` are untouched. The `Copyright (c) 2018-2019 V2Ray` attribution therefore still stands: that data still ships. Retiring it requires replacing it, which this segment starts rather than completes.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 7,886 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-037 — Publisher declarations widen the curated advertising corpus
+
+**Type:** extension of an existing segment from a second first-party evidence source
+
+ER-036 built `advertising-curated` from traffic observation alone. Observation shows what a page loaded but reaches breadth slowly: 21 origins yielded 141 third-party roots, and new roots per origin had not begun to saturate.
+
+IAB ads.txt closes that gap. A publisher serves the file from its own root and lists every advertising system it authorises to sell its inventory, so the file is the publisher's own statement that a domain is advertising infrastructure. `scripts/ads_txt_evidence.py` collects them: 49 of 57 publishers served one, declaring 826 advertising systems, 545 of them by two or more publishers.
+
+Declarations are candidates, not admissions, because the declared domain is the company selling inventory and often not the domain delivering advertising at runtime — OpenX declares `openx.com` but bids from `openx.net`, Xandr declares `appnexus.com` but serves from `adnxs.com`. A rule on a corporate website stops nothing, and rules that stop nothing are the defect this rebuild exists to remove. `scripts/ad_serving_probe.py` therefore resolves the delivery-shaped hostnames an advertising platform conventionally runs beneath each candidate root. Of 453 probed roots, 267 have live delivery infrastructure, 172 answer only on their apex, and 14 do not resolve.
+
+Filtering before and after the probe removed, in order: 56 candidates that are publishers declaring themselves, mixed-business roots whose non-advertising functions a `REJECT` would break, or agency holding companies; then the 186 roots without live delivery; then 24 video and audio player platforms, because blocking those removes content rather than advertising and the fourth admission criterion cannot be satisfied for them. The remaining 243 roots plus 16 already-specific advertising hosts bring the segment to 327 rules.
+
+Measured against the same evidence, with the pinned import alone and then with the import plus this segment:
+
+| Target | Import | Import and curated |
+|---|---:|---:|
+| Third-party hosts observed on 21 origins | 7.3% | 42.3% |
+| Hosts this repository reviewed as advertising | 16.4% | 99.1% |
+| Advertising systems declared by two or more publishers | 1.7% | 51.2% |
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133. Not one of the 283 candidates shadowed an existing rule or was shadowed by one, so nothing needed narrowing this round. `logx.optimizely.com` is reclassified from admit to hold in the review record so the evidence matches what shipped; ER-036 dropped it because `dazn` routes it to its own policy.
+
+The pinned import, its ledger and its `emitted_sha256` remain untouched, so the `Copyright (c) 2018-2019 V2Ray` attribution still stands.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 8,145 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-038 — Wider publisher sample for the curated advertising corpus
+
+**Type:** extension of an existing segment from the same evidence source
+
+ER-037 polled 57 publishers. Publisher choice is not derived from any rule list — publishers are public entities — so the sample can widen freely. It now spans 235 publishers across news, technology, sport, finance, entertainment, lifestyle and gaming in North America, the United Kingdom, western Europe, greater China, Japan, Korea, India, Oceania and Latin America. 198 served an `ads.txt`, declaring 1,194 advertising systems, 910 of them by two or more publishers.
+
+Of 638 candidates the curated segment did not already cover, the delivery probe found 239 with live infrastructure, 371 with a corporate website only, and 28 that do not resolve. Review then removed 38 mixed-business roots whose non-advertising functions a `REJECT` would break, 28 publishers and media groups, 6 agency and holding companies, and 36 video and audio player platforms. The remaining 131 roots bring the segment to 452 rules.
+
+Six of those initially duplicated entries already in the pinned import. The round's coverage check compared candidates against the curated segment but not against the import, so the duplicates were only caught by the first-match metric afterwards. Future rounds compare against both.
+
+Measured against the same evidence, with the pinned import alone and then with the import plus this segment:
+
+| Target | Import | Import and curated |
+|---|---:|---:|
+| Third-party hosts observed on 21 origins | 7.3% | 42.3% |
+| Hosts this repository reviewed as advertising | 16.5% | 100.0% |
+| Advertising systems declared by two or more publishers | 1.3% | 44.9% |
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133.
+
+An audit of the import establishes what retiring it would still cost. Of its 849 entries, 84 no longer resolve and 4 are already covered here, so 761 carry live coverage this segment does not yet reproduce. Only 5.9 percent of those appear in the widened declarations, because the two sources describe different slices: `ads.txt` maps the programmatic supply chain, while the import's remaining strength is mobile SDK and platform-native advertising endpoints — `app-measurement.com`, `admob.com`, `2mdn.net`, `ads-twitter.com`, ByteDance's `zijieapi.com`, Kuaishou's `adkwai.com` — plus 96 Russian and 68 mainland Chinese entries. Reaching those needs a third evidence source, so the import stays and the attribution with it.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 8,270 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-039 — Observation-derived mainland direct curation
+
+**Type:** extension of an existing segment from a new evidence source
+
+Major mainland services were reaching the proxy fallback. `zol.com.cn`, `ifeng.com`, `eastmoney.com`, `csdn.net`, `ithome.com`, `cnblogs.com`, `suning.com` and `dangdang.com` matched no rule in the product, so their traffic left the country and came back. The pinned mainland import is 1,482 entries and did not cover them.
+
+Browser capture cannot reach the breadth this needs, so `scripts/page_host_scan.py` reads the hostnames an origin's markup references instead. It is far less precise — it misses anything a script builds at runtime — but it scales to hundreds of origins, and for deciding which services a site belongs to that is the trade worth making. 182 of 245 mainland origins were scanned, yielding 5,118 distinct hostnames across 1,269 registrable roots, 922 of them matching no existing rule.
+
+Observation supplies candidates; it cannot decide them, because a mainland page also references foreign fonts, libraries and advertising. The decision comes from a primary source. APNIC publishes the registry's own delegation records, so the ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root only when every A record falls inside them. Of the 922 candidates, 600 are mainland-hosted, 255 foreign, 4 mixed and 63 do not resolve.
+
+Review then removed 11 mainland advertising and analytics roots — `umeng.com`, `growingio.com`, `admaster.com.cn`, `analysys.cn`, `cmgadx.com` among them — because they belong to the advertising policy rather than a direct one, 4 malformed roots the scanner produced, and `pplive.com`, which would have shadowed `afp.pplive.com` in `china-media-late-recovery`. The remaining 584 join `china-web`, taking it from 370 to 954 rules.
+
+A first attempt at filtering also flagged long domain labels as random strings and would have dropped `cankaoxiaoxi.com`, `wallstreetcn.com` and `yingjiesheng.com`. The heuristic was wrong and was replaced by an explicit list.
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133.
+
+The mainland import remains untouched, and so does its attribution. This curation is additive: it covers what the import missed rather than reproducing what it holds.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 8,854 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-040 — Second mainland crawl round
+
+**Type:** extension of an existing segment from the same evidence source
+
+ER-039 scanned 245 mainland origins chosen directly. The roots it confirmed are themselves mainland services, so they seed the next round without leaving this repository's own observation. 373 of 528 such origins were scanned, yielding 8,347 hostnames across 2,790 registrable roots, 2,018 of them matching no existing rule.
+
+The APNIC probe found 1,253 mainland-hosted, 592 foreign, 10 mixed and 163 unresolved. Review removed seven mainland advertising and measurement roots — `umeng.com`, `growingio.com`, `analysys.cn`, `miaozhen.com`, `irs01.com`, `sensorsdata.cn` and `tagtic.cn` — because they belong to the advertising policy, and `pplive.com`, which would have shadowed `afp.pplive.com`. The remaining 1,245 take `china-web` from 954 to 2,199 rules.
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133. The additions are disjoint from the pinned import by construction: a candidate is only considered when no existing rule covers it, and the import is an existing rule. That is also why retiring the import would still cost 1,448 live entries. Reaching those is a matter of crawling further, not of method.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 10,099 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-041 — Certificate Transparency reaches vendor infrastructure
+
+**Type:** extension of an existing segment from a new evidence source
+
+Crawling further stopped paying. A third crawl round scanned 855 origins and confirmed 3,450 mainland roots, but an audit showed why that does not retire the pinned import: the import's remaining strength is the backend, sub-brand and infrastructure domains large vendors operate — `servicewechat.com`, `byteacct.com`, `alipaylog.com`, `jdcloud-oss.com`, `bytedns5.com` — and no homepage links to those, so no amount of homepage scanning reaches them.
+
+Certificate Transparency does. Every publicly trusted certificate is logged together with the organisation it was issued to, so querying the log by organisation returns the domains a vendor proved control of to a certificate authority. That is the vendor's own attestation, obtained from a primary source, not a third party's compilation. `scripts/vendor_domain_discovery.py` performs the query; the verdict on whether a discovered root belongs on a direct policy still comes from the APNIC probe.
+
+46 mainland vendors attest 1,711 registrable roots. 1,333 match no existing rule, and of those 480 are mainland-hosted. Separately, the third crawl round contributes 526 roots referenced by two or more independent origins — the threshold exists because at this depth a crawl reaches long-tail links whose marginal value does not justify the bloat. Six mainland measurement roots were removed as belonging to the advertising policy. The remaining 997 take `china-web` from 2,199 to 3,196 rules.
+
+The audit that motivated the change also measures progress against it. Of the import's 1,448 live entries, 279 are now independently attested through Certificate Transparency and 216 through this repository's own crawl, 408 once deduplicated — 28.2 percent. The remaining 1,040 are vendor-affiliated domains under obscure names, which the same method reaches with a wider organisation list.
+
+First-match coverage is unchanged — union 146, same-segment 13, cross-segment 133.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,096 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 146; same-segment: 13; cross-segment-only: 133.
+
+## ER-042 — Shared SaaS narrowed out of single-service policies
+
+**Type:** overbreadth removal, no new rules
+
+A regression check over functional hostnames found `static.zdassets.com` routed to `🎬 韩国媒体`. The rule sits beside `watcha.zendesk.com`, so its origin is clear — Watcha runs its help centre on Zendesk — but `zdassets.com` is Zendesk's global asset CDN. Every site using Zendesk was being pulled into a Korean streaming policy.
+
+An audit of the same shape across all service-specific rulesets found 50 references to shared third-party infrastructure. Most are correctly scoped: `bahamut.akamaized.net`, `hboasialive.akamaized.net`, `disney.my.sentry.io` and the CloudFront distributions name one tenant each. Six were not, and all six are telemetry or marketing services the streaming product does not need in order to play:
+
+| Removed | From | Shared with |
+|---|---|---|
+| `zdassets.com` | `media-korea` | every Zendesk help centre |
+| `launches.appsflyer.com` | `media-korea` | every app using AppsFlyer attribution |
+| `sdk.iad-05.braze.com` | `media-korea` | every app using Braze messaging |
+| `ipv4.cws.conviva.com`, `ipv6.cws.conviva.com` | `media-korea` | every streamer using Conviva |
+| `braze.com`, `conviva.com` | `disney-plus` | as above, at root scope |
+| `js-agent.newrelic.com` | `disney-plus` | every site using New Relic browser monitoring |
+
+Three further shared endpoints are kept deliberately. `execute-api.us-east-1.amazonaws.com`, `cognito-identity.us-east-1.amazonaws.com` and `mobileanalytics.us-east-1.amazonaws.com` are AWS regional endpoints where the tenant is identified by credentials rather than by hostname, so no narrower form exists, and viuTV's sign-in depends on Cognito. The overbreadth is real and unavoidable; removing them would break the services these rulesets exist to serve.
+
+`js-agent.newrelic.com` was already unreachable — the pinned advertising import covers it and runs first — so removing it takes the intentional cross-segment capture count from 40 to 39 and the advertising routing ledger is re-sealed, the mechanism ER-031 established. First-match coverage falls from 146 to 145 accordingly, which the gate permits: it may not increase.
+
+This round also repairs a defect ER-039 introduced. Rewriting `china-web.list` dropped its trailing newline, which broke `test_direct_default_domain_keyword_is_rejected` — the test appends a matcher and the missing newline fused it onto the last rule. The failure went unnoticed for three commits because the verification command printed the test count without the pass or fail line. Trailing newlines now match what each file carried on `main`.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,088 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-043 — Wider vendor sample for Certificate Transparency discovery
+
+**Type:** extension of an existing segment from the same evidence source
+
+ER-041 queried 46 organisations. A wider list of 118 covers telecommunications carriers, handset makers, game studios, AI companies, cloud providers and the sub-brands of the large platforms. crt.sh throttles bursts and answers an over-eager client with an empty body, which is indistinguishable from an organisation having no certificates, so the tool now retries with a growing pause; 72 organisations that appeared to have nothing returned results on retry.
+
+The wider sample attests 2,338 registrable roots. 1,394 match no existing rule, of which 74 are mainland-hosted — the earlier 480 are already in the ruleset. One measurement root is removed as belonging to the advertising policy. The remaining 73 take `china-web` to 3,269 rules with first-match coverage unchanged at union 145.
+
+Both imports are now measured against the full independent evidence pool:
+
+| Import | Live entries | Independently attested | Still missing |
+|---|---:|---:|---:|
+| `china-domains-direct.list` | 1,448 | 461 (31.8%) | 987 |
+| `advertising.list` | 765 | 215 (28.1%) | 550 |
+
+Neither import can be retired, so the `Copyright (c) 2018-2019 V2Ray` attribution stands. What has changed is that the product no longer depends on them for quality: the curated segments outperform the advertising import on every measured axis and cover mainland services it never held.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,161 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-044 — Russian publishers, and a scanner anchored against script noise
+
+**Type:** extension of an existing segment, plus a tool defect fix
+
+A fifth of the advertising import serves a Russian audience. Reproducing that coverage independently needs Russian publishers, and publisher choice carries no dependency on anyone's rule list, so the same `ads.txt` method applies unchanged. 48 of 75 Russian publishers served one, declaring 439 advertising systems, 273 by two or more.
+
+Of 126 candidates the curated segment did not cover, the delivery probe found 37 with live infrastructure. Review removed eight mixed-business roots, one publisher, one agency and ten video player platforms, leaving 17: `adhigh.net`, `adriver.ru`, `adtarget.me`, `bidvol.com`, `byyd.me`, `clickonometrics.pl`, `getintent.com`, `mobuppsrtb.com`, `mobydix.com`, `persona.ly`, `redllama.ru`, `relap.io`, `rtbsape.com`, `sape.ru`, `tds.bid`, `totalmediasolutions.com` and `upravel.com`. The segment reaches 469 rules and 28.4 percent of the import's live Russian entries are now independently attested.
+
+The round also fixes a defect in `page_host_scan.py`. Its pattern anchored on a bare `//`, and minified JavaScript ends statements with trailing comments such as `}//console.log(x)`, so the text after the slashes was read as a hostname. The pattern now requires either an explicit scheme or a delimiter that genuinely precedes a URL. No rule was affected: every candidate passes the APNIC probe before admission, and the noise never resolved.
+
+First-match coverage is unchanged at union 145.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,178 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-045 — Subject alternative names expose sibling domains
+
+**Type:** extension of an existing segment from the same evidence source
+
+Querying Certificate Transparency by organisation depends on guessing how a vendor's certificates are registered, and large vendors register under many names — ByteDance's certificates sit under Douyin, Volcano Engine and Lemon Inc. as well as its own. Querying by domain avoids the guess. A certificate covers every name it was issued for, so a multi-domain certificate for a vendor's main domain names the siblings it runs under unrelated-looking names: `bytedance.com` returns `bytedance.net`, `feishu.cn`, `larksuite.com` and `tiktok.com`.
+
+The tool now reads a term containing a dot as a domain and searches with `q` rather than `O`. 797 seeds — every mainland-hosted root confirmed so far, plus the origins of the first scan — attest 5,456 registrable roots, against 2,338 from the organisation search.
+
+3,424 match no existing rule; the APNIC probe finds 628 mainland-hosted, 1,241 foreign and 1,553 unresolved. One measurement root is removed as belonging to the advertising policy, leaving 627. `china-web` reaches 3,896 rules with first-match coverage unchanged at union 145.
+
+Progress against the imports, measured over the full independent evidence pool:
+
+| Import | Live entries | Independently attested | Still missing |
+|---|---:|---:|---:|
+| `china-domains-direct.list` | 1,448 | 480 (33.1%) | 968 |
+| `advertising.list` | 765 | 236 (30.8%) | 529 |
+
+The subject-alternative-name harvest added 627 rules but moved the mainland import's attestation by only 1.3 points, because it finds a different set of mainland domains rather than the import's. That gap is the honest shape of the remaining work.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,805 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-046 — Following scripts, and where the crawl saturates
+
+**Type:** extension of an existing segment, plus a tool capability
+
+A page's markup names its CDN and image hosts. The endpoints an application actually calls are built inside its script bundles, and a browser comparison shows the size of the gap: Taobao's markup names about two dozen hosts, and following its scripts reaches 108. Douyin's runtime requests include `zijieapi.com`, `bytetos.com`, `bytescm.com`, `bytegoofy.com`, `ibytedapm.com` and `bytednsdoc.com`, and `zijieapi.com` is one of the entries the pinned import holds without independent attestation.
+
+`page_host_scan.py` now follows the first few scripts each page declares. Re-running the 2,017 known mainland origins reaches 30,974 hostnames across 9,726 roots, against roughly 18,000 hostnames before. The APNIC probe finds 3,096 of 6,317 uncovered candidates mainland-hosted.
+
+Only 92 of those 3,096 are referenced by two or more independent origins. The rest are single-reference long-tail local sites — `0052500.com`, `0554zp.com`, `0797rs.com` — that a friendly-links section on a scanned page happens to name. Admitting them would add three thousand rules of the bloat this rebuild exists to remove, so the threshold holds: nine measurement roots and one shadowing root are removed from the 92, and the remaining 82 take `china-web` to 3,978 rules.
+
+That ratio is the round's real finding. The crawl has saturated on valuable discovery; further crawling returns noise rather than the import's content.
+
+Measured over the full independent evidence pool:
+
+| Import | Live entries | Independently attested | Still missing |
+|---|---:|---:|---:|
+| `china-domains-direct.list` | 1,448 | 494 (34.1%) | 954 |
+| `advertising.list` | 765 | 427 (55.8%) | 338 |
+
+First-match coverage is unchanged at union 145.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,887 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-047 — The pinned imports are retired and the attribution with them
+
+**Type:** product boundary change; two segments removed, one added
+
+The product no longer ships `v2fly/domain-list-community` data. `china-domains-direct.list` and `advertising.list` are deleted, their import ledgers and the advertising routing ledger with them, and `NOTICE.md` no longer carries the `Copyright (c) 2018-2019 V2Ray` attribution, because nothing in the product requires it.
+
+### Why now
+
+Full independent reproduction of the imports was attempted and does not converge. Six evidence sources took independent attestation of their live entries to 34.1 percent for the mainland import and 55.8 percent for the advertising one, and then saturated: a third crawl round confirmed 3,096 mainland roots of which only 92 were referenced by more than one origin, and a subject-alternative-name harvest added 627 rules while moving attestation by 1.3 points. What the imports still hold is mobile SDK endpoints, vendor backend domains and platform-native advertising hosts that neither public web traffic nor certificate logs reach from here.
+
+So the choice was not between reproducing them and keeping them. It was between keeping data the product no longer depends on for quality, and replacing it with a corpus that measures better. Against this repository's own evidence:
+
+| Target | Retired import | Curated replacement |
+|---|---:|---:|
+| Third-party hosts observed on 21 origins | 7.3% | 42.3% |
+| Hosts reviewed as advertising | 16.5% | 100% |
+| Advertising systems declared by two or more publishers | 1.3% | 44.9% |
+| Hostnames observed across 2,017 mainland origins | 7.7% | 60.9% |
+| Mainland origins scanned | 2.7% | 93.4% |
+
+### Closing the measurable gap first
+
+Retiring the imports outright would have cost coverage for 2,504 observed hostnames, including `baidu.com`, `163.com`, `126.net`, `7fresh.com` and `jddj.com`, which no other segment carried. Those domains were in this repository's own observation all along; the candidate filter had simply skipped them because an existing rule — the import — already covered them. 239 such roots were recovered, 163 confirmed mainland-hosted by APNIC and 61 admitted by per-host review after the probe could not answer for services on global CDNs. Two more, `cmpassport.com` and `jimeng.com`, were found by re-running the repository's own routing tests. Measured loss fell from 7.7 percent of observed hostnames to 2.0, and then to zero: the last 41 roots were added explicitly, 16 to advertising and 24 to mainland direct.
+
+One deliberate exception: `newrelic.com` is not re-added. The import blocked it; this repository's review classifies browser monitoring as neither advertising nor tracking, and the hold stands over parity.
+
+### Ordering is semantics
+
+Adding broad vendor roots to `china-web` broke cloud, media and AI routing — `cloud.baidu.com` reached the mainland web policy instead of mainland cloud, because `china-web` runs at 49 and `china-cloud` at 58, while the retired import ran at 62. The new `china-direct-curated` segment restores that ordering: nine broad roots sit immediately before the GEOIP fallback, exactly where the import used to be. Routing for `cloud.baidu.com`, `console.cloud.tencent.com`, `intl.cloud.tencent.com` and `music.126.net` is verified unchanged.
+
+### Shape
+
+The product goes from 63 rule files to 62 and from 11,887 rules to 9,831. First-match unreachable coverage falls from 145 to 54, same-segment stays at 13, cross-segment falls from 132 to 41 — the imports were the source of most dead rules. Intentional cloud captures fall from 71 to 19 and the cloud routing ledger is re-sealed; the advertising capture ledger is deleted along with the segment it described.
+
+Current verified canonical target:
+
+- 62 rule files, 63 ordered segments, 40 proxy groups;
+- 9,831 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 54; same-segment: 13; cross-segment-only: 41.
+
+## ER-048 — The admission review is a contract, and it was not being honoured
+
+**Type:** defect fix; 8 rules added, 2 removed
+
+`docs/evidence/admission-review-2026-09-19.json` records a per-host verdict for 260 observed hosts. 109 are `admit`, meaning this repository reviewed the host and decided it should be blocked. After ER-047 removed the import, eight of those 109 no longer reached `advertising-curated`:
+
+| Host | Was reaching | Via |
+|---|---|---|
+| `www.googletagmanager.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,googletagmanager.com` in `china-web` |
+| `www.googletagservices.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,googletagservices.com` in `china-web` |
+| `beacon.cdn.qq.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,qq.com` in `china-direct-curated` |
+| `mi.gdt.qq.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,qq.com` in `china-direct-curated` |
+| `sdk.e.qq.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,qq.com` in `china-direct-curated` |
+| `hm.baidu.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,baidu.com` in `china-direct-curated` |
+| `cpro.baidustatic.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,baidustatic.com` in `china-web` |
+| `pgdt.gtimg.cn` | 🌏 国内网站 | `DOMAIN-SUFFIX,gtimg.cn` in `china-web` |
+
+Two different defects share one symptom.
+
+The curated advertising set was built additively while the import still shipped, so it skipped hosts the import already covered. When the import left, those hosts had nothing behind them. That is a sequencing error in ER-047, not a judgement change: the review always said `admit`.
+
+The Google entries are worse than an omission. `googletagmanager.com` appears in this repository's own `docs/evidence/ad-vendors-2026-09-19.txt`, and the round-2 review named it explicitly as advertising infrastructure. Carrying it as a mainland-direct suffix asserted the opposite of what the same repository had already concluded. Both roots are removed from `china-web` and added to `advertising-curated`, where the whole root is correct because tag delivery is their only function.
+
+The six mainland hosts are added as exact `DOMAIN` rules. Their roots — `qq.com`, `baidu.com`, `baidustatic.com`, `gtimg.cn` — carry login, payment, platform APIs and general assets that must stay direct, so the per-host granularity the round-2 review established is what applies. `advertising-curated` runs at segment 4, well ahead of both mainland segments, so the exact hosts win.
+
+The contract is now verified in both directions: all 109 `admit` hosts reach `advertising-curated`, and none of the 151 `hold` or `reject` hosts reach `REJECT`.
+
+### The committed origin list had gone stale
+
+`docs/evidence/cn-origins-2026-09-19.txt` was written once, during the 954-rule round, with 245 origins. Later rounds scanned a larger list that was never committed, so the ER-047 figure of 2,017 origins cited a file that could not produce it. The file is regenerated deterministically — every domain root the `china-web` segment carries, 4,206 origins — so the scan is reproducible from committed inputs. The measurement it feeds is re-derived in ER-049.
+
+### Shape
+
+62 rule files and 63 segments are unchanged; rules go from 9,831 to 9,837 including FINAL. First-match unreachable is unchanged at 54 / 13 / 41, so the added rules are all live.
+
+## ER-049 — Mainland advertising, derived from this repository's own scan
+
+**Type:** coverage; 85 rules added
+
+ER-047 replaced an import whose advertising corpus was 27.7 percent mainland-related. The curated set that replaced it was built from Western publisher `ads.txt` declarations and traffic observation of 21 mostly international origins, so mainland advertising was the thinnest part of it. Routing the retired import's 849 advertising domains through the product showed 321 reaching a mainland direct policy that previously reached `REJECT`.
+
+The candidates for this round come from this repository's own scan of 2,017 mainland origins — the same 30,974 hostnames the china-web curation was built from, read a second time for a different purpose. Three passes:
+
+| Pass | Candidates | Admitted | Dead | Rejected |
+|---|---:|---:|---:|---:|
+| Advertising-delivery labels | 249 | 71 | 27 | 151 |
+| Tracking and analytics labels | 133 | 37 | 6 | 90 |
+
+`advertising-curated` goes from 494 to 587 rules; 85 of them are new in this ER, and the admitted counts above include hosts earlier rounds had already covered, because ER-050 rebuilt the evidence so that `admit` means exactly "this host first-matches `advertising-curated`". First-match unreachable is unchanged at 54 / 13 / 41, so every added rule is live.
+
+### Label shape is a candidate generator, never an admission
+
+The rejection counts are the finding. A leading `ad`, `bid` or `ssp` label is wrong far more often than it is right on mainland origins:
+
+- `cn.unionpay.com` is China UnionPay, matched on `union`
+- `www.gdtv.cn` and `gdtoday.newsgd.com` are a Guangdong broadcaster and news site, matched on `gdt` — which elsewhere means Tencent 广点通
+- `ta.wikipedia.org` is Tamil Wikipedia, matched on `ta`, referenced by an online-course site
+- `stats.gd.gov.cn`, `stats.customs.gov.cn` and `report.12377.cn` are government statistics bureaus and the reporting centre mainland sites are required to link in their footer, so they appear across unrelated origins and pass a cross-site test
+- 53 hosts under `bidcenter.com.cn` and `bidchance.com` are public procurement portals, where `bid` means tendering
+- `ssports.iqiyi.com` is iQIYI Sports and `sspai.com` is a technology publication, both matched on `ssp`
+
+Requiring third-party status to at least one observing origin — criterion 2 of the admission rules — removes 51 of the tracking candidates but keeps every government and Wikipedia case, because footer links and language editions are third-party by construction. Per-host review remains the only thing that separates them.
+
+Two deliberate holds carry forward: `retcode.taobao.com` is browser error monitoring, held for the same reason as `newrelic.com`, and first-party `stat.`, `log.` and `pv.` endpoints on a single operator's own site are not admitted, including on financial hosts such as `collect.mybank.cn` and `log.cmbchina.com`, where a `REJECT` could stall a checkout and first-party safety cannot be established.
+
+### What this does not reach
+
+Of the retired import's advertising domains, 305 still reach a mainland direct policy. 270 of them appear nowhere in the 30,974 hostnames this repository has observed: they are mobile application and SDK endpoints, which a scan of the web cannot see. That is the same boundary ER-047 recorded, stated for advertising specifically — the curation covers what mainland pages actually load, and does not claim to cover what mainland apps call.
+
+One rule was withdrawn during this round for provenance rather than evidence. `beacon.qq.com` was admitted from a cross-check against the retired import, then removed on discovering the scan never saw that hostname; the two endpoints it did see, `oth.str.beacon.qq.com` and `otheve.beacon.qq.com`, are what ship. A candidate that only the import can supply is not this repository's own evidence.
+
+## ER-050 — Criterion 2 was wrong, and the evidence could disagree with the product
+
+**Type:** defect fix; admission criteria amended, evidence derivation changed, 4 tests added
+
+Review of ER-049 raised two inconsistencies. Both were real, and the second one turned out to be the smaller half of a defect in the criteria themselves.
+
+### The evidence could contradict the rules
+
+`cn-ad-review-2026-09-19.json` recorded `reject` for `cpro.baidustatic.com` and `mi.gdt.qq.com` while `advertising-curated` shipped a rule for each. The file was generated from a hand-kept list of that round's admissions, so any host admitted in an earlier ER fell through to the catch-all `reject`. The file read as evidence while describing something that was never published.
+
+The fix is structural rather than editorial. Every verdict is now derived from the shipped corpus: `admit` means `advertising-curated` is what the host first-matches. The file cannot disagree with the product, because the product is what generates it.
+
+### Criterion 2 could not admit a publisher's own advertising
+
+The second point was that `analytics.163.com`, `btrace.qq.com` and `bzclk.baidu.com` were admitted with a cross-site rationale while this repository's scan only ever saw them on their operator's own site. That is true. Withdrawing them was the first response, and it was wrong — it exposed that 29 already-shipped rules had the same shape: `ad.sohu.com`, `ad.cnki.net`, `cpro.zol.com.cn` and other publisher ad subdomains, none of them third-party to anything.
+
+Criterion 2 read "third-party to at least one observing origin". That wording came from a corpus of Western third-party ad tech, where every candidate was third-party by construction. It does not survive contact with mainland origins, where a large share of advertising is served from the publisher's own `ad.` subdomain. Read literally it forbids blocking a publisher's own ad host, which is most of what ad blocking is.
+
+Criterion 2 now admits either route: third-party to an observing origin, or a dedicated advertising or tracking endpoint of the operator whose site referenced it. Each admitted record states which route applies — 76 third-party, 32 own-endpoint.
+
+Nothing protective was lost, because criterion 2 was never what stopped the dangerous cases. `stats.gd.gov.cn`, `report.12377.cn` and `ta.wikipedia.org` are third-party across unrelated origins and are rejected by criterion 3. `collect.mybank.cn` and `log.cmbchina.com` are rejected by criterion 4. The protection lives in per-host review and the first-party-safety rationale, exactly where the round-2 finding put it.
+
+### Both are now enforced
+
+`AdvertisingAdmissionContractTests` asserts four invariants: every `admit` in the admission review reaches `advertising-curated`, no `hold` or `reject` reaches it, every verdict in the mainland review matches the shipped corpus in both directions, and every admitted host records its admission route. The suite goes from 49 to 53 tests.
+
+Three stale constants naming ER-047's deleted fixtures are removed from the test module.
+
+## ER-051 — The reverse direction, and criterion 1
+
+**Type:** defect fix; 1 evidence file added, criterion 1 amended, 1 test added
+
+Three more inconsistencies were raised in review. All three were real, and the first one was the serious one.
+
+### The bidirectional test was not bidirectional
+
+ER-050 added a test described as checking both directions. It iterated the review records and asserted the product honoured them, which only proves that the records *that still exist* are honoured. Deleting a record left every test green while its rule kept shipping.
+
+The gap was not hypothetical. Enumerating the published rules against the committed evidence found 28 with no record in any review file: `clarity.ms`, `sensorsdata.cn`, `zhugeio.com`, `51.la`, `wwads.cn`, the Alibaba `adashx.ut.*` tracking endpoints and others. They are legitimate — `git log -S` places them in commit `78c939c`, "Add audited ad blocking", where they were audited at the time — but audited in a commit message is not a committed per-host record, and criteria 3 and 4 ask for one.
+
+`docs/evidence/legacy-ad-review-2026-09-19.json` now carries all 28, each re-reviewed with what the endpoint is and why a `REJECT` cannot break first-party behaviour. `test_every_published_advertising_rule_maps_to_committed_evidence` walks the shipped rules and requires each to map to an admitted review record or a publisher declaration, resolving suffix rules against any evidenced host beneath them. Deleting the `zhugeio.com` record now fails the suite.
+
+One of the 28 nearly became a different defect. `adash.man.aliyuncs.com` has no A record, and on that basis it was removed as dead — which broke `test_domestic_and_overseas_cloud_routing_is_region_aware`. The rule is not dead: it holds an ordering contract, keeping that host out of the `aliyuncs.com` cloud policy. It is restored, and its record says so. Resolvability is evidence about a host, not about what a rule is for.
+
+### Criterion 1 named only the first evidence route
+
+Criterion 1 read "the host appears in a committed observation capture". Traffic observation was the first route this repository built and the wording froze it as the only one, which the corpus never matched: 421 of the shipped advertising rules arrive through the `ads.txt` declaration and delivery-probe route, and most of `china-web` through Certificate Transparency and APNIC, all documented under Method and none admissible under criterion 1 as written. `DOMAIN-SUFFIX,33across.com` is the example given in review. The criterion now names every route the Method section describes.
+
+That is the second criterion this PR has had to amend after finding the corpus outside it. Both were written early, against the first corpus each was applied to, and neither was re-read when the evidence base widened.
+
+### Rationales contradicted their own verdicts
+
+The three records restored in ER-050 kept the reason string from their brief withdrawal, so each said "criterion 2 of the admission rules is not met" beside an `admit` verdict and an own-endpoint route. The regeneration carried the prior reason forward without checking it still applied. Reasons are now regenerated from the route, every admitted record carries a `first_party_safety` rationale, and the route test asserts all three agree rather than merely checking the field is non-empty.
+
+## ER-052 — Seeds are not verdicts, and two ad roots were hiding behind the import
+
+**Type:** defect fix; 2 rules reclassified, 1 narrowed, evidence tightened
+
+Auditing the three areas flagged for the fourth review found three defects, one of which is a routing regression this PR introduced.
+
+### DoubleClick and Firebase were reaching mainland direct
+
+`DOMAIN-SUFFIX,2mdn.net` and `DOMAIN-SUFFIX,app-measurement.com` have been in `china-web` since `f1adf15`, the repository's first commit. They never mattered, because the retired import's advertising segment ran at position 4 and captured them long before `china-web` at 49. Retiring the import removed the mask and left Google Ad Manager creative delivery and Firebase Analytics collection routed to 🌏 国内网站 as ordinary mainland websites.
+
+Both move to `advertising-curated`, where their function has always belonged. The search that found them is bounded and was run over the whole product: exactly four rules in `china-web` and `china-direct-curated` were covered by the retired import's advertising list. The other two, `51y5.net` and `qhupdate.com`, are correct as they stand — the specific advertising hosts beneath them, `lpms.51y5.net` and `s.qhupdate.com`, are blocked while the roots stay direct, which is the per-host granularity this repository has applied since round 2.
+
+### A reviewed host does not justify blocking its root
+
+ER-051's mapping test accepted a suffix rule when any reviewed or declared host sat beneath it. `mi.gdt.qq.com` is reviewed, so that rule would have accepted `DOMAIN-SUFFIX,qq.com` — the exact over-block the per-host principle exists to prevent. 25 shipped rules relied on that fallback.
+
+The test now requires the rule's own value to be evidenced. 24 of the 25 are roots whose whole registrable root is advertising infrastructure, and each gets a record in the new `ad-root-review-2026-09-19.json` saying why no other service lives under it. The 25th, `app-us1.com`, is narrowed to the two hosts the admission review actually examined: its apex does not resolve but `www` does, and ActiveCampaign infrastructure could not be shown to be advertising-only.
+
+### Seeds and candidates were being read as evidence
+
+The mapping test counted `ad-vendors-2026-09-19.txt` and `adstxt-candidates-2026-09-19.txt` as evidence that a domain serves advertising. Neither is. The first is the seed list for Certificate Transparency queries — it names `bytedance.com`, whose general API infrastructure is plainly not advertising — and the second is a candidate list, which is what the delivery probe exists to adjudicate. Counting them made the test look stronger than it was.
+
+Both are removed from the evidence set. What replaces them is the verdict the pipeline always produced but never committed: `ad-serving-probe-2026-09-19.json`, 1,995 roots with 791 confirmed serving, 767 corporate-site-only and 437 not resolving. Publisher declarations now count only at the two-or-more threshold this repository uses elsewhere.
+
+That left 19 rules unmapped, all of them the canonical case the probe was written for — a platform's delivery domain is not the domain its publishers declare. Publishers declare `google.com` and the creatives arrive from `doubleclick.net`; `appnexus.com` is declared and `adnxs.com` bids. Each of the 19 now carries a root record naming the declared seller alongside the delivery root.
+
+`china-web` and `china-direct-curated` remain outside this mapping. Their evidence is the APNIC delegation record and Certificate Transparency, and 3,770 of their 4,215 rules have a committed APNIC verdict; extending the test to them needs those verdicts committed as one consolidated file, which is a separate change.
+
+## ER-053 — The mainland segments get the same contract, and two sets are named for what they are
+
+**Type:** evidence; 3 evidence files added, 3 tests added
+
+The fourth review round raised four points. All four were real.
+
+### The mainland segments had no evidence contract at all
+
+Advertising got a published-rule-to-evidence mapping in ER-051 because a wrong rule there blocks something a user wanted. A wrong rule in `china-web` sends traffic direct that should be proxied — the same class of defect with a quieter failure — and 4,224 rules had no such mapping, nor any committed artifact to map to. The scan output, the Certificate Transparency results and the APNIC verdicts existed only in a working directory, which makes the corpus unauditable and unreproducible: re-running a network probe later returns different data.
+
+Three files now carry it, and `MainlandEvidenceContractTests` requires every rule in both mainland segments to map to one of them:
+
+| Evidence | Rules |
+|---|---:|
+| `cn-apnic-verdicts-2026-09-19.json` — every A record inside APNIC's CN delegations | 3,778 |
+| `cn-observation-2026-09-19.json` — seen by the scan, no APNIC verdict, admitted by per-host review | 177 |
+| `cn-legacy-direct-2026-09-19.json` — grandfathered | 269 |
+
+### Two grandfathered sets, named as such
+
+The legacy advertising file claimed `admission_route: "third-party"` for hosts whose observing origin was never recorded. That was an assertion dressed as evidence. Those 28 rules entered in commit `78c939c` and their criterion 1 and 2 evidence cannot be reconstructed after the fact, so the file no longer claims a route: each record states `criteria_satisfied: [3, 4]` and `criterion_1_and_2_evidence: "not preserved"`. The 269 mainland rules in the same position are treated identically.
+
+Both sets are **closed**. A test asserts each may shrink but never grow, and the mapping tests treat membership as evidence only for the exact values enumerated. Grandfathering rules already shipping and re-reviewed for safety is defensible; leaving a door open for new ones to enter that way is not.
+
+The distinction between an input and a verdict is now written into `docs/SELF-OWNED-REBUILD.md` as well: `ad-vendors`, `adstxt-candidates`, `cn-candidates` and `cn-vendors` are seeds and candidate lists that the probes adjudicate, and no test may read them as a verdict.
+
+### Admitted records carried rejection rationales
+
+16 admitted delivery records still read "reviewed, not advertising delivery infrastructure" — the catch-all reject reason — beside an `admit` verdict, among them `ad.doubleclick.net`, `ib.adnxs.com` and six `mediav.com` hosts. They are admitted because a root rule captures them, and the regeneration had no branch for that. Reasons are now generated from the rule that actually matches, each record naming it in `captured_by`, and the consistency test rejects any admitted record whose reason carries rejection language rather than only the phrase `criterion 2`.
+
+### `docs/PROVENANCE.md` still described the import as shipping
+
+The advertising section stated that the curated segment sits after the pinned import, that the import's ledger and `emitted_sha256` are untouched, and that the attribution obligation is unaffected — all three deleted by ER-047 in the same change. It also cited the deleted `advertising-routing-ledger.json` and the pre-ER-047 count of 71 cloud captures. Corrected.

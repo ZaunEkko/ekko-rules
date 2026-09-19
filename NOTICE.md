@@ -33,18 +33,13 @@ Most current service rules, group mappings, ordering decisions, and security fil
 
 Six late-recovery rulesets are selected from frozen repository history to preserve only historical DIRECT-default behavior that would otherwise reach proxy FINAL. Recovery is a compatibility mechanism, not renewed proof that every historical domain or IP is currently owned by the mapped vendor. A separate public-product exclusion ledger removes provider-specific, local-institution, personal, scripting, mirror, and unofficial-content entries from current publication while leaving immutable historical evidence intact.
 
-### Pinned MIT imports
+### Retired upstream imports
 
-Two one-time deterministic imports use the same pinned revision of [`v2fly/domain-list-community`](https://github.com/v2fly/domain-list-community/tree/660198a50bac2ab10c567d95a472a7b33915d1b0), licensed under MIT (`Copyright (c) 2018-2019 V2Ray`):
+The product previously shipped two one-time deterministic imports of [`v2fly/domain-list-community`](https://github.com/v2fly/domain-list-community) at revision `660198a50bac2ab10c567d95a472a7b33915d1b0`, licensed under MIT (`Copyright (c) 2018-2019 V2Ray`), as `sources/rules/china-domains-direct.list` and `sources/rules/advertising.list`. ER-047 retired both. No rule in the current product derives from that data, and the attribution it required no longer applies.
 
-| Canonical output | Selection boundary | Frozen evidence |
-|---|---|---|
-| `sources/rules/china-domains-direct.list` | 1,482 anchored `DOMAIN`/`DOMAIN-SUFFIX` entries selected from 31 named mainland service categories; includes, `!cn`, keyword, regexp, single-label, and earlier-covered entries excluded | `tests/fixtures/china-domain-import-ledger.json` |
-| `sources/rules/advertising.list` | 849 anchored entries resolved from `category-ads` using pinned include/attribute semantics; the sole regexp and all non-anchored forms excluded | `tests/fixtures/advertising-import-ledger.json` |
+The replacement rules were derived from this repository's own evidence: traffic observation, publisher `ads.txt` declarations, Certificate Transparency logs, and APNIC delegation records. Method and evidence are in `docs/SELF-OWNED-REBUILD.md` and `docs/evidence/`.
 
-`category-ads-all` is intentionally not imported because it also includes advertising providers, analytics, messaging, and other broader service roots with a larger false-positive boundary. Normal generation reads only committed canonical files and performs no upstream fetch or GEOSITE compilation.
-
-Only sources that directly contribute to the current canonical product are attributed above. Earlier reconstruction comparisons remain internal audit evidence and are not presented as current product inputs or dependencies.
+Only sources that directly contribute to the current canonical product are attributed here. Earlier reconstruction comparisons remain internal audit evidence and are not presented as current product inputs or dependencies.
 
 ### Third-party remote configs referenced by the self-hosted converter
 

@@ -39,7 +39,7 @@ jobs:
           scripts/profile_model.py
           scripts/generate_profile.py
           scripts/validate_generated.py
-          scripts/reverse_profile.py
+          scripts/rule_evidence.py
           tests/test_profile.py
 
       - name: Run unit and behavior tests

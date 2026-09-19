@@ -45,6 +45,13 @@ GENERATED_RULESET_ALIASES = {
         list_sha256="a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
         provider_sha256="b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
     ),
+    "hbo-max": GeneratedRulesetAlias(
+        canonical="hbo-go",
+        start=26,
+        end=42,
+        list_sha256="76a309cf767328e4b45f4e7f92a0974a3203e450e36ac24d54b40038f1e94464",
+        provider_sha256="80b025db9fd58216c1becee57c65c3f8facf3352f15993ed1be522cf12f5efee",
+    ),
     "spotify-2": GeneratedRulesetAlias(
         canonical="spotify",
         start=7,
@@ -716,8 +723,6 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
             | {
                 "direct_default_to_final_violations",
                 "recovery_ledger",
-                "intentional_advertising_capture_count",
-                "advertising_routing_ledger",
                 "intentional_cloud_capture_count",
                 "cloud_routing_ledger",
             },
@@ -732,9 +737,7 @@ def _validate_quality_baseline_schema(quality: dict[str, Any]) -> None:
                 "cross_segment_dependencies_must_not_increase": True,
                 "direct_default_to_final_violations": 0,
                 "recovery_ledger": "tests/fixtures/phase-3-recovery-ledger.json",
-                "intentional_advertising_capture_count": 40,
-                "advertising_routing_ledger": "tests/fixtures/advertising-routing-ledger.json",
-                "intentional_cloud_capture_count": 71,
+                "intentional_cloud_capture_count": 19,
                 "cloud_routing_ledger": "tests/fixtures/cloud-routing-ledger.json",
             },
             "Unsupported Phase 3 recovery next_gate",
