@@ -866,4 +866,18 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: ER-059 admitted the Japanese allocation after observing one gateway at 8.209.197.93, and Honkai Star Rail kept refusing login with 1001_1. A router log caught the connection at the moment of failure - UDP to 8.216.16.211 port 23301, the HoYoverse gateway port, matching only MATCH and using the fallback while the login session used another exit, which is what the risk check rejects. RDAP places 8.209.197.93 in ALICLOUD-JP 8.209.192.0 slash 18 and 8.216.16.211 in ASEPL-SG 8.208.0.0 slash 12, and the Japanese range is a sub-block carved out of the Singapore one - so the earlier rule took a sub-block for the whole pool. The rule is now the exact boundary of the ASEPL-SG allocation rather than a range invented to be wide enough, with edges verified at 8.208.0.1 and 8.223.255.254 matching while 8.207.255.255 and 8.224.0.1 fall through. Under fake-ip the breadth costs little because no-resolve means the rule only sees connections made to a bare address, and both the fallback and the game policy lead with the manual selector so the default action is unchanged. console.tailscale.com joins the remote-streaming admin segment on the same round - it answers from CloudFront while login and controlplane sit in Tailscale's own 192.200.0.0 space, relays are not served from a CDN, and direct access from the mainland times out; as an exact DOMAIN it cannot touch a relay, re-verified for derp1a, controlplane, ts.net and log.tailscale.io in both builds. ZeroTier's data plane was seen on the fallback in the same log and is deliberately left alone - its registered block belongs to Datacamp, a CDN, and direct reachability of a Zurich root from the mainland is not established while the proxy path works, so moving it needs a measurement first.
+- id: version-check-must-not-assert-stale-currency
+  status: accepted
+  scope: selfhost-web
+  summary: A thirty-minute cache made the page state that a deployment was current when a newer tag existed.
+  evidence:
+  - selfhost/app/src/lib/latest-version.ts
+  - selfhost/app/src/lib/latest-version.test.ts
+  - selfhost/app/src/app/api/health/route.ts
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: After selfhost-v0.2.1 was published the deployed page still read 最新 0.2.0 with update_available false, because the check cached for thirty minutes while the update timer pulls every five. A stale cache here does not withhold the answer, it states the opposite with the same confidence as a correct one, which is the failure the check was added to prevent; and once the image moved first the page would print a running version newer than the latest beside it. The cache existed only to protect the anonymous api.github.com budget of 60 requests an hour per address, which this server spends on every visitor's behalf, so a lookup per load would have broken for everyone at sixty visits in an hour. Tags now come from git's ref advertisement at info/refs service=git-upload-pack, roughly 6 KB and not metered that way, so the quota no longer dictates freshness and the check runs on every load. A failure is held for a minute so a failing lookup does not make each visitor wait out the timeout, concurrent callers still share one request, and the health endpoint reports the running version as latest whenever the check lags behind the image, because the running image was built from a published tag and a smaller number would be both wrong and alarming. The star count keeps its own thirty-minute clock on the REST API since it does not need to be fresh.
 
