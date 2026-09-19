@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-049 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-050 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1082,11 +1082,10 @@ The candidates for this round come from this repository's own scan of 2,017 main
 
 | Pass | Candidates | Admitted | Dead | Rejected |
 |---|---:|---:|---:|---:|
-| Advertising-delivery labels | 249 | 55 | 6 | 188 |
-| Tracking and analytics labels | 110 | 17 | 1 | 92 |
-| Hostnames under roots still routed direct | 37 | 13 | 2 | 22 |
+| Advertising-delivery labels | 249 | 71 | 27 | 151 |
+| Tracking and analytics labels | 133 | 37 | 6 | 90 |
 
-`advertising-curated` goes from 494 to 587 rules. First-match unreachable is unchanged at 54 / 13 / 41, so every added rule is live.
+`advertising-curated` goes from 494 to 587 rules; 85 of them are new in this ER, and the admitted counts above include hosts earlier rounds had already covered, because ER-050 rebuilt the evidence so that `admit` means exactly "this host first-matches `advertising-curated`". First-match unreachable is unchanged at 54 / 13 / 41, so every added rule is live.
 
 ### Label shape is a candidate generator, never an admission
 
@@ -1108,3 +1107,31 @@ Two deliberate holds carry forward: `retcode.taobao.com` is browser error monito
 Of the retired import's advertising domains, 305 still reach a mainland direct policy. 270 of them appear nowhere in the 30,974 hostnames this repository has observed: they are mobile application and SDK endpoints, which a scan of the web cannot see. That is the same boundary ER-047 recorded, stated for advertising specifically — the curation covers what mainland pages actually load, and does not claim to cover what mainland apps call.
 
 One rule was withdrawn during this round for provenance rather than evidence. `beacon.qq.com` was admitted from a cross-check against the retired import, then removed on discovering the scan never saw that hostname; the two endpoints it did see, `oth.str.beacon.qq.com` and `otheve.beacon.qq.com`, are what ship. A candidate that only the import can supply is not this repository's own evidence.
+
+## ER-050 — Criterion 2 was wrong, and the evidence could disagree with the product
+
+**Type:** defect fix; admission criteria amended, evidence derivation changed, 4 tests added
+
+Review of ER-049 raised two inconsistencies. Both were real, and the second one turned out to be the smaller half of a defect in the criteria themselves.
+
+### The evidence could contradict the rules
+
+`cn-ad-review-2026-09-19.json` recorded `reject` for `cpro.baidustatic.com` and `mi.gdt.qq.com` while `advertising-curated` shipped a rule for each. The file was generated from a hand-kept list of that round's admissions, so any host admitted in an earlier ER fell through to the catch-all `reject`. The file read as evidence while describing something that was never published.
+
+The fix is structural rather than editorial. Every verdict is now derived from the shipped corpus: `admit` means `advertising-curated` is what the host first-matches. The file cannot disagree with the product, because the product is what generates it.
+
+### Criterion 2 could not admit a publisher's own advertising
+
+The second point was that `analytics.163.com`, `btrace.qq.com` and `bzclk.baidu.com` were admitted with a cross-site rationale while this repository's scan only ever saw them on their operator's own site. That is true. Withdrawing them was the first response, and it was wrong — it exposed that 29 already-shipped rules had the same shape: `ad.sohu.com`, `ad.cnki.net`, `cpro.zol.com.cn` and other publisher ad subdomains, none of them third-party to anything.
+
+Criterion 2 read "third-party to at least one observing origin". That wording came from a corpus of Western third-party ad tech, where every candidate was third-party by construction. It does not survive contact with mainland origins, where a large share of advertising is served from the publisher's own `ad.` subdomain. Read literally it forbids blocking a publisher's own ad host, which is most of what ad blocking is.
+
+Criterion 2 now admits either route: third-party to an observing origin, or a dedicated advertising or tracking endpoint of the operator whose site referenced it. Each admitted record states which route applies — 76 third-party, 32 own-endpoint.
+
+Nothing protective was lost, because criterion 2 was never what stopped the dangerous cases. `stats.gd.gov.cn`, `report.12377.cn` and `ta.wikipedia.org` are third-party across unrelated origins and are rejected by criterion 3. `collect.mybank.cn` and `log.cmbchina.com` are rejected by criterion 4. The protection lives in per-host review and the first-party-safety rationale, exactly where the round-2 finding put it.
+
+### Both are now enforced
+
+`AdvertisingAdmissionContractTests` asserts four invariants: every `admit` in the admission review reaches `advertising-curated`, no `hold` or `reject` reaches it, every verdict in the mainland review matches the shipped corpus in both directions, and every admitted host records its admission route. The suite goes from 49 to 53 tests.
+
+Three stale constants naming ER-047's deleted fixtures are removed from the test module.

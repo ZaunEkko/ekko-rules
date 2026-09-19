@@ -697,3 +697,17 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: Three passes over the 30,974 hostnames this repository scanned from 2,017 mainland origins - advertising-delivery labels, tracking and analytics labels, and hostnames under roots the product still routes direct - yield 396 candidates of which 85 are admitted, taking advertising-curated from 494 to 587 rules with first-match coverage unchanged. The rejection counts are the finding - a leading ad, bid, ssp, gdt, union or ta label is wrong more often than right on mainland origins, where it matches China UnionPay, a Guangdong broadcaster, Tamil Wikipedia, government statistics bureaus, the reporting centre every mainland site links in its footer, and 53 public procurement portals. Third-party status removes 51 tracking candidates but keeps every government and Wikipedia case, so per-host review remains the only separator. retcode.taobao.com is held as browser monitoring for the same reason as newrelic.com, and first-party endpoints on financial hosts are not admitted because a REJECT could stall a checkout. 305 import advertising domains still reach a mainland direct policy and 270 of them appear in no observed hostname, being mobile application and SDK endpoints a web scan cannot see. beacon.qq.com was withdrawn for provenance after the scan proved it never observed that hostname, and the two endpoints it did observe ship instead.
+- id: admission-criterion-scope
+  status: accepted
+  scope: routing-policy
+  summary: Criterion 2 as written could not admit a publisher's own advertising subdomain, and the round's evidence file was generated from a hand-kept list rather than from the rules.
+  evidence:
+  - docs/SELF-OWNED-REBUILD.md
+  - docs/evidence/cn-ad-review-2026-09-19.json
+  - tests/test_profile.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Two inconsistencies were raised in review and both were real. The evidence file recorded reject for hosts the product blocks, because it was generated from a hand-kept list of that round's admissions and anything admitted earlier fell through to the catch-all; every verdict is now derived from the shipped corpus, so the file cannot disagree with the product. The second point was that three hosts were admitted with a cross-site rationale while the scan only saw them on their operator's own site - true, and withdrawing them exposed that 29 already-shipped rules had the same shape, among them ad.sohu.com, ad.cnki.net and cpro.zol.com.cn. Criterion 2 read third-party to at least one observing origin, wording that came from Western third-party ad tech where every candidate was third-party by construction, and read literally it forbids blocking a publisher's own ad subdomain, which is most of what ad blocking is. It now admits either route and each record states which applies, 76 third-party and 32 own-endpoint. Nothing protective was lost because criterion 2 never stopped the dangerous cases - the government statistics bureaus, the mandatory footer reporting link and Tamil Wikipedia are all third-party and are rejected by criterion 3, and the financial endpoints by criterion 4. Four invariants are now asserted in AdvertisingAdmissionContractTests.

@@ -81,14 +81,16 @@ Discovery has not saturated across 21 origins: 4.2 new roots per site over the f
 
 ## Admission criteria
 
-A rule enters the rebuilt `advertising.list` only when all hold:
+A rule enters `advertising-curated` only when all hold:
 
 1. the host appears in a committed observation capture;
-2. it is third-party to at least one observing origin;
+2. it is **either** third-party to at least one observing origin, **or** a dedicated advertising or tracking endpoint of the operator whose site referenced it;
 3. per-host review establishes the endpoint serves advertising, attribution, or behavioural tracking rather than a function the page needs;
 4. the review records why a `REJECT` cannot break first-party behaviour.
 
-Criterion 3 is the bottleneck and is not automatable from reach data.
+Criterion 2 read "third-party to at least one observing origin" until ER-049. That wording came from a corpus of Western third-party ad tech, where every candidate was third-party by construction, and it does not survive contact with mainland origins: a large share of mainland advertising is served from the publisher's own `ad.` subdomain — `ad.sohu.com`, `ad.cnki.net`, `cpro.zol.com.cn` — which the original wording could never admit. Blocking a publisher's own ad subdomain is what ad blocking is.
+
+Nothing protective was lost, because criterion 2 was never what stopped the dangerous cases. `stats.gd.gov.cn`, `report.12377.cn` and `ta.wikipedia.org` are third-party across unrelated origins and are rejected by criterion 3; `collect.mybank.cn` and `log.cmbchina.com` are rejected by criterion 4. Criterion 3 remains the bottleneck and is not automatable from reach data.
 
 ## Status — complete
 

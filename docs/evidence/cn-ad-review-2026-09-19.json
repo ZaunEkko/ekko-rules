@@ -1,2536 +1,2349 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "capture": "docs/evidence/cn-origins-2026-09-19.txt",
-  "method": "three passes over the hostnames this repository's own scan of 2,017 mainland origins collected: leading labels matching advertising-delivery conventions, leading labels matching tracking and analytics conventions, and hostnames sharing a registrable root with an endpoint the product still routes direct. Every candidate is reviewed per host, required to be third-party to at least one observing origin, and checked for a live A record.",
+  "method": "Two passes over the hostnames this repository's own scan of 2,017 mainland origins collected: leading labels matching advertising-delivery conventions, and leading labels matching tracking and analytics conventions, plus hostnames surfaced under roots the product still routes direct. Every verdict is derived from the shipped corpus - admit means advertising-curated is what the host first-matches - so this file cannot disagree with the product. Admission requires per-host review, a live A record, and criterion 2 of docs/SELF-OWNED-REBUILD.md: third-party to an observing origin, or a dedicated advertising or tracking endpoint of the operator whose site referenced it. admission_route records which of the two applies.",
   "counts": {
     "delivery_pass": {
       "candidates": 249,
-      "reject": 188,
-      "admit": 55,
-      "dead": 6
+      "reject": 151,
+      "admit": 71,
+      "dead": 27,
+      "admitted_third_party": 42,
+      "admitted_own_endpoint": 29
     },
     "tracking_pass": {
-      "candidates": 110,
-      "reject": 92,
-      "admit": 17,
-      "dead": 1
-    },
-    "third_party_pass": {
-      "candidates": 37,
-      "admit": 13,
-      "dead": 2,
-      "reject": 22
+      "candidates": 133,
+      "reject": 90,
+      "admit": 37,
+      "dead": 6,
+      "admitted_third_party": 34,
+      "admitted_own_endpoint": 3
     }
   },
   "delivery_records": [
     {
       "host": "11.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "12.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "13.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "14.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "15.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "21.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "22.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "221.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "23.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "31.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "32.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "33.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "34.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "35.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "36.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "37.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "41.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "42.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "43.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "44.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "45.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "46.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "50.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "51.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "52.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "53.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "54.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "61.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "62.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "63.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "64.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "65.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "71.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "81.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "a.gdt.qq.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.ssjj.cn",
-        "https://www.weiwenjia.com"
+      "third_party_to": [
+        "ssjj.cn",
+        "weiwenjia.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad-img.fengniao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.fengniao.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad-static-xg.tagtic.cn",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.tgbus.com"
+      "third_party_to": [
+        "tgbus.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "ad-zpub.leju.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.leju.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.360yield.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://cnbeta.com.tw"
+      "third_party_to": [
+        "cnbeta.com.tw"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.3elife.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.3elife.net"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.caijing.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.caijing.com.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.cnki.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.cnki.net"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.cyzone.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.cyzone.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.doubleclick.net",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.prometric.com.cn"
+      "third_party_to": [
+        "prometric.com.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "ad.eepw.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.eepw.com.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.eqxiu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.eqxiu.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.hqew.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.hqew.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.jschina.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.jschina.com.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.ofweek.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.ofweek.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.sohu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.sohu.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.southcn.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.southcn.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.wanfangdata.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.wanfangdata.com.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.weather.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.weather.com.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.xibojiaoyu.com",
-      "verdict": "dead",
-      "reason": "reviewed as advertising but does not resolve; a rule would match nothing",
-      "seen_on": [
-        "https://www.xibojiaoyu.cn",
-        "https://www.xibojiaoyu.com"
+      "third_party_to": [
+        "xibojiaoyu.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "ad.ximalaya.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.xibojiaoyu.cn",
-        "https://www.xibojiaoyu.com"
+      "third_party_to": [
+        "xibojiaoyu.cn",
+        "xibojiaoyu.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.yqxiu.cn",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.eqxiu.com"
+      "third_party_to": [
+        "eqxiu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ad.yslcw.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.21jingji.com"
+      "third_party_to": [
+        "21jingji.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ada.baidu.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.weiling.cn",
-        "https://www.xdfyz.cn"
+      "third_party_to": [
+        "weiling.cn",
+        "xdfyz.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "adadm.dangdang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "dead",
-      "reason": "reviewed as advertising but does not resolve; a rule would match nothing",
-      "seen_on": [
-        "https://www.dangdang.com"
-      ],
-      "site_count": 1
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "adam.co",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.bscea.org"
+      "third_party_to": [
+        "bscea.org"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "adant.ai",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.faxianai.com"
+      "third_party_to": [
+        "faxianai.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "adapi.fang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.fang.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "adc.a6air.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.a6air.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "addons.mozilla.org",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.howxm.com",
-        "https://www.lkong.com"
+      "third_party_to": [
+        "howxm.com",
+        "lkong.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "ade.googlesyndication.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.prometric.com.cn"
+      "third_party_to": [
+        "prometric.com.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "adeff.com",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.miaozhen.com"
+      "third_party_to": [
+        "miaozhen.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "adimg.cqnews.net",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.cqnews.net"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "adincontent.init",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.bjnews.com.cn"
+      "third_party_to": [
+        "bjnews.com.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "adjs.pxto.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.pxto.com.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "adm2.autoimg.cn",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://autohome.com.cn",
-        "https://www.autoimg.cn"
+      "third_party_to": [
+        "autohome.com.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "adm3.autoimg.cn",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://autohome.com.cn",
-        "https://www.autoimg.cn"
+      "third_party_to": [
+        "autohome.com.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "admin.chinanev.net",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.chinanev.net"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "admin.cmnews.duba.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.duba.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "admin.etm.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.etm.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "admin.juejin.id",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.juejin.cn"
+      "third_party_to": [
+        "juejin.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "admin.people78.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.people78.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "admin.qidian.qq.com",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.cbi360.net",
-        "https://www.juhe.cn",
-        "https://www.yunpan.com"
+      "third_party_to": [
+        "cbi360.net",
+        "juhe.cn",
+        "yunpan.com"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
     },
     {
       "host": "admin.qingting.fm",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.qingting.fm"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "admin.wangxiao.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.wangxiao.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "admin.xiaoe-tech.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.xiaoe-tech.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "admin1.sojson.com",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.sojson.com"
-      ],
-      "site_count": 1
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "adminapi.hqwx.com",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.hqwx.com",
-        "https://www.linkon.org.cn"
+      "third_party_to": [
+        "linkon.org.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
     },
     {
       "host": "adobe.ly",
-      "verdict": "reject",
-      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy",
-      "seen_on": [
-        "https://www.eainfor.com",
-        "https://www.flyme.cn",
-        "https://www.flyme.com",
-        "https://www.samsung.com.cn"
+      "third_party_to": [
+        "eainfor.com",
+        "flyme.cn",
+        "flyme.com",
+        "samsung.com.cn"
       ],
-      "site_count": 4
+      "third_party_count": 4,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
     },
     {
       "host": "adomas.org",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.changyou.com",
-        "https://www.cy.com",
-        "https://www.pumch.cn"
+      "third_party_to": [
+        "changyou.com",
+        "cy.com",
+        "pumch.cn"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "adqunar.qunar.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.qunar.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ads.cecb2b.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.cecb2b.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ads.staff.xdf.cn",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.neworiental.org"
+      "third_party_to": [
+        "neworiental.org"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "ads.taobao.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.duba.com"
+      "third_party_to": [
+        "duba.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ads.vidoomy.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://cnbeta.com.tw"
+      "third_party_to": [
+        "cnbeta.com.tw"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "adsame.cyol.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.cyol.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "adservice.google.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.prometric.com.cn"
+      "third_party_to": [
+        "prometric.com.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "adservice.kugou.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.kugou.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "adshow.fang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.fang.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "adtool.cdown",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.dongao.cn",
-        "https://www.dongao.com"
+      "third_party_to": [
+        "dongao.cn",
+        "dongao.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "adtrace.5054399.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.4399.com"
+      "third_party_to": [
+        "4399.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "advancep.cn.goepe.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.goepe.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "adventure-x.org",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.infoq.cn"
+      "third_party_to": [
+        "infoq.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "advertnew.wanfangdata.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.wanfangdata.com.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ady.dongyingnews.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.dongyingnews.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "afp.jinkaoedu.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.zhiyeapp.com"
+      "third_party_to": [
+        "zhiyeapp.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "ah.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "amp.ad.sina.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://sina.com.cn"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "assets.adobedtm.com",
-      "verdict": "reject",
-      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy",
-      "seen_on": [
-        "https://hp.com.cn",
-        "https://www.audi-faw-nev.com.cn",
-        "https://www.samsung.com.cn"
+      "third_party_to": [
+        "audi-faw-nev.com.cn",
+        "hp.com.cn",
+        "samsung.com.cn"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
     },
     {
       "host": "beijing.bidchance.com",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.beijingbaomu.com"
+      "third_party_to": [
+        "beijingbaomu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "biaoshu.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "bid.ename.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.ename.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "bidcard.alltobid.com",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.zrdp.cn"
+      "third_party_to": [
+        "zrdp.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "bidding.hqew.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.hqew.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "bj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "cdn-static.sspai.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "少数派 technology publication; matches ssp by coincidence",
-      "seen_on": [
-        "https://www.sspai.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "cdnfile.sspai.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "少数派 technology publication; matches ssp by coincidence",
-      "seen_on": [
-        "https://www.sspai.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "ckmap.mediav.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.ifeng.com"
+      "third_party_to": [
+        "ifeng.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "click.union.vip.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.1234wu.com"
+      "third_party_to": [
+        "1234wu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "cm.adform.net",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://cnbeta.com.tw"
+      "third_party_to": [
+        "cnbeta.com.tw"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "cm.mediav.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://so.com"
+      "third_party_to": [
+        "so.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "cms.tanx.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.pingan.com"
+      "third_party_to": [
+        "pingan.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "cn.unionpay.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "China UnionPay payment network",
-      "seen_on": [
-        "https://www.unionpay.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "color.adobe.com",
-      "verdict": "reject",
-      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy",
-      "seen_on": [
-        "https://www.1234wu.com"
+      "third_party_to": [
+        "1234wu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
     },
     {
       "host": "cpro.baidu.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.jumei.com",
-        "https://www.lu.com"
+      "third_party_to": [
+        "jumei.com",
+        "lu.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "cpro.baidustatic.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://sina.com.cn",
-        "https://www.1ting.com",
-        "https://www.2345.com",
-        "https://www.7k7k.com",
-        "https://www.962.net",
-        "https://www.baidu.com"
+      "third_party_to": [
+        "1ting.com",
+        "2345.com",
+        "7k7k.com",
+        "962.net",
+        "baidu.com",
+        "bitauto.com"
       ],
-      "site_count": 23
+      "third_party_count": 23,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "cpro.zol.com.cn",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.zol.com",
-        "https://zol.com.cn"
+      "third_party_to": [
+        "zol.com"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "cq.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "credit.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "dfhs.tanx.com",
-      "verdict": "dead",
-      "reason": "reviewed as advertising but does not resolve; a rule would match nothing",
-      "seen_on": [
-        "https://www.taobao.com",
-        "https://www.tmall.com"
+      "third_party_to": [
+        "taobao.com",
+        "tmall.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "dsp.youdao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.youdao.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ecpm.tanx.com",
-      "verdict": "dead",
-      "reason": "reviewed as advertising but does not resolve; a rule would match nothing",
-      "seen_on": [
-        "https://www.taobao.com",
-        "https://www.tmall.com"
+      "third_party_to": [
+        "taobao.com",
+        "tmall.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "el.addeventlistener",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.galaxyclub.cn",
-        "https://www.samsungmembers.cn"
+      "third_party_to": [
+        "galaxyclub.cn",
+        "samsungmembers.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "esg.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "fabu.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "fenlei.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "firefly.adobe.com",
-      "verdict": "reject",
-      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy",
-      "seen_on": [
-        "https://www.faxianai.com"
+      "third_party_to": [
+        "faxianai.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
     },
     {
       "host": "fj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "gd.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "gdtoday.newsgd.com",
-      "verdict": "reject",
-      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通",
-      "seen_on": [
-        "https://www.newsgd.com",
-        "https://www.southcn.com"
+      "third_party_to": [
+        "southcn.com"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通"
     },
     {
       "host": "get.adobe.com",
-      "verdict": "reject",
-      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy",
-      "seen_on": [
-        "https://www.chinaz.com",
-        "https://www.geeknev.com",
-        "https://www.ifengimg.com",
-        "https://www.weathertv.cn",
-        "https://www.zhanqi.tv"
+      "third_party_to": [
+        "chinaz.com",
+        "geeknev.com",
+        "ifengimg.com",
+        "weathertv.cn",
+        "zhanqi.tv"
       ],
-      "site_count": 5
+      "third_party_count": 5,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
     },
     {
       "host": "gs.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "guess.mediav.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.duba.com"
+      "third_party_to": [
+        "duba.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "gx.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "gz.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "h5.gdt.qq.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.pajkb.com"
+      "third_party_to": [
+        "pajkb.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "h5.ssp.qq.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.qq.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "hain.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "hb.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "hbs.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "hlj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "hn.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "hns.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "ib.adnxs.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://cnbeta.com.tw"
+      "third_party_to": [
+        "cnbeta.com.tw"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "image.bidchance.com",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.zhaobiao.cn"
+      "third_party_to": [
+        "zhaobiao.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "img.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "interface.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "jl.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "job.adquan.com",
-      "verdict": "reject",
-      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure",
-      "seen_on": [
-        "https://www.faxianai.com"
+      "third_party_to": [
+        "faxianai.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure"
     },
     {
       "host": "js.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "jx.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "kmh.addeventlistener",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.qianlong.com"
+      "third_party_to": [
+        "qianlong.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "kmhyd.addeventlistener",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.qianlong.com"
+      "third_party_to": [
+        "qianlong.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "kuajing.admin5.com",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.a5.cn"
+      "third_party_to": [
+        "a5.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "ln.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "m.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "mail.gdtfair.com",
-      "verdict": "reject",
-      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通",
-      "seen_on": [
-        "https://www.gdghg.com"
+      "third_party_to": [
+        "gdghg.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通"
     },
     {
       "host": "manual.sspai.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "少数派 technology publication; matches ssp by coincidence",
-      "seen_on": [
-        "https://www.sspai.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "marketing.adobe.com",
-      "verdict": "reject",
-      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy",
-      "seen_on": [
-        "https://www.blackrock.com.cn"
+      "third_party_to": [
+        "blackrock.com.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
     },
     {
       "host": "mi.gdt.qq.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.163.com",
-        "https://www.youku.com"
+      "third_party_to": [
+        "163.com",
+        "youku.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "nmg.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "ns.adobe.com",
-      "verdict": "reject",
-      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy",
-      "seen_on": [
-        "https://www.ctzg.com",
-        "https://www.samsung.com.cn"
+      "third_party_to": [
+        "ctzg.com",
+        "samsung.com.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "nx.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "p.tanx.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.2345.com"
+      "third_party_to": [
+        "2345.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "post.sspai.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "少数派 technology publication; matches ssp by coincidence",
-      "seen_on": [
-        "https://www.sspai.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "px.ads.linkedin.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.diandian.com",
-        "https://www.kingdee.com"
+      "third_party_to": [
+        "diandian.com",
+        "kingdee.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "qh.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "qzs.gdtimg.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.iqiyi.com",
-        "https://www.tgbus.com",
-        "https://www.youku.com"
+      "third_party_to": [
+        "iqiyi.com",
+        "tgbus.com",
+        "youku.com"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "qzsdk.gdtimg.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.163.com"
+      "third_party_to": [
+        "163.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "restprops.addon",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.chinajoy.net"
+      "third_party_to": [
+        "chinajoy.net"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "s.ad.smaato.net",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://cnbeta.com.tw"
+      "third_party_to": [
+        "cnbeta.com.tw"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "s.union.360.cn",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.21cnjy.com",
-        "https://www.analysysdata.com",
-        "https://www.beisen.com",
-        "https://www.chooseauto.com.cn",
-        "https://www.cmeii.com",
-        "https://www.downza.cn"
+      "third_party_to": [
+        "21cnjy.com",
+        "analysysdata.com",
+        "beisen.com",
+        "chooseauto.com.cn",
+        "cmeii.com",
+        "downza.cn"
       ],
-      "site_count": 26
+      "third_party_count": 26,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "sa.bid.default",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.suning.com"
+      "third_party_to": [
+        "suning.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "sa.bid.event",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.suning.com"
+      "third_party_to": [
+        "suning.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "sa.bid.fun",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.suning.com"
+      "third_party_to": [
+        "suning.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "sc.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "sd.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "search.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "seo.admin5.com",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.destoon.com"
+      "third_party_to": [
+        "destoon.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "sh.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "show-g.mediav.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://so.com",
-        "https://www.duba.com",
-        "https://www.ihuaben.com"
+      "third_party_to": [
+        "duba.com",
+        "ihuaben.com",
+        "so.com"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "shuju.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "sso.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "ssp-sync.criteo.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://cnbeta.com.tw"
+      "third_party_to": [
+        "cnbeta.com.tw"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "ssp.21ic.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.21ic.com"
-      ],
-      "site_count": 1
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ssp.360.cn",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://so.com"
+      "third_party_to": [
+        "so.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "ssp.pd.xibojiaoyu.local",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.xibojiaoyu.cn",
-        "https://www.xibojiaoyu.com"
+      "third_party_to": [
+        "xibojiaoyu.cn",
+        "xibojiaoyu.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "ssp.test.xibojiaoyu.com",
-      "verdict": "reject",
-      "reason": "non-production test environment",
-      "seen_on": [
-        "https://www.xibojiaoyu.cn",
-        "https://www.xibojiaoyu.com"
+      "third_party_to": [
+        "xibojiaoyu.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "non-production test environment"
     },
     {
       "host": "ssp.uat.xibojiaoyu.com",
-      "verdict": "reject",
-      "reason": "non-production test environment",
-      "seen_on": [
-        "https://www.xibojiaoyu.cn",
-        "https://www.xibojiaoyu.com"
+      "third_party_to": [
+        "xibojiaoyu.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "ssp.uat.xibojiaoyu.local",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.xibojiaoyu.cn",
-        "https://www.xibojiaoyu.com"
+      "third_party_to": [
+        "xibojiaoyu.cn",
+        "xibojiaoyu.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "ssp.xibojiaoyu.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.xibojiaoyu.cn",
-        "https://www.xibojiaoyu.com"
+      "third_party_to": [
+        "xibojiaoyu.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "sspai.com",
-      "verdict": "reject",
-      "reason": "少数派 technology publication; matches ssp by coincidence",
-      "seen_on": [
-        "https://www.1234wu.com",
-        "https://www.newrank.cn",
-        "https://www.sspai.com"
+      "third_party_to": [
+        "1234wu.com",
+        "newrank.cn"
       ],
-      "site_count": 3
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "少数派 technology publication; matches ssp by coincidence"
     },
     {
       "host": "ssports.iqiyi.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "iQIYI Sports; matches ssp by coincidence",
-      "seen_on": [
-        "https://www.iqiyi.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "static-ssl.mediav.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.hao86.com"
+      "third_party_to": [
+        "hao86.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "static.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "static.mediav.com",
-      "verdict": "reject",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "seen_on": [
-        "https://www.163.com",
-        "https://www.2345.com",
-        "https://www.7k7k.com",
-        "https://www.duba.com",
-        "https://www.hao86.com",
-        "https://www.le.com"
+      "third_party_to": [
+        "163.com",
+        "2345.com",
+        "7k7k.com",
+        "duba.com",
+        "hao86.com",
+        "le.com"
       ],
-      "site_count": 6
+      "third_party_count": 6,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "reviewed, not advertising delivery infrastructure"
     },
     {
       "host": "storage-cdn.bidizhaobiao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidizhaobiao.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "sx.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "sxs.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "tj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "toolitembar.addclass",
-      "verdict": "reject",
-      "reason": "scanner artefact, not a resolvable hostname",
-      "seen_on": [
-        "https://www.kf5.com"
+      "third_party_to": [
+        "kf5.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "trans.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "union-click.jd.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.1234wu.com",
-        "https://www.zol.com",
-        "https://zol.com.cn"
+      "third_party_to": [
+        "1234wu.com",
+        "zol.com",
+        "zol.com.cn"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "union.114piaowu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "affiliate programme portal a user visits, not a delivery endpoint",
-      "seen_on": [
-        "https://www.114piaowu.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "union.151files.goldhoe.com",
-      "verdict": "reject",
-      "reason": "affiliate programme portal a user visits, not a delivery endpoint",
-      "seen_on": [
-        "https://www.jinchutou.com"
+      "third_party_to": [
+        "jinchutou.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "affiliate programme portal a user visits, not a delivery endpoint"
     },
     {
       "host": "union.153files.goldhoe.com",
-      "verdict": "reject",
-      "reason": "affiliate programme portal a user visits, not a delivery endpoint",
-      "seen_on": [
-        "https://www.jinchutou.com"
+      "third_party_to": [
+        "jinchutou.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "affiliate programme portal a user visits, not a delivery endpoint"
     },
     {
       "host": "union.bokecc.com",
-      "verdict": "reject",
-      "reason": "affiliate programme portal a user visits, not a delivery endpoint",
-      "seen_on": [
-        "https://www.cifm.com"
+      "third_party_to": [
+        "cifm.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "affiliate programme portal a user visits, not a delivery endpoint"
     },
     {
       "host": "union.dangdang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "affiliate programme portal a user visits, not a delivery endpoint",
-      "seen_on": [
-        "https://www.dangdang.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "union.gad.netease.com",
-      "verdict": "dead",
-      "reason": "reviewed as advertising but does not resolve; a rule would match nothing",
-      "seen_on": [
-        "https://www.harrypottermagicawakened.com"
+      "third_party_to": [
+        "harrypottermagicawakened.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "union.jd.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "affiliate programme portal a user visits, not a delivery endpoint",
-      "seen_on": [
-        "https://www.jd.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "union.koolearn.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "affiliate programme portal a user visits, not a delivery endpoint",
-      "seen_on": [
-        "https://www.koolearn.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "union.yingjiesheng.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "affiliate programme portal a user visits, not a delivery endpoint",
-      "seen_on": [
-        "https://www.yingjiesheng.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "user.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "v.admaster.com.cn",
-      "verdict": "dead",
-      "reason": "reviewed as advertising but does not resolve; a rule would match nothing",
-      "seen_on": [
-        "https://www.597.com",
-        "https://www.guancha.cn"
+      "third_party_to": [
+        "597.com",
+        "guancha.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "v.gdt.qq.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.163.com"
+      "third_party_to": [
+        "163.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "vipinfo.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "vr.gdt.qq.com",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://www.163.com",
-        "https://www.youku.com"
+      "third_party_to": [
+        "163.com",
+        "youku.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "www.adbc.com.cn",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.ceweekly.cn",
-        "https://www.imachina.org.cn"
+      "third_party_to": [
+        "ceweekly.cn",
+        "imachina.org.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "www.addlink.cn",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.35.com",
-        "https://www.west.cn"
+      "third_party_to": [
+        "35.com",
+        "west.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "www.adguider.com",
-      "verdict": "reject",
-      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure",
-      "seen_on": [
-        "https://www.1234wu.com"
+      "third_party_to": [
+        "1234wu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure"
     },
     {
       "host": "www.admaimai.com",
-      "verdict": "reject",
-      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure",
-      "seen_on": [
-        "https://www.114piaowu.com"
+      "third_party_to": [
+        "114piaowu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "www.admin10000.com",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.oneapm.com"
+      "third_party_to": [
+        "oneapm.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
     },
     {
       "host": "www.admin5.cn",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.a5.cn"
+      "third_party_to": [
+        "a5.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "www.admin5.com",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.a5.cn",
-        "https://www.appchina.com",
-        "https://www.askci.com",
-        "https://www.cifnews.com",
-        "https://www.destoon.com",
-        "https://www.epwk.com"
+      "third_party_to": [
+        "a5.cn",
+        "appchina.com",
+        "askci.com",
+        "cifnews.com",
+        "destoon.com",
+        "epwk.com"
       ],
-      "site_count": 19
+      "third_party_count": 19,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
     },
     {
       "host": "www.adminbuy.cn",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.zhujib.com"
+      "third_party_to": [
+        "zhujib.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
     },
     {
       "host": "www.adobe.com",
-      "verdict": "reject",
-      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy",
-      "seen_on": [
-        "https://music.163.com",
-        "https://www.aibase.cn",
-        "https://www.aibase.com",
-        "https://www.blackrock.com.cn",
-        "https://www.btime.com",
-        "https://www.buycar.cn"
+      "third_party_to": [
+        "163.com",
+        "aibase.cn",
+        "aibase.com",
+        "blackrock.com.cn",
+        "btime.com",
+        "buycar.cn"
       ],
-      "site_count": 22
+      "third_party_count": 22,
+      "verdict": "reject",
+      "reason": "Adobe product site or Experience Cloud tag host reviewed under its own policy"
     },
     {
       "host": "www.adquan.com",
-      "verdict": "reject",
-      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure",
-      "seen_on": [
-        "https://www.1234wu.com"
+      "third_party_to": [
+        "1234wu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure"
     },
     {
       "host": "www.adspower.net",
-      "verdict": "reject",
-      "reason": "unrelated service; matches an advertising prefix by coincidence",
-      "seen_on": [
-        "https://www.1234wu.com",
-        "https://www.anestcang.com",
-        "https://www.diandian.com",
-        "https://www.goluckyvip.com"
+      "third_party_to": [
+        "1234wu.com",
+        "anestcang.com",
+        "diandian.com",
+        "goluckyvip.com"
       ],
-      "site_count": 4
+      "third_party_count": 4,
+      "verdict": "reject",
+      "reason": "unrelated service; matches an advertising prefix by coincidence"
     },
     {
       "host": "www.adtchrome.com",
-      "verdict": "reject",
-      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure",
-      "seen_on": [
-        "https://www.ofweek.com"
+      "third_party_to": [
+        "ofweek.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "advertising-industry publication or tool vendor site, not delivery infrastructure"
     },
     {
       "host": "www.bida24.com",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.666666.com.cn",
-        "https://www.stockstar.com"
+      "third_party_to": [
+        "666666.com.cn",
+        "stockstar.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "www.bidcenter.com.cn",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.1234wu.com",
-        "https://www.64365.com",
-        "https://www.bidcenter.com.cn",
-        "https://www.cbi360.net",
-        "https://www.chinapp.com",
-        "https://www.hualv.com"
+      "third_party_to": [
+        "1234wu.com",
+        "64365.com",
+        "cbi360.net",
+        "chinapp.com",
+        "hualv.com",
+        "loupan.com"
       ],
-      "site_count": 11
+      "third_party_count": 10,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "www.bidchance.com",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.114piaowu.com",
-        "https://www.1234wu.com",
-        "https://www.55.la",
-        "https://www.acc5.com",
-        "https://www.cbi360.net",
-        "https://www.chem17.com"
+      "third_party_to": [
+        "114piaowu.com",
+        "1234wu.com",
+        "55.la",
+        "acc5.com",
+        "cbi360.net",
+        "chem17.com"
       ],
-      "site_count": 15
+      "third_party_count": 15,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "www.bidianer.com",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.1ai.net",
-        "https://www.pcsoft.com.cn"
+      "third_party_to": [
+        "1ai.net",
+        "pcsoft.com.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "www.bidizhaobiao.com",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.1234wu.com",
-        "https://www.1mishu.com",
-        "https://www.afzhan.com",
-        "https://www.chem17.com",
-        "https://www.chinairn.com",
-        "https://www.cnhnb.com"
+      "third_party_to": [
+        "1234wu.com",
+        "1mishu.com",
+        "afzhan.com",
+        "chem17.com",
+        "chinairn.com",
+        "cnhnb.com"
       ],
-      "site_count": 11
+      "third_party_count": 11,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "www.bidnews.cn",
-      "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.1234wu.com"
+      "third_party_to": [
+        "1234wu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding"
     },
     {
       "host": "www.gdtex.com",
-      "verdict": "reject",
-      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通",
-      "seen_on": [
-        "https://www.gdghg.com"
+      "third_party_to": [
+        "gdghg.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通"
     },
     {
       "host": "www.gdtv.cn",
-      "verdict": "reject",
-      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通",
-      "seen_on": [
-        "https://www.gddpf.org.cn",
-        "https://www.gdwomen.org.cn"
+      "third_party_to": [
+        "gddpf.org.cn",
+        "gdwomen.org.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "Guangdong broadcaster, news or trade-fair host; gdt here is not 广点通"
     },
     {
       "host": "x.bidswitch.net",
-      "verdict": "admit",
-      "reason": "advertising delivery, exchange or click tracking; resolves",
-      "seen_on": [
-        "https://cnbeta.com.tw"
+      "third_party_to": [
+        "cnbeta.com.tw"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
     },
     {
       "host": "xj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "xm.admin5.com",
-      "verdict": "reject",
-      "reason": "administration console, not advertising",
-      "seen_on": [
-        "https://www.a5.cn"
+      "third_party_to": [
+        "a5.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "administration console, not advertising"
     },
     {
       "host": "xz.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "yn.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "zbwj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "zj.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "zone.bidcenter.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "public procurement and tender portal; bid refers to tendering, not real-time bidding",
-      "seen_on": [
-        "https://www.bidcenter.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     }
   ],
   "tracking_records": [
     {
       "host": "analysis.chinabgao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "chinabgao.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "analysis.huanqiu.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "lifetimes.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "analytics.163.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
-        "163.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "analytics.ahrefs.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "gamepp.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "analytics.alright.network",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "ijiandao.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "analytics.juhe.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "juhe.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "analytics.meituan.net",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "meituan.org.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "analytics.mshare.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "shixiseng.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "analytics.oceanengine.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "shoujihao.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "analytics.ooopic.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "ooopic.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "analytics.s4.udesk.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "udesk.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "analytics.tuhu.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "tuhu.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "beacon.cdn.qq.com",
+      "third_party_to": [
+        "163.com",
+        "dnspod.cn",
+        "youku.com"
+      ],
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated"
     },
     {
       "host": "beacon.jk.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
-        "jk.cn",
+      "third_party_to": [
         "pajk.com.cn",
         "pajkb.com"
       ],
-      "site_count": 3
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "beacon.sina.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "sina.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "beacon.test.pajkdc.com",
-      "verdict": "reject",
-      "reason": "non-production environment",
-      "seen_on_roots": [
+      "third_party_to": [
         "jk.cn",
         "pajk.com.cn",
         "pajkb.com"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "non-production environment"
     },
     {
       "host": "beaconcdn.qq.com",
-      "verdict": "admit",
-      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions",
-      "seen_on_roots": [
+      "third_party_to": [
         "dnspod.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions"
     },
     {
       "host": "btrace.qq.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
-        "qq.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "bzclk.baidu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
       "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
-        "baidu.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "cbjs.baidu.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "1010jiajiao.com",
         "chinakaoyan.com",
         "chinaz.com",
@@ -2538,169 +2351,193 @@
         "nbd.com.cn",
         "shafa.com"
       ],
-      "site_count": 7
+      "third_party_count": 7,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "click.5054399.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "4399.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "click.ali213.net",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "ali213.net"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "click.aliyun.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "aliyun.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "click.baihe.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "baihe.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "click.ctyun.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "kkj.cn",
         "mydrivers.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "click.dangdang.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "dangdang.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "click.gamersky.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "gamersky.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "click.hm.baidu.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
-        "baidu.com",
+      "third_party_to": [
         "cqmmgo.com"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "click.suning.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "suning.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "click.union.vip.com",
+      "third_party_to": [
+        "1234wu.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery, exchange or click tracking; resolves"
+    },
+    {
+      "host": "clk.optaim.com",
+      "third_party_to": [
+        "56.com",
+        "56img.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated"
+    },
+    {
+      "host": "cm.e.qq.com",
+      "third_party_to": [
+        "lejucaijing.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
+    },
+    {
+      "host": "cm.pos.baidu.com",
+      "third_party_to": [
+        "lejucaijing.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
     },
     {
       "host": "cnzz.mmstat.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "dongchedi.com",
         "zqc1.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "collect.alipay.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "payment or banking endpoint; a REJECT could stall checkout and first-party safety cannot be established",
-      "seen_on_roots": [
-        "alipay.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "collect.cqnews.net",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "cqnews.net"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "collect.mybank.cn",
-      "verdict": "reject",
-      "reason": "payment or banking endpoint; a REJECT could stall checkout and first-party safety cannot be established",
-      "seen_on_roots": [
+      "third_party_to": [
         "alipay.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "payment or banking endpoint; a REJECT could stall checkout and first-party safety cannot be established"
     },
     {
       "host": "collect.zjtcn.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "zjtcn.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "count.eepw.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "eepw.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "counter.mydown.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "mydown.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "dn-growing.qbox.me",
-      "verdict": "admit",
-      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions",
-      "seen_on_roots": [
+      "third_party_to": [
         "zhenai.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions"
     },
     {
       "host": "dup.baidustatic.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "123.com.cn",
         "17k.com",
         "caixin.com",
@@ -2708,178 +2545,280 @@
         "cngold.com.cn",
         "co188.com"
       ],
-      "site_count": 18
+      "third_party_count": 18,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
+    },
+    {
+      "host": "e.qq.com",
+      "third_party_to": [
+        "sogou.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "the Tencent advertising platform's own website, which a user visits deliberately"
+    },
+    {
+      "host": "eclick.baidu.com",
+      "third_party_to": [
+        "114piaowu.com",
+        "chinaz.com",
+        "jiakaobaodian.com",
+        "lietou-static.com",
+        "xiaozhu2.com"
+      ],
+      "third_party_count": 5,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
+    },
+    {
+      "host": "ecmb.bdimg.com",
+      "third_party_to": [
+        "baidu.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
+    },
+    {
+      "host": "fclog.baidu.com",
+      "third_party_to": [
+        "aiqicha.com"
+      ],
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
+    },
+    {
+      "host": "fourier.taobao.com",
+      "third_party_to": [
+        "996.com",
+        "9game.cn",
+        "fliggy.com",
+        "tmall.com"
+      ],
+      "third_party_count": 4,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
+    },
+    {
+      "host": "h.trace.qq.com",
+      "third_party_to": [
+        "dnspod.cn",
+        "sogou.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
     },
     {
       "host": "hm.aidu.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "cmeii.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "hm.baidu.com",
+      "third_party_to": [
+        "1010jiajiao.com",
+        "11467.com",
+        "120ask.com",
+        "123.com.cn",
+        "12321.cn",
+        "12365auto.com"
+      ],
+      "third_party_count": 604,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated"
     },
     {
       "host": "hm.bendibao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "bendibao.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "hm.hualv.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
-        "64365.com",
-        "hualv.com"
+      "third_party_to": [
+        "64365.com"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "hm.loupan.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "loupan.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "log.66law.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "hualv.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "log.cmbchina.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "payment or banking endpoint; a REJECT could stall checkout and first-party safety cannot be established",
-      "seen_on_roots": [
-        "cmbchina.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "log.diandian.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "diandian.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "log.kuwo.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "kuwo.cn"
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
+    },
+    {
+      "host": "log.mmstat.com",
+      "third_party_to": [
+        "aliyun.com",
+        "fliggy.com",
+        "taobao.com",
+        "taopiaopiao.com",
+        "tmall.com"
       ],
-      "site_count": 1
+      "third_party_count": 5,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated"
     },
     {
       "host": "log.mogu.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
-        "mogu.com",
+      "third_party_to": [
         "mogucdn.com",
         "mogujie.com"
       ],
-      "site_count": 3
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "log.study.163.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "163.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "log.youpin.mi.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "xiaomiyoupin.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "log.yunduocrm.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "open.com.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "logs.17house.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "17house.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "logs.dutenews.com",
-      "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "dutenews.com"
-      ],
-      "site_count": 1
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "logs.szdute.cn",
-      "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "szdute.cn"
+      "third_party_to": [],
+      "third_party_count": 0,
+      "admission_route": "operator's own dedicated endpoint",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
+    },
+    {
+      "host": "lpms.51y5.net",
+      "third_party_to": [
+        "ku6.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
     },
     {
       "host": "oth.str.beacon.qq.com",
-      "verdict": "admit",
-      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions",
-      "seen_on_roots": [
+      "third_party_to": [
         "dnspod.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions"
     },
     {
       "host": "otheve.beacon.qq.com",
-      "verdict": "admit",
-      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions",
-      "seen_on_roots": [
+      "third_party_to": [
         "dnspod.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party telemetry or analytics endpoint observed in the same scan; surfaced by a second pass over hostnames whose leading label does not match the tracking conventions"
+    },
+    {
+      "host": "pos.baidu.com",
+      "third_party_to": [
+        "2345.com",
+        "jiakaobaodian.com",
+        "xiaozhu2.com"
+      ],
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
     },
     {
       "host": "pv.fengniao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "fengniao.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "pv.sohu.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "125yan.com",
         "cmgadx.com",
         "eoffcn.com",
@@ -2887,368 +2826,393 @@
         "toyeebuy.com",
         "xzjy365.com"
       ],
-      "site_count": 6
+      "third_party_count": 6,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "pv.zhiding.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "zhiding.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "pv.zol.com.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
-        "zol.com",
-        "zol.com.cn"
+      "third_party_to": [
+        "zol.com"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "report.12377.cn",
-      "verdict": "reject",
-      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer",
-      "seen_on_roots": [
+      "third_party_to": [
         "962.net",
         "koubei.com",
         "uzzf.com"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "report.aliyun.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "aliyun.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "report.bjjubao.org.cn",
-      "verdict": "reject",
-      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer",
-      "seen_on_roots": [
-        "9xiu.com",
-        "bjjubao.org.cn"
+      "third_party_to": [
+        "9xiu.com"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer"
     },
     {
       "host": "report.cei.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "1234wu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "report.cnblogs.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "cnblogs.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "report.hebccw.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "hebei.com.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "report.huatuo.qq.com",
-      "verdict": "dead",
-      "reason": "reviewed as tracking but does not resolve",
-      "seen_on_roots": [
+      "third_party_to": [
         "juhe.cn",
         "yunpan.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "report.iimedia.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "1234wu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "report.meituan.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
-        "meituan.com",
+      "third_party_to": [
         "meituan.org.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "report.meituan.net",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "meituan.org.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "dead",
+      "reason": "reviewed as advertising or tracking but does not resolve; a rule would match nothing"
     },
     {
       "host": "report.qcloud.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "qcloud.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "report.seedsufe.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "1234wu.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
+    },
+    {
+      "host": "retcode.taobao.com",
+      "third_party_to": [
+        "koubei.com",
+        "xuexi.cn"
+      ],
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "browser error monitoring; this repository classifies monitoring as neither advertising nor tracking, consistent with the newrelic.com hold"
+    },
+    {
+      "host": "s.360.cn",
+      "third_party_to": [
+        "163.com",
+        "ibiling.cn",
+        "kuaijianji.com",
+        "ppsport.com",
+        "so.com"
+      ],
+      "third_party_count": 5,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
+    },
+    {
+      "host": "s.qhupdate.com",
+      "third_party_to": [
+        "kuaijianji.com",
+        "so.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
     },
     {
       "host": "sensors.h5.xed.plus",
-      "verdict": "reject",
-      "reason": "non-production environment",
-      "seen_on_roots": [
+      "third_party_to": [
         "xiaoe-tech.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "non-production environment"
     },
     {
       "host": "sensors.ibreader.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "jianshu.com",
         "jianshu.io"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "sensors.qiniu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "qiniu.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "sensors.woa.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "dnspod.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "sensors.xeknow.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "xiaoe-tech.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "sensors.xiaoeknow.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "xiaoe-tech.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "stat.58che.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "cnmo.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "stat.ihuaben.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "ihuaben.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "stat.it168.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "it168.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "stat.qf.v-56.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "56.com",
         "56img.com"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "stat.vip.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "vip.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "stat.www.gov.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer",
-      "seen_on_roots": [
-        "www.gov.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "stat.y.qq.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "qq.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "stat.youpin.mi.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "xiaomiyoupin.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "stat.zol.com.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "zol.com",
-        "zol.com.cn",
         "zolauto.com"
       ],
-      "site_count": 3
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "statistic.live.126.net",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "cnhnb.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "stats.12365auto.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "12365auto.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "stats.21jingji.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "21jingji.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "stats.customs.gov.cn",
-      "verdict": "reject",
-      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer",
-      "seen_on_roots": [
+      "third_party_to": [
         "1234wu.com",
         "myce.cn"
       ],
-      "site_count": 2
+      "third_party_count": 2,
+      "verdict": "reject",
+      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer"
+    },
+    {
+      "host": "stats.g.doubleclick.net",
+      "third_party_to": [
+        "huize.com",
+        "vbkr.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated"
     },
     {
       "host": "stats.gd.gov.cn",
-      "verdict": "reject",
-      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer",
-      "seen_on_roots": [
+      "third_party_to": [
         "gddpf.org.cn",
         "gdftu.org.cn",
         "gdszjgdj.org"
       ],
-      "site_count": 3
+      "third_party_count": 3,
+      "verdict": "reject",
+      "reason": "government portal or the legally mandated reporting link mainland sites carry in their footer"
+    },
+    {
+      "host": "stats.ipinyou.com",
+      "third_party_to": [
+        "163.com",
+        "fkw.com"
+      ],
+      "third_party_count": 2,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising or third-party tracking endpoint; reviewed per host and shipped in advertising-curated"
     },
     {
       "host": "stats.shafa.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "shafa.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "ta.597.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "597.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "ta.bendibao.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "bendibao.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "ta.lianjia.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "lianjia.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "ta.trs.cn",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "bast.net.cn",
         "bocfullertonbank.com",
         "cgws.com",
@@ -3256,22 +3220,32 @@
         "cnjiwang.com",
         "idcpc.org.cn"
       ],
-      "site_count": 11
+      "third_party_count": 11,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "ta.wikipedia.org",
-      "verdict": "reject",
-      "reason": "Tamil Wikipedia; ta is a language code, not 统计分析",
-      "seen_on_roots": [
+      "third_party_to": [
         "xuetangx.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "Tamil Wikipedia; ta is a language code, not 统计分析"
+    },
+    {
+      "host": "tce.alicdn.com",
+      "third_party_to": [
+        "fliggy.com"
+      ],
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "content widget delivery, not advertising"
     },
     {
       "host": "tongji.baidu.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "maiche.com",
         "qunar.com",
         "wanfangdata.com.cn",
@@ -3279,440 +3253,128 @@
         "xiaozhu2.com",
         "zw.cn"
       ],
-      "site_count": 6
+      "third_party_count": 6,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "tongji.dcloud.net.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "dcloud.net.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "tongji.leju.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "lejucaijing.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "tongji.meizu.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
-        "meizu.cn",
-        "meizu.com"
+      "third_party_to": [
+        "meizu.cn"
       ],
-      "site_count": 2
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "tongji.pc6.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "pc6.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "tongji.scol.com.cn",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "scol.com.cn"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "trace.inlong.qq.com",
-      "verdict": "admit",
-      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "sogou.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "third-party tracking or analytics platform collecting across unrelated sites; resolves"
     },
     {
       "host": "trace.suning.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "suning.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "track.58.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "58.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "track.csc.com.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "csc108.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "track.sfccn.com",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "yslcw.com"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "verdict": "reject",
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "track.sohu.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "sohu.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "tracker.1ting.com",
+      "third_party_to": [],
+      "third_party_count": 0,
       "verdict": "reject",
-      "reason": "first-party endpoint seen only on its own site; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "1ting.com"
-      ],
-      "site_count": 1
+      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met"
     },
     {
       "host": "tracking.eiceducation.com.cn",
-      "verdict": "reject",
-      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it",
-      "seen_on_roots": [
+      "third_party_to": [
         "eic.org.cn"
       ],
-      "site_count": 1
-    }
-  ],
-  "third_party_pass_records": [
-    {
-      "host": "apilog-web.acfun.cn",
+      "third_party_count": 1,
       "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "ark.letv.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "le.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "click.ali213.net",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "click.gamersky.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "cm.e.qq.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "lejucaijing.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "cm.pos.baidu.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "lejucaijing.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "da.mgtv.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "dc.letv.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [
-        "le.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "e.qq.com",
-      "verdict": "reject",
-      "reason": "the Tencent advertising platform's own website, which a user visits deliberately",
-      "seen_on_roots": [
-        "sogou.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "eclick.baidu.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "114piaowu.com",
-        "chinaz.com",
-        "jiakaobaodian.com",
-        "lietou-static.com",
-        "xiaozhu2.com"
-      ],
-      "site_count": 5
-    },
-    {
-      "host": "ecmb.bdimg.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "baidu.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "fclog.baidu.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "aiqicha.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "fenxi.360.cn",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "fourier.taobao.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "996.com",
-        "9game.cn",
-        "fliggy.com",
-        "tmall.com"
-      ],
-      "site_count": 4
-    },
-    {
-      "host": "g.163.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "h.trace.qq.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "dnspod.cn",
-        "sogou.com"
-      ],
-      "site_count": 2
-    },
-    {
-      "host": "info.e.qq.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "isdspeed.qq.com",
-      "verdict": "dead",
-      "reason": "reviewed as tracking but does not resolve",
-      "seen_on_roots": [
-        "chexiu.cn"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "ja2.gamersky.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "jzt.jd.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "lpms.51y5.net",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "ku6.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "miaowu.baidu.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "nsclick.baidu.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "pos.baidu.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "2345.com",
-        "jiakaobaodian.com",
-        "xiaozhu2.com"
-      ],
-      "site_count": 3
-    },
-    {
-      "host": "reke.at.sohu.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "retcode.taobao.com",
-      "verdict": "reject",
-      "reason": "browser error monitoring; this repository classifies monitoring as neither advertising nor tracking, consistent with the newrelic.com hold",
-      "seen_on_roots": [
-        "koubei.com",
-        "xuexi.cn"
-      ],
-      "site_count": 2
-    },
-    {
-      "host": "s.360.cn",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "163.com",
-        "ibiling.cn",
-        "kuaijianji.com",
-        "ppsport.com",
-        "so.com"
-      ],
-      "site_count": 5
-    },
-    {
-      "host": "s.qhupdate.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
-        "kuaijianji.com",
-        "so.com"
-      ],
-      "site_count": 2
-    },
-    {
-      "host": "stat.y.qq.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "tajs.qq.com",
-      "verdict": "dead",
-      "reason": "reviewed as tracking but does not resolve",
-      "seen_on_roots": [
-        "itvalue.com.cn",
-        "jiemian.com"
-      ],
-      "site_count": 2
-    },
-    {
-      "host": "tce.alicdn.com",
-      "verdict": "reject",
-      "reason": "content widget delivery, not advertising",
-      "seen_on_roots": [
-        "fliggy.com"
-      ],
-      "site_count": 1
-    },
-    {
-      "host": "track.sohu.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "v2.da.mgtv.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "web.da.mgtv.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
-    },
-    {
-      "host": "web2.da.mgtv.com",
-      "verdict": "reject",
-      "reason": "first-party to every origin that referenced it; criterion 2 of the admission rules is not met",
-      "seen_on_roots": [],
-      "site_count": 0
+      "reason": "first-party logging or analytics for a single operator; blocking it carries risk without cross-site collection to justify it"
     },
     {
       "host": "wlog.kuaishou.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "acfun.cn"
       ],
-      "site_count": 1
+      "third_party_count": 1,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
     },
     {
       "host": "zz.bdstatic.com",
-      "verdict": "admit",
-      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves",
-      "seen_on_roots": [
+      "third_party_to": [
         "123.com.cn",
         "163.com",
         "17k.com",
@@ -3720,7 +3382,10 @@
         "21ic.com",
         "21jingji.com"
       ],
-      "site_count": 118
+      "third_party_count": 118,
+      "admission_route": "third-party",
+      "verdict": "admit",
+      "reason": "advertising delivery or third-party tracking observed on at least one unrelated origin; resolves"
     }
   ]
 }

@@ -21,6 +21,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import rule_evidence  # noqa: E402
 
 SOURCES = ROOT / "sources"
+EVIDENCE = ROOT / "docs" / "evidence"
+ADMISSION_REVIEW = EVIDENCE / "admission-review-2026-09-19.json"
+MAINLAND_AD_REVIEW = EVIDENCE / "cn-ad-review-2026-09-19.json"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
 PHASE_3_AFTER = ROOT / "tests" / "fixtures" / "phase-3-after.json"
@@ -28,15 +31,6 @@ PHASE_3_DESIGN = ROOT / "tests" / "fixtures" / "phase-3-design.json"
 PHASE_3_LEDGER = ROOT / "tests" / "fixtures" / "phase-3-migration-ledger.json"
 PHASE_3_RECOVERY_LEDGER = (
     ROOT / "tests" / "fixtures" / "phase-3-recovery-ledger.json"
-)
-CHINA_DOMAIN_IMPORT_LEDGER = (
-    ROOT / "tests" / "fixtures" / "china-domain-import-ledger.json"
-)
-ADVERTISING_IMPORT_LEDGER = (
-    ROOT / "tests" / "fixtures" / "advertising-import-ledger.json"
-)
-ADVERTISING_ROUTING_LEDGER = (
-    ROOT / "tests" / "fixtures" / "advertising-routing-ledger.json"
 )
 CLOUD_ROUTING_LEDGER = (
     ROOT / "tests" / "fixtures" / "cloud-routing-ledger.json"
@@ -2630,3 +2624,61 @@ class RuleEvidenceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AdvertisingAdmissionContractTests(unittest.TestCase):
+    """The committed reviews and the shipped corpus must agree, in both directions.
+
+    A review that records a verdict the product does not honour is worse than no
+    review: it reads as evidence while describing something that was never
+    published. Both defects this guards against were real - the curated set was
+    built additively while an import still covered part of it, and a later
+    evidence file was generated from a hand-kept list rather than from the rules.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sources = load_profile_sources(SOURCES)
+
+    def lands_in_advertising(self, host: str) -> bool:
+        return (
+            first_match(self.sources, domain=host)["slug"] == "advertising-curated"
+        )
+
+    def test_every_admitted_host_reaches_the_advertising_policy(self) -> None:
+        review = json.loads(ADMISSION_REVIEW.read_text(encoding="utf-8"))
+        missed = [
+            record["host"]
+            for record in review["records"]
+            if record["verdict"] == "admit" and not self.lands_in_advertising(record["host"])
+        ]
+        self.assertEqual(missed, [], "hosts reviewed as admit that the product does not block")
+
+    def test_no_held_or_rejected_host_reaches_the_advertising_policy(self) -> None:
+        review = json.loads(ADMISSION_REVIEW.read_text(encoding="utf-8"))
+        blocked = [
+            record["host"]
+            for record in review["records"]
+            if record["verdict"] != "admit" and self.lands_in_advertising(record["host"])
+        ]
+        self.assertEqual(blocked, [], "hosts reviewed as hold or reject that the product blocks")
+
+    def test_mainland_review_verdicts_match_the_shipped_corpus(self) -> None:
+        review = json.loads(MAINLAND_AD_REVIEW.read_text(encoding="utf-8"))
+        disagreements = []
+        for key in ("delivery_records", "tracking_records"):
+            for record in review[key]:
+                shipped = self.lands_in_advertising(record["host"])
+                if (record["verdict"] == "admit") != shipped:
+                    disagreements.append((record["host"], record["verdict"], shipped))
+        self.assertEqual(disagreements, [], "review verdicts that disagree with the rules")
+
+    def test_admitted_hosts_record_which_admission_route_applies(self) -> None:
+        review = json.loads(MAINLAND_AD_REVIEW.read_text(encoding="utf-8"))
+        missing = [
+            record["host"]
+            for key in ("delivery_records", "tracking_records")
+            for record in review[key]
+            if record["verdict"] == "admit" and not record.get("admission_route")
+        ]
+        self.assertEqual(missing, [], "admitted hosts without a recorded admission route")
