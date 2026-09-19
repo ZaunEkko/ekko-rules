@@ -38,7 +38,7 @@ Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
-All 40 policy groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects an app feature, temporarily switch the advertising group to `DIRECT` or another policy.
+All 41 policy groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects an app feature, temporarily switch the advertising group to `DIRECT` or another policy.
 
 ## Mainland domains, IPs, and DNS
 
@@ -58,4 +58,4 @@ The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
-The sole product contains 62 rulesets, 63 segments, and 40 proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+The sole product contains 63 rulesets, 64 segments, and 41 proxy groups. No automatic-latency, Full, local, or Extended variant is published.

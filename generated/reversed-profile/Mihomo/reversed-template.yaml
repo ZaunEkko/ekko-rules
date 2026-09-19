@@ -264,6 +264,13 @@ proxy-groups:
   - ♻️ 手动切换
   use:
   - subscription
+- name: 🛒 海外购物
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
 - name: 🔞 NSFW
   type: select
   proxies:
@@ -707,6 +714,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google.yaml
     path: ./ruleset/google.yaml
     interval: 86400
+  overseas-shopping:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/overseas-shopping.yaml
+    path: ./ruleset/overseas-shopping.yaml
+    interval: 86400
   china-direct-curated:
     type: http
     behavior: classical
@@ -782,6 +796,7 @@ rules:
 - RULE-SET,microsoft,🧩 微软服务
 - RULE-SET,microsoft-late-recovery,DIRECT
 - RULE-SET,google,🔎 Google
+- RULE-SET,overseas-shopping,🛒 海外购物
 - RULE-SET,china-direct-curated,🌏 国内网站
 - RULE-SET,china-geoip-direct,DIRECT
 - MATCH,🐟 漏网之鱼

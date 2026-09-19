@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "source": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
-  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A root is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round.",
+  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A root is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19 round names a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve.",
   "counts": {
-    "roots": 3778
+    "roots": 3782
   },
   "records": [
     {
@@ -4732,6 +4732,17 @@
       "probe_round": "cn-verdicts-r2.json"
     },
     {
+      "root": "byte-test.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "218.91.225.98",
+        "114.80.10.195",
+        "182.101.26.190"
+      ],
+      "probe_round": "ecs-2026-09-19",
+      "resolved_via": "perfops.byte-test.com"
+    },
+    {
       "root": "bytedance.com",
       "mainland_hosted": true,
       "addresses": [
@@ -6190,6 +6201,15 @@
         "1.117.229.108"
       ],
       "probe_round": "cn-verdicts-r2.json"
+    },
+    {
+      "root": "chinanews.com.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "115.223.11.252",
+        "115.223.12.177"
+      ],
+      "probe_round": "ecs-2026-09-19"
     },
     {
       "root": "chinanosz.com",
@@ -13290,6 +13310,14 @@
         "39.105.105.237"
       ],
       "probe_round": "cn-verdicts.json"
+    },
+    {
+      "root": "honor.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "124.91.148.41"
+      ],
+      "probe_round": "ecs-2026-09-19"
     },
     {
       "root": "honyfunds.com",
@@ -28165,6 +28193,15 @@
         "140.207.177.207"
       ],
       "probe_round": "cn-verdicts-r2.json"
+    },
+    {
+      "root": "xinhuanet.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "117.177.70.180",
+        "117.177.70.163"
+      ],
+      "probe_round": "ecs-2026-09-19"
     },
     {
       "root": "xiniudata.com",

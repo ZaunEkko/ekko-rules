@@ -33,6 +33,18 @@ DOH_ENDPOINT = "https://dns.google/resolve"
 TIMEOUT = 20
 WORKERS = 24
 
+# The question a mainland direct rule needs answered is "where is a client in
+# the mainland served from", and this probe runs outside it. Without saying so,
+# the resolver answers for where the query came from: xinhuanet.com returns
+# 156.238.128.x from here and 117.177.70.x for a mainland client, so the probe
+# called a China Mobile-hosted site foreign. EDNS Client Subnet asks the
+# question properly by naming the client network the answer is for.
+#
+# Not every operator honours it. Cloudflare answers from anycast and returns the
+# same address whatever subnet is named, so a domain on it stays unadjudicable -
+# which is a true finding about the method, not a verdict about the domain.
+CLIENT_SUBNET = "223.5.5.0/24"
+
 
 def load_cn_ranges() -> list[tuple[int, int]]:
     """Return sorted (start, end) integer ranges APNIC delegated to CN."""
@@ -67,7 +79,9 @@ def in_cn(address: str, starts: list[int], ranges: list[tuple[int, int]]) -> boo
 
 
 def resolve(host: str) -> list[str]:
-    query = urllib.parse.urlencode({"name": host, "type": "A"})
+    query = urllib.parse.urlencode(
+        {"name": host, "type": "A", "edns_client_subnet": CLIENT_SUBNET}
+    )
     request = urllib.request.Request(
         f"{DOH_ENDPOINT}?{query}", headers={"accept": "application/dns-json"}
     )
@@ -119,7 +133,7 @@ def main(argv: list[str]) -> int:
     unresolved = [r for r in records if not r["addresses"]]
     document = {
         "schema_version": 1,
-        "method": "APNIC delegation records define the CN address space; a candidate is mainland-hosted when every A record falls inside it",
+        "method": f"APNIC delegation records define the CN address space; a candidate is mainland-hosted when every A record falls inside it. Resolution names {CLIENT_SUBNET} as the client subnet so the answer is the one a mainland client receives rather than the one this probe's own location earns",
         "source": APNIC_DELEGATIONS,
         "cn_ranges": len(ranges),
         "summary": {

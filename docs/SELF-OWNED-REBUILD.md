@@ -141,8 +141,11 @@ Every published rule in the advertising and mainland segments maps to one of the
 | `cn-apnic-verdicts-2026-09-19.json` | APNIC verdicts for the mainland roots |
 | `cn-observation-2026-09-19.json` | mainland roots the scan saw but APNIC could not adjudicate |
 | `cn-legacy-direct-2026-09-19.json` | the closed grandfathered mainland set |
+| `cn-review-admitted-2026-09-19.json` | the few roots neither the scan nor the probe can adjudicate, each stating which limitation applied |
 
 `ad-vendors-2026-09-19.txt`, `adstxt-candidates-2026-09-19.txt`, `cn-candidates-2026-09-19.txt` and `cn-vendors-2026-09-19.txt` are **inputs, not evidence**. They are the seeds and candidate lists the probes adjudicate, and the vendor seed names `bytedance.com`, whose general API infrastructure is not advertising. No test may read them as a verdict.
+
+The APNIC probe names a mainland client subnet in its query. It did not at first, and the omission made it answer the wrong question: `xinhuanet.com` returns `156.238.128.x` to this repository's own location and `117.177.70.x` to a mainland client, so the probe called a China Mobile-hosted site foreign. Geo-DNS and CDN edges are the normal case for exactly the services a mainland direct rule is about, so the fix matters more than the four verdicts it corrected. It is not total: Cloudflare answers from anycast and returns the same address whatever subnet is named, which is why `cloudflare.cn` has no verdict and why a small review-admitted category exists at all.
 
 Two grandfathered sets exist because two groups of rules predate the rebuild and their criterion 1 evidence was never committed: 28 advertising rules from commit `78c939c` and 269 mainland rules from the repository's own early curation. Claiming an evidence route for them after the fact would be an assertion, not evidence. Both sets are closed — a test asserts each may shrink but never grow — so neither can become a route for admitting new rules.
 

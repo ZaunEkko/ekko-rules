@@ -30,6 +30,7 @@ AD_SERVING_PROBE = EVIDENCE / "ad-serving-probe-2026-09-19.json"
 CN_APNIC_VERDICTS = EVIDENCE / "cn-apnic-verdicts-2026-09-19.json"
 CN_OBSERVATION = EVIDENCE / "cn-observation-2026-09-19.json"
 CN_LEGACY_DIRECT = EVIDENCE / "cn-legacy-direct-2026-09-19.json"
+CN_REVIEW_ADMITTED = EVIDENCE / "cn-review-admitted-2026-09-19.json"
 ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
@@ -146,12 +147,12 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 63)
-        self.assertEqual(len(self.sources.rule_segments), 62)
-        self.assertEqual(len(self.sources.proxy_groups), 40)
-        self.assertEqual(len(self.sources.segments_for("core")), 63)
-        self.assertEqual(len(self.sources.rule_segments_for("core")), 62)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 40)
+        self.assertEqual(len(self.sources.segments), 64)
+        self.assertEqual(len(self.sources.rule_segments), 63)
+        self.assertEqual(len(self.sources.proxy_groups), 41)
+        self.assertEqual(len(self.sources.segments_for("core")), 64)
+        self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 41)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -198,6 +199,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🎮 游戏平台",
                 "🎮 游戏下载",
                 "📪 邮件服务",
+                "🛒 海外购物",
                 "🔞 NSFW",
                 "🌏 国内网站",
                 "🐟 漏网之鱼",
@@ -2322,8 +2324,8 @@ class GenerationTests(unittest.TestCase):
                     self.assertNotIn(f"/{alias_slug}.list", active_text)
                     self.assertNotIn(f"/{alias_slug}.yaml", active_text)
                     self.assertNotIn(f"RULE-SET,{alias_slug},", active_text)
-        self.assertEqual(len(self.sources.rule_segments), 62)
-        self.assertEqual(len(self.sources.segments), 63)
+        self.assertEqual(len(self.sources.rule_segments), 63)
+        self.assertEqual(len(self.sources.segments), 64)
 
     def test_stale_file_is_detected_by_check_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -2831,7 +2833,16 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             value.lower()
             for value in json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))["values"]
         }
-        evidenced = apnic | observed | legacy
+        # The fourth route exists because the other three have a blind spot, not
+        # because review outranks them: an anycast probe endpoint answers from
+        # wherever you ask, so resolving it from outside the mainland says
+        # nothing. Every entry has to state the limitation that put it here.
+        reviewed = {
+            record["root"].lower()
+            for record in json.loads(CN_REVIEW_ADMITTED.read_text(encoding="utf-8"))["records"]
+            if record["verdict"] == "admit"
+        }
+        evidenced = apnic | observed | legacy | reviewed
         unmapped = [
             entry
             for slug in ("china-web", "china-direct-curated")
@@ -2839,6 +2850,30 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             if parse_rule(entry, context="mainland evidence")[1].lower() not in evidenced
         ]
         self.assertEqual(unmapped, [], "mainland rules with no committed evidence")
+
+    REVIEW_ADMITTED_LIMIT = 8
+
+    def test_review_admitted_roots_state_why_the_probes_could_not_decide(self) -> None:
+        """This route is the easiest one to abuse, so it carries the most proof.
+
+        A root here skipped both the scan and the APNIC verdict. What keeps that
+        honest is that the record must say which limitation applied, and that the
+        category stays small enough to read in full.
+        """
+        document = json.loads(CN_REVIEW_ADMITTED.read_text(encoding="utf-8"))
+        self.assertLessEqual(
+            len(document["records"]),
+            self.REVIEW_ADMITTED_LIMIT,
+            "the review-admitted route is a blind-spot patch, not a general entrance",
+        )
+        incomplete = [
+            record["root"]
+            for record in document["records"]
+            if not record.get("why_other_routes_failed")
+            or not record.get("reason")
+            or not record.get("vendor_attribution")
+        ]
+        self.assertEqual(incomplete, [], "review-admitted roots missing their justification")
 
     def test_the_mainland_grandfathered_set_is_closed(self) -> None:
         legacy = json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))

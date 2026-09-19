@@ -755,3 +755,43 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: Advertising got a rule-to-evidence mapping first because a wrong rule there blocks something; a wrong mainland rule sends traffic direct that should be proxied, the same defect with a quieter failure, and 4,224 rules had neither a mapping nor a committed artifact to map to - the scan output, Certificate Transparency results and APNIC verdicts existed only in a working directory, so the corpus was unauditable and re-running a probe later returns different data. Three files now carry it, 3,778 rules by APNIC verdict, 177 seen by the scan without an APNIC verdict, and 269 grandfathered, with MainlandEvidenceContractTests requiring every rule in both segments to map. The legacy advertising file had claimed admission_route third-party for hosts whose observing origin was never recorded, which was an assertion dressed as evidence; it now records criteria_satisfied 3 and 4 with criterion 1 and 2 evidence marked not preserved, and the 269 mainland rules are treated identically. Both grandfathered sets are closed, asserted to shrink but never grow, because grandfathering rules already shipping and re-reviewed for safety is defensible while leaving a door open for new ones is not. 16 admitted records still carried the catch-all rejection reason beside an admit verdict, including ad.doubleclick.net and six mediav.com hosts admitted through a root rule; reasons are regenerated from the matching rule and the test now rejects any rejection language rather than one phrase. docs/PROVENANCE.md still described the pinned import as shipping with its ledger and attribution intact, and cited a deleted ledger and the pre-retirement cloud capture count.
+- id: cloudflare-china-own-domain
+  status: accepted
+  scope: routing-policy
+  summary: The Cloudflare China infrastructure family was carried in china-cloud without cloudflare.cn, the domain the service is named after.
+  evidence:
+  - sources/rules/china-cloud.list
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: A mainland user reached cloudflare.cn through the proxy while cloudflare-cn.com, cloudflarechina.cn, cloudflarecn.net, cloudflareinsights-cn.com and cf-ns.com all went direct. It joins its family in china-cloud, which is both where it belongs and what the evidence permits - the APNIC probe cannot adjudicate it, because resolving cloudflare.cn from outside the mainland returns a Hong Kong address while the China network answers differently depending on where the question is asked. That is a limit of the probe rather than a finding about the domain, and it is why ER-023's reviewed Cloudflare China roots sit in china-cloud on review rather than on a probe verdict.
+- id: overseas-shopping-policy
+  status: accepted
+  scope: routing-policy
+  summary: A retailer that needs its own exit had nowhere to go but the fallback, so overseas shopping becomes its own segment and group.
+  evidence:
+  - sources/rules/overseas-shopping.list
+  - sources/proxy-groups.yaml
+  - sources/manifest.yaml
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Takealot answers a proxy exit with a Cloudflare interstitial that other sites accept, which is IP reputation rather than a country block, and reaching it meant changing the fallback for everything. The new group holds 76 roots - regional Amazon storefronts, eBay, Etsy, Japanese shops including DLsite, Rakuten, ZOZO, Suruga-ya, Mandarake and AmiAmi, the forwarding services a cross-border order passes through, and regional retailers such as Gmarket, SSG and Takealot - admitted because what these sites display, sell and challenge depends on the exit, not because the category was untidy. The segment runs after every other service segment so amazon.com cannot take aws.amazon.com, console.aws.amazon.com or media-amazon.com, all verified. lazada.com, lazada.sg, shopee.com and shopee.sg were dropped - the Lazada family is already direct in china-web, the duplicate registered as a dead rule that the coverage gate caught, and splitting a brand whose mainland entry is deliberately direct across two policies is worse than leaving it whole. cloudflareperf.com joins china-cloud with the Cloudflare China family on an APNIC-confirmed mainland apex.
+- id: mainland-probe-client-subnet
+  status: accepted
+  scope: routing-policy
+  summary: The mainland hosting probe resolved without naming a client subnet, so geo-DNS services answered for the probe's own location and were recorded as foreign.
+  evidence:
+  - scripts/mainland_hosting_probe.py
+  - docs/evidence/cn-apnic-verdicts-2026-09-19.json
+  - docs/evidence/cn-review-admitted-2026-09-19.json
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: xinhuanet.com returns 156.238.128.x to this repository and 117.177.70.x to a mainland client, so the probe read the first and called a China Mobile-hosted site foreign - the normal case for exactly the CDN-fronted services a mainland direct rule is about. The probe now names a mainland client subnet with EDNS Client Subnet, and four roots previously classified as foreign are mainland-hosted under the corrected question - xinhuanet.com, chinanews.com.cn, honor.cn and cloudflareperf.com. The fix is not total and the residue is informative - Cloudflare answers from anycast and ignores the named subnet, so cloudflare.cn still has no verdict, which is a finding about the method rather than the domain. The ByteDance probe endpoints split under the corrected probe - perfops.byte-test.com resolves into mainland space while perfops1 through perfops3 of byteperf.com stay foreign because they are deliberately spread across regions - so byte-test.com is admitted on the APNIC route and byteperf.com on a routing rationale, that a client measuring which CDN node to use must measure the path its media traffic takes. That rationale lives in a fourth evidence route which carries more proof than the others rather than less - every record states its reason, vendor attribution and the limitation that put it there, and the category is capped at eight. lenovo.com.cn was examined and not added because it answers from Akamai's global edge even for a mainland client.

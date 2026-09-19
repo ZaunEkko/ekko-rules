@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "method": "Roots admitted by per-host review where neither the scan nor the APNIC probe could supply a verdict, each recording why review concluded what it did and why the other routes could not. This category exists because two evidence routes have a blind spot rather than because review outranks them - it is enumerated, small, and every entry states the limitation that put it here.",
+  "counts": {
+    "roots": 1
+  },
+  "records": [
+    {
+      "root": "byteperf.com",
+      "verdict": "admit",
+      "reason": "ByteDance network-quality probe endpoint. Its clients measure against it to choose a CDN node, so the measurement has to traverse the path the media traffic uses; taken through a proxy it describes a path the client will not take and the client then picks the wrong node.",
+      "vendor_attribution": "domain naming, and its use as the ByteDance probe by the split-tunnel test at ip.skk.moe that surfaced it",
+      "why_other_routes_failed": "the apex does not resolve, and naming a mainland client subnet still returns foreign addresses for perfops1, perfops2 and perfops3 - 35.219.10.74, 95.40.53.40 and 47.84.187.31. Those endpoints are deliberately spread across regions because measuring only nearby would defeat their purpose, so hosting says nothing about how the traffic should be routed. byte-test.com, probed alongside it, does resolve into mainland space and is admitted on the APNIC route instead.",
+      "placement": "china-web, alongside the ByteDance mainland infrastructure already there"
+    }
+  ]
+}
