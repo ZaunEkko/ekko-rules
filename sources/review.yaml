@@ -668,3 +668,18 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: Both imports, their ledgers and the advertising routing ledger are deleted, and NOTICE.md no longer carries the V2Ray attribution because nothing in the product requires it. Six evidence sources took independent attestation to 34.1 and 55.8 percent and then saturated, so the choice was between keeping data the product no longer depends on and replacing it with a corpus that measures better - 7.3 to 42.3 percent of observed third-party hosts, 16.5 to 100 percent of hosts reviewed as advertising, 7.7 to 60.9 percent of hostnames observed across mainland origins. The measurable gap was closed first - 239 roots that only the import covered were recovered from this repository's own observation, 163 confirmed by APNIC and 61 by per-host review, plus 41 added explicitly, taking measured loss to zero. newrelic.com is deliberately not re-added because this repository's review classifies browser monitoring as neither advertising nor tracking. A new china-direct-curated segment restores the ordering the import provided, holding nine broad vendor and CDN roots immediately before the GEOIP fallback so they do not run ahead of the cloud, media and AI segments.
+- id: admission-review-contract
+  status: accepted
+  scope: routing-policy
+  summary: Eight hosts the committed admission review marks admit stopped reaching the advertising policy once the import was removed, two of them because ad vendor roots had been carried as mainland direct.
+  evidence:
+  - docs/evidence/admission-review-2026-09-19.json
+  - docs/evidence/ad-vendors-2026-09-19.txt
+  - sources/rules/advertising-curated.list
+  - sources/rules/china-web.list
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The curated advertising set was built additively while the import still shipped, so it skipped hosts the import already covered and those hosts had nothing behind them once it left - a sequencing error in ER-047, not a judgement change. googletagmanager.com and googletagservices.com are the worse case, because this repository's own ad-vendors evidence names them as advertising infrastructure while china-web carried them as mainland direct; both roots move to advertising-curated in full. The six mainland hosts are added as exact DOMAIN rules because their roots carry login, payment, platform APIs and general assets that must stay direct. All 109 admit hosts now reach advertising-curated and none of the 151 hold or reject hosts reach REJECT. The committed origin list, stale at 245 origins from the first round while later rounds used a larger uncommitted list, is regenerated deterministically from the china-web roots so the scan is reproducible.

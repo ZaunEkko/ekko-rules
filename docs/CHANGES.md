@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-047 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-048 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1036,3 +1036,38 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 54; same-segment: 13; cross-segment-only: 41.
+
+## ER-048 — The admission review is a contract, and it was not being honoured
+
+**Type:** defect fix; 8 rules added, 2 removed
+
+`docs/evidence/admission-review-2026-09-19.json` records a per-host verdict for 260 observed hosts. 109 are `admit`, meaning this repository reviewed the host and decided it should be blocked. After ER-047 removed the import, eight of those 109 no longer reached `advertising-curated`:
+
+| Host | Was reaching | Via |
+|---|---|---|
+| `www.googletagmanager.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,googletagmanager.com` in `china-web` |
+| `www.googletagservices.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,googletagservices.com` in `china-web` |
+| `beacon.cdn.qq.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,qq.com` in `china-direct-curated` |
+| `mi.gdt.qq.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,qq.com` in `china-direct-curated` |
+| `sdk.e.qq.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,qq.com` in `china-direct-curated` |
+| `hm.baidu.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,baidu.com` in `china-direct-curated` |
+| `cpro.baidustatic.com` | 🌏 国内网站 | `DOMAIN-SUFFIX,baidustatic.com` in `china-web` |
+| `pgdt.gtimg.cn` | 🌏 国内网站 | `DOMAIN-SUFFIX,gtimg.cn` in `china-web` |
+
+Two different defects share one symptom.
+
+The curated advertising set was built additively while the import still shipped, so it skipped hosts the import already covered. When the import left, those hosts had nothing behind them. That is a sequencing error in ER-047, not a judgement change: the review always said `admit`.
+
+The Google entries are worse than an omission. `googletagmanager.com` appears in this repository's own `docs/evidence/ad-vendors-2026-09-19.txt`, and the round-2 review named it explicitly as advertising infrastructure. Carrying it as a mainland-direct suffix asserted the opposite of what the same repository had already concluded. Both roots are removed from `china-web` and added to `advertising-curated`, where the whole root is correct because tag delivery is their only function.
+
+The six mainland hosts are added as exact `DOMAIN` rules. Their roots — `qq.com`, `baidu.com`, `baidustatic.com`, `gtimg.cn` — carry login, payment, platform APIs and general assets that must stay direct, so the per-host granularity the round-2 review established is what applies. `advertising-curated` runs at segment 4, well ahead of both mainland segments, so the exact hosts win.
+
+The contract is now verified in both directions: all 109 `admit` hosts reach `advertising-curated`, and none of the 151 `hold` or `reject` hosts reach `REJECT`.
+
+### The committed origin list had gone stale
+
+`docs/evidence/cn-origins-2026-09-19.txt` was written once, during the 954-rule round, with 245 origins. Later rounds scanned a larger list that was never committed, so the ER-047 figure of 2,017 origins cited a file that could not produce it. The file is regenerated deterministically — every domain root the `china-web` segment carries, 4,206 origins — so the scan is reproducible from committed inputs. The measurement it feeds is re-derived in ER-049.
+
+### Shape
+
+62 rule files and 63 segments are unchanged; rules go from 9,831 to 9,837 including FINAL. First-match unreachable is unchanged at 54 / 13 / 41, so the added rules are all live.

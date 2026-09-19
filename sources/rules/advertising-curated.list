@@ -3,9 +3,11 @@ DOMAIN,api.lab.amplitude.com
 DOMAIN,app.audiopulsar.com
 DOMAIN,app.stitchvideo.tv
 DOMAIN,aps.amazon.com
+DOMAIN,beacon.cdn.qq.com
 DOMAIN,browsertdidticket.m.qq.com
 DOMAIN,cdn.p-n.io
 DOMAIN,connect.facebook.net
+DOMAIN,cpro.baidustatic.com
 DOMAIN,ess.leju.com
 DOMAIN,experiments.parsely.com
 DOMAIN,fundingchoicesmessages.google.com
@@ -13,11 +15,15 @@ DOMAIN,galileotelemetry.tencent.com
 DOMAIN,gatherer.m.qq.com
 DOMAIN,gm.mmstat.com
 DOMAIN,h5.analytics.126.net
+DOMAIN,hm.baidu.com
 DOMAIN,log.mmstat.com
+DOMAIN,mi.gdt.qq.com
+DOMAIN,pgdt.gtimg.cn
 DOMAIN,pmp.adcrew.co
 DOMAIN,publishers.logicad.jp
 DOMAIN,pxlrtpge-a.akamaihd.net
 DOMAIN,rtb.bidsxchange.com
+DOMAIN,sdk.e.qq.com
 DOMAIN,ssp.cadent.com
 DOMAIN,ssp.decenterads.com
 DOMAIN,ssp.disqus.com
@@ -216,6 +222,8 @@ DOMAIN-SUFFIX,google-analytics.com
 DOMAIN-SUFFIX,googleadservices.com
 DOMAIN-SUFFIX,googleoptimize.com
 DOMAIN-SUFFIX,googlesyndication.com
+DOMAIN-SUFFIX,googletagmanager.com
+DOMAIN-SUFFIX,googletagservices.com
 DOMAIN-SUFFIX,gravite.net
 DOMAIN-SUFFIX,greedygame.com
 DOMAIN-SUFFIX,groundtruth.com
