@@ -301,7 +301,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--blue); outline-
 @media (max-width: 650px) {
   .page-shell { width: min(100% - 1rem, 1120px); }
   .topbar { align-items: flex-start; }
-  .brand-copy span, .runtime-status code { display: none; }
+  .brand-copy span { display: none; }
+  /* The running version stays visible at every width: a visitor who cannot
+     see which ruleset this deployment serves has no way to tell whether it
+     has caught up with the routing notes they just read. */
+  .runtime-status { flex-wrap: wrap; }
   .runtime-status { grid-template-columns: auto auto; padding: .5rem .6rem; }
   .status-dot { grid-row: auto; }
   .workbench { border-radius: 1.15rem; }
