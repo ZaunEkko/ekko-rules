@@ -1371,3 +1371,46 @@ Granularity, and only granularity. In the full build Netflix can move to another
 
 Generation loops over both products throughout: `PRODUCT_CONFIG_NAMES` and `PRODUCT_TEMPLATE_NAMES` give `ekko-rules-lite.ini` and `reversed-template-lite.yaml` beside the originals, `validate_generated` checks the pair, and the self-host sync rewrites both. The converter lists the full build first and the lite build second, ahead of the third-party presets.
 
+## ER-061 — The gateway pool was never in Japan; a sub-block was mistaken for the whole
+
+**Type:** routing correctness; 1 rule widened to its registered allocation, 1 admin host added
+
+### Honkai: Star Rail login still failed
+
+ER-059 admitted `IP-CIDR,8.209.192.0/18,no-resolve` after observing a gateway at `8.209.197.93`. The game kept rejecting login with `1001_1` — the error that asks the player to turn off their proxy. A router log caught the connection at the moment it happens:
+
+```
+[UDP] 192.168.6.224:64817 --> 8.216.16.211:23301  match Match using 🐟 漏网之鱼
+```
+
+Port 23301 is the HoYoverse gateway. `8.216.16.211` is outside the `/18`, so it fell to the fallback while the login session used another exit, and the risk check saw one account arriving from two places.
+
+RDAP explains the miss:
+
+| Address | Registered allocation | Holder |
+|---|---|---|
+| `8.209.197.93` | `8.209.192.0/18` ALICLOUD-JP | Alibaba Cloud, Tokyo |
+| `8.216.16.211` | `8.208.0.0/12` ASEPL-SG | Alibaba Cloud (Singapore) |
+
+`8.209.192.0/18` is a Japanese sub-block carved out of `8.208.0.0/12`. The earlier rule took that sub-block for the whole pool: one observed Japanese gateway was read as "the pool is in Japan", when the pool spans Alibaba Cloud's international estate and hands out a Singapore address just as readily.
+
+The rule is now `IP-CIDR,8.208.0.0/12,no-resolve` — the exact boundary of the ASEPL-SG allocation, not a range invented to be wide enough. Edges verified: `8.208.0.1` and `8.223.255.254` match; `8.207.255.255` and `8.224.0.1` still fall through.
+
+The breadth costs less than it reads. `no-resolve` under fake-ip means the rule only ever sees connections made to a bare address, because anything resolved through a domain carries a `198.18.0.0/16` destination instead. What moves is bare-IP traffic to Alibaba Cloud international, from `🐟 漏网之鱼` to `🎮 游戏平台` — and both default to `♻️ 手动切换`, so the default action does not change at all. What changes is that the game can be pointed at one region without moving everything else.
+
+### The Tailscale console has a second host
+
+`console.tailscale.com` answers from CloudFront, while `login.tailscale.com` and `controlplane.tailscale.com` sit in Tailscale's own `192.200.0.0` space — relays are not served from a CDN, consoles are. Direct access to it from the mainland times out, which is the reason it needs a policy that can reach. It joins `🖥️ 远程串流后台` as an exact `DOMAIN`, which cannot touch a relay: `derp1a`, `controlplane`, `ts.net` and `log.tailscale.io` were re-verified on the data policy in both builds.
+
+### Recorded but not acted on
+
+The same log shows ZeroTier's data plane on the fallback:
+
+```
+[UDP] 192.168.6.224:9993 --> 84.17.53.155:9993  match Match using 🐟 漏网之鱼
+```
+
+`84.17.53.155` is Datacamp Zurich, where `root-zrh-01.zerotier.com` lives. The `DOMAIN` rule for that host can never fire: the client caches root addresses and sends UDP straight to them without a lookup, and `PROCESS-NAME` cannot help on a router, where forwarded LAN traffic carries no process. So on a router ZeroTier's data plane always reaches the fallback.
+
+It is not fixed here, for two reasons. Its registered block `84.17.52.0/23` belongs to Datacamp, a CDN, so using it as a stand-in for ZeroTier would capture unrelated traffic. And direct access to a Zurich root from the mainland is not established to work, while the proxy path currently does — moving it to DIRECT on reasoning alone is the mistake ER-058 was written about. It needs a measurement first.
+

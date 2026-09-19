@@ -1,6 +1,7 @@
 payload:
 - DOMAIN,anydesk.com
 - DOMAIN,app.netbird.io
+- DOMAIN,console.tailscale.com
 - DOMAIN,login.tailscale.com
 - DOMAIN,moonlight-stream.org
 - DOMAIN,my.zerotier.com
