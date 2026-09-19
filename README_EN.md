@@ -177,12 +177,13 @@ all concrete business rules
 → five non-Microsoft late-recovery rulesets
 → overseas cloud → domestic cloud
 → Microsoft and its late recovery → Google
-→ classic mainland-domain rules
+→ overseas shopping
+→ broad mainland roots
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
 ```
 
-The classic domain layer uses `DOMAIN` and `DOMAIN-SUFFIX` entries selected from a pinned source revision to cover common mainland services without an extra DNS lookup. It uses no deprecated `GEOSITE`, `DOMAIN-KEYWORD`, regular expression, or single-label/public-suffix catchall. Matches go to `🌏 国内网站`, whose default action is `DIRECT`.
+The second-to-last layer is nine broad mainland roots — the apexes of Baidu, Tencent, NetEase and Xiaomi, plus the `gtimg.com` and `127.net` CDN roots. They sit here rather than earlier because ordering is semantics: specific cloud, media and AI hosts live beneath those same roots, and matching the root first would take them. Like the rest of the mainland layer they come from this repository's own evidence (see [`docs/PROVENANCE.md`](docs/PROVENANCE.md)), use only anchored `DOMAIN` / `DOMAIN-SUFFIX` entries, and use no deprecated `GEOSITE`, `DOMAIN-KEYWORD`, regular expression, or single-label/public-suffix catchall. Matches go to `🌏 国内网站`, whose default action is `DIRECT`, without an extra DNS lookup. The much larger mainland domain layer of 4,228 rules sits earlier, among the specific service rules.
 
 The terminal `GEOIP,CN,DIRECT,no-resolve` rule supplements this with mainland destination-IP classification. `no-resolve` prevents that matcher from initiating a DNS lookup for a domain; if the client already knows the destination IP, GEOIP can still evaluate it. A domain not covered by the classic layer, with no destination IP available at matching time, continues to `🐟 漏网之鱼`. Ekko Rules keeps `no-resolve` on every destination-IP rule and publishes no actively resolving variant.
 

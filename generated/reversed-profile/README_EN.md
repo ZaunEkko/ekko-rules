@@ -54,7 +54,8 @@ all concrete business rules
 → five non-Microsoft late-recovery rulesets
 → overseas cloud → domestic cloud
 → Microsoft and its late recovery → Google
-→ classic mainland-domain rules
+→ overseas shopping
+→ broad mainland roots
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
 ```

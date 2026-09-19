@@ -3129,3 +3129,87 @@ class ProvenanceAccountingTests(unittest.TestCase):
             ],
         )
 
+class DocumentedRoutingOrderTests(unittest.TestCase):
+    """The published tail diagram has to name the segments that are there.
+
+    Both READMEs print the fixed tail order, and a reader uses it to reason
+    about what wins. It drifted when ER-055 inserted overseas-shopping between
+    Google and the mainland roots: the diagram kept its old shape and silently
+    described a product one segment shorter than the one shipping.
+
+    This checks the tail rather than the whole manifest, because that is the
+    part the diagram claims to enumerate; everything before it is covered by the
+    diagram's own first line, "all specific service rules".
+    """
+
+    # Each tail segment and a token the diagram must contain for it. The tokens
+    # are what a reader would look for, not slugs, because the diagram is prose.
+    TAIL_TOKENS = {
+        "overseas-cloud": ("海外云服务", "overseas cloud"),
+        "china-cloud": ("国内云服务", "domestic cloud"),
+        "microsoft": ("微软服务", "Microsoft"),
+        "google": ("Google", "Google"),
+        "overseas-shopping": ("海外购物", "overseas shopping"),
+        "china-direct-curated": ("大陆宽域根域", "broad mainland roots"),
+        "china-geoip-direct": ("GEOIP,CN,DIRECT,no-resolve", "GEOIP,CN,DIRECT,no-resolve"),
+        "final": ("漏网之鱼", "漏网之鱼"),
+    }
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sources = load_profile_sources(SOURCES)
+
+    def diagram(self, name: str) -> str:
+        text = (ROOT / name).read_text(encoding="utf-8")
+        marker = "全部具体业务规则" if name == "README.md" else "all concrete business rules"
+        start = text.index(marker)
+        return text[start : text.index("```", start)]
+
+    def tail_slugs(self) -> "list[str]":
+        segments = self.sources.segments_for("core")
+        start = next(
+            index
+            for index, segment in enumerate(segments)
+            if segment.slug == "overseas-cloud"
+        )
+        return [segment.slug for segment in segments[start:]]
+
+    def test_the_diagram_names_every_tail_segment(self) -> None:
+        for name, column in (("README.md", 0), ("README_EN.md", 1)):
+            diagram = self.diagram(name)
+            for slug in self.tail_slugs():
+                if slug.endswith("late-recovery"):
+                    continue  # counted collectively by the late-recovery line
+                token = self.TAIL_TOKENS.get(slug)
+                self.assertIsNotNone(
+                    token, f"{slug} reaches the tail but {name} has no token for it"
+                )
+                self.assertIn(
+                    token[column],
+                    diagram,
+                    f"{name} does not name {slug} in the routing order",
+                )
+
+    def test_the_diagram_does_not_name_a_segment_that_left(self) -> None:
+        present = set(self.tail_slugs())
+        for name, column in (("README.md", 0), ("README_EN.md", 1)):
+            diagram = self.diagram(name)
+            for slug, token in self.TAIL_TOKENS.items():
+                if token[column] in diagram:
+                    self.assertIn(
+                        slug,
+                        present,
+                        f"{name} still names {slug}, which no longer reaches the tail",
+                    )
+
+    def test_the_late_recovery_line_counts_the_ones_that_are_there(self) -> None:
+        non_microsoft = [
+            segment.slug
+            for segment in self.sources.rule_segments_for("core")
+            if segment.slug.endswith("late-recovery")
+            and not segment.slug.startswith("microsoft")
+        ]
+        self.assertEqual(len(non_microsoft), 5, "the diagram says five of them")
+        self.assertIn("五个非微软 late-recovery", self.diagram("README.md"))
+        self.assertIn("five non-Microsoft late-recovery", self.diagram("README_EN.md"))
+

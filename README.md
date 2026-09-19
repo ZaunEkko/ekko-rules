@@ -176,12 +176,13 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 → 五个非微软 late-recovery ruleset
 → 海外云服务 → 国内云服务
 → 微软服务及其 late-recovery → Google
-→ 经典中国大陆域名规则
+→ 海外购物
+→ 大陆宽域根域
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
 ```
 
-经典域名层使用固定版本来源筛选出的 `DOMAIN` 与 `DOMAIN-SUFFIX`，覆盖常见大陆服务域名，不使用已弃用的 `GEOSITE`，也不使用 `DOMAIN-KEYWORD`、正则或单标签/公共后缀兜底。它在不触发额外 DNS 查询的情况下把命中的域名交给 `🌏 国内网站`（默认 `DIRECT`）。
+倒数第二层是九条大陆宽域根域——百度、腾讯、网易、小米各自的主域,以及 `gtimg.com`、`127.net` 两条 CDN 根。它们放在这里而不是更早,是因为顺序即语义:这些根域下面还住着云、流媒体和 AI 的具体主机,提前匹配会把那些抢走。它们与大陆域名层的其余部分一样出自本仓库自有证据(见 [`docs/PROVENANCE.md`](docs/PROVENANCE.md)),只使用锚定的 `DOMAIN` / `DOMAIN-SUFFIX`,不使用已弃用的 `GEOSITE`,也不使用 `DOMAIN-KEYWORD`、正则或单标签/公共后缀兜底,在不触发额外 DNS 查询的情况下把命中的域名交给 `🌏 国内网站`(默认 `DIRECT`)。覆盖面更大的那 4,228 条大陆域名规则位于更前面的具体业务规则之中。
 
 末尾的 `GEOIP,CN,DIRECT,no-resolve` 继续补充中国大陆目标 IP：`no-resolve` 阻止该匹配器为了判断域名而主动发起 DNS 查询；若客户端此前已经得到目标 IP，GEOIP 仍可使用该 IP 完成匹配。若域名未被经典域名层覆盖、当时也没有可用目标 IP，则流量继续进入 `🐟 漏网之鱼`。Ekko Rules 保留所有目标 IP 规则的 `no-resolve`，不发布会主动解析的变体。
 
