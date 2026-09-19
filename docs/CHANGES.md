@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-048 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-049 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1071,3 +1071,40 @@ The contract is now verified in both directions: all 109 `admit` hosts reach `ad
 ### Shape
 
 62 rule files and 63 segments are unchanged; rules go from 9,831 to 9,837 including FINAL. First-match unreachable is unchanged at 54 / 13 / 41, so the added rules are all live.
+
+## ER-049 — Mainland advertising, derived from this repository's own scan
+
+**Type:** coverage; 85 rules added
+
+ER-047 replaced an import whose advertising corpus was 27.7 percent mainland-related. The curated set that replaced it was built from Western publisher `ads.txt` declarations and traffic observation of 21 mostly international origins, so mainland advertising was the thinnest part of it. Routing the retired import's 849 advertising domains through the product showed 321 reaching a mainland direct policy that previously reached `REJECT`.
+
+The candidates for this round come from this repository's own scan of 2,017 mainland origins — the same 30,974 hostnames the china-web curation was built from, read a second time for a different purpose. Three passes:
+
+| Pass | Candidates | Admitted | Dead | Rejected |
+|---|---:|---:|---:|---:|
+| Advertising-delivery labels | 249 | 55 | 6 | 188 |
+| Tracking and analytics labels | 110 | 17 | 1 | 92 |
+| Hostnames under roots still routed direct | 37 | 13 | 2 | 22 |
+
+`advertising-curated` goes from 494 to 587 rules. First-match unreachable is unchanged at 54 / 13 / 41, so every added rule is live.
+
+### Label shape is a candidate generator, never an admission
+
+The rejection counts are the finding. A leading `ad`, `bid` or `ssp` label is wrong far more often than it is right on mainland origins:
+
+- `cn.unionpay.com` is China UnionPay, matched on `union`
+- `www.gdtv.cn` and `gdtoday.newsgd.com` are a Guangdong broadcaster and news site, matched on `gdt` — which elsewhere means Tencent 广点通
+- `ta.wikipedia.org` is Tamil Wikipedia, matched on `ta`, referenced by an online-course site
+- `stats.gd.gov.cn`, `stats.customs.gov.cn` and `report.12377.cn` are government statistics bureaus and the reporting centre mainland sites are required to link in their footer, so they appear across unrelated origins and pass a cross-site test
+- 53 hosts under `bidcenter.com.cn` and `bidchance.com` are public procurement portals, where `bid` means tendering
+- `ssports.iqiyi.com` is iQIYI Sports and `sspai.com` is a technology publication, both matched on `ssp`
+
+Requiring third-party status to at least one observing origin — criterion 2 of the admission rules — removes 51 of the tracking candidates but keeps every government and Wikipedia case, because footer links and language editions are third-party by construction. Per-host review remains the only thing that separates them.
+
+Two deliberate holds carry forward: `retcode.taobao.com` is browser error monitoring, held for the same reason as `newrelic.com`, and first-party `stat.`, `log.` and `pv.` endpoints on a single operator's own site are not admitted, including on financial hosts such as `collect.mybank.cn` and `log.cmbchina.com`, where a `REJECT` could stall a checkout and first-party safety cannot be established.
+
+### What this does not reach
+
+Of the retired import's advertising domains, 305 still reach a mainland direct policy. 270 of them appear nowhere in the 30,974 hostnames this repository has observed: they are mobile application and SDK endpoints, which a scan of the web cannot see. That is the same boundary ER-047 recorded, stated for advertising specifically — the curation covers what mainland pages actually load, and does not claim to cover what mainland apps call.
+
+One rule was withdrawn during this round for provenance rather than evidence. `beacon.qq.com` was admitted from a cross-check against the retired import, then removed on discovering the scan never saw that hostname; the two endpoints it did see, `oth.str.beacon.qq.com` and `otheve.beacon.qq.com`, are what ship. A candidate that only the import can supply is not this repository's own evidence.

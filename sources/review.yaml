@@ -683,3 +683,17 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The curated advertising set was built additively while the import still shipped, so it skipped hosts the import already covered and those hosts had nothing behind them once it left - a sequencing error in ER-047, not a judgement change. googletagmanager.com and googletagservices.com are the worse case, because this repository's own ad-vendors evidence names them as advertising infrastructure while china-web carried them as mainland direct; both roots move to advertising-curated in full. The six mainland hosts are added as exact DOMAIN rules because their roots carry login, payment, platform APIs and general assets that must stay direct. All 109 admit hosts now reach advertising-curated and none of the 151 hold or reject hosts reach REJECT. The committed origin list, stale at 245 origins from the first round while later rounds used a larger uncommitted list, is regenerated deterministically from the china-web roots so the scan is reproducible.
+- id: mainland-advertising-curation
+  status: accepted
+  scope: routing-policy
+  summary: The curated advertising set was built from Western publisher declarations, so mainland advertising was its thinnest part; the mainland scan already held the candidates.
+  evidence:
+  - docs/evidence/cn-ad-review-2026-09-19.json
+  - docs/evidence/cn-origins-2026-09-19.txt
+  - sources/rules/advertising-curated.list
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Three passes over the 30,974 hostnames this repository scanned from 2,017 mainland origins - advertising-delivery labels, tracking and analytics labels, and hostnames under roots the product still routes direct - yield 396 candidates of which 85 are admitted, taking advertising-curated from 494 to 587 rules with first-match coverage unchanged. The rejection counts are the finding - a leading ad, bid, ssp, gdt, union or ta label is wrong more often than right on mainland origins, where it matches China UnionPay, a Guangdong broadcaster, Tamil Wikipedia, government statistics bureaus, the reporting centre every mainland site links in its footer, and 53 public procurement portals. Third-party status removes 51 tracking candidates but keeps every government and Wikipedia case, so per-host review remains the only separator. retcode.taobao.com is held as browser monitoring for the same reason as newrelic.com, and first-party endpoints on financial hosts are not admitted because a REJECT could stall a checkout. 305 import advertising domains still reach a mainland direct policy and 270 of them appear in no observed hostname, being mobile application and SDK endpoints a web scan cannot see. beacon.qq.com was withdrawn for provenance after the scan proved it never observed that hostname, and the two endpoints it did observe ship instead.
