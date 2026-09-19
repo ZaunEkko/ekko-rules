@@ -24,6 +24,10 @@ SOURCES = ROOT / "sources"
 EVIDENCE = ROOT / "docs" / "evidence"
 ADMISSION_REVIEW = EVIDENCE / "admission-review-2026-09-19.json"
 MAINLAND_AD_REVIEW = EVIDENCE / "cn-ad-review-2026-09-19.json"
+LEGACY_AD_REVIEW = EVIDENCE / "legacy-ad-review-2026-09-19.json"
+ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
+AD_VENDORS = EVIDENCE / "ad-vendors-2026-09-19.txt"
+ADS_TXT_CANDIDATES = EVIDENCE / "adstxt-candidates-2026-09-19.txt"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
 PHASE_3_AFTER = ROOT / "tests" / "fixtures" / "phase-3-after.json"
@@ -2673,12 +2677,83 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
                     disagreements.append((record["host"], record["verdict"], shipped))
         self.assertEqual(disagreements, [], "review verdicts that disagree with the rules")
 
-    def test_admitted_hosts_record_which_admission_route_applies(self) -> None:
+    def test_admitted_hosts_record_a_route_that_matches_their_evidence(self) -> None:
+        """An admission route has to agree with the record it sits on.
+
+        Carrying a stale rationale forward is how a record ends up saying a
+        criterion is not met while the verdict says it is.
+        """
         review = json.loads(MAINLAND_AD_REVIEW.read_text(encoding="utf-8"))
-        missing = [
-            record["host"]
-            for key in ("delivery_records", "tracking_records")
-            for record in review[key]
-            if record["verdict"] == "admit" and not record.get("admission_route")
+        wrong = []
+        for key in ("delivery_records", "tracking_records"):
+            for record in review[key]:
+                if record["verdict"] != "admit":
+                    continue
+                expected = (
+                    "third-party"
+                    if record["third_party_count"]
+                    else "operator's own dedicated endpoint"
+                )
+                if record.get("admission_route") != expected:
+                    wrong.append((record["host"], record.get("admission_route")))
+                if not record.get("first_party_safety"):
+                    wrong.append((record["host"], "no criterion 4 rationale"))
+                if "criterion 2" in record["reason"]:
+                    wrong.append((record["host"], "reason contradicts the verdict"))
+        self.assertEqual(wrong, [], "admitted records whose route or rationale does not match")
+
+    def evidenced_hosts(self) -> tuple[set[str], set[str]]:
+        """Return the hosts a committed review admits, and the declared ad systems."""
+        reviewed: set[str] = set()
+        admission = json.loads(ADMISSION_REVIEW.read_text(encoding="utf-8"))
+        reviewed |= {
+            record["host"].lower()
+            for record in admission["records"]
+            if record["verdict"] == "admit"
+        }
+        mainland = json.loads(MAINLAND_AD_REVIEW.read_text(encoding="utf-8"))
+        for key in ("delivery_records", "tracking_records"):
+            reviewed |= {
+                record["host"].lower()
+                for record in mainland[key]
+                if record["verdict"] == "admit"
+            }
+        legacy = json.loads(LEGACY_AD_REVIEW.read_text(encoding="utf-8"))
+        reviewed |= {record["host"].lower() for record in legacy["records"]}
+
+        declared = {
+            record["system"].lower()
+            for record in json.loads(ADS_TXT_EVIDENCE.read_text(encoding="utf-8"))["records"]
+        }
+        for path in (AD_VENDORS, ADS_TXT_CANDIDATES):
+            declared |= {
+                line.strip().lower()
+                for line in path.read_text(encoding="utf-8").splitlines()
+                if line.strip() and not line.startswith("#")
+            }
+        return reviewed, declared
+
+    def test_every_published_advertising_rule_maps_to_committed_evidence(self) -> None:
+        """The direction that catches a deleted record.
+
+        Walking the review files and checking the product only proves the
+        records that still exist are honoured. Walking the published rules is
+        what proves no rule ships without a committed reason for it.
+        """
+        reviewed, declared = self.evidenced_hosts()
+
+        def evidenced(value: str) -> bool:
+            if value in reviewed or value in declared:
+                return True
+            # A suffix rule is evidenced by any reviewed or declared host beneath it.
+            suffix = f".{value}"
+            return any(
+                host.endswith(suffix) for host in reviewed
+            ) or any(system.endswith(suffix) for system in declared)
+
+        unmapped = [
+            entry
+            for entry in self.sources.rules["advertising-curated"]
+            if not evidenced(parse_rule(entry, context="evidence mapping")[1].lower())
         ]
-        self.assertEqual(missing, [], "admitted hosts without a recorded admission route")
+        self.assertEqual(unmapped, [], "published advertising rules with no committed evidence")

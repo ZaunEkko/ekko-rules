@@ -711,3 +711,17 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: Two inconsistencies were raised in review and both were real. The evidence file recorded reject for hosts the product blocks, because it was generated from a hand-kept list of that round's admissions and anything admitted earlier fell through to the catch-all; every verdict is now derived from the shipped corpus, so the file cannot disagree with the product. The second point was that three hosts were admitted with a cross-site rationale while the scan only saw them on their operator's own site - true, and withdrawing them exposed that 29 already-shipped rules had the same shape, among them ad.sohu.com, ad.cnki.net and cpro.zol.com.cn. Criterion 2 read third-party to at least one observing origin, wording that came from Western third-party ad tech where every candidate was third-party by construction, and read literally it forbids blocking a publisher's own ad subdomain, which is most of what ad blocking is. It now admits either route and each record states which applies, 76 third-party and 32 own-endpoint. Nothing protective was lost because criterion 2 never stopped the dangerous cases - the government statistics bureaus, the mandatory footer reporting link and Tamil Wikipedia are all third-party and are rejected by criterion 3, and the financial endpoints by criterion 4. Four invariants are now asserted in AdvertisingAdmissionContractTests.
+- id: published-rule-evidence-mapping
+  status: accepted
+  scope: routing-policy
+  summary: The bidirectional test walked only the review records, so a deleted record left its rule shipping unexamined, and 28 rules had no committed per-host record at all.
+  evidence:
+  - docs/evidence/legacy-ad-review-2026-09-19.json
+  - docs/SELF-OWNED-REBUILD.md
+  - tests/test_profile.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Walking the review records only proves the records that still exist are honoured; walking the published rules is what proves no rule ships without a committed reason. Enumerating them found 28 advertising rules with no record in any review file, among them clarity.ms, sensorsdata.cn, zhugeio.com, 51.la, wwads.cn and the Alibaba adashx tracking endpoints, all introduced by commit 78c939c and audited at the time but never recorded per host. A legacy review file now carries all 28 with what each endpoint is and why a REJECT is safe, and a new test maps every published rule to an admitted record or a publisher declaration. adash.man.aliyuncs.com was briefly removed as dead because it has no A record, which broke the cloud ordering test - the rule holds an ordering contract against the aliyuncs.com cloud policy, so resolvability is evidence about a host and not about what a rule is for. Criterion 1 named only the traffic-observation route although 421 shipped rules arrive through ads.txt and the delivery probe and most of china-web through Certificate Transparency and APNIC, so it now names every route the Method section describes. The three records restored in ER-050 had carried a withdrawal-era reason contradicting their own verdict; reasons are regenerated from the admission route and the test asserts route, reason and rationale agree.

@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-050 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-051 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1135,3 +1135,29 @@ Nothing protective was lost, because criterion 2 was never what stopped the dang
 `AdvertisingAdmissionContractTests` asserts four invariants: every `admit` in the admission review reaches `advertising-curated`, no `hold` or `reject` reaches it, every verdict in the mainland review matches the shipped corpus in both directions, and every admitted host records its admission route. The suite goes from 49 to 53 tests.
 
 Three stale constants naming ER-047's deleted fixtures are removed from the test module.
+
+## ER-051 — The reverse direction, and criterion 1
+
+**Type:** defect fix; 1 evidence file added, criterion 1 amended, 1 test added
+
+Three more inconsistencies were raised in review. All three were real, and the first one was the serious one.
+
+### The bidirectional test was not bidirectional
+
+ER-050 added a test described as checking both directions. It iterated the review records and asserted the product honoured them, which only proves that the records *that still exist* are honoured. Deleting a record left every test green while its rule kept shipping.
+
+The gap was not hypothetical. Enumerating the published rules against the committed evidence found 28 with no record in any review file: `clarity.ms`, `sensorsdata.cn`, `zhugeio.com`, `51.la`, `wwads.cn`, the Alibaba `adashx.ut.*` tracking endpoints and others. They are legitimate — `git log -S` places them in commit `78c939c`, "Add audited ad blocking", where they were audited at the time — but audited in a commit message is not a committed per-host record, and criteria 3 and 4 ask for one.
+
+`docs/evidence/legacy-ad-review-2026-09-19.json` now carries all 28, each re-reviewed with what the endpoint is and why a `REJECT` cannot break first-party behaviour. `test_every_published_advertising_rule_maps_to_committed_evidence` walks the shipped rules and requires each to map to an admitted review record or a publisher declaration, resolving suffix rules against any evidenced host beneath them. Deleting the `zhugeio.com` record now fails the suite.
+
+One of the 28 nearly became a different defect. `adash.man.aliyuncs.com` has no A record, and on that basis it was removed as dead — which broke `test_domestic_and_overseas_cloud_routing_is_region_aware`. The rule is not dead: it holds an ordering contract, keeping that host out of the `aliyuncs.com` cloud policy. It is restored, and its record says so. Resolvability is evidence about a host, not about what a rule is for.
+
+### Criterion 1 named only the first evidence route
+
+Criterion 1 read "the host appears in a committed observation capture". Traffic observation was the first route this repository built and the wording froze it as the only one, which the corpus never matched: 421 of the shipped advertising rules arrive through the `ads.txt` declaration and delivery-probe route, and most of `china-web` through Certificate Transparency and APNIC, all documented under Method and none admissible under criterion 1 as written. `DOMAIN-SUFFIX,33across.com` is the example given in review. The criterion now names every route the Method section describes.
+
+That is the second criterion this PR has had to amend after finding the corpus outside it. Both were written early, against the first corpus each was applied to, and neither was re-read when the evidence base widened.
+
+### Rationales contradicted their own verdicts
+
+The three records restored in ER-050 kept the reason string from their brief withdrawal, so each said "criterion 2 of the admission rules is not met" beside an `admit` verdict and an own-endpoint route. The regeneration carried the prior reason forward without checking it still applied. Reasons are now regenerated from the route, every admitted record carries a `first_party_safety` rationale, and the route test asserts all three agree rather than merely checking the field is non-empty.
