@@ -3007,44 +3007,99 @@ class ProvenanceAccountingTests(unittest.TestCase):
     mainland curation without the split being updated, leaving the mainland and
     remainder categories 369 rules apart from the sources, and again when a
     round of additions left the headline and the table partitioning a corpus
-    369 + 53 rules smaller than the one being published. Both times the document
-    still read as an audit. A number nobody checks is worse than no number, so
-    this checks it.
+    smaller than the one being published. Both times the document still read as
+    an audit.
+
+    Checking only the grand total does not prevent that. Two categories wrong by
+    the same amount in opposite directions sum correctly, which is exactly the
+    shape the 369-rule drift had, so every row is checked against the segments
+    it claims to describe and the categories are checked to partition the
+    corpus: every rule segment in exactly one, none left over.
     """
+
+    # Each row of the table, in order, and the segments it accounts for. The
+    # remainder is whatever the named boundaries do not claim, which is what
+    # makes a rule moving between boundaries fail here rather than cancel out.
+    NAMED_BOUNDARIES = (
+        ("Current late recovery", lambda slug: slug.endswith("late-recovery")),
+        (
+            "Observation-derived mainland direct curation",
+            lambda slug: slug in {"china-web", "china-direct-curated"},
+        ),
+        (
+            "Observation-derived advertising curation",
+            lambda slug: slug == "advertising-curated",
+        ),
+        ("Overseas shopping curation", lambda slug: slug == "overseas-shopping"),
+        (
+            "Finance and account registration curation",
+            lambda slug: slug == "finance",
+        ),
+    )
+    REMAINDER_LABEL = "Specialized, private/local, and service corpus"
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.sources = load_profile_sources(SOURCES)
-        cls.text = (ROOT / "docs" / "PROVENANCE.md").read_text(
-            encoding="utf-8"
-        )
+        cls.text = (ROOT / "docs" / "PROVENANCE.md").read_text(encoding="utf-8")
 
     def accounting_section(self) -> str:
         start = self.text.index("## Current rule accounting")
         end = self.text.index("## Direct canonical inputs")
         return self.text[start:end]
 
-    def test_the_accounting_table_partitions_the_published_corpus(self) -> None:
-        section = self.accounting_section()
-        rows = [
-            int(value.replace(",", ""))
-            for value in re.findall(r"\| ([\d,]+) \|", section)
-        ]
-        self.assertTrue(rows, "the accounting table has no rows to check")
-        published = scope_metrics(self.sources, product="core")[
-            "rules_in_files"
-        ]
+    def published_rows(self) -> "list[tuple[str, int]]":
+        rows = []
+        for line in self.accounting_section().splitlines():
+            match = re.match(r"\|\s*([^|]+?)\s*\|\s*([\d,]+)\s*\|", line)
+            if match:
+                rows.append((match.group(1), int(match.group(2).replace(",", ""))))
+        return rows
+
+    def counted_boundaries(self) -> "dict[str, int]":
+        slugs = [segment.slug for segment in self.sources.rule_segments_for("core")]
+        counted = {}
+        claimed = set()
+        for label, belongs in self.NAMED_BOUNDARIES:
+            owned = [slug for slug in slugs if belongs(slug)]
+            overlap = claimed.intersection(owned)
+            self.assertEqual(
+                overlap, set(), f"{label} claims segments another boundary already has"
+            )
+            claimed.update(owned)
+            counted[label] = sum(len(self.sources.rules[slug]) for slug in owned)
+        remainder = [slug for slug in slugs if slug not in claimed]
+        counted[self.REMAINDER_LABEL] = sum(
+            len(self.sources.rules[slug]) for slug in remainder
+        )
+        return counted
+
+    def test_every_row_matches_the_segments_it_claims(self) -> None:
+        counted = self.counted_boundaries()
+        published = dict(self.published_rows())
         self.assertEqual(
-            sum(rows),
-            published,
-            "the provenance table must partition the published corpus exactly",
+            set(published),
+            set(counted),
+            "the table's categories and the checked boundaries must be the same set",
+        )
+        for label, expected in counted.items():
+            self.assertEqual(
+                published[label],
+                expected,
+                f"{label} is published as {published[label]} but its segments hold {expected}",
+            )
+
+    def test_the_boundaries_partition_the_published_corpus(self) -> None:
+        counted = self.counted_boundaries()
+        self.assertEqual(
+            sum(counted.values()),
+            scope_metrics(self.sources, product="core")["rules_in_files"],
+            "the boundaries must account for every published rule exactly once",
         )
 
     def test_the_headline_and_the_remainder_quote_the_same_corpus(self) -> None:
         section = self.accounting_section()
-        published = scope_metrics(self.sources, product="core")[
-            "rules_in_files"
-        ]
+        published = scope_metrics(self.sources, product="core")["rules_in_files"]
         headline = re.search(r"The ([\d,]+) file rules are partitioned", section)
         self.assertIsNotNone(headline, "the accounting headline is missing")
         self.assertEqual(int(headline.group(1).replace(",", "")), published)
@@ -3052,11 +3107,25 @@ class ProvenanceAccountingTests(unittest.TestCase):
         # The prose names the last category again; it said 2,794 while the table
         # said 2,818, so the two disagreed with each other as well as with the
         # sources.
-        rows = [
-            int(value.replace(",", ""))
-            for value in re.findall(r"\| ([\d,]+) \|", section)
-        ]
         remainder = re.search(r"The final ([\d,]+)-rule category", section)
         self.assertIsNotNone(remainder, "the remainder sentence is missing")
-        self.assertEqual(int(remainder.group(1).replace(",", "")), rows[-1])
+        self.assertEqual(
+            int(remainder.group(1).replace(",", "")),
+            self.counted_boundaries()[self.REMAINDER_LABEL],
+        )
+
+    def test_the_mainland_narrative_quotes_the_same_total_as_the_table(self) -> None:
+        """A third copy of the mainland figure sat further down saying 3,858."""
+        narrative = re.search(
+            r"`sources/rules/china-web\.list` and "
+            r"`sources/rules/china-direct-curated\.list` carry ([\d,]+) rules",
+            self.text,
+        )
+        self.assertIsNotNone(narrative, "the mainland narrative total is missing")
+        self.assertEqual(
+            int(narrative.group(1).replace(",", "")),
+            self.counted_boundaries()[
+                "Observation-derived mainland direct curation"
+            ],
+        )
 
