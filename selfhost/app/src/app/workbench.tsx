@@ -34,7 +34,6 @@ type Health = {
   deployment_error?: string | null;
   deployment_warning?: string | null;
   ekko_rules_version: string;
-  subconverter_version: string;
   subconverter_reachable: boolean;
   access_password_required: boolean;
   lan_access_enabled: boolean;
@@ -725,6 +724,14 @@ export function Workbench({
                 ? "引擎已就绪"
                 : "引擎未就绪"}
           </strong>
+          {/* The rules version is baked into the image at build time from the
+              release tag, so what this prints is the corpus the server is
+              actually serving — not what the repository currently holds. A
+              visitor who reads the routing notes has no other way to tell
+              whether this deployment has caught up with them. */}
+          <code title="服务器当前运行的规则版本">
+            规则 {health?.ekko_rules_version ?? "—"}
+          </code>
         </div>
 
       </header>
@@ -1488,8 +1495,7 @@ export function Workbench({
 
             <dl className="result-specs">
               <div><dt>规则</dt><dd>Ekko Rules {health?.ekko_rules_version ?? "—"}</dd></div>
-               <div><dt>引擎</dt><dd>{health?.subconverter_version ?? "—"}</dd></div>
-               <div><dt>协议</dt><dd>自动识别 · 无需手选</dd></div>
+              <div><dt>协议</dt><dd>自动识别 · 无需手选</dd></div>
               <div>
                 <dt>{storesProfiles ? "重启后" : "服务器保存"}</dt>
                 <dd>{storesProfiles ? "地址仍然有效" : "不保存任何内容"}</dd>
