@@ -639,3 +639,16 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: A certificate covers every name it was issued for, so querying by domain rather than organisation returns the siblings a vendor runs under unrelated-looking names - bytedance.com yields bytedance.net, feishu.cn, larksuite.com and tiktok.com. 797 seeds attest 5,456 roots against 2,338 from the organisation search; 3,424 are uncovered and the APNIC probe finds 628 mainland-hosted. One measurement root is removed and the remaining 627 take china-web to 3,896 rules with first-match coverage unchanged. The harvest moved the mainland import's independent attestation only from 31.8 to 33.1 percent because it finds a different set of mainland domains rather than the import's.
+- id: script-following-and-crawl-saturation
+  status: accepted
+  scope: routing-policy
+  summary: Markup names a page's CDN hosts but not the endpoints its scripts call, and past a point further crawling returns long-tail noise.
+  evidence:
+  - scripts/page_host_scan.py
+  - docs/evidence/cn-origins-2026-09-19.txt
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The scanner now follows the first few scripts each page declares, which takes a re-run of 2,017 mainland origins from roughly 18,000 hostnames to 30,974 across 9,726 roots; the APNIC probe finds 3,096 of 6,317 uncovered candidates mainland-hosted. Only 92 are referenced by two or more independent origins, the rest being single-reference long-tail local sites a friendly-links section happens to name, so the threshold holds and 82 are admitted after removing nine measurement roots and one shadowing root. That ratio is the finding - the crawl has saturated on valuable discovery. Independent attestation reaches 34.1 percent of the mainland import's live entries and 55.8 percent of the advertising import's.

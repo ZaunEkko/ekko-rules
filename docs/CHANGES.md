@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-045 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-046 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -962,6 +962,35 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 11,805 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-046 — Following scripts, and where the crawl saturates
+
+**Type:** extension of an existing segment, plus a tool capability
+
+A page's markup names its CDN and image hosts. The endpoints an application actually calls are built inside its script bundles, and a browser comparison shows the size of the gap: Taobao's markup names about two dozen hosts, and following its scripts reaches 108. Douyin's runtime requests include `zijieapi.com`, `bytetos.com`, `bytescm.com`, `bytegoofy.com`, `ibytedapm.com` and `bytednsdoc.com`, and `zijieapi.com` is one of the entries the pinned import holds without independent attestation.
+
+`page_host_scan.py` now follows the first few scripts each page declares. Re-running the 2,017 known mainland origins reaches 30,974 hostnames across 9,726 roots, against roughly 18,000 hostnames before. The APNIC probe finds 3,096 of 6,317 uncovered candidates mainland-hosted.
+
+Only 92 of those 3,096 are referenced by two or more independent origins. The rest are single-reference long-tail local sites — `0052500.com`, `0554zp.com`, `0797rs.com` — that a friendly-links section on a scanned page happens to name. Admitting them would add three thousand rules of the bloat this rebuild exists to remove, so the threshold holds: nine measurement roots and one shadowing root are removed from the 92, and the remaining 82 take `china-web` to 3,978 rules.
+
+That ratio is the round's real finding. The crawl has saturated on valuable discovery; further crawling returns noise rather than the import's content.
+
+Measured over the full independent evidence pool:
+
+| Import | Live entries | Independently attested | Still missing |
+|---|---:|---:|---:|
+| `china-domains-direct.list` | 1,448 | 494 (34.1%) | 954 |
+| `advertising.list` | 765 | 427 (55.8%) | 338 |
+
+First-match coverage is unchanged at union 145.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,887 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
