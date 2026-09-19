@@ -114,10 +114,10 @@ segments:
   scope: both
 - order: 16
   kind: ruleset
-  slug: kakao-talk
-  target: 📲 聊天软件
+  slug: finance
+  target: 💳 金融服务
   lite_target: 🚀 国外服务
-  source: rules/kakao-talk.list
+  source: rules/finance.list
   scope: both
 - order: 17
   kind: ruleset

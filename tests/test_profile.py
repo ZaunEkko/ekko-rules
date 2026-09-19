@@ -152,10 +152,10 @@ class CanonicalSourceTests(unittest.TestCase):
         self.assertEqual(len(self.sources.rule_segments), 63)
         # The raw list carries both products: 42 for the full one plus the two
         # groups only the lite product publishes.
-        self.assertEqual(len(self.sources.proxy_groups), 44)
+        self.assertEqual(len(self.sources.proxy_groups), 45)
         self.assertEqual(len(self.sources.segments_for("core")), 64)
         self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 42)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 43)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -204,6 +204,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🎮 游戏下载",
                 "📪 邮件服务",
                 "🛒 海外购物",
+                "💳 金融服务",
                 "🔞 NSFW",
                 "🌏 国内网站",
                 "🐟 漏网之鱼",
@@ -2280,6 +2281,13 @@ class GenerationTests(unittest.TestCase):
         self.assertEqual(
             GENERATED_RULESET_ALIASES,
             {
+                "kakao-talk": (
+                    "line",
+                    36,
+                    51,
+                    "4d7a40149baa508048e0258477af4df12e84a2c5a03de92602c744026da79244",
+                    "a585752df3b3752c55a28cdff6e8724152f821f893390870ea9aa87f96f3745d",
+                ),
                 "xai": (
                     "ai-platforms",
                     22,

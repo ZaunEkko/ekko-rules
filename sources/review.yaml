@@ -880,4 +880,19 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: After selfhost-v0.2.1 was published the deployed page still read 最新 0.2.0 with update_available false, because the check cached for thirty minutes while the update timer pulls every five. A stale cache here does not withhold the answer, it states the opposite with the same confidence as a correct one, which is the failure the check was added to prevent; and once the image moved first the page would print a running version newer than the latest beside it. The cache existed only to protect the anonymous api.github.com budget of 60 requests an hour per address, which this server spends on every visitor's behalf, so a lookup per load would have broken for everyone at sixty visits in an hour. Tags now come from git's ref advertisement at info/refs service=git-upload-pack, roughly 6 KB and not metered that way, so the quota no longer dictates freshness and the check runs on every load. A failure is held for a minute so a failing lookup does not make each visitor wait out the timeout, concurrent callers still share one request, and the health endpoint reports the running version as latest whenever the check lags behind the image, because the running image was built from a published tag and a smaller number would be both wrong and alarming. The star count keeps its own thirty-minute clock on the REST API since it does not need to be fresh.
+- id: finance-needs-its-own-exit
+  status: accepted
+  scope: routing-policy
+  summary: Financial accounts are checked against where they are used, so they cannot share an exit with every unclassified request.
+  evidence:
+  - sources/rules/finance.list
+  - sources/rules/china-web.list
+  - sources/proxy-groups.yaml
+  - docs/evidence/cn-apnic-verdicts-2026-09-19.json
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: wise.com reached the fallback and worked, which is why it went unnoticed - the fallback is a proxy so the page loaded, but it had no exit of its own, and a financial account is checked against where it is used. Sharing an exit with every unclassified request means that exit moves whenever anything else does, which is the same defect as the game session. The finance policy leads with the manual selector and holds 44 rules across payments and remittance, virtual cards, SMS receipt and virtual numbers, and overseas banks and brokers. Virtual cards and SMS receipt belong with the rest because they are the step where an account is created and the registering address is the one the account is thereafter expected to arrive from. Every domain was resolved before admission and the ones that did not answer were left out; futunn.com and moomoo.com were checked rather than assumed because a broker on Tencent Cloud reads like a mainland service, and both resolve into Hong Kong rather than mainland ranges. The segment is funded the way ER-023 established - kakao-talk concatenated into line, the two adjacent with nothing between them and both targeting the same chat policy, so nothing can reorder and nothing can change policy, verified per host afterwards, with the retired Raw URL kept as a generated-only compatibility slice behind frozen hashes. Checking that mainland banks stayed direct turned up twelve on the fallback, which is worse than a foreign bank there because the proxy exit is what their risk check objects to; the mainland probe admitted the eight that resolve wholly into APNIC CN ranges and left four out - cloudpay.com.cn and yunshanfu.cn resolve outside them, gdb.com.cn and hsbank.cc do not resolve - because a bank being obviously Chinese is a reason to look rather than a verdict.
 

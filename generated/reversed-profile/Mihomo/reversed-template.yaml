@@ -278,6 +278,13 @@ proxy-groups:
   - DIRECT
   use:
   - subscription
+- name: 💳 金融服务
+  type: select
+  proxies:
+  - ♻️ 手动切换
+  - DIRECT
+  use:
+  - subscription
 - name: 🔞 NSFW
   type: select
   proxies:
@@ -406,12 +413,12 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/line.yaml
     path: ./ruleset/line.yaml
     interval: 86400
-  kakao-talk:
+  finance:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/kakao-talk.yaml
-    path: ./ruleset/kakao-talk.yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/finance.yaml
+    path: ./ruleset/finance.yaml
     interval: 86400
   whatsapp:
     type: http
@@ -758,7 +765,7 @@ rules:
 - RULE-SET,instagram,🗣 社交媒体
 - RULE-SET,mail,📪 邮件服务
 - RULE-SET,line,📲 聊天软件
-- RULE-SET,kakao-talk,📲 聊天软件
+- RULE-SET,finance,💳 金融服务
 - RULE-SET,whatsapp,📲 聊天软件
 - RULE-SET,telegram,📲 聊天软件
 - RULE-SET,social-platforms,🗣 社交媒体

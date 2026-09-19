@@ -1,9 +1,11 @@
 {
   "schema_version": 1,
   "source": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
-  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A root is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19 round names a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve.",
+  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A root is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19 and bank-2026-09-19 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve.",
   "counts": {
-    "roots": 3783
+    "roots": 3783,
+    "records": 3795,
+    "mainland_hosted": 3791
   },
   "records": [
     {
@@ -3784,6 +3786,16 @@
       "probe_round": "cn-verdicts-r3.json"
     },
     {
+      "root": "bankofbeijing.com.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "203.93.21.215",
+        "36.112.110.87",
+        "120.246.122.87"
+      ],
+      "probe_round": "bank-2026-09-19"
+    },
+    {
       "root": "bankofchangsha.com",
       "mainland_hosted": true,
       "addresses": [
@@ -4542,6 +4554,16 @@
         "115.227.7.195"
       ],
       "probe_round": "cn-verdicts-r2.json"
+    },
+    {
+      "root": "bosc.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "27.115.79.218",
+        "180.169.146.250",
+        "180.166.17.58"
+      ],
+      "probe_round": "bank-2026-09-19"
     },
     {
       "root": "boscam.com.cn",
@@ -5549,6 +5571,15 @@
       "probe_round": "cn-verdicts-r2.json"
     },
     {
+      "root": "cgbchina.com.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "122.228.26.192",
+        "59.37.89.206"
+      ],
+      "probe_round": "bank-2026-09-19"
+    },
+    {
       "root": "cgf.cn",
       "mainland_hosted": true,
       "addresses": [
@@ -6481,6 +6512,15 @@
       "probe_round": "cn-verdicts-r2.json"
     },
     {
+      "root": "cib.com.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "61.164.117.101",
+        "183.134.11.39"
+      ],
+      "probe_round": "bank-2026-09-19"
+    },
+    {
       "root": "cibn.cc",
       "mainland_hosted": true,
       "addresses": [
@@ -6811,6 +6851,14 @@
       "probe_round": "vendor-verdicts.json"
     },
     {
+      "root": "cloudpay.com.cn",
+      "mainland_hosted": false,
+      "addresses": [
+        "43.241.47.241"
+      ],
+      "probe_round": "bank-2026-09-19"
+    },
+    {
       "root": "cloudstatic.cn",
       "mainland_hosted": true,
       "addresses": [
@@ -6843,6 +6891,15 @@
         "116.246.38.9"
       ],
       "probe_round": "cn-verdicts.json"
+    },
+    {
+      "root": "cmbc.com.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "122.228.26.22",
+        "61.164.117.101"
+      ],
+      "probe_round": "bank-2026-09-19"
     },
     {
       "root": "cmcm.com",
@@ -7934,6 +7991,14 @@
         "123.60.194.40"
       ],
       "probe_round": "cn-verdicts-r3.json"
+    },
+    {
+      "root": "czbank.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "61.175.193.73"
+      ],
+      "probe_round": "bank-2026-09-19"
     },
     {
       "root": "czbbb.cn",
@@ -11305,6 +11370,12 @@
       "probe_round": "cn-verdicts-r2.json"
     },
     {
+      "root": "gdb.com.cn",
+      "mainland_hosted": false,
+      "addresses": [],
+      "probe_round": "bank-2026-09-19"
+    },
+    {
       "root": "gdccp.com",
       "mainland_hosted": true,
       "addresses": [
@@ -13469,6 +13540,12 @@
       "probe_round": "cn-verdicts-r2.json"
     },
     {
+      "root": "hsbank.cc",
+      "mainland_hosted": false,
+      "addresses": [],
+      "probe_round": "bank-2026-09-19"
+    },
+    {
       "root": "hscbw.com",
       "mainland_hosted": true,
       "addresses": [
@@ -13902,6 +13979,14 @@
         "124.71.94.150"
       ],
       "probe_round": "vendor-verdicts.json"
+    },
+    {
+      "root": "hxb.com.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "123.6.116.35"
+      ],
+      "probe_round": "bank-2026-09-19"
     },
     {
       "root": "hxfund.com.cn",
@@ -19823,6 +19908,15 @@
         "101.227.22.147"
       ],
       "probe_round": "cn-verdicts-r2.json"
+    },
+    {
+      "root": "njcb.com.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "221.226.46.165",
+        "58.240.77.165"
+      ],
+      "probe_round": "bank-2026-09-19"
     },
     {
       "root": "njgean.com",
@@ -29859,6 +29953,14 @@
         "112.126.86.203"
       ],
       "probe_round": "js-verdicts.json"
+    },
+    {
+      "root": "yunshanfu.cn",
+      "mainland_hosted": false,
+      "addresses": [
+        "170.33.12.185"
+      ],
+      "probe_round": "bank-2026-09-19"
     },
     {
       "root": "yunshangzhipian.com",
