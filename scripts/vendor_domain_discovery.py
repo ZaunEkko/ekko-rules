@@ -59,11 +59,17 @@ def registrable_root(host: str) -> str:
     return ".".join(labels[-2:])
 
 
-def query(organisation: str) -> tuple[str, list[str]]:
-    """Return the registrable roots certificates name for ``organisation``."""
-    url = CRT_SH + "?" + urllib.parse.urlencode(
-        {"O": f"%{organisation}%", "output": "json"}
-    )
+def query(term: str) -> tuple[str, list[str]]:
+    """Return the registrable roots certificates name for ``term``.
+
+    A term containing a dot is read as a domain and searched with ``q``, which
+    returns that domain's certificates. Those certificates also carry their
+    other subject alternative names, so a multi-domain certificate exposes the
+    sibling domains a vendor runs under unrelated-looking names. Anything else
+    is read as an organisation and searched with ``O``.
+    """
+    field, value = ("q", f"%.{term}") if "." in term else ("O", f"%{term}%")
+    url = CRT_SH + "?" + urllib.parse.urlencode({field: value, "output": "json"})
     request = urllib.request.Request(url, headers={"user-agent": "ekko-rules-evidence/1"})
     entries: list[dict[str, object]] = []
     for attempt in range(ATTEMPTS):
@@ -78,12 +84,12 @@ def query(organisation: str) -> tuple[str, list[str]]:
             time.sleep(BACKOFF_SECONDS * (attempt + 1))
     roots = set()
     for entry in entries:
-        for field in ("common_name", "name_value"):
-            for name in str(entry.get(field, "")).split("\n"):
+        for key in ("common_name", "name_value"):
+            for name in str(entry.get(key, "")).split("\n"):
                 root = registrable_root(name)
                 if root and VALID_ROOT.match(root) and not root[0].isdigit():
                     roots.add(root)
-    return organisation, sorted(roots)
+    return term, sorted(roots)
 
 
 def main(argv: list[str]) -> int:

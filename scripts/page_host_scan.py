@@ -36,8 +36,14 @@ USER_AGENT = (
 )
 
 # src=, href=, url(), and protocol-relative or absolute URLs inside scripts.
+#
+# A bare "//" is not enough to anchor on: minified JavaScript ends statements
+# with trailing line comments such as "}//console.log(x)", and the text after
+# the slashes then looks exactly like a hostname. Requiring either an explicit
+# scheme or a delimiter that precedes a URL in markup and script keeps those
+# out without losing protocol-relative references.
 HOST_PATTERN = re.compile(
-    r"""(?:https?:)?//([a-z0-9](?:[a-z0-9\-._]*[a-z0-9])?\.[a-z]{2,})""",
+    r"""(?:https?://|(?<=[\s"'`(=\[{])//)([a-z0-9](?:[a-z0-9\-._]*[a-z0-9])?\.[a-z]{2,})""",
     re.IGNORECASE,
 )
 

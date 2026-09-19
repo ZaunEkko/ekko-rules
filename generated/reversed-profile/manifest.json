@@ -6,7 +6,7 @@
   "self_hash_included": false,
   "files": {
     "Mihomo/reversed-template.yaml": "052daeedf45dbf42df45e08bab8eef6f8c37dca0761276046461c5078a0e7dc8",
-    "Providers/Ruleset/advertising-curated.yaml": "fa64267dd2e19fb527afbfd46b30ee6d4baf57008a3d766684c4e84c94a4a869",
+    "Providers/Ruleset/advertising-curated.yaml": "08a6874573d00f8fb06b5e1fdf58fc3e741eef72891b520131003c90b6540629",
     "Providers/Ruleset/advertising.yaml": "2e32375b3f86af8e09771785c0e145a0371839a7fb5c128a0371fd6c83a858c3",
     "Providers/Ruleset/ai-developer.yaml": "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
     "Providers/Ruleset/ai-platforms.yaml": "2af6df159b121a558ddf74cfcb0321646d3388d0d2153c34d2c6e61fc50b1d6d",
@@ -75,7 +75,7 @@
     "Providers/Ruleset/youtube.yaml": "d214401b85f98da6f5168ca1f16420c9c0a753f4538b109a4ff844d5e8b38e90",
     "README.md": "b936d84e6cd395e67b0b1f7f5ea58b03d3bcdae76f7c70586a9d00e9c2b5f75d",
     "README_EN.md": "e7737741d830cda5ff77a0d9eeff234516726f3f0d8c599b61ff6ae11752c3cf",
-    "Ruleset/advertising-curated.list": "b91b13936c674bd0e00e092aad3acde18104b33c69cf5210279d23591881583e",
+    "Ruleset/advertising-curated.list": "1468cf37f4b4f52f0e1526c6032158448c541187905c2569c7fc3ba2e08091a6",
     "Ruleset/advertising.list": "fc65062129d120ee2921b78b9ffd95444b694662192c05541e68bc28d559f900",
     "Ruleset/ai-developer.list": "064c45c6b25dfd29ce123eb9147f4e46466e355462f34dde01fcec98ce5e7934",
     "Ruleset/ai-platforms.list": "6e30f1d18e26b41785a0046b6813f57fd2ae1f829773534aec2ed9ee43346311",
@@ -142,7 +142,7 @@
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "3c03e5576ca548fe119cb106eb6864d387d4b2afdc1d595fcd77a46450a24eaf",
+    "analysis.json": "9842a21ee625211b2f402a1e0696815023e210d34981498c1dfa7922bdb3734f",
     "config/ekko-rules.ini": "fc21f8c54811060cdc9c60df6c9390b13c0d4b17c3c5141dfad1f54321d92bb7"
   }
 }

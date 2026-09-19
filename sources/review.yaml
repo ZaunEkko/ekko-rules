@@ -612,3 +612,17 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The organisation list grows from 46 to 118 across carriers, handset makers, game studios, AI companies, cloud providers and platform sub-brands, and the tool retries with a growing pause so throttling is no longer mistaken for absence - 72 organisations that appeared empty returned results. The wider sample attests 2,338 roots, 1,394 uncovered, 74 mainland-hosted beyond what is already shipped; one measurement root is removed as belonging to the advertising policy and the remaining 73 take china-web to 3,269 rules with first-match coverage unchanged. Measured against the full independent pool, 31.8 percent of the mainland import's live entries and 28.1 percent of the advertising import's are independently attested, so neither can be retired and the attribution stands.
+- id: russian-publisher-declarations
+  status: accepted
+  scope: routing-policy
+  summary: A fifth of the advertising import serves a Russian audience, which the first publisher sample did not reach.
+  evidence:
+  - docs/evidence/ru-publishers-2026-09-19.txt
+  - scripts/ads_txt_evidence.py
+  - scripts/ad_serving_probe.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: 48 of 75 Russian publishers served an ads.txt declaring 439 advertising systems, 273 by two or more. Of 126 uncovered candidates the delivery probe found 37 serving; review removed eight mixed-business roots, one publisher, one agency and ten video player platforms, leaving 17 that take the segment to 469 rules. 28.4 percent of the import's live Russian entries are now independently attested. The round also anchors page_host_scan.py against minified JavaScript trailing comments, which its bare double-slash pattern had been reading as hostnames; no rule was affected because every candidate passes the APNIC probe first and the noise never resolved.

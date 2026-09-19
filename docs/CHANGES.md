@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-043 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-044 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -915,6 +915,26 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 11,161 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-044 — Russian publishers, and a scanner anchored against script noise
+
+**Type:** extension of an existing segment, plus a tool defect fix
+
+A fifth of the advertising import serves a Russian audience. Reproducing that coverage independently needs Russian publishers, and publisher choice carries no dependency on anyone's rule list, so the same `ads.txt` method applies unchanged. 48 of 75 Russian publishers served one, declaring 439 advertising systems, 273 by two or more.
+
+Of 126 candidates the curated segment did not cover, the delivery probe found 37 with live infrastructure. Review removed eight mixed-business roots, one publisher, one agency and ten video player platforms, leaving 17: `adhigh.net`, `adriver.ru`, `adtarget.me`, `bidvol.com`, `byyd.me`, `clickonometrics.pl`, `getintent.com`, `mobuppsrtb.com`, `mobydix.com`, `persona.ly`, `redllama.ru`, `relap.io`, `rtbsape.com`, `sape.ru`, `tds.bid`, `totalmediasolutions.com` and `upravel.com`. The segment reaches 469 rules and 28.4 percent of the import's live Russian entries are now independently attested.
+
+The round also fixes a defect in `page_host_scan.py`. Its pattern anchored on a bare `//`, and minified JavaScript ends statements with trailing comments such as `}//console.log(x)`, so the text after the slashes was read as a hostname. The pattern now requires either an explicit scheme or a delimiter that genuinely precedes a URL. No rule was affected: every candidate passes the APNIC probe before admission, and the noise never resolved.
+
+First-match coverage is unchanged at union 145.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,178 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.

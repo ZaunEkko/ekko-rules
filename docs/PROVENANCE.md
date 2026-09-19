@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 11,161 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 11,178 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,14 +21,14 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 11,160 file rules are partitioned by evidence boundary:
+The 11,177 file rules are partitioned by evidence boundary:
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
 | Classic mainland-domain import | 1,482 | Direct pinned MIT input with immutable selection ledger |
 | Advertising import | 849 | Direct pinned MIT input with immutable selection and capture ledgers |
 | Current late recovery | 2,684 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
-| Observation-derived advertising curation | 452 | Derived solely from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
+| Observation-derived advertising curation | 469 | Derived solely from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
 | Observation-derived mainland direct curation | 2,899 | Derived from this repository's own scan of mainland origins, each root confirmed mainland-hosted against APNIC delegation records |
 | Specialized, private/local, and service corpus | 2,794 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
