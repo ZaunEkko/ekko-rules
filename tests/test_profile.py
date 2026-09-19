@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -55,6 +56,7 @@ from scripts.profile_model import (  # noqa: E402
     compare_trees,
     coverage_metrics,
     PRODUCTS,
+    scope_metrics,
     build_analysis,
     first_match,
     load_profile_sources,
@@ -2997,4 +2999,64 @@ class LiteProductTests(unittest.TestCase):
                     f"{product} routes {domain} to {verdict['target']}, which "
                     f"that product does not define",
                 )
+
+class ProvenanceAccountingTests(unittest.TestCase):
+    """The provenance table has to add up to the product it describes.
+
+    It drifted twice without anyone noticing: once when rules moved into the
+    mainland curation without the split being updated, leaving the mainland and
+    remainder categories 369 rules apart from the sources, and again when a
+    round of additions left the headline and the table partitioning a corpus
+    369 + 53 rules smaller than the one being published. Both times the document
+    still read as an audit. A number nobody checks is worse than no number, so
+    this checks it.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sources = load_profile_sources(SOURCES)
+        cls.text = (ROOT / "docs" / "PROVENANCE.md").read_text(
+            encoding="utf-8"
+        )
+
+    def accounting_section(self) -> str:
+        start = self.text.index("## Current rule accounting")
+        end = self.text.index("## Direct canonical inputs")
+        return self.text[start:end]
+
+    def test_the_accounting_table_partitions_the_published_corpus(self) -> None:
+        section = self.accounting_section()
+        rows = [
+            int(value.replace(",", ""))
+            for value in re.findall(r"\| ([\d,]+) \|", section)
+        ]
+        self.assertTrue(rows, "the accounting table has no rows to check")
+        published = scope_metrics(self.sources, product="core")[
+            "rules_in_files"
+        ]
+        self.assertEqual(
+            sum(rows),
+            published,
+            "the provenance table must partition the published corpus exactly",
+        )
+
+    def test_the_headline_and_the_remainder_quote_the_same_corpus(self) -> None:
+        section = self.accounting_section()
+        published = scope_metrics(self.sources, product="core")[
+            "rules_in_files"
+        ]
+        headline = re.search(r"The ([\d,]+) file rules are partitioned", section)
+        self.assertIsNotNone(headline, "the accounting headline is missing")
+        self.assertEqual(int(headline.group(1).replace(",", "")), published)
+
+        # The prose names the last category again; it said 2,794 while the table
+        # said 2,818, so the two disagreed with each other as well as with the
+        # sources.
+        rows = [
+            int(value.replace(",", ""))
+            for value in re.findall(r"\| ([\d,]+) \|", section)
+        ]
+        remainder = re.search(r"The final ([\d,]+)-rule category", section)
+        self.assertIsNotNone(remainder, "the remainder sentence is missing")
+        self.assertEqual(int(remainder.group(1).replace(",", "")), rows[-1])
 
