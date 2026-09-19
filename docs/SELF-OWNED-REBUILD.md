@@ -126,6 +126,26 @@ Retiring them outright would still have cost coverage for 2,504 observed hostnam
 
 One deliberate exception: `newrelic.com` is not re-added. The import blocked it; this repository's review classifies browser monitoring as neither advertising nor tracking, and the hold stands over parity.
 
+## Committed evidence
+
+Every published rule in the advertising and mainland segments maps to one of these, and two test classes assert it in both directions.
+
+| File | What it holds |
+|---|---|
+| `admission-review-2026-09-19.json` | per-host verdicts for hosts seen in the traffic capture |
+| `cn-ad-review-2026-09-19.json` | per-host verdicts for advertising and tracking hosts found in the mainland scan |
+| `ad-root-review-2026-09-19.json` | root-level verdicts, each stating why no non-advertising service lives under the root, and the declared seller where the delivery domain differs |
+| `ad-serving-probe-2026-09-19.json` | delivery-probe verdicts: which candidate roots actually run advertising infrastructure |
+| `ads-txt-2026-09-19.json` | publisher declarations, counted at two or more publishers |
+| `legacy-ad-review-2026-09-19.json` | the closed grandfathered advertising set |
+| `cn-apnic-verdicts-2026-09-19.json` | APNIC verdicts for the mainland roots |
+| `cn-observation-2026-09-19.json` | mainland roots the scan saw but APNIC could not adjudicate |
+| `cn-legacy-direct-2026-09-19.json` | the closed grandfathered mainland set |
+
+`ad-vendors-2026-09-19.txt`, `adstxt-candidates-2026-09-19.txt`, `cn-candidates-2026-09-19.txt` and `cn-vendors-2026-09-19.txt` are **inputs, not evidence**. They are the seeds and candidate lists the probes adjudicate, and the vendor seed names `bytedance.com`, whose general API infrastructure is not advertising. No test may read them as a verdict.
+
+Two grandfathered sets exist because two groups of rules predate the rebuild and their criterion 1 evidence was never committed: 28 advertising rules from commit `78c939c` and 269 mainland rules from the repository's own early curation. Claiming an evidence route for them after the fact would be an assertion, not evidence. Both sets are closed — a test asserts each may shrink but never grow — so neither can become a route for admitting new rules.
+
 ## Status of the evidence tools
 
 | Script | Role |

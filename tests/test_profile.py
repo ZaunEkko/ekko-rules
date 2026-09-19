@@ -27,6 +27,9 @@ MAINLAND_AD_REVIEW = EVIDENCE / "cn-ad-review-2026-09-19.json"
 LEGACY_AD_REVIEW = EVIDENCE / "legacy-ad-review-2026-09-19.json"
 AD_ROOT_REVIEW = EVIDENCE / "ad-root-review-2026-09-19.json"
 AD_SERVING_PROBE = EVIDENCE / "ad-serving-probe-2026-09-19.json"
+CN_APNIC_VERDICTS = EVIDENCE / "cn-apnic-verdicts-2026-09-19.json"
+CN_OBSERVATION = EVIDENCE / "cn-observation-2026-09-19.json"
+CN_LEGACY_DIRECT = EVIDENCE / "cn-legacy-direct-2026-09-19.json"
 ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
@@ -2698,7 +2701,15 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
                     wrong.append((record["host"], record.get("admission_route")))
                 if not record.get("first_party_safety"):
                     wrong.append((record["host"], "no criterion 4 rationale"))
-                if "criterion 2" in record["reason"]:
+                rejecty = (
+                    "not advertising",
+                    "criterion",
+                    "coincidence",
+                    "not delivery",
+                    "reviewed, not",
+                    "does not resolve",
+                )
+                if any(phrase in record["reason"].lower() for phrase in rejecty):
                     wrong.append((record["host"], "reason contradicts the verdict"))
         self.assertEqual(wrong, [], "admitted records whose route or rationale does not match")
 
@@ -2718,6 +2729,9 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
                 for record in mainland[key]
                 if record["verdict"] == "admit"
             }
+        # The grandfathered set is closed: these rules predate the rebuild and
+        # their criterion 1 and 2 evidence was never committed, so they count as
+        # evidence only for the exact hosts enumerated, and the set may not grow.
         legacy = json.loads(LEGACY_AD_REVIEW.read_text(encoding="utf-8"))
         reviewed |= {record["host"].lower() for record in legacy["records"]}
 
@@ -2736,6 +2750,30 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
             if record["serves_advertising"]
         }
         return reviewed, declared
+
+    GRANDFATHERED_LIMIT = 28
+
+    def test_the_grandfathered_set_is_closed(self) -> None:
+        """A rule may leave the grandfathered set; none may join it.
+
+        These records satisfy criteria 3 and 4 only — the observation that would
+        satisfy criteria 1 and 2 predates the rebuild and was never committed.
+        That is acceptable for rules already shipping and reviewed; it is not a
+        route for admitting new ones.
+        """
+        legacy = json.loads(LEGACY_AD_REVIEW.read_text(encoding="utf-8"))
+        self.assertEqual(legacy["status"], "grandfathered")
+        self.assertLessEqual(
+            len(legacy["records"]),
+            self.GRANDFATHERED_LIMIT,
+            "the grandfathered set may shrink, never grow",
+        )
+        claiming = [
+            record["host"]
+            for record in legacy["records"]
+            if record.get("admission_route") or record.get("criteria_satisfied") != [3, 4]
+        ]
+        self.assertEqual(claiming, [], "grandfathered records claiming evidence they do not have")
 
     def test_every_published_advertising_rule_maps_to_committed_evidence(self) -> None:
         """The direction that catches a deleted record.
@@ -2763,3 +2801,50 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
             if not evidenced(parse_rule(entry, context="evidence mapping")[1].lower())
         ]
         self.assertEqual(unmapped, [], "published advertising rules with no committed evidence")
+
+
+class MainlandEvidenceContractTests(unittest.TestCase):
+    """The mainland segments carry 4,224 rules and must be auditable too.
+
+    Advertising got this contract first because a wrong rule there blocks
+    something. A wrong rule here sends traffic direct that should be proxied,
+    which is the same class of defect with a quieter failure.
+    """
+
+    CN_GRANDFATHERED_LIMIT = 269
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sources = load_profile_sources(SOURCES)
+
+    def test_every_mainland_rule_maps_to_committed_evidence(self) -> None:
+        apnic = {
+            record["root"].lower()
+            for record in json.loads(CN_APNIC_VERDICTS.read_text(encoding="utf-8"))["records"]
+            if record["mainland_hosted"]
+        }
+        observed = {
+            record["root"].lower()
+            for record in json.loads(CN_OBSERVATION.read_text(encoding="utf-8"))["records"]
+        }
+        legacy = {
+            value.lower()
+            for value in json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))["values"]
+        }
+        evidenced = apnic | observed | legacy
+        unmapped = [
+            entry
+            for slug in ("china-web", "china-direct-curated")
+            for entry in self.sources.rules[slug]
+            if parse_rule(entry, context="mainland evidence")[1].lower() not in evidenced
+        ]
+        self.assertEqual(unmapped, [], "mainland rules with no committed evidence")
+
+    def test_the_mainland_grandfathered_set_is_closed(self) -> None:
+        legacy = json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))
+        self.assertEqual(legacy["status"], "grandfathered")
+        self.assertLessEqual(
+            len(legacy["values"]),
+            self.CN_GRANDFATHERED_LIMIT,
+            "the mainland grandfathered set may shrink, never grow",
+        )

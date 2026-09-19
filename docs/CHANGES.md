@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-052 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-053 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1189,3 +1189,37 @@ Both are removed from the evidence set. What replaces them is the verdict the pi
 That left 19 rules unmapped, all of them the canonical case the probe was written for — a platform's delivery domain is not the domain its publishers declare. Publishers declare `google.com` and the creatives arrive from `doubleclick.net`; `appnexus.com` is declared and `adnxs.com` bids. Each of the 19 now carries a root record naming the declared seller alongside the delivery root.
 
 `china-web` and `china-direct-curated` remain outside this mapping. Their evidence is the APNIC delegation record and Certificate Transparency, and 3,770 of their 4,215 rules have a committed APNIC verdict; extending the test to them needs those verdicts committed as one consolidated file, which is a separate change.
+
+## ER-053 — The mainland segments get the same contract, and two sets are named for what they are
+
+**Type:** evidence; 3 evidence files added, 3 tests added
+
+The fourth review round raised four points. All four were real.
+
+### The mainland segments had no evidence contract at all
+
+Advertising got a published-rule-to-evidence mapping in ER-051 because a wrong rule there blocks something a user wanted. A wrong rule in `china-web` sends traffic direct that should be proxied — the same class of defect with a quieter failure — and 4,224 rules had no such mapping, nor any committed artifact to map to. The scan output, the Certificate Transparency results and the APNIC verdicts existed only in a working directory, which makes the corpus unauditable and unreproducible: re-running a network probe later returns different data.
+
+Three files now carry it, and `MainlandEvidenceContractTests` requires every rule in both mainland segments to map to one of them:
+
+| Evidence | Rules |
+|---|---:|
+| `cn-apnic-verdicts-2026-09-19.json` — every A record inside APNIC's CN delegations | 3,778 |
+| `cn-observation-2026-09-19.json` — seen by the scan, no APNIC verdict, admitted by per-host review | 177 |
+| `cn-legacy-direct-2026-09-19.json` — grandfathered | 269 |
+
+### Two grandfathered sets, named as such
+
+The legacy advertising file claimed `admission_route: "third-party"` for hosts whose observing origin was never recorded. That was an assertion dressed as evidence. Those 28 rules entered in commit `78c939c` and their criterion 1 and 2 evidence cannot be reconstructed after the fact, so the file no longer claims a route: each record states `criteria_satisfied: [3, 4]` and `criterion_1_and_2_evidence: "not preserved"`. The 269 mainland rules in the same position are treated identically.
+
+Both sets are **closed**. A test asserts each may shrink but never grow, and the mapping tests treat membership as evidence only for the exact values enumerated. Grandfathering rules already shipping and re-reviewed for safety is defensible; leaving a door open for new ones to enter that way is not.
+
+The distinction between an input and a verdict is now written into `docs/SELF-OWNED-REBUILD.md` as well: `ad-vendors`, `adstxt-candidates`, `cn-candidates` and `cn-vendors` are seeds and candidate lists that the probes adjudicate, and no test may read them as a verdict.
+
+### Admitted records carried rejection rationales
+
+16 admitted delivery records still read "reviewed, not advertising delivery infrastructure" — the catch-all reject reason — beside an `admit` verdict, among them `ad.doubleclick.net`, `ib.adnxs.com` and six `mediav.com` hosts. They are admitted because a root rule captures them, and the regeneration had no branch for that. Reasons are now generated from the rule that actually matches, each record naming it in `captured_by`, and the consistency test rejects any admitted record whose reason carries rejection language rather than only the phrase `criterion 2`.
+
+### `docs/PROVENANCE.md` still described the import as shipping
+
+The advertising section stated that the curated segment sits after the pinned import, that the import's ledger and `emitted_sha256` are untouched, and that the attribution obligation is unaffected — all three deleted by ER-047 in the same change. It also cited the deleted `advertising-routing-ledger.json` and the pre-ER-047 count of 71 cloud captures. Corrected.

@@ -56,9 +56,9 @@ The decision comes from a primary source wherever it can: APNIC publishes the re
 
 An ads.txt declaration names the company selling inventory, which is often not the domain that delivers advertising at runtime, so a declared root enters only after `scripts/ad_serving_probe.py` resolves conventional delivery hostnames beneath it and finds live infrastructure. Roots answering only on their apex are corporate websites and are excluded, as are publishers declaring themselves, mixed-business roots whose non-advertising functions a `REJECT` would break, and video and audio player platforms where blocking would remove content rather than advertising.
 
-The segment sits immediately after the pinned advertising import and shares its `🛑 广告拦截` policy. It deliberately introduces no new first-match coverage: a curated suffix that would shadow an existing rule is narrowed to the observed hosts instead, and entries the import already covers are dropped. The frozen import, its ledger, and its `emitted_sha256` are untouched, so the attribution obligation on that data is unaffected. Method, admission criteria, and the measured reasons this curation exists are in `docs/SELF-OWNED-REBUILD.md`.
+The segment is the whole advertising policy since ER-047 retired the pinned import; nothing sits between `private`, `remote-streaming` and it. It introduces no new first-match coverage: a curated suffix that would shadow an existing rule is narrowed to the observed hosts instead. Every published rule maps to a committed verdict — a per-host review, a root review, a publisher declaration made by two or more publishers, or a delivery-probe confirmation — and `AdvertisingAdmissionContractTests` asserts that mapping in both directions. Method, admission criteria, and the measured reasons this curation exists are in `docs/SELF-OWNED-REBUILD.md`.
 
-Advertising precedes specialized service segments, so 39 later telemetry/advertising matchers intentionally become unreachable. That exact capture set is frozen in `tests/fixtures/advertising-routing-ledger.json`; any additional capture requires review. The independent `🛑 广告拦截` group defaults to `REJECT` but remains manually switchable.
+Advertising precedes specialized service segments, so a small number of later telemetry and advertising matchers intentionally become unreachable; they are counted in the frozen first-match coverage figures in `sources/quality-baseline.yaml` rather than in a separate ledger, which ER-047 deleted along with the import it described. The independent `🛑 广告拦截` group defaults to `REJECT` but remains manually switchable.
 
 ### Domestic and overseas cloud routing
 
@@ -66,7 +66,7 @@ ER-023 adds repository-maintained `china-cloud` and `overseas-cloud` rulesets. A
 
 Generated-only `onedrive`, `icloud`, and `spotify-2` compatibility copies keep previously published Raw ruleset/provider URLs available with their original pre-merge matcher subsets and frozen list/provider hashes. They are derived deterministically from the consolidated `cloud-storage` or `spotify` source, included in the generated SHA-256 manifest, and are not canonical segments, rule-count inputs, or active Subconverter/Mihomo references.
 
-No cloud CIDR, ASN, `GEOSITE`, regular expression, or broad consumer-company root is added. The 71 intentional later-rule captures created by the cloud ownership layer are frozen in `tests/fixtures/cloud-routing-ledger.json`; concrete business rules such as Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili's Kingsoft hosts remain ahead of the cloud layer.
+No cloud CIDR, ASN, `GEOSITE`, regular expression, or broad consumer-company root is added. The 19 intentional later-rule captures created by the cloud ownership layer are frozen in `tests/fixtures/cloud-routing-ledger.json`; concrete business rules such as Tencent GME, Epic downloads, GitHub S3, Google AI, YouTube, OpenAI Azure, and Bilibili's Kingsoft hosts remain ahead of the cloud layer.
 
 ## Immutable reconstruction and compatibility evidence
 

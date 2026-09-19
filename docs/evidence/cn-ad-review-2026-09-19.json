@@ -288,8 +288,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,tagtic.cn: mainland advertising and attribution SDK backend",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,tagtic.cn"
     },
     {
       "host": "ad-zpub.leju.com",
@@ -355,8 +356,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,doubleclick.net: Google Ad Manager delivery and click-tracking domain",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,doubleclick.net"
     },
     {
       "host": "ad.eepw.com.cn",
@@ -553,8 +555,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,googlesyndication.com: Google AdSense and Ad Manager creative delivery",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,googlesyndication.com"
     },
     {
       "host": "adeff.com",
@@ -772,8 +775,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by DOMAIN-SUFFIX,vidoomy.com, a reviewed advertising rule covering this host",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,vidoomy.com"
     },
     {
       "host": "adsame.cyol.com",
@@ -973,8 +977,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
     },
     {
       "host": "click.union.vip.com",
@@ -1006,8 +1011,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
     },
     {
       "host": "cms.tanx.com",
@@ -1061,8 +1067,9 @@
       "third_party_count": 23,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "advertising or tracking endpoint reviewed per host",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN,cpro.baidustatic.com"
     },
     {
       "host": "cpro.zol.com.cn",
@@ -1212,8 +1219,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
     },
     {
       "host": "gx.bidcenter.com.cn",
@@ -1299,8 +1307,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,adnxs.com: Xandr bidding and delivery",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,adnxs.com"
     },
     {
       "host": "image.bidchance.com",
@@ -1433,8 +1442,9 @@
       "third_party_count": 2,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "advertising or tracking endpoint reviewed per host",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN,mi.gdt.qq.com"
     },
     {
       "host": "nmg.bidcenter.com.cn",
@@ -1508,8 +1518,9 @@
       "third_party_count": 3,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,gdtimg.com: Tencent GDT creative image hosting; the root serves advertising assets only",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,gdtimg.com"
     },
     {
       "host": "qzsdk.gdtimg.com",
@@ -1519,8 +1530,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,gdtimg.com: Tencent GDT creative image hosting; the root serves advertising assets only",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,gdtimg.com"
     },
     {
       "host": "restprops.addon",
@@ -1637,8 +1649,9 @@
       "third_party_count": 3,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
     },
     {
       "host": "shuju.bidcenter.com.cn",
@@ -1662,8 +1675,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by DOMAIN-SUFFIX,criteo.com, a reviewed advertising rule covering this host",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,criteo.com"
     },
     {
       "host": "ssp.21ic.com",
@@ -1762,8 +1776,9 @@
       "third_party_count": 1,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
     },
     {
       "host": "static.bidcenter.com.cn",
@@ -1785,8 +1800,9 @@
       "third_party_count": 6,
       "admission_route": "third-party",
       "verdict": "admit",
-      "reason": "reviewed, not advertising delivery infrastructure",
-      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host"
+      "reason": "captured by the root rule DOMAIN-SUFFIX,mediav.com: MediaV advertising exchange",
+      "first_party_safety": "third-party advertising or tracking collection observed across origins; a REJECT cannot break first-party behaviour because no observing origin serves its own content from this host",
+      "captured_by": "DOMAIN-SUFFIX,mediav.com"
     },
     {
       "host": "storage-cdn.bidizhaobiao.com",
