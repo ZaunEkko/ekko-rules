@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-055 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-056 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1253,3 +1253,38 @@ Four candidates were dropped rather than shipped. `lazada.com` is already in `ch
 `cloudflareperf.com` joins `china-cloud` alongside the rest of the Cloudflare China family. Its apex is APNIC-confirmed mainland-hosted, unlike `cloudflare.cn` in ER-054, whose verdict the probe could not reach.
 
 The product goes to 63 rule files, 64 segments, 41 proxy groups and 10,001 rules including FINAL. First-match coverage is unchanged at 54 / 13 / 41.
+
+## ER-056 — The mainland probe was asking the wrong question
+
+**Type:** method fix; 5 rules added, 1 evidence category added
+
+A split-tunnel test showed ByteDance's row leaving through the proxy. Chasing it found the domains the test probes, and chasing those found something worse than a missing rule.
+
+### The probe answered for its own location
+
+`mainland_hosting_probe.py` resolved through a public resolver without saying who the answer was for, so a geo-DNS service answered for where the query came from. `xinhuanet.com` returns `156.238.128.x` to this repository and `117.177.70.x` to a mainland client; the probe read the first and called a China Mobile-hosted site foreign. That is the normal case for exactly the services a mainland direct rule is about — CDN-fronted, geo-resolved, and invisible to a probe run from outside.
+
+The probe now names a mainland client subnet with EDNS Client Subnet. Four roots this repository had previously classified as foreign are mainland-hosted under the corrected question: `xinhuanet.com`, `chinanews.com.cn`, `honor.cn` and `cloudflareperf.com`. All but the last are added here; `cloudflareperf.com` was already placed in ER-055 by review and now has a verdict behind it.
+
+The fix is not total, and the residue is informative. Cloudflare answers from anycast and returns the same address whatever subnet is named, so `cloudflare.cn` still has no verdict — a true finding about the method rather than about the domain. ER-054 recorded that as a limitation before the cause was understood; it now has a name.
+
+### ByteDance, split by what the evidence actually says
+
+The test probes `perfops.byte-test.com` and `perfops1` through `perfops3.byteperf.com`. Under the corrected probe they do not behave the same way:
+
+| Host | Answer for a mainland client |
+|---|---|
+| `perfops.byte-test.com` | `218.91.225.98`, `114.80.10.195`, `182.101.26.190` — mainland |
+| `perfops1.byteperf.com` | `35.219.10.74` — foreign |
+| `perfops2.byteperf.com` | `95.40.53.40` — foreign |
+| `perfops3.byteperf.com` | `47.84.187.31` — foreign |
+
+So `byte-test.com` is admitted on the APNIC route and `byteperf.com` is not, because its endpoints are deliberately spread across regions — measuring only what is nearby would defeat their purpose. It is admitted anyway, on a rationale that is about routing rather than hosting: these are the endpoints a ByteDance client measures against to choose a CDN node, and a measurement taken through a proxy describes a path the media traffic will not take, so the client then picks the wrong node.
+
+### A fourth evidence route, deliberately cramped
+
+That rationale needed somewhere to live. `cn-review-admitted-2026-09-19.json` holds roots that neither the scan nor the probe can adjudicate, and it carries more proof than the other routes rather than less: each record must state the reason, the vendor attribution, and which limitation put it there, and `MainlandEvidenceContractTests` caps the category at eight records. It exists because two evidence routes have a blind spot, not because review outranks them. It currently holds one root.
+
+`lenovo.com.cn` was examined and not added: it answers from Akamai's global edge even for a mainland client, so a direct rule would not shorten the path. `ant.design`, `vivo.com`, `honor.com` and `lenovo.com` are global sites and stay on the proxy.
+
+First-match coverage is unchanged at 54 / 13 / 41.

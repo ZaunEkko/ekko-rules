@@ -30,6 +30,7 @@ AD_SERVING_PROBE = EVIDENCE / "ad-serving-probe-2026-09-19.json"
 CN_APNIC_VERDICTS = EVIDENCE / "cn-apnic-verdicts-2026-09-19.json"
 CN_OBSERVATION = EVIDENCE / "cn-observation-2026-09-19.json"
 CN_LEGACY_DIRECT = EVIDENCE / "cn-legacy-direct-2026-09-19.json"
+CN_REVIEW_ADMITTED = EVIDENCE / "cn-review-admitted-2026-09-19.json"
 ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
@@ -2832,7 +2833,16 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             value.lower()
             for value in json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))["values"]
         }
-        evidenced = apnic | observed | legacy
+        # The fourth route exists because the other three have a blind spot, not
+        # because review outranks them: an anycast probe endpoint answers from
+        # wherever you ask, so resolving it from outside the mainland says
+        # nothing. Every entry has to state the limitation that put it here.
+        reviewed = {
+            record["root"].lower()
+            for record in json.loads(CN_REVIEW_ADMITTED.read_text(encoding="utf-8"))["records"]
+            if record["verdict"] == "admit"
+        }
+        evidenced = apnic | observed | legacy | reviewed
         unmapped = [
             entry
             for slug in ("china-web", "china-direct-curated")
@@ -2840,6 +2850,30 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             if parse_rule(entry, context="mainland evidence")[1].lower() not in evidenced
         ]
         self.assertEqual(unmapped, [], "mainland rules with no committed evidence")
+
+    REVIEW_ADMITTED_LIMIT = 8
+
+    def test_review_admitted_roots_state_why_the_probes_could_not_decide(self) -> None:
+        """This route is the easiest one to abuse, so it carries the most proof.
+
+        A root here skipped both the scan and the APNIC verdict. What keeps that
+        honest is that the record must say which limitation applied, and that the
+        category stays small enough to read in full.
+        """
+        document = json.loads(CN_REVIEW_ADMITTED.read_text(encoding="utf-8"))
+        self.assertLessEqual(
+            len(document["records"]),
+            self.REVIEW_ADMITTED_LIMIT,
+            "the review-admitted route is a blind-spot patch, not a general entrance",
+        )
+        incomplete = [
+            record["root"]
+            for record in document["records"]
+            if not record.get("why_other_routes_failed")
+            or not record.get("reason")
+            or not record.get("vendor_attribution")
+        ]
+        self.assertEqual(incomplete, [], "review-admitted roots missing their justification")
 
     def test_the_mainland_grandfathered_set_is_closed(self) -> None:
         legacy = json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))
