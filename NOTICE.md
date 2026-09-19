@@ -16,7 +16,7 @@ Rule counts, evidence boundaries and the per-category accounting live in [`docs/
 
 **No rule in the current product derives from a third-party rule list.**
 
-The product previously shipped two one-time deterministic imports of [`v2fly/domain-list-community`](https://github.com/v2fly/domain-list-community) at revision `660198a50bac2ab10c567d95a472a7b33915d1b0`, licensed under MIT (`Copyright (c) 2018-2019 V2Ray`). ER-047 retired both, and the attribution they required no longer applies. The replacement rules were derived from this repository's own evidence — traffic observation, publisher `ads.txt` declarations, Certificate Transparency logs, and APNIC delegation records — with method and records in [`docs/SELF-OWNED-REBUILD.md`](docs/SELF-OWNED-REBUILD.md) and [`docs/evidence/`](docs/evidence/).
+Rules are derived from this repository's own evidence — traffic observation, publisher `ads.txt` declarations, Certificate Transparency logs, and APNIC delegation records — with method and records in [`docs/SELF-OWNED-REBUILD.md`](docs/SELF-OWNED-REBUILD.md) and [`docs/evidence/`](docs/evidence/).
 
 Similar factual indicators — domains, IP ranges, ASNs, process names, service identifiers — may independently appear in other routing projects. That is convergence on the same public facts, not derivation.
 

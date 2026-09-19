@@ -54,7 +54,8 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 → 五个非微软 late-recovery ruleset
 → 海外云服务 → 国内云服务
 → 微软服务及其 late-recovery → Google
-→ 经典中国大陆域名规则
+→ 海外购物
+→ 大陆宽域根域
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
 ```

@@ -98,11 +98,16 @@ Nothing protective was lost, because criterion 2 was never what stopped the dang
 
 Rules derived entirely from this repository's own evidence:
 
-| Segment | Rules | Evidence |
-|---|---:|---|
-| `advertising-curated` | 494 | traffic capture, publisher ads.txt declarations, delivery probe |
-| `china-web` | 4,219 | markup and script scans of mainland origins, Certificate Transparency vendor attestation, APNIC delegation records |
-| `china-direct-curated` | 9 | the broad vendor and CDN roots, held late so they do not preempt the cloud, media and AI segments |
+| Segment | Evidence |
+|---|---|
+| `advertising-curated` | traffic capture, publisher ads.txt declarations, delivery probe |
+| `china-web` | markup and script scans of mainland origins, Certificate Transparency vendor attestation, APNIC delegation records |
+| `china-direct-curated` | the broad vendor and CDN roots, held late so they do not preempt the cloud, media and AI segments |
+
+Counts are not repeated here. This table carried them and drifted, because a
+segment keeps growing after the round that created it while a finished record
+does not. The current figures are in [`docs/PROVENANCE.md`](PROVENANCE.md),
+where the test suite checks them against the canonical sources.
 
 Measured improvement, with the retired import alone and then with the curation that replaced it:
 
