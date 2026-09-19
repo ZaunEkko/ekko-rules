@@ -18,7 +18,7 @@
     "Providers/Ruleset/bilibili-hmt-late-recovery.yaml": "a5e98020f876ac31f51f9099670fb0e9cbfb78ed592ad6cf18ad6294e0ab0a02",
     "Providers/Ruleset/bilibili-hmt.yaml": "bb7182ffda04655b893fcf1520cacadc9a5fbfe1bf45a02f3c48b6f0cd0340e1",
     "Providers/Ruleset/bilibili-sea.yaml": "7d7e69c968b083eddb90a026e6df3169c8f71ab9ebc9d4b2b206638a1253bbb1",
-    "Providers/Ruleset/china-cloud.yaml": "4d52be30567d37b7cdaf1b14463b4b6bda54ee4e0f524c5663f2c7d57e0459ef",
+    "Providers/Ruleset/china-cloud.yaml": "0d4889fd99814c64aa8da6b8be0910d248be8ba680abcea9805433c935522921",
     "Providers/Ruleset/china-direct-curated.yaml": "4af1d55180c48411cbed87a79c97bcde1476d2cb03120c0b5b07a87feebf7dda",
     "Providers/Ruleset/china-geoip-direct.yaml": "09e1eded090516a2b76d42d89721996b6eb1854895d11122af8bdf2ff12c536c",
     "Providers/Ruleset/china-media-late-recovery.yaml": "dc5f0d045b12e93c1a81ade4cdba7d875a4521437ba4c943b625d87d9f5b809e",
@@ -86,7 +86,7 @@
     "Ruleset/bilibili-hmt-late-recovery.list": "eff859235d09e9c3e4ff10e09765be69cc2993b69fbf506c9dbbfea30b3cdb87",
     "Ruleset/bilibili-hmt.list": "fd0e7dc9068c229278fd8892546bb8621de0759378a1f25fe6d2ae79e674cc1b",
     "Ruleset/bilibili-sea.list": "725d07cc71ff090c72a046c0b8b6e139695dadbb70f942038feac1d6642d8604",
-    "Ruleset/china-cloud.list": "8aa2383a8c30bc0af91015921c5bd69e0c128d4c464c60c7bcccff2eee11feab",
+    "Ruleset/china-cloud.list": "765b39f11141351b246e3bfe2502bc9fadd61e7b76675b65c41f0eb5e2d3bae8",
     "Ruleset/china-direct-curated.list": "a16bec25dff939b2d4150582ff245c27ee89edf91ece6797a13bc099acabb427",
     "Ruleset/china-geoip-direct.list": "17b98929dcf837281a498702a4723b323be1b206f9563c9f6cf9d4e3db9a02df",
     "Ruleset/china-media-late-recovery.list": "62bd0b2fd47fc40b1b860318edd12845ce6a7fc15a55ae3efa4b77f6b9a6980a",
@@ -140,7 +140,7 @@
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "3ef9926c69d0104ed8a600387e0a4405cff057478f6626d258df4cc483621893",
+    "analysis.json": "58ea0c73b31787aff15b340fcb3fb351387e0e06b5aae8832d8da86e5b797a34",
     "config/ekko-rules.ini": "63fe0315873f26f9da3d8d7be917db55512057f61229e74989f72c3ef1f05c6d"
   }
 }

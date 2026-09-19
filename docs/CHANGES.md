@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-053 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-054 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1223,3 +1223,13 @@ The distinction between an input and a verdict is now written into `docs/SELF-OW
 ### `docs/PROVENANCE.md` still described the import as shipping
 
 The advertising section stated that the curated segment sits after the pinned import, that the import's ledger and `emitted_sha256` are untouched, and that the attribution obligation is unaffected — all three deleted by ER-047 in the same change. It also cited the deleted `advertising-routing-ledger.json` and the pre-ER-047 count of 71 cloud captures. Corrected.
+
+## ER-054 — Cloudflare's China network was missing its own domain
+
+**Type:** coverage; 1 rule added
+
+`china-cloud` carries the Cloudflare China infrastructure family — `cloudflare-cn.com`, `cloudflarechina.cn`, `cloudflarecn.net`, `cloudflareinsights-cn.com`, `cf-ns.com` and the rest — and not `cloudflare.cn`, the domain the service is actually named after. A mainland user reached it through the proxy while every sibling root went direct.
+
+It joins its family in `china-cloud` rather than a mainland-direct segment, which is both where it belongs and what the evidence permits. The APNIC probe cannot adjudicate it: resolving `cloudflare.cn` from outside the mainland returns `223.26.56.104`, a Hong Kong address, because the China network answers differently depending on where the question is asked. That is a limit of this repository's probe, not a finding about the domain, and it is why ER-023's reviewed Cloudflare China roots live in `china-cloud` on review rather than on a probe verdict.
+
+First-match coverage is unchanged.

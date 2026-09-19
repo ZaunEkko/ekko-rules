@@ -6,7 +6,7 @@
         "proxy_group_count": 40,
         "ruleset_count": 62,
         "segment_count": 63,
-        "rule_count": 9923,
+        "rule_count": 9924,
         "destination_ip_rule_count": 206
       },
       "quality": {
@@ -839,21 +839,21 @@
           "index": 57,
           "manifest_order": 57,
           "start": 9234,
-          "end": 9394,
-          "count": 161,
+          "end": 9395,
+          "count": 162,
           "target": "☁️ 国内云服务",
           "slug": "china-cloud",
           "scope": "core",
           "rule_types": {
-            "DOMAIN-SUFFIX": 159,
-            "DOMAIN": 2
+            "DOMAIN": 2,
+            "DOMAIN-SUFFIX": 160
           }
         },
         {
           "index": 58,
           "manifest_order": 58,
-          "start": 9395,
-          "end": 9442,
+          "start": 9396,
+          "end": 9443,
           "count": 48,
           "target": "🧩 微软服务",
           "slug": "microsoft",
@@ -865,8 +865,8 @@
         {
           "index": 59,
           "manifest_order": 59,
-          "start": 9443,
-          "end": 9875,
+          "start": 9444,
+          "end": 9876,
           "count": 433,
           "target": "DIRECT",
           "slug": "microsoft-late-recovery",
@@ -879,8 +879,8 @@
         {
           "index": 60,
           "manifest_order": 60,
-          "start": 9876,
-          "end": 9912,
+          "start": 9877,
+          "end": 9913,
           "count": 37,
           "target": "🔎 Google",
           "slug": "google",
@@ -895,8 +895,8 @@
         {
           "index": 61,
           "manifest_order": 61,
-          "start": 9913,
-          "end": 9921,
+          "start": 9914,
+          "end": 9922,
           "count": 9,
           "target": "🌏 国内网站",
           "slug": "china-direct-curated",
@@ -908,8 +908,8 @@
         {
           "index": 62,
           "manifest_order": 62,
-          "start": 9922,
-          "end": 9922,
+          "start": 9923,
+          "end": 9923,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -921,8 +921,8 @@
         {
           "index": 63,
           "manifest_order": 63,
-          "start": 9923,
-          "end": 9923,
+          "start": 9924,
+          "end": 9924,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",
