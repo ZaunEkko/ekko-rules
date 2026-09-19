@@ -376,17 +376,23 @@ segments:
   scope: core
 - order: 61
   kind: ruleset
+  slug: overseas-shopping
+  target: 🛒 海外购物
+  source: rules/overseas-shopping.list
+  scope: core
+- order: 62
+  kind: ruleset
   slug: china-direct-curated
   target: 🌏 国内网站
   source: rules/china-direct-curated.list
   scope: core
-- order: 62
+- order: 63
   kind: ruleset
   slug: china-geoip-direct
   target: DIRECT
   source: rules/china-geoip-direct.list
   scope: core
-- order: 63
+- order: 64
   kind: terminal
   slug: final
   target: 🐟 漏网之鱼

@@ -5,7 +5,7 @@
   "self": "manifest.json",
   "self_hash_included": false,
   "files": {
-    "Mihomo/reversed-template.yaml": "1a887b43b2e7d1c7985dd1b366173651b2034cc70a8b9eeab1c15ff8406a9330",
+    "Mihomo/reversed-template.yaml": "27a2415538374e985b1f2de13b2fad7edfd1b7612b7b08b52fc9e3cbfb3f92ef",
     "Providers/Ruleset/advertising-curated.yaml": "b6f1ad53648416cd1851ff8535718052b8942f12289c30a3ad8d54312e58218f",
     "Providers/Ruleset/ai-developer.yaml": "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
     "Providers/Ruleset/ai-platforms.yaml": "2af6df159b121a558ddf74cfcb0321646d3388d0d2153c34d2c6e61fc50b1d6d",
@@ -18,7 +18,7 @@
     "Providers/Ruleset/bilibili-hmt-late-recovery.yaml": "a5e98020f876ac31f51f9099670fb0e9cbfb78ed592ad6cf18ad6294e0ab0a02",
     "Providers/Ruleset/bilibili-hmt.yaml": "bb7182ffda04655b893fcf1520cacadc9a5fbfe1bf45a02f3c48b6f0cd0340e1",
     "Providers/Ruleset/bilibili-sea.yaml": "7d7e69c968b083eddb90a026e6df3169c8f71ab9ebc9d4b2b206638a1253bbb1",
-    "Providers/Ruleset/china-cloud.yaml": "0d4889fd99814c64aa8da6b8be0910d248be8ba680abcea9805433c935522921",
+    "Providers/Ruleset/china-cloud.yaml": "284ae09ef4a3ff8bbbd0a4289ef49c425a5cb62b336abb0bd2535cf9c9730eea",
     "Providers/Ruleset/china-direct-curated.yaml": "4af1d55180c48411cbed87a79c97bcde1476d2cb03120c0b5b07a87feebf7dda",
     "Providers/Ruleset/china-geoip-direct.yaml": "09e1eded090516a2b76d42d89721996b6eb1854895d11122af8bdf2ff12c536c",
     "Providers/Ruleset/china-media-late-recovery.yaml": "dc5f0d045b12e93c1a81ade4cdba7d875a4521437ba4c943b625d87d9f5b809e",
@@ -57,6 +57,7 @@
     "Providers/Ruleset/onedrive.yaml": "402e08c9c0bf57fa829a3ab35f90997e02d33a640b5bc53e4c26507766f0cd31",
     "Providers/Ruleset/openai.yaml": "095c66db4527b6491c3bc44d0751397d3cf9d57d0177d1f5767581930e9aaf76",
     "Providers/Ruleset/overseas-cloud.yaml": "6620e395fb3c900b981c98793e89bf23d05afd2455a9a9e377e86ed3fac75925",
+    "Providers/Ruleset/overseas-shopping.yaml": "ce59632436bd66e8217ffb5a0d89518eae6a893600a4dfa4113f3858627d853d",
     "Providers/Ruleset/prime-video.yaml": "5d85e397c9176efc22e439d1cb3dfa469c0124b878061fd3a80d2718957c89e2",
     "Providers/Ruleset/private.yaml": "345a5a85d502271b5465c995c2298cd024a9dedb18a0c9f012c5ad22c74c6220",
     "Providers/Ruleset/qobuz.yaml": "529926626d0b869314a5e706b14413615d122cc5e203970a06438b8d20860f09",
@@ -72,8 +73,8 @@
     "Providers/Ruleset/whatsapp.yaml": "7aa985f3782ac4ab18537800e2856bd9d0e598d7b7a43df07a202e3f59aa857f",
     "Providers/Ruleset/xai.yaml": "c528ddafca25108e32bca53a4de650b0ba9a96b20667ab02fc5b95a774cf3eb6",
     "Providers/Ruleset/youtube.yaml": "d214401b85f98da6f5168ca1f16420c9c0a753f4538b109a4ff844d5e8b38e90",
-    "README.md": "e89ccc78dcd24ee0e6684aeaa52bba3f2c91c6fdfadceda37437061f22cec979",
-    "README_EN.md": "c71d2c5283d9c2eecb8bf661ffc0e4cedab8ea374340fe5b416117a3c6ee3c58",
+    "README.md": "28d2ddf63f491141c316ba0f031601ca93776ea40f3e71597205212c677d9f64",
+    "README_EN.md": "88ec3f9dd1f43bb94bec96275e5c2f1d7d15bb96db9af44d7db61ba9b8ce8725",
     "Ruleset/advertising-curated.list": "25ab282e4c5fc31352c89e1a7a7dd79eb05c200cfed620cd17b54c7a7f4e8724",
     "Ruleset/ai-developer.list": "064c45c6b25dfd29ce123eb9147f4e46466e355462f34dde01fcec98ce5e7934",
     "Ruleset/ai-platforms.list": "6e30f1d18e26b41785a0046b6813f57fd2ae1f829773534aec2ed9ee43346311",
@@ -86,7 +87,7 @@
     "Ruleset/bilibili-hmt-late-recovery.list": "eff859235d09e9c3e4ff10e09765be69cc2993b69fbf506c9dbbfea30b3cdb87",
     "Ruleset/bilibili-hmt.list": "fd0e7dc9068c229278fd8892546bb8621de0759378a1f25fe6d2ae79e674cc1b",
     "Ruleset/bilibili-sea.list": "725d07cc71ff090c72a046c0b8b6e139695dadbb70f942038feac1d6642d8604",
-    "Ruleset/china-cloud.list": "765b39f11141351b246e3bfe2502bc9fadd61e7b76675b65c41f0eb5e2d3bae8",
+    "Ruleset/china-cloud.list": "aacfa148ee92f6236cef8f5ef69dd33a377c1ebf433d969c893399b0b25edabf",
     "Ruleset/china-direct-curated.list": "a16bec25dff939b2d4150582ff245c27ee89edf91ece6797a13bc099acabb427",
     "Ruleset/china-geoip-direct.list": "17b98929dcf837281a498702a4723b323be1b206f9563c9f6cf9d4e3db9a02df",
     "Ruleset/china-media-late-recovery.list": "62bd0b2fd47fc40b1b860318edd12845ce6a7fc15a55ae3efa4b77f6b9a6980a",
@@ -125,6 +126,7 @@
     "Ruleset/onedrive.list": "70b2124935f9ed33e71bd6b2f6ee8ebb255fc0c31e1c9daea67312f42ed2e551",
     "Ruleset/openai.list": "c9eb45d2d7db0153301e3dbebe7a971e8074fc442d2cd2686038d1dff4fb1985",
     "Ruleset/overseas-cloud.list": "e58b2e8b2bf6415523deddc7527670c4fb9c658f7f1198ccf3bd510a2f74e355",
+    "Ruleset/overseas-shopping.list": "5beb8fc218f1d09d651a44b63678bd659368c2e2b70fd8def16bc425f7b84592",
     "Ruleset/prime-video.list": "b47f4c0600f095cf0c022b5ee45e5b4de6e4237316a7d1e4f77afb675fd7e48e",
     "Ruleset/private.list": "35a79b8d460c669ba1426809a754d89ee6d17ca80c35ed0802c7d24990268bd2",
     "Ruleset/qobuz.list": "d52e027f2ccf3ce1e4ee0b8a35b1be5f26cd8ae0bcb5df44ca9381f9a53ab37d",
@@ -140,7 +142,7 @@
     "Ruleset/whatsapp.list": "2cb511c80caf7632a15d9638256b78af044821fe2a43d159d62f3664587b0b13",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "58ea0c73b31787aff15b340fcb3fb351387e0e06b5aae8832d8da86e5b797a34",
-    "config/ekko-rules.ini": "63fe0315873f26f9da3d8d7be917db55512057f61229e74989f72c3ef1f05c6d"
+    "analysis.json": "f239614dd74d7adc1ed6840696be52dfc8f6514903a0f1aaedcb886c73dc0c2e",
+    "config/ekko-rules.ini": "d12ae087682a6e4de3c1b96374ad919d4dd2a03b3b3e97a192c2e81ebaf834a5"
   }
 }

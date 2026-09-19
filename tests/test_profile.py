@@ -146,12 +146,12 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 63)
-        self.assertEqual(len(self.sources.rule_segments), 62)
-        self.assertEqual(len(self.sources.proxy_groups), 40)
-        self.assertEqual(len(self.sources.segments_for("core")), 63)
-        self.assertEqual(len(self.sources.rule_segments_for("core")), 62)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 40)
+        self.assertEqual(len(self.sources.segments), 64)
+        self.assertEqual(len(self.sources.rule_segments), 63)
+        self.assertEqual(len(self.sources.proxy_groups), 41)
+        self.assertEqual(len(self.sources.segments_for("core")), 64)
+        self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 41)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -198,6 +198,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🎮 游戏平台",
                 "🎮 游戏下载",
                 "📪 邮件服务",
+                "🛒 海外购物",
                 "🔞 NSFW",
                 "🌏 国内网站",
                 "🐟 漏网之鱼",
@@ -2322,8 +2323,8 @@ class GenerationTests(unittest.TestCase):
                     self.assertNotIn(f"/{alias_slug}.list", active_text)
                     self.assertNotIn(f"/{alias_slug}.yaml", active_text)
                     self.assertNotIn(f"RULE-SET,{alias_slug},", active_text)
-        self.assertEqual(len(self.sources.rule_segments), 62)
-        self.assertEqual(len(self.sources.segments), 63)
+        self.assertEqual(len(self.sources.rule_segments), 63)
+        self.assertEqual(len(self.sources.segments), 64)
 
     def test_stale_file_is_detected_by_check_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

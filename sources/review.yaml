@@ -767,3 +767,17 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: A mainland user reached cloudflare.cn through the proxy while cloudflare-cn.com, cloudflarechina.cn, cloudflarecn.net, cloudflareinsights-cn.com and cf-ns.com all went direct. It joins its family in china-cloud, which is both where it belongs and what the evidence permits - the APNIC probe cannot adjudicate it, because resolving cloudflare.cn from outside the mainland returns a Hong Kong address while the China network answers differently depending on where the question is asked. That is a limit of the probe rather than a finding about the domain, and it is why ER-023's reviewed Cloudflare China roots sit in china-cloud on review rather than on a probe verdict.
+- id: overseas-shopping-policy
+  status: accepted
+  scope: routing-policy
+  summary: A retailer that needs its own exit had nowhere to go but the fallback, so overseas shopping becomes its own segment and group.
+  evidence:
+  - sources/rules/overseas-shopping.list
+  - sources/proxy-groups.yaml
+  - sources/manifest.yaml
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Takealot answers a proxy exit with a Cloudflare interstitial that other sites accept, which is IP reputation rather than a country block, and reaching it meant changing the fallback for everything. The new group holds 76 roots - regional Amazon storefronts, eBay, Etsy, Japanese shops including DLsite, Rakuten, ZOZO, Suruga-ya, Mandarake and AmiAmi, the forwarding services a cross-border order passes through, and regional retailers such as Gmarket, SSG and Takealot - admitted because what these sites display, sell and challenge depends on the exit, not because the category was untidy. The segment runs after every other service segment so amazon.com cannot take aws.amazon.com, console.aws.amazon.com or media-amazon.com, all verified. lazada.com, lazada.sg, shopee.com and shopee.sg were dropped - the Lazada family is already direct in china-web, the duplicate registered as a dead rule that the coverage gate caught, and splitting a brand whose mainland entry is deliberately direct across two policies is worse than leaving it whole. cloudflareperf.com joins china-cloud with the Cloudflare China family on an APNIC-confirmed mainland apex.

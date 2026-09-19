@@ -129,6 +129,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **国内基础服务**：验证码、推送、国内代码与模型社区、协作文档、电子认证、主流教学平台以及明确的国区智能设备和车联网入口复用默认直连的 `🌏 国内网站`；只保留官方根域，国际共用设备云不做宽泛直连；
 - **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，除代码托管与语言包生态外，还覆盖 Linear、Notion、Slack、Atlassian、Postman、Sentry、Vercel、Supabase、主流 CI/CD、可观测平台、开发数据库和在线 IDE 的官网、控制台、API 与必要资源链路；用户在意代理流量时可临时切到 `DIRECT`；通用 CDN、对象存储及用户托管站点仍不纳入；
 - **云基础设施**：`☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud，以及国内厂商的海外区域端点；广告和具体业务规则仍优先；
+- **海外购物**：`🛒 海外购物` 默认 `♻️ 手动切换`，覆盖各区域亚马逊、eBay、Etsy 等欧美零售，DLsite、乐天、ZOZO、骏河屋、Mandarake、AmiAmi 等日本店铺，Buyee、ZenMarket、tenso 等转运代购，以及 Gmarket、SSG、Takealot 等地区电商。这类站点的店面内容、可购范围与人机验证都取决于出口 IP，独立成组便于单独挑节点；已在别处归类的不重复收录——阿里系的 Lazada 与 Shopee 大陆入口保持直连，Coupang 仍在 `🎬 韩国媒体`，`aws.amazon.com` 与 Prime Video 图床各自留在云与流媒体分组；
 - **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认使用 `REJECT` 拦截，仍可手动改为节点或 `DIRECT`；
 - **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。
 

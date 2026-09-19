@@ -305,6 +305,14 @@ groups:
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
 - order: 38
+  name: 🛒 海外购物
+  type: select
+  scope: core
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 39
   name: 🔞 NSFW
   type: select
   scope: core
@@ -313,7 +321,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 39
+- order: 40
   name: 🌏 国内网站
   type: select
   scope: core
@@ -321,7 +329,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 40
+- order: 41
   name: 🐟 漏网之鱼
   type: select
   scope: core

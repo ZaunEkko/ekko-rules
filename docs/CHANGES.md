@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-054 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-055 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1233,3 +1233,23 @@ The advertising section stated that the curated segment sits after the pinned im
 It joins its family in `china-cloud` rather than a mainland-direct segment, which is both where it belongs and what the evidence permits. The APNIC probe cannot adjudicate it: resolving `cloudflare.cn` from outside the mainland returns `223.26.56.104`, a Hong Kong address, because the China network answers differently depending on where the question is asked. That is a limit of this repository's probe, not a finding about the domain, and it is why ER-023's reviewed Cloudflare China roots live in `china-cloud` on review rather than on a probe verdict.
 
 First-match coverage is unchanged.
+
+## ER-055 — Overseas shopping becomes its own policy
+
+**Type:** product shape; 1 segment and 1 group added, 76 rules
+
+Takealot returns `403` with a Cloudflare interstitial from a proxy exit that other sites accept. That is not a country block — it is IP reputation, and the fix is a node the challenge does not flag. Reaching it meant changing `🐟 漏网之鱼` for everything, because a retailer that needs its own exit had nowhere else to go.
+
+`🛒 海外购物` is that place. 76 roots: the regional Amazon storefronts, eBay and Etsy, Japanese shops including DLsite, Rakuten, ZOZO, Suruga-ya, Mandarake and AmiAmi, the forwarding services a cross-border order actually passes through — Buyee, ZenMarket, tenso — and regional retailers such as Gmarket, SSG, Musinsa and Takealot. What these sites display, what they will sell, and whether they challenge at all depends on which exit reaches them, which is the criterion this repository uses for a separate group rather than category tidiness.
+
+### Placement is what keeps it safe
+
+The segment runs at position 61, after every other service segment, so a broad root cannot take traffic that already has a home. `amazon.com` is the case that needs it: `aws.amazon.com` and `console.aws.amazon.com` stay in overseas cloud and `media-amazon.com` stays with Prime Video, because all three match earlier. Verified, along with Coupang staying under Korean media.
+
+Four candidates were dropped rather than shipped. `lazada.com` is already in `china-web` with the rest of Alibaba's Lazada family, and adding it here created a dead rule the coverage gate caught — first-match unreachable rose from 54 to 55 and is back at 54. `lazada.sg`, `shopee.com` and `shopee.sg` went with it: splitting a brand whose mainland entry is deliberately direct across two policies is worse than leaving it whole.
+
+### Cloudflare's performance domain
+
+`cloudflareperf.com` joins `china-cloud` alongside the rest of the Cloudflare China family. Its apex is APNIC-confirmed mainland-hosted, unlike `cloudflare.cn` in ER-054, whose verdict the probe could not reach.
+
+The product goes to 63 rule files, 64 segments, 41 proxy groups and 10,001 rules including FINAL. First-match coverage is unchanged at 54 / 13 / 41.

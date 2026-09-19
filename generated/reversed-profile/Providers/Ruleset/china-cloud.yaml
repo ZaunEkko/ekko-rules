@@ -48,6 +48,7 @@ payload:
 - DOMAIN-SUFFIX,cloudflarecn.net
 - DOMAIN-SUFFIX,cloudflareglobal.net
 - DOMAIN-SUFFIX,cloudflareinsights-cn.com
+- DOMAIN-SUFFIX,cloudflareperf.com
 - DOMAIN-SUFFIX,cloudflareprod.com
 - DOMAIN-SUFFIX,cloudflarestaging.com
 - DOMAIN-SUFFIX,cloudflarestoragegw.com
