@@ -17,7 +17,6 @@ DOMAIN,root-zrh-01.zerotier.com
 DOMAIN,root-alice-sfo-01.zerotier.com
 PROCESS-NAME,Moonlight.exe
 PROCESS-NAME,Moonlight
-DOMAIN,moonlight-stream.org
 DOMAIN,qt.conntest.moonlight-stream.org
 PROCESS-NAME,sunshine.exe
 PROCESS-NAME,sunshine

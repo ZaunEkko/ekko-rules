@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-056 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1288,3 +1288,86 @@ That rationale needed somewhere to live. `cn-review-admitted-2026-09-19.json` ho
 `lenovo.com.cn` was examined and not added: it answers from Akamai's global edge even for a mainland client, so a direct rule would not shorten the path. `ant.design`, `vivo.com`, `honor.com` and `lenovo.com` are global sites and stay on the proxy.
 
 First-match coverage is unchanged at 54 / 13 / 41.
+## ER-057 — byteperf is not mainland, and the exemption it justified is withdrawn
+
+**Type:** correction; 1 rule removed, 1 evidence category deleted
+
+ER-056 admitted `byteperf.com` on a routing rationale after its own measurement said the endpoints answer from outside the mainland. The split-tunnel test that surfaced them labels those three rows 海外 and 国际, and with the rule shipping they reported a Hangzhou address — the product was forcing overseas measurement endpoints down the domestic path.
+
+The measurement was right and the rationale was wrong. `perfops1` through `perfops3.byteperf.com` resolve to `35.219.10.74`, `95.40.53.40` and `47.84.187.31` for a mainland client because ByteDance spreads them across regions on purpose; that is the finding, and overriding it with an argument about what a measurement *ought* to traverse was reasoning past the evidence. The rule is removed. `byte-test.com` stays: it resolves into mainland space and was admitted on the APNIC route.
+
+`cn-review-admitted-2026-09-19.json` is deleted with it. That category was created in ER-056 to hold exactly this one root, and a blind-spot patch with nothing in it is scaffolding, not a route. `MainlandEvidenceContractTests` is back to three evidence routes. If a future root genuinely needs review admission, the file comes back carrying that root's own justification rather than being kept warm for it.
+
+## ER-058 — Remote streaming is two jobs, and one of them needs a proxy
+
+**Type:** product shape; 1 segment and 1 group added, funded by consolidation
+
+`🖥️ 远程串流` was DIRECT-first and held `DOMAIN-SUFFIX,tailscale.com`, so a browser opening the Tailscale admin console took the direct path and never arrived. The obvious fix — moving the suffix to a proxy policy — is wrong, and was reported to be wrong from the field: the DERP relays under that same suffix carry the streaming payload, and routing them through a proxy pushes a remote desktop session across the tunnel. Both facts hold at once because one suffix covers two jobs.
+
+The policy is now two:
+
+| Group | Default | Holds |
+|---|---|---|
+| `🖥️ 远程串流后台` | `♻️ 手动切换` | 19 console and website hosts across Tailscale, ZeroTier, NetBird, Parsec, RustDesk, AnyDesk, TeamViewer and Moonlight |
+| `🖥️ 远程串流流量` | `DIRECT` | 65 data-plane rules: DERP relays, control planes, root servers, signalling, relay endpoints and the process names |
+
+The admin segment runs immediately before the data segment, so an exact console host wins while the vendor suffix beneath it keeps carrying the payload direct. `login.tailscale.com` reaches the console policy; `derp1a.tailscale.com`, `controlplane.tailscale.com`, `abc.ts.net`, `root.zerotier.com`, `kessel-ws.parsec.app`, `rs-ny.rustdesk.com`, `net.anydesk.com`, `master1.teamviewer.com`, `signal.netbird.io` and `remotedesktop.google.com` all stay on the data policy. Verified per host.
+
+Most vendors needed no rule change. Their entries were already precise data-plane hosts and their consoles were reaching the proxy through the fallback; naming them here moves them onto a policy that can be pointed at a working node instead of whatever the fallback happens to hold.
+
+### Funding
+
+The product sits at the Subconverter 64-segment ceiling, so the new segment is paid for the way ER-023 established. `xai` is concatenated into `ai-platforms`, three matchers appended without reordering. Routing cannot change, because every segment in that family targets `🧲 海外 AI`. The retired Raw URL survives as a generated-only compatibility copy of the `[22, 25)` slice behind frozen list and provider hashes, exactly as `hbo-max`, `spotify-2`, `onedrive` and `icloud` do.
+
+## ER-059 — A session split across policies is the defect, not the exit it picks
+
+**Type:** routing correctness; PlayStation, psnine and Honkai: Star Rail
+
+Three reports this round were one defect wearing different clothes: a single page or a single game session reaching through two policies at once.
+
+### PlayStation web images
+
+`psnine.com` rendered with every cover image broken. `DOMAIN-SUFFIX,dl.playstation.net` sat in `game-download`, which is DIRECT-first so that a game download does not spend proxy bandwidth — but `psnobj.prod.dl.playstation.net` and `psn-rsc.prod.dl.playstation.net` are not downloads. They are the object CDN a web page loads cover art from, and direct access to them times out.
+
+The suffix is replaced by the endpoints that actually carry game content: `DOMAIN-SUFFIX,ww.prod.dl.playstation.net` covers the `gs2` family, and `zeus` and `ares` are named exactly. Everything else under the parent falls through to `game-platform` with the rest of PSN's web surface. `gs2.ww.prod.dl.playstation.net` answers from `111.172.236.x`, a China Telecom address, so the mainland download path is preserved.
+
+`psnine.com` itself is added to `china-web`. It is APNIC-confirmed mainland at `183.134.11.39` and was reaching the proxy fallback.
+
+### Honkai: Star Rail
+
+The game reported proxy use. Its dispatch and login domains reached `🎮 游戏平台` while the game server, which dispatch hands out as a bare address, fell to the fallback — two exits for one session, and the exit the account logged in from did not match the one the session arrived on.
+
+`starrails.com` was the larger half of the split: the whole suffix sat in `game-download`, so the dispatch call took the download policy while the server connection took another. `autopatchos.starrails.com` is the client download and stays there; the rest of the domain joins the platform policy. `IP-CIDR,8.209.192.0/18,no-resolve` covers the gateway pool, which RDAP places in Alibaba Cloud Japan where the Asia servers rotate.
+
+A `/32` on the observed address would have gone stale the first time the pool moved, and that failure is not a slow route — it is the detection firing again. Under fake-ip the breadth costs less than it reads: `no-resolve` means the rule only ever sees connections made to a bare address, because anything resolved through a domain carries a `198.18.0.0/16` destination instead. Dispatch-assigned game servers are exactly that case.
+
+Verified end to end: dispatch for Asia, USA and Europe, the global dispatch, the login SDK, static resources, the account API, the website, the observed gateway and another address in the same block all reach `🎮 游戏平台`, while the client download stays on `🎮 游戏下载`.
+
+First-match coverage is unchanged at 54 / 13 / 41 across all three.
+
+## ER-060 — The same routing, in ten policy groups
+
+**Type:** product shape; a second build, no rule changes
+
+Forty-two policy groups exist so that each kind of traffic can be pointed at its own node. For anyone who does not want that, the same design is a screen of dropdowns to work through before the profile is usable. This publishes a second build that folds them, and publishes it as a build rather than a variant: the rules are the same file, the segments are the same 64, and only the target a segment names changes.
+
+| | Full | Lite |
+|---|---|---|
+| Policy groups | 42 | 10 |
+| Routing segments | 64 | 64 |
+| Segments retargeted | — | 47 |
+
+The ten kept are `♻️ 手动切换`, `🌏 国内网站`, `🎬 流媒体`, `🧲 海外 AI`, `🎮 游戏平台`, `🎮 游戏下载`, `🚀 国外服务`, `🛑 广告拦截`, `🔞 NSFW` and `🐟 漏网之鱼`. They were not chosen by count. A group survives folding when someone plausibly wants to point it somewhere different from everything else around it: mainland and overseas are the first split, downloads are metered differently from play, AI is the one overseas category people routinely give a separate node, and the two REJECT groups are decisions rather than destinations.
+
+### The claim that had to be proved
+
+Folding groups is only safe if it changes nothing about what traffic does, and that is a claim about every segment, not about the ones that were inspected. `Segment.lite_target` and `target_for(product)` make the fold a per-segment retarget rather than an edit, and `LiteProductTests` then compares the effective action of all 64 segments across both products: a target is followed to its group's leading member, and a group leading with `DIRECT` or `REJECT` counts as that, anything else as a proxy. Both products give 17 `DIRECT`, 45 `PROXY`, 2 `REJECT`.
+
+A test that compares two things that cannot differ proves nothing, so it was checked against an injected fault: retargeting `游戏下载` to `国外服务` — a fold that looks reasonable and is wrong, because a metered download would start spending proxy bandwidth — fails it.
+
+### What it costs
+
+Granularity, and only granularity. In the full build Netflix can move to another node without touching YouTube; in the lite build they share `🎬 流媒体` and move together. That is the trade, and it is stated in both READMEs next to the number rather than buried.
+
+Generation loops over both products throughout: `PRODUCT_CONFIG_NAMES` and `PRODUCT_TEMPLATE_NAMES` give `ekko-rules-lite.ini` and `reversed-template-lite.yaml` beside the originals, `validate_generated` checks the pair, and the self-host sync rewrites both. The converter lists the full build first and the lite build second, ahead of the third-party presets.
+

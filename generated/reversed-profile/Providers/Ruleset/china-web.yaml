@@ -669,7 +669,6 @@ payload:
 - DOMAIN-SUFFIX,bytednsdoc.com
 - DOMAIN-SUFFIX,bytegoofy.com
 - DOMAIN-SUFFIX,byteimg.com
-- DOMAIN-SUFFIX,byteperf.com
 - DOMAIN-SUFFIX,bytescm.com
 - DOMAIN-SUFFIX,bytetos.com
 - DOMAIN-SUFFIX,bzcm.net
@@ -2877,6 +2876,7 @@ payload:
 - DOMAIN-SUFFIX,przwt.com
 - DOMAIN-SUFFIX,psbc.com
 - DOMAIN-SUFFIX,pscloud.info
+- DOMAIN-SUFFIX,psnine.com
 - DOMAIN-SUFFIX,pstatp.com
 - DOMAIN-SUFFIX,ptxw.com
 - DOMAIN-SUFFIX,pubone.net

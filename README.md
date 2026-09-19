@@ -96,14 +96,28 @@ Windows 首次部署可以改用 `setup.cmd`，它顺带安装一个随登录运
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Mihomo/reversed-template.yaml
 ```
 
+精简版同样有一份：
+
+```text
+https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Mihomo/reversed-template-lite.yaml
+```
+
 下载后把 `PUT_YOUR_SUBSCRIPTION_URL_HERE` 换成自己的订阅地址，再由 Clash Verge Rev 等 Mihomo 客户端加载。模板只提供代理 Provider、策略组、Rule Provider 和规则，不接管端口、DNS、TUN、控制器或其他客户端设置。
 
 ### 配合其它 Subconverter 前端
 
-规则本身是公开的，也可以在任何支持自定义远程配置的 Subconverter 前端里使用：「生成类型」选 `Clash`，「远程配置」填
+规则本身是公开的，也可以在任何支持自定义远程配置的 Subconverter 前端里使用：「生成类型」选 `Clash`，「远程配置」填下面两条之一。
+
+完整版，42 个策略组：
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
+```
+
+精简版，10 个策略组，分流行为与完整版完全一致：
+
+```text
+https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules-lite.ini
 ```
 
 > **转换后端能看到完整的真实订阅地址，包括其中的 token。** 这是所有在线转换的共性：后端必须拿到完整地址才能拉取节点。Ekko Rules 只提供公开规则，不接收也看不到任何人提交给别处的订阅；只自托管前端而仍调用公共后端，同样藏不住这个地址。介意这一点就用上面的两种形态之一。不要在 Issue、PR、日志或公开聊天里粘贴带 token 的订阅链接。
@@ -125,7 +139,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **区域媒体**：美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；已核验的量子、非凡、暴风、索尼、百度、闪电、火狐、速博、红牛、最大、iKun 等第三方视频接口及其专用播放域名进入默认直连的 `🌏 国内流媒体`，避免播放流量落入代理兜底；
 - **游戏分流**：中国大陆游戏平台、登录、社区和语音进入默认直连的 `🌏 国内网站`，专用下载端点进入默认直连的 `🎮 游戏下载`；`🎮 游戏平台` 仅承载海外平台并默认使用 `♻️ 手动切换`；
 - **社交与通信**：社交媒体、聊天软件、Discord 和邮件分别处理；
-- **远程串流与实时通信**：`🖥️ 远程串流` 默认 `DIRECT`，除 Tailscale、ZeroTier、Moonlight、RustDesk、AnyDesk、TeamViewer 等远程访问链路外，也覆盖 ToDesk、向日葵、RayLink 及主流 RTC/IM 基础服务，避免远程桌面、语音或实时数据绕行代理；
+- **远程串流与实时通信**：拆成两组。`🖥️ 远程串流流量` 默认 `DIRECT`，承载真正的数据面——Tailscale 的 DERP 中继与控制面、ZeroTier 根服务器、Parsec 与 RustDesk 的会话端点、NetBird 信令与中继、Chrome 远程桌面，以及 ToDesk、向日葵、RayLink 和主流 RTC/IM 基础服务，避免远程桌面、语音或实时数据绕行代理；`🖥️ 远程串流后台` 默认 `♻️ 手动切换`，只收各家的管理后台与官网(Tailscale、ZeroTier、NetBird、Parsec、RustDesk、AnyDesk、TeamViewer、Moonlight)。分开的原因是一个厂商后缀同时盖着两件事：控制台在大陆直连打不开，而同后缀下的中继却承载着串流负载——任何一个策略单独套上去都是错的；
 - **国内基础服务**：验证码、推送、国内代码与模型社区、协作文档、电子认证、主流教学平台以及明确的国区智能设备和车联网入口复用默认直连的 `🌏 国内网站`；只保留官方根域，国际共用设备云不做宽泛直连；
 - **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，除代码托管与语言包生态外，还覆盖 Linear、Notion、Slack、Atlassian、Postman、Sentry、Vercel、Supabase、主流 CI/CD、可观测平台、开发数据库和在线 IDE 的官网、控制台、API 与必要资源链路；用户在意代理流量时可临时切到 `DIRECT`；通用 CDN、对象存储及用户托管站点仍不纳入；
 - **云基础设施**：`☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud，以及国内厂商的海外区域端点；广告和具体业务规则仍优先；
@@ -134,6 +148,23 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。
 
 `🛑 广告拦截` 与 `🔞 NSFW` 默认选择 `REJECT`；所有策略组均可由用户自行切换，不启用自动测速。若广告拦截影响个别应用的登录、播放、购买、通知或遥测，可临时把 `🛑 广告拦截` 改为 `DIRECT` 或其他策略。
+
+## 精简版：同样的分流，10 个策略组
+
+42 个策略组是为了能分别挑节点。用不到这种粒度的人，面对的就是一屏需要逐个确认的下拉框。精简版把这些合并掉：
+
+| | 完整版 | 精简版 |
+|---|---|---|
+| 策略组 | 42 | 10 |
+| 分流规则 | 64 段 | 同样 64 段 |
+
+保留下来的 10 个是 `♻️ 手动切换`、`🌏 国内网站`、`🎬 流媒体`、`🧲 海外 AI`、`🎮 游戏平台`、`🎮 游戏下载`、`🚀 国外服务`、`🛑 广告拦截`、`🔞 NSFW` 和 `🐟 漏网之鱼`。
+
+**行为没有变。** 精简不是删规则，是把 47 个分段改指到合并后的策略组：原先各自成组、默认都走代理的那些——OpenAI、Claude、各家流媒体、社交、开发服务、海外云、海外购物等——统一进 `🚀 国外服务` 或 `🎬 流媒体`；原先默认直连的国内分组统一进 `🌏 国内网站`。每一段规则该直连的仍然直连、该代理的仍然代理，命中顺序一条没动。这一点由测试守着：两套产品逐段比对最终动作，17 条 `DIRECT`、45 条 `PROXY`、2 条 `REJECT`，完全一致。
+
+**代价是细粒度。** 完整版里可以只给 Netflix 换一个节点而不动 YouTube；精简版里它们同属 `🎬 流媒体`，换就是一起换。需要按服务分别挑线路，就用完整版。
+
+在线站的「远程配置」下拉里，第一项是完整版，第二项是精简版。只要规则的取用地址见上一节。
 
 ## 中国大陆域名、IP 与 DNS
 

@@ -1,0 +1,20 @@
+payload:
+- DOMAIN,anydesk.com
+- DOMAIN,app.netbird.io
+- DOMAIN,login.tailscale.com
+- DOMAIN,moonlight-stream.org
+- DOMAIN,my.zerotier.com
+- DOMAIN,netbird.io
+- DOMAIN,parsec.app
+- DOMAIN,rustdesk.com
+- DOMAIN,tailscale.com
+- DOMAIN,teamviewer.com
+- DOMAIN,www.anydesk.com
+- DOMAIN,www.netbird.io
+- DOMAIN,www.parsec.app
+- DOMAIN,www.rustdesk.com
+- DOMAIN,www.tailscale.com
+- DOMAIN,www.teamviewer.com
+- DOMAIN,www.zerotier.com
+- DOMAIN,zerotier.com
+- DOMAIN-SUFFIX,parsecgaming.com

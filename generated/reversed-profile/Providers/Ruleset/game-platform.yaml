@@ -53,6 +53,7 @@ payload:
 - DOMAIN-SUFFIX,rockstargames.com
 - DOMAIN-SUFFIX,starcraft.com
 - DOMAIN-SUFFIX,starcraft2.com
+- DOMAIN-SUFFIX,starrails.com
 - DOMAIN-SUFFIX,steam-api.com
 - DOMAIN-SUFFIX,steam-chat.com
 - DOMAIN-SUFFIX,steamcommunity.com
@@ -70,3 +71,4 @@ payload:
 - DOMAIN-SUFFIX,xboxgamepass.com
 - DOMAIN-SUFFIX,xboxlive.com
 - DOMAIN-SUFFIX,xboxservices.com
+- IP-CIDR,8.209.192.0/18,no-resolve

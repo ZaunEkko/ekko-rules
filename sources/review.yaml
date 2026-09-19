@@ -788,10 +788,69 @@ items:
   evidence:
   - scripts/mainland_hosting_probe.py
   - docs/evidence/cn-apnic-verdicts-2026-09-19.json
-  - docs/evidence/cn-review-admitted-2026-09-19.json
   first_observed: 2026-09-19
   last_verified: '2026-09-19'
   phase_2_candidate: none
   recommended_action: keep
   current_product: standard
   resolution: xinhuanet.com returns 156.238.128.x to this repository and 117.177.70.x to a mainland client, so the probe read the first and called a China Mobile-hosted site foreign - the normal case for exactly the CDN-fronted services a mainland direct rule is about. The probe now names a mainland client subnet with EDNS Client Subnet, and four roots previously classified as foreign are mainland-hosted under the corrected question - xinhuanet.com, chinanews.com.cn, honor.cn and cloudflareperf.com. The fix is not total and the residue is informative - Cloudflare answers from anycast and ignores the named subnet, so cloudflare.cn still has no verdict, which is a finding about the method rather than the domain. The ByteDance probe endpoints split under the corrected probe - perfops.byte-test.com resolves into mainland space while perfops1 through perfops3 of byteperf.com stay foreign because they are deliberately spread across regions - so byte-test.com is admitted on the APNIC route and byteperf.com on a routing rationale, that a client measuring which CDN node to use must measure the path its media traffic takes. That rationale lives in a fourth evidence route which carries more proof than the others rather than less - every record states its reason, vendor attribution and the limitation that put it there, and the category is capped at eight. lenovo.com.cn was examined and not added because it answers from Akamai's global edge even for a mainland client.
+- id: byteperf-overseas-correction
+  status: accepted
+  scope: routing-policy
+  summary: A routing rationale was allowed to override this repository's own measurement, and the field reported the result as domestic traffic that should have been overseas.
+  evidence:
+  - docs/evidence/cn-apnic-verdicts-2026-09-19.json
+  - sources/rules/china-web.list
+  - tests/test_profile.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: ER-056 admitted byteperf.com after its own probe said the endpoints answer from outside the mainland, on the argument that a client measuring which CDN node to use must measure the path its media takes. The split-tunnel test that surfaced them labels those rows 海外 and 国际, and with the rule shipping they reported a Hangzhou address - the product was forcing overseas measurement endpoints down the domestic path. perfops1 through perfops3 resolve to 35.219.10.74, 95.40.53.40 and 47.84.187.31 for a mainland client because ByteDance spreads them across regions deliberately; that is the finding, and reasoning past it was the error. The rule is removed while byte-test.com stays on the APNIC route. cn-review-admitted-2026-09-19.json is deleted with it, because a blind-spot patch holding nothing is scaffolding rather than a route, and MainlandEvidenceContractTests returns to three evidence routes.
+- id: remote-streaming-two-jobs
+  status: accepted
+  scope: routing-policy
+  summary: One vendor suffix covered both the admin console and the streaming payload, so no single policy could be right for it.
+  evidence:
+  - sources/rules/remote-streaming-admin.list
+  - sources/rules/remote-streaming.list
+  - sources/proxy-groups.yaml
+  - scripts/profile_model.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The group was DIRECT-first and held DOMAIN-SUFFIX,tailscale.com, so a browser opening the admin console took the direct path and never arrived; moving the suffix to a proxy policy is equally wrong because the DERP relays under it carry the streaming payload and the field reported proxy traffic climbing when that was tried. The policy is now two - 远程串流后台 leading with the manual selector and holding 19 console and website hosts across Tailscale, ZeroTier, NetBird, Parsec, RustDesk, AnyDesk, TeamViewer and Moonlight, and 远程串流流量 leading with DIRECT and holding the 65 data-plane rules. The admin segment runs immediately before the data segment so an exact console host wins while the vendor suffix beneath it keeps carrying the payload direct, verified per host for derp1a, controlplane, ts.net, root.zerotier.com, kessel-ws.parsec.app, rs-ny.rustdesk.com, net.anydesk.com, master1.teamviewer.com, signal.netbird.io and remotedesktop.google.com. The product sits at the Subconverter 64-segment ceiling, so the new segment is funded the way ER-023 established - xai is concatenated into ai-platforms without reordering, routing cannot change because every segment in that family targets the same policy, and the retired Raw URL survives as a generated-only compatibility copy behind frozen hashes.
+- id: session-split-across-policies
+  status: accepted
+  scope: routing-policy
+  summary: A page or a game session reaching through two policies at once is the defect behind three separate reports.
+  evidence:
+  - sources/rules/game-download.list
+  - sources/rules/game-platform.list
+  - sources/rules/china-web.list
+  - docs/evidence/cn-apnic-verdicts-2026-09-19.json
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: psnine.com rendered with every cover image broken because DOMAIN-SUFFIX,dl.playstation.net sat in the DIRECT-first download policy while psnobj and psn-rsc under it are the object CDN a web page loads cover art from, and direct access to them times out. The suffix is replaced by the endpoints that carry game content - ww.prod.dl.playstation.net for the gs2 family plus zeus and ares named exactly - so everything else falls through to the platform policy with the rest of PSN's web surface, and gs2.ww.prod answers from a China Telecom address so the mainland download path is preserved. psnine.com itself is APNIC-confirmed mainland and joins china-web. Honkai Star Rail reported proxy use because its dispatch and login domains reached the platform policy while the game server, which dispatch hands out as a bare address, fell to the fallback - two exits for one session. starrails.com was the larger half of that split, sitting wholly in the download policy, so autopatchos stays and the rest joins the platform; the IP-CIDR 8.209.192.0 slash 18 block with no-resolve covers the gateway pool that RDAP places in Alibaba Cloud Japan. A single-address rule would go stale the first time the pool moved and that failure is the detection firing again, while under fake-ip the breadth costs little because no-resolve means the rule only sees connections made to a bare address.
+- id: lite-product-same-routing
+  status: accepted
+  scope: product-shape
+  summary: A second build folds 42 policy groups into 10 without changing what any segment does.
+  evidence:
+  - sources/manifest.yaml
+  - sources/proxy-groups.yaml
+  - scripts/profile_model.py
+  - tests/test_profile.py
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Forty-two groups exist so each kind of traffic can be pointed at its own node, which for anyone who does not want that is a screen of dropdowns before the profile is usable. The lite build keeps the same 64 segments and the same rule files and only changes the target a segment names, expressed as Segment.lite_target with target_for(product) so the fold is a per-segment retarget rather than an edit. Forty-seven segments are retargeted - the ones that each had a group of their own and all defaulted to a proxy go to 国外服务 or 流媒体, the mainland groups that defaulted to direct go to 国内网站 - leaving ten groups chosen by whether someone plausibly wants to point them somewhere different, not by count. The safety claim covers every segment rather than the inspected ones, so LiteProductTests compares the effective action of all 64 across both products by following a target to its group's leading member, and both give 17 DIRECT, 45 PROXY and 2 REJECT. That test was checked against an injected fault - retargeting 游戏下载 to 国外服务, a fold that reads reasonable and is wrong because a metered download would start spending proxy bandwidth - and it fails. The cost is granularity alone - Netflix and YouTube share 流媒体 and move together - and it is stated in both READMEs beside the group count.
+

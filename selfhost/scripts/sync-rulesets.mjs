@@ -12,14 +12,25 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../..");
-const sourceIni = path.join(root, "generated/reversed-profile/config/ekko-rules.ini");
+// Both products are rewritten the same way: they reference the same ruleset
+// files, and only the policy each ruleset line names differs between them.
+const PRODUCT_INIS = [
+  {
+    source: path.join(root, "generated/reversed-profile/config/ekko-rules.ini"),
+    dest: path.join(root, "selfhost/subconverter/config/ekko-rules-selfhost.ini"),
+  },
+  {
+    source: path.join(root, "generated/reversed-profile/config/ekko-rules-lite.ini"),
+    dest: path.join(root, "selfhost/subconverter/config/ekko-rules-selfhost-lite.ini"),
+  },
+];
 const sourceRules = path.join(root, "generated/reversed-profile/Ruleset");
-const destIni = path.join(root, "selfhost/subconverter/config/ekko-rules-selfhost.ini");
 const destRules = path.join(root, "selfhost/subconverter/rulesets");
 
 mkdirSync(destRules, { recursive: true });
 
-const lines = readFileSync(sourceIni, "utf8").split(/\r?\n/);
+function rewriteIni(source, dest) {
+const lines = readFileSync(source, "utf8").split(/\r?\n/);
 const out = [];
 let insertedBase = false;
 for (const line of lines) {
@@ -43,7 +54,10 @@ for (const line of lines) {
   }
   out.push(line);
 }
-writeFileSync(destIni, `${out.join("\n").replace(/\n+$/, "\n")}`, "utf8");
+writeFileSync(dest, `${out.join("\n").replace(/\n+$/, "\n")}`, "utf8");
+}
+
+for (const product of PRODUCT_INIS) rewriteIni(product.source, product.dest);
 
 const sourceRuleNames = readdirSync(sourceRules)
   .filter((name) => name.endsWith(".list"))
@@ -65,7 +79,11 @@ for (const name of sourceRuleNames) {
 console.log(
   JSON.stringify(
     {
-      ini: path.relative(root, destIni).replaceAll("\\", "/"),
+      // Both products are written, so both are named. Reporting one of them
+      // left no way to see the other stop being written.
+      inis: PRODUCT_INIS.map((product) =>
+        path.relative(root, product.dest).replaceAll("\\", "/"),
+      ),
       rulesets: copied,
       pruned,
       complete_config_bases: 8,
