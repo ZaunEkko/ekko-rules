@@ -880,9 +880,16 @@ def _validate_rules(
         entries = read_rule_lines(source_path)
         for entry in entries:
             rule_type, value, _ = parse_rule(entry, context=source)
+            # Checked per product rather than on the full build's target. The
+            # two currently agree, but that is a property of how the lite build
+            # folds today, not a guarantee — a future fold that landed a
+            # keyword rule on a DIRECT policy would otherwise pass unnoticed.
             require(
                 not (
-                    segment.target in direct_default_targets
+                    any(
+                        segment.target_for(product) in direct_default_targets
+                        for product in PRODUCTS
+                    )
                     and rule_type == "DOMAIN-KEYWORD"
                 ),
                 f"DIRECT-default rules must use anchored domain matchers: {segment.slug}: {entry}",
@@ -1241,6 +1248,10 @@ def _product_analysis(sources: ProfileSources, product: str) -> dict[str, Any]:
     segment_records: list[dict[str, Any]] = []
     position = 1
     for product_index, segment in enumerate(sources.segments_for(product), start=1):
+        # A product's analysis must describe that product. Reading `target`
+        # here named the full build's policies in the lite build's analysis,
+        # for groups the lite configuration does not even define.
+        target = segment.target_for(product)
         if segment.kind == "terminal":
             segment_records.append(
                 {
@@ -1249,7 +1260,7 @@ def _product_analysis(sources: ProfileSources, product: str) -> dict[str, Any]:
                     "start": position,
                     "end": position,
                     "count": 1,
-                    "target": segment.target,
+                    "target": target,
                     "slug": segment.slug,
                     "scope": segment.scope,
                     "rule_types": {"MATCH": 1},
@@ -1259,9 +1270,9 @@ def _product_analysis(sources: ProfileSources, product: str) -> dict[str, Any]:
         entries = sources.rules[segment.slug]
         types = Counter(entry.split(",", 1)[0] for entry in entries)
         for entry in entries:
-            restored = _restored_rule(entry, segment.target)
+            restored = _restored_rule(entry, target)
             restored_rules.append(restored)
-            matcher_targets[_rule_matcher(entry)].add(segment.target)
+            matcher_targets[_rule_matcher(entry)].add(target)
         segment_records.append(
             {
                 "index": product_index,
@@ -1269,7 +1280,7 @@ def _product_analysis(sources: ProfileSources, product: str) -> dict[str, Any]:
                 "start": position,
                 "end": position + len(entries) - 1,
                 "count": len(entries),
-                "target": segment.target,
+                "target": target,
                 "slug": segment.slug,
                 "scope": segment.scope,
                 "rule_types": dict(types),
@@ -1939,11 +1950,13 @@ def first_match(
     ip: str | None = None,
     process_name: str | None = None,
 ) -> dict[str, str]:
+    # Same rule as the analysis: an answer about a product names that
+    # product's policy, not the full build's.
     for segment in sources.segments_for(product):
         if segment.kind == "terminal":
             return {
                 "slug": segment.slug,
-                "target": segment.target,
+                "target": segment.target_for(product),
                 "rule": "MATCH",
             }
         for entry in sources.rules[segment.slug]:
@@ -1955,7 +1968,7 @@ def first_match(
             ):
                 return {
                     "slug": segment.slug,
-                    "target": segment.target,
+                    "target": segment.target_for(product),
                     "rule": entry,
                 }
     raise ProfileError("Canonical profile has no terminal match")

@@ -376,6 +376,14 @@ export function Workbench({
   const remoteConfigOptions = capabilities?.remote_configs ?? [];
   const allowCustomRemoteConfig = Boolean(capabilities?.allow_custom_remote_config);
   const usingCustomRemoteConfig = remoteConfigId === "__custom__";
+  /* Whether this conversion's groups and rules come from somebody else.
+     Keyed off the preset's own builtin flag rather than a list of ids: this
+     repository publishes more than one build, and an operator can add presets
+     of their own, which are third-party however they are labelled. A pasted
+     URL is not in the list at all, so it warns too. */
+  const usingThirdPartyRemoteConfig = !remoteConfigOptions.some(
+    (option) => option.id === remoteConfigId && option.builtin,
+  );
   const siteLinks = capabilities?.site_links ?? [];
   const statelessQuery = useMemo(() => {
     if (storesProfiles || !subscriptionUrl.trim()) return "";
@@ -1724,7 +1732,7 @@ export function Workbench({
                     maxLength={512}
                   />
                 ) : null}
-                {remoteConfigId !== "ekko" ? (
+                {usingThirdPartyRemoteConfig ? (
                   <small className="remote-config-note">
                     选择非 Ekko Rules 时，这次转换的分组、规则与基础配置全部来自对方项目。
                   </small>

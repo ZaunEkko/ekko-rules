@@ -54,6 +54,8 @@ from scripts.profile_model import (  # noqa: E402
     ProfileError,
     compare_trees,
     coverage_metrics,
+    PRODUCTS,
+    build_analysis,
     first_match,
     load_profile_sources,
     parse_json_document,
@@ -2949,3 +2951,42 @@ class LiteProductTests(unittest.TestCase):
             and segment.target_for("lite") != "DIRECT"
         ]
         self.assertEqual(missing, [], "lite segments pointing at groups lite does not publish")
+
+    def test_a_product_is_only_ever_described_by_its_own_policies(self) -> None:
+        """Published descriptions must not name groups the product lacks.
+
+        Both products come from the same segments, so anything reading
+        `segment.target` instead of `segment.target_for(product)` keeps the
+        full build's answer while claiming to describe the lite one. That
+        shipped: every one of the 47 retargeted segments appeared in the lite
+        analysis pointing at a group the lite configuration does not define,
+        and the target-derived quality metrics were the full build's.
+        """
+        analysis = build_analysis(self.sources)
+        for product in PRODUCTS:
+            available = {
+                group.name for group in self.sources.proxy_groups_for(product)
+            } | {"DIRECT", "REJECT"}
+            for record in analysis["products"][product]["segments"]:
+                self.assertIn(
+                    record["target"],
+                    available,
+                    f"{product} analysis names {record['target']}, which that "
+                    f"product does not define ({record['slug']})",
+                )
+
+    def test_asking_where_traffic_goes_answers_for_the_product_asked(self) -> None:
+        """`first_match` carried the same defect, unreported."""
+        for product in PRODUCTS:
+            available = {
+                group.name for group in self.sources.proxy_groups_for(product)
+            } | {"DIRECT", "REJECT"}
+            for domain in ("chat.openai.com", "www.netflix.com", "www.baidu.com"):
+                verdict = first_match(self.sources, product=product, domain=domain)
+                self.assertIn(
+                    verdict["target"],
+                    available,
+                    f"{product} routes {domain} to {verdict['target']}, which "
+                    f"that product does not define",
+                )
+

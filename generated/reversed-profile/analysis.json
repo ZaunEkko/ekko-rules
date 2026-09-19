@@ -974,9 +974,9 @@
             "union": 41
           }
         },
-        "exact_duplicate_occurrences_beyond_first": 2,
-        "exact_duplicate_rule_keys": 2,
-        "matchers_routed_to_multiple_targets": 38
+        "exact_duplicate_occurrences_beyond_first": 12,
+        "exact_duplicate_rule_keys": 12,
+        "matchers_routed_to_multiple_targets": 28
       },
       "segments": [
         {
@@ -1014,7 +1014,7 @@
           "start": 48,
           "end": 66,
           "count": 19,
-          "target": "🖥️ 远程串流后台",
+          "target": "🚀 国外服务",
           "slug": "remote-streaming-admin",
           "scope": "both",
           "rule_types": {
@@ -1028,7 +1028,7 @@
           "start": 67,
           "end": 131,
           "count": 65,
-          "target": "🖥️ 远程串流流量",
+          "target": "🌏 国内网站",
           "slug": "remote-streaming",
           "scope": "both",
           "rule_types": {
@@ -1057,7 +1057,7 @@
           "start": 722,
           "end": 739,
           "count": 18,
-          "target": "🧲 OpenAI",
+          "target": "🧲 海外 AI",
           "slug": "openai",
           "scope": "both",
           "rule_types": {
@@ -1071,7 +1071,7 @@
           "start": 740,
           "end": 743,
           "count": 4,
-          "target": "🧲 Claude",
+          "target": "🧲 海外 AI",
           "slug": "claude",
           "scope": "both",
           "rule_types": {
@@ -1139,7 +1139,7 @@
           "start": 800,
           "end": 827,
           "count": 28,
-          "target": "🎙 Discord",
+          "target": "🚀 国外服务",
           "slug": "discord",
           "scope": "both",
           "rule_types": {
@@ -1152,7 +1152,7 @@
           "start": 828,
           "end": 901,
           "count": 74,
-          "target": "🗣 社交媒体",
+          "target": "🚀 国外服务",
           "slug": "instagram",
           "scope": "both",
           "rule_types": {
@@ -1165,7 +1165,7 @@
           "start": 902,
           "end": 921,
           "count": 20,
-          "target": "📪 邮件服务",
+          "target": "🌏 国内网站",
           "slug": "mail",
           "scope": "both",
           "rule_types": {
@@ -1179,7 +1179,7 @@
           "start": 922,
           "end": 957,
           "count": 36,
-          "target": "📲 聊天软件",
+          "target": "🚀 国外服务",
           "slug": "line",
           "scope": "both",
           "rule_types": {
@@ -1194,7 +1194,7 @@
           "start": 958,
           "end": 972,
           "count": 15,
-          "target": "📲 聊天软件",
+          "target": "🚀 国外服务",
           "slug": "kakao-talk",
           "scope": "both",
           "rule_types": {
@@ -1208,7 +1208,7 @@
           "start": 973,
           "end": 998,
           "count": 26,
-          "target": "📲 聊天软件",
+          "target": "🚀 国外服务",
           "slug": "whatsapp",
           "scope": "both",
           "rule_types": {
@@ -1224,7 +1224,7 @@
           "start": 999,
           "end": 1032,
           "count": 34,
-          "target": "📲 聊天软件",
+          "target": "🚀 国外服务",
           "slug": "telegram",
           "scope": "both",
           "rule_types": {
@@ -1241,7 +1241,7 @@
           "start": 1033,
           "end": 1086,
           "count": 54,
-          "target": "🗣 社交媒体",
+          "target": "🚀 国外服务",
           "slug": "social-platforms",
           "scope": "both",
           "rule_types": {
@@ -1255,7 +1255,7 @@
           "start": 1087,
           "end": 1287,
           "count": 201,
-          "target": "🧑‍💻 开发服务",
+          "target": "🚀 国外服务",
           "slug": "developer-platforms",
           "scope": "both",
           "rule_types": {
@@ -1311,7 +1311,7 @@
           "start": 1485,
           "end": 1511,
           "count": 27,
-          "target": "🎬 韩国媒体",
+          "target": "🎬 流媒体",
           "slug": "media-korea",
           "scope": "both",
           "rule_types": {
@@ -1325,7 +1325,7 @@
           "start": 1512,
           "end": 1523,
           "count": 12,
-          "target": "🎬 港澳台媒体",
+          "target": "🎬 流媒体",
           "slug": "media-taiwan",
           "scope": "both",
           "rule_types": {
@@ -1339,7 +1339,7 @@
           "start": 1524,
           "end": 1548,
           "count": 25,
-          "target": "🎬 PrimeVideo",
+          "target": "🎬 流媒体",
           "slug": "prime-video",
           "scope": "both",
           "rule_types": {
@@ -1355,7 +1355,7 @@
           "start": 1549,
           "end": 1559,
           "count": 11,
-          "target": "🎬 港澳台媒体",
+          "target": "🎬 流媒体",
           "slug": "viutv",
           "scope": "both",
           "rule_types": {
@@ -1369,7 +1369,7 @@
           "start": 1560,
           "end": 1571,
           "count": 12,
-          "target": "🎬 港澳台媒体",
+          "target": "🎬 流媒体",
           "slug": "kktv",
           "scope": "both",
           "rule_types": {
@@ -1384,7 +1384,7 @@
           "start": 1572,
           "end": 1580,
           "count": 9,
-          "target": "🎬 港澳台媒体",
+          "target": "🎬 流媒体",
           "slug": "bahamut",
           "scope": "both",
           "rule_types": {
@@ -1399,7 +1399,7 @@
           "start": 1581,
           "end": 1606,
           "count": 26,
-          "target": "🎬 日本媒体",
+          "target": "🎬 流媒体",
           "slug": "media-japan",
           "scope": "both",
           "rule_types": {
@@ -1413,7 +1413,7 @@
           "start": 1607,
           "end": 1623,
           "count": 17,
-          "target": "🎬 YouTube",
+          "target": "🎬 流媒体",
           "slug": "youtube",
           "scope": "both",
           "rule_types": {
@@ -1426,7 +1426,7 @@
           "start": 1624,
           "end": 1627,
           "count": 4,
-          "target": "🎵 音乐平台",
+          "target": "🎬 流媒体",
           "slug": "tidal",
           "scope": "both",
           "rule_types": {
@@ -1439,7 +1439,7 @@
           "start": 1628,
           "end": 1789,
           "count": 162,
-          "target": "🎬 DisneyPlus",
+          "target": "🎬 流媒体",
           "slug": "disney-plus",
           "scope": "both",
           "rule_types": {
@@ -1453,7 +1453,7 @@
           "start": 1790,
           "end": 1831,
           "count": 42,
-          "target": "🎬 HBO GO/MAX",
+          "target": "🎬 流媒体",
           "slug": "hbo-go",
           "scope": "both",
           "rule_types": {
@@ -1469,7 +1469,7 @@
           "start": 1832,
           "end": 1846,
           "count": 15,
-          "target": "🎬 Dazn",
+          "target": "🎬 流媒体",
           "slug": "dazn",
           "scope": "both",
           "rule_types": {
@@ -1483,7 +1483,7 @@
           "start": 1847,
           "end": 1854,
           "count": 8,
-          "target": "🎬 AppleTV+",
+          "target": "🎬 流媒体",
           "slug": "apple-tv-plus",
           "scope": "both",
           "rule_types": {
@@ -1498,7 +1498,7 @@
           "start": 1855,
           "end": 1861,
           "count": 7,
-          "target": "🎬 东南亚媒体",
+          "target": "🎬 流媒体",
           "slug": "bilibili-sea",
           "scope": "both",
           "rule_types": {
@@ -1513,7 +1513,7 @@
           "start": 1862,
           "end": 1876,
           "count": 15,
-          "target": "🎬 B站港澳台",
+          "target": "🌏 国内网站",
           "slug": "bilibili-hmt",
           "scope": "both",
           "rule_types": {
@@ -1527,7 +1527,7 @@
           "start": 1877,
           "end": 1896,
           "count": 20,
-          "target": "🎬 爱奇艺国际",
+          "target": "🌏 国内网站",
           "slug": "iqiyi",
           "scope": "both",
           "rule_types": {
@@ -1541,7 +1541,7 @@
           "start": 1897,
           "end": 1917,
           "count": 21,
-          "target": "🎵 音乐平台",
+          "target": "🎬 流媒体",
           "slug": "spotify",
           "scope": "both",
           "rule_types": {
@@ -1555,7 +1555,7 @@
           "start": 1918,
           "end": 1941,
           "count": 24,
-          "target": "🎵 音乐平台",
+          "target": "🎬 流媒体",
           "slug": "qobuz",
           "scope": "both",
           "rule_types": {
@@ -1568,7 +1568,7 @@
           "start": 1942,
           "end": 1951,
           "count": 10,
-          "target": "🎵 音乐平台",
+          "target": "🎬 流媒体",
           "slug": "apple-music",
           "scope": "both",
           "rule_types": {
@@ -1583,7 +1583,7 @@
           "start": 1952,
           "end": 2152,
           "count": 201,
-          "target": "🌏 国内流媒体",
+          "target": "🌏 国内网站",
           "slug": "china-media",
           "scope": "both",
           "rule_types": {
@@ -1597,7 +1597,7 @@
           "start": 2153,
           "end": 2175,
           "count": 23,
-          "target": "🎶 TikTok",
+          "target": "🎬 流媒体",
           "slug": "tiktok",
           "scope": "both",
           "rule_types": {
@@ -1613,7 +1613,7 @@
           "start": 2176,
           "end": 2228,
           "count": 53,
-          "target": "🎬 Netflix",
+          "target": "🎬 流媒体",
           "slug": "netflix",
           "scope": "both",
           "rule_types": {
@@ -1631,7 +1631,7 @@
           "start": 2229,
           "end": 2309,
           "count": 81,
-          "target": "☁️ 云盘服务",
+          "target": "🚀 国外服务",
           "slug": "cloud-storage",
           "scope": "both",
           "rule_types": {
@@ -1646,7 +1646,7 @@
           "start": 2310,
           "end": 2349,
           "count": 40,
-          "target": "🍎 苹果服务",
+          "target": "🚀 国外服务",
           "slug": "apple",
           "scope": "both",
           "rule_types": {
@@ -1662,7 +1662,7 @@
           "start": 2350,
           "end": 2404,
           "count": 55,
-          "target": "🎬 美国流媒体",
+          "target": "🎬 流媒体",
           "slug": "us-media",
           "scope": "both",
           "rule_types": {
@@ -1675,7 +1675,7 @@
           "start": 2405,
           "end": 2434,
           "count": 30,
-          "target": "🌏 国外流媒体",
+          "target": "🚀 国外服务",
           "slug": "global-media",
           "scope": "both",
           "rule_types": {
@@ -1718,7 +1718,7 @@
           "start": 7205,
           "end": 7312,
           "count": 108,
-          "target": "🎬 B站港澳台",
+          "target": "🌏 国内网站",
           "slug": "bilibili-hmt-late-recovery",
           "scope": "both",
           "rule_types": {
@@ -1733,7 +1733,7 @@
           "start": 7313,
           "end": 7348,
           "count": 36,
-          "target": "🎬 爱奇艺国际",
+          "target": "🌏 国内网站",
           "slug": "iqiyi-late-recovery",
           "scope": "both",
           "rule_types": {
@@ -1761,7 +1761,7 @@
           "start": 8813,
           "end": 8905,
           "count": 93,
-          "target": "🌏 国内流媒体",
+          "target": "🌏 国内网站",
           "slug": "china-media-late-recovery",
           "scope": "both",
           "rule_types": {
@@ -1776,7 +1776,7 @@
           "start": 8906,
           "end": 9260,
           "count": 355,
-          "target": "☁️ 海外云服务",
+          "target": "🚀 国外服务",
           "slug": "overseas-cloud",
           "scope": "both",
           "rule_types": {
@@ -1790,7 +1790,7 @@
           "start": 9261,
           "end": 9423,
           "count": 163,
-          "target": "☁️ 国内云服务",
+          "target": "🌏 国内网站",
           "slug": "china-cloud",
           "scope": "both",
           "rule_types": {
@@ -1804,7 +1804,7 @@
           "start": 9424,
           "end": 9471,
           "count": 48,
-          "target": "🧩 微软服务",
+          "target": "🚀 国外服务",
           "slug": "microsoft",
           "scope": "both",
           "rule_types": {
@@ -1831,7 +1831,7 @@
           "start": 9905,
           "end": 9941,
           "count": 37,
-          "target": "🔎 Google",
+          "target": "🚀 国外服务",
           "slug": "google",
           "scope": "both",
           "rule_types": {
@@ -1847,7 +1847,7 @@
           "start": 9942,
           "end": 10017,
           "count": 76,
-          "target": "🛒 海外购物",
+          "target": "🚀 国外服务",
           "slug": "overseas-shopping",
           "scope": "both",
           "rule_types": {
