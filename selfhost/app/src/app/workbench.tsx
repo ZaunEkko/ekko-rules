@@ -5,6 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import {
   countEnabledOptions,
   DEFAULT_CONVERT_OPTIONS,
+  RECOMMENDED_CONVERT_OPTIONS,
   type ConvertOptions,
 } from "@/lib/options";
 import {
@@ -136,6 +137,11 @@ type SavedLink = {
   restore: {
     url: string;
     remoteConfigId: string;
+    /* The id alone is not enough for a pasted config: "__custom__" says which
+       field was in use, not what was typed into it. Without this, restoring
+       such a record selected 自定义地址 with an empty box and then asked for a
+       URL the record already had. */
+    customRemoteConfig?: string;
     convertOptions: ConvertOptions;
   };
   createdAt: number;
@@ -167,7 +173,7 @@ export function describeOptions(options: ConvertOptions): string[] {
   return named;
 }
 
-const OPTION_KEYS = Object.keys(DEFAULT_CONVERT_OPTIONS) as Array<
+const OPTION_KEYS = Object.keys(RECOMMENDED_CONVERT_OPTIONS) as Array<
   keyof ConvertOptions
 >;
 
@@ -315,7 +321,7 @@ export function Workbench({
   const [profileName, setProfileName] = useState("");
   const [target, setTarget] = useState("clash");
   const [convertOptions, setConvertOptions] = useState<ConvertOptions>({
-    ...DEFAULT_CONVERT_OPTIONS,
+    ...RECOMMENDED_CONVERT_OPTIONS,
   });
   const [showUrl, setShowUrl] = useState(false);
   const [accessPassword, setAccessPassword] = useState("");
@@ -546,10 +552,11 @@ export function Workbench({
   const restoreLink = useCallback((entry: SavedLink) => {
     if (!entry.restore) return;
     setSubscriptionUrl(entry.restore.url);
+    setCustomRemoteConfig(entry.restore.customRemoteConfig ?? "");
     setTarget(entry.target);
     setRemoteConfigId(entry.restore.remoteConfigId);
     setConvertOptions({
-      ...DEFAULT_CONVERT_OPTIONS,
+      ...RECOMMENDED_CONVERT_OPTIONS,
       ...entry.restore.convertOptions,
     });
     setProfileName(entry.name);
@@ -568,7 +575,8 @@ export function Workbench({
     setProfileName("");
     setTarget("clash");
     setRemoteConfigId("ekko");
-    setConvertOptions({ ...DEFAULT_CONVERT_OPTIONS });
+    setCustomRemoteConfig("");
+    setConvertOptions({ ...RECOMMENDED_CONVERT_OPTIONS });
   }, []);
 
   const formTouched =
@@ -576,7 +584,9 @@ export function Workbench({
     profileName !== "" ||
     target !== "clash" ||
     remoteConfigId !== "ekko" ||
-    OPTION_KEYS.some((key) => convertOptions[key] !== DEFAULT_CONVERT_OPTIONS[key]);
+    OPTION_KEYS.some(
+      (key) => convertOptions[key] !== RECOMMENDED_CONVERT_OPTIONS[key],
+    );
 
   const forgetLink = useCallback(
     (link: string) => {
@@ -1172,6 +1182,7 @@ export function Workbench({
                       {
                         url: subscriptionUrl,
                         remoteConfigId,
+                        customRemoteConfig,
                         convertOptions,
                       },
                     );
@@ -1776,6 +1787,7 @@ export function Workbench({
                       {
                         url: subscriptionUrl,
                         remoteConfigId,
+                        customRemoteConfig,
                         convertOptions,
                       },
                     );

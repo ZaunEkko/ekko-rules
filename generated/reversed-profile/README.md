@@ -2,12 +2,14 @@
 
 [English](README_EN.md)
 
-面向 Subconverter 与 Mihomo 的单一标准分流规则产品。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
+面向 Subconverter 与 Mihomo 的标准分流规则产品，同一套规则发布为两个构建：完整版 42 个策略组，精简版 10 个。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
 
 ## 入口
 
-- `config/ekko-rules.ini`：Subconverter 在线预设，不接管 Clash 基础配置。
-- `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
+- `config/ekko-rules.ini`：Subconverter 在线预设（完整版），不接管 Clash 基础配置。
+- `config/ekko-rules-lite.ini`：同上，精简版。
+- `Mihomo/reversed-template.yaml`：Mihomo 模板（完整版），使用前替换订阅地址占位符。
+- `Mihomo/reversed-template-lite.yaml`：同上，精简版。
 - `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留合并前原始内容的旧 Raw URL 兼容副本，不进入活动模板或规则计数。
 - `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
@@ -60,4 +62,4 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 
 末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
-唯一产品包含 63 个 ruleset、64 个区段和 42 个策略组，不提供自动测速、Full、local 或 Extended 变体。
+两个构建共用 63 个 ruleset 与 64 个区段，只有策略组数量不同：完整版 42 个，精简版 10 个。精简版不删除任何规则，只是把分段改指到合并后的策略组，每一段的最终动作与完整版一致；代价是不能按服务分别挑节点。不提供自动测速、Full、local 或 Extended 变体。

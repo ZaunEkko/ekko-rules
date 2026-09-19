@@ -2,12 +2,14 @@
 
 [中文](README.md)
 
-A single standard routing-rules product for Subconverter and Mihomo. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
+A standard routing-rules product for Subconverter and Mihomo, published as two builds of the same rules: 42 policy groups in the full build, 10 in the lite one. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
 
 ## Entry points
 
-- `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
-- `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
+- `config/ekko-rules.ini`: Online Subconverter preset (full build) without a Clash base override.
+- `config/ekko-rules-lite.ini`: The same, lite build.
+- `Mihomo/reversed-template.yaml`: Mihomo template (full build); replace the subscription URL placeholder before use.
+- `Mihomo/reversed-template-lite.yaml`: The same, lite build.
 - `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
 - `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
@@ -60,4 +62,4 @@ The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
-The sole product contains 63 rulesets, 64 segments, and 42 proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+Both builds share 63 rulesets and 64 segments and differ only in the number of proxy groups: 42 in the full build, 10 in the lite one. The lite build removes no rules; it retargets segments onto the merged groups, so every segment ends in the same action as it does in the full build. What it costs is the ability to pick a node per service. No automatic-latency, Full, local, or Extended variant is published.

@@ -1339,16 +1339,19 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
     rulesets = len(sources.rule_segments_for(CORE_PRODUCT))
     segments = len(sources.segments_for(CORE_PRODUCT))
     groups = len(sources.proxy_groups_for(CORE_PRODUCT))
+    lite_groups = len(sources.proxy_groups_for(LITE_PRODUCT))
     chinese = f"""# Ekko Rules
 
 [English](README_EN.md)
 
-面向 Subconverter 与 Mihomo 的单一标准分流规则产品。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
+面向 Subconverter 与 Mihomo 的标准分流规则产品，同一套规则发布为两个构建：完整版 {groups} 个策略组，精简版 {lite_groups} 个。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
 
 ## 入口
 
-- `config/ekko-rules.ini`：Subconverter 在线预设，不接管 Clash 基础配置。
-- `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
+- `config/ekko-rules.ini`：Subconverter 在线预设（完整版），不接管 Clash 基础配置。
+- `config/ekko-rules-lite.ini`：同上，精简版。
+- `Mihomo/reversed-template.yaml`：Mihomo 模板（完整版），使用前替换订阅地址占位符。
+- `Mihomo/reversed-template-lite.yaml`：同上，精简版。
 - `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留合并前原始内容的旧 Raw URL 兼容副本，不进入活动模板或规则计数。
 - `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
@@ -1401,18 +1404,20 @@ Ruleset 地址前缀：`{rules_base}`。
 
 末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
-唯一产品包含 {rulesets} 个 ruleset、{segments} 个区段和 {groups} 个策略组，不提供自动测速、Full、local 或 Extended 变体。
+两个构建共用 {rulesets} 个 ruleset 与 {segments} 个区段，只有策略组数量不同：完整版 {groups} 个，精简版 {lite_groups} 个。精简版不删除任何规则，只是把分段改指到合并后的策略组，每一段的最终动作与完整版一致；代价是不能按服务分别挑节点。不提供自动测速、Full、local 或 Extended 变体。
 """
     english = f"""# Ekko Rules
 
 [中文](README.md)
 
-A single standard routing-rules product for Subconverter and Mihomo. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
+A standard routing-rules product for Subconverter and Mihomo, published as two builds of the same rules: {groups} policy groups in the full build, {lite_groups} in the lite one. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
 
 ## Entry points
 
-- `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
-- `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
+- `config/ekko-rules.ini`: Online Subconverter preset (full build) without a Clash base override.
+- `config/ekko-rules-lite.ini`: The same, lite build.
+- `Mihomo/reversed-template.yaml`: Mihomo template (full build); replace the subscription URL placeholder before use.
+- `Mihomo/reversed-template-lite.yaml`: The same, lite build.
 - `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
 - `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
@@ -1465,7 +1470,7 @@ The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
-The sole product contains {rulesets} rulesets, {segments} segments, and {groups} proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+Both builds share {rulesets} rulesets and {segments} segments and differ only in the number of proxy groups: {groups} in the full build, {lite_groups} in the lite one. The lite build removes no rules; it retargets segments onto the merged groups, so every segment ends in the same action as it does in the full build. What it costs is the ability to pick a node per service. No automatic-latency, Full, local, or Extended variant is published.
 """
     write_text(output / "README.md", chinese)
     write_text(output / "README_EN.md", english)

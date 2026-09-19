@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { DEFAULT_CONVERT_OPTIONS } from "./options";
+import {
+  DEFAULT_CONVERT_OPTIONS,
+  RECOMMENDED_CONVERT_OPTIONS,
+} from "./options";
 import {
   buildStatelessConvertQuery,
   buildStatelessSubscriptionUrl,
@@ -76,14 +79,12 @@ test("a link carries only the choices that differ from the defaults", () => {
     buildStatelessConvertQuery({
       subscriptionUrl: "https://example.test/sub",
       target: "clash",
-      // udp is on by default, so asking for it again must not widen the link.
-      options: { tfo: true, udp: true },
+      options: { udp: true },
     }),
   );
   assert.equal(params.get("url"), "https://example.test/sub");
   assert.equal(params.get("target"), "clash");
-  assert.equal(params.get("tfo"), "true");
-  assert.equal(params.get("udp"), null);
+  assert.equal(params.get("udp"), "true");
   assert.equal(params.get("emoji"), null);
   assert.equal(params.get("interval"), null);
   assert.equal(params.get("config"), null);
@@ -113,4 +114,37 @@ test("a built link parses back into the same request", () => {
   assert.equal(parsed.options.updateIntervalHours, 6);
   assert.equal(parsed.name, "手机");
   assert.equal(parsed.remoteConfig, "acl4ssr-mini");
+});
+
+test("an omitted parameter keeps the meaning it had when the link was made", () => {
+  // A stateless link carries only what differs from DEFAULT_CONVERT_OPTIONS,
+  // so those values are a contract with every link already in circulation.
+  // Changing one silently rewrites what an old link asks for: someone who
+  // imported a link months ago would get a different configuration on its next
+  // refresh without having touched anything. The recommendations the form
+  // starts with live in RECOMMENDED_CONVERT_OPTIONS instead, and a link states
+  // them outright.
+  const legacy = parseStatelessConvertQuery(
+    new URLSearchParams("url=https%3A%2F%2Fexample.test%2Fsub&target=clash"),
+  );
+  assert.deepEqual(legacy.options, DEFAULT_CONVERT_OPTIONS);
+  for (const [name, value] of Object.entries(DEFAULT_CONVERT_OPTIONS)) {
+    assert.equal(
+      legacy.options?.[name as keyof typeof DEFAULT_CONVERT_OPTIONS],
+      value,
+      `a link with no parameters must still mean ${name} = ${value}`,
+    );
+  }
+
+  // And the recommendations really do differ, so the form's choices reach the
+  // link by being written into it rather than by being assumed.
+  const written = new URLSearchParams(
+    buildStatelessConvertQuery({
+      subscriptionUrl: "https://example.test/sub",
+      target: "clash",
+      options: RECOMMENDED_CONVERT_OPTIONS,
+    }),
+  );
+  assert.equal(written.get("udp"), "true");
+  assert.equal(written.get("xudp"), "true");
 });
