@@ -1446,3 +1446,37 @@ The star count keeps its own thirty-minute clock on the REST API. It does not ne
 
 `parseRefTagNames` scans for ref names rather than parsing the pkt-line framing: a name ends at the first character git forbids in one, which is the NUL or newline the framing puts there, or the caret of a peeled `^{}` entry. Tested against a body shaped like the real thing — pkt-line lengths, a NUL-delimited capability list on the first ref, peeled entries, and refs that are not tags — and against a body with no tags at all, which must yield nothing rather than a guess.
 
+## ER-063 — Money has its own exit requirement
+
+**Type:** product shape; 1 group and 1 segment added, funded by consolidation; 8 mainland banks admitted
+
+`wise.com` reached `🐟 漏网之鱼`. It worked, which is why it went unnoticed: the fallback is a proxy, so the page loaded. What it did not have was an exit of its own. A financial account is checked against where it is used — a login from an exit that does not match the account's history is what triggers verification, and in the worst case a freeze. Sharing an exit with every unclassified request means that exit changes whenever anything else does. That is the same defect as the game: one session, an exit it did not choose.
+
+`💳 金融服务` defaults to `♻️ 手动切换` and holds 44 rules across four families:
+
+| Family | Holds |
+|---|---|
+| Payments and remittance | Wise, PayPal, Payoneer, Revolut, Remitly, Western Union, Xoom, Airwallex, dLocal |
+| Virtual cards | WildCard, Dupay, Privacy.com |
+| SMS receipt and virtual numbers | SMS-Activate, 5SIM, SMSPVA, SMS-Man, OnlineSIM, SMSPool, Receive-SMS, JuicySMS, TextNow |
+| Overseas banks and brokers | HSBC (incl. `.com.hk`), Citi, Chase, Bank of America, Wells Fargo, DBS, OCBC, UOB, Standard Chartered, Barclays, Santander, Schwab, Fidelity, Interactive Brokers, Futu, moomoo, Tiger |
+
+Virtual cards and SMS receipt belong here rather than anywhere else because they are the step where an account is created: the address that registers a number or a card is the address the account is thereafter expected to arrive from. Every domain was resolved before admission; the ones that did not answer are not in the list.
+
+`futunn.com` and `moomoo.com` resolve into Hong Kong ranges, not mainland ones, so they are foreign services here rather than DIRECT candidates — checked rather than assumed, because a broker on Tencent Cloud reads like a mainland service at a glance.
+
+### Funding
+
+The product was at the 64-segment ceiling, so the segment is paid for the way ER-023 established. `kakao-talk` is concatenated into `line`: the two were adjacent with nothing between them and both target `📲 聊天软件`, so appending one to the other cannot reorder anything and cannot change where any rule lands. Verified after the merge — `kakao.com`, `daum.net`, `kakaocdn.net`, `potplayer.tv`, `line.me`, `lin.ee` and `linecorp.com` all still reach the same policy in both builds. The retired Raw URL survives as a generated-only compatibility copy of the `[36, 51)` slice behind frozen list and provider hashes.
+
+### Eight mainland banks were on the fallback
+
+Checking that mainland banks stayed DIRECT turned up twelve that did not. A mainland bank reaching the fallback is worse than a foreign one: the proxy exit is exactly what its risk check objects to.
+
+The mainland probe answered for each. Eight resolve wholly into APNIC's CN ranges and are admitted to `china-web`: 兴业、华夏、民生、北京、上海、南京、浙商 and 广发. Four are not: `cloudpay.com.cn` and `yunshanfu.cn` resolve outside those ranges, and `gdb.com.cn` and `hsbank.cc` do not resolve at all. They stay on the fallback. A bank being obviously Chinese is a reason to look, not a verdict — the seed list is not the evidence, and the four without a verdict are not admitted on the strength of their names.
+
+Verdicts join `docs/evidence/cn-apnic-verdicts-2026-09-19.json` under the probe round
+`bank-2026-09-19` rather than opening a fourth evidence route. It is the same method,
+the same registry and the same verdict type, and ER-057 already established that an
+evidence category holding one round of one thing is scaffolding rather than a route.
+

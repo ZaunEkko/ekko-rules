@@ -182,12 +182,12 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/line.yaml
     path: ./ruleset/line.yaml
     interval: 86400
-  kakao-talk:
+  finance:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/kakao-talk.yaml
-    path: ./ruleset/kakao-talk.yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/finance.yaml
+    path: ./ruleset/finance.yaml
     interval: 86400
   whatsapp:
     type: http
@@ -534,7 +534,7 @@ rules:
 - RULE-SET,instagram,🚀 国外服务
 - RULE-SET,mail,🌏 国内网站
 - RULE-SET,line,🚀 国外服务
-- RULE-SET,kakao-talk,🚀 国外服务
+- RULE-SET,finance,🚀 国外服务
 - RULE-SET,whatsapp,🚀 国外服务
 - RULE-SET,telegram,🚀 国外服务
 - RULE-SET,social-platforms,🚀 国外服务
