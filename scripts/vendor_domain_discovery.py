@@ -44,9 +44,22 @@ BACKOFF_SECONDS = 8
 MULTI_LABEL_SUFFIXES = frozenset(
     {
         "com.cn", "net.cn", "org.cn", "gov.cn", "edu.cn", "ac.cn",
-        "com.hk", "com.tw", "com.sg", "com.my", "co.jp", "co.kr",
+        "com.hk", "net.hk", "org.hk", "com.tw", "net.tw", "org.tw",
+        "com.sg", "com.my", "co.jp", "ne.jp", "or.jp", "co.kr", "or.kr",
+        "co.uk", "org.uk", "me.uk", "ac.uk", "gov.uk", "co.nz", "net.nz",
+        "com.au", "net.au", "org.au", "com.br", "com.mx", "com.ar",
+        "com.co", "com.pe", "com.uy", "com.ec", "com.gt", "com.pt",
+        "com.es", "com.tr", "com.ua", "net.ua", "org.ua", "pp.ua",
+        "com.ru", "net.ru", "org.ru", "com.bd", "com.pk", "co.in",
+        "co.za", "co.zw", "co.il", "com.vn", "com.ph", "com.kz",
+        "eu.org", "co.id", "or.id", "com.ng", "com.eg", "com.sa",
     }
 )
+# A certificate covering many unrelated registrable roots is a shared or CDN
+# certificate, and the tenants on it prove nothing about each other. Reading
+# one as a vendor's portfolio pulls in whoever else happened to share it:
+# Chartboost's certificate named Cisco, SmartAdServer's named Broadcom.
+SHARED_CERTIFICATE_ROOTS = 12
 VALID_ROOT = re.compile(r"^[a-z0-9]([a-z0-9\-]*[a-z0-9])?(\.[a-z0-9\-]+)*\.[a-z]{2,}$")
 
 
@@ -84,11 +97,17 @@ def query(term: str) -> tuple[str, list[str]]:
             time.sleep(BACKOFF_SECONDS * (attempt + 1))
     roots = set()
     for entry in entries:
+        names: set[str] = set()
         for key in ("common_name", "name_value"):
-            for name in str(entry.get(key, "")).split("\n"):
-                root = registrable_root(name)
-                if root and VALID_ROOT.match(root) and not root[0].isdigit():
-                    roots.add(root)
+            names.update(str(entry.get(key, "")).split("\n"))
+        certificate_roots = {
+            root
+            for root in (registrable_root(name) for name in names)
+            if root and VALID_ROOT.match(root) and not root[0].isdigit()
+        }
+        if len(certificate_roots) > SHARED_CERTIFICATE_ROOTS:
+            continue
+        roots |= certificate_roots
     return term, sorted(roots)
 
 
