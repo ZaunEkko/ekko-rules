@@ -148,6 +148,10 @@ journalctl -u ekko-selfhost-update.service -n 50
 
 `scripts/vps-update.sh` 只有在镜像确实变化时才重启容器，更新后会等 web 进入 running 状态；没起来就以非零退出并打印日志，定时器的 journal 里能看到。
 
+它同时会把这份检出跟上 `main`，并在 systemd 单元变化时重新安装：镜像不是部署的全部，单元文件、compose 与 nginx 片段也在仓库里，而这些以前只能上机手动同步——曾经有一台服务器落后十一个提交，一直跑着几周前就改掉的定时间隔。
+
+同步是尽力而为，不会挡住镜像更新：检出不在 `main`、有本地改动，或拉取无法快进时，它只打印一行说明就继续干正事。`ekko-selfhost-update.timer` 里没有机器相关的路径，变了就直接装上；`ekko-selfhost-update.service` 写死了 `/opt/ekko-rules/selfhost`，所以只有当已安装的那份 `WorkingDirectory` 正好指向本检出时才会覆盖——把仓库放在别处的服务器改过这一行，静默覆盖会让单元指向一个不存在的目录。脚本更新到自己时会交棒给新副本重跑一次（shell 是边读边执行的，在一个刚被改写的文件里继续跑就是部署自毁的方式）。
+
 ### 固定版本与回滚
 
 默认跟随 `latest`，打一个 `selfhost-v*` tag 就是一次发布：publish 工作流把 `latest`
