@@ -3,11 +3,17 @@ Description=Check for new Ekko Rules self-hosted converter images
 Documentation=https://github.com/ZaunEkko/ekko-rules/blob/main/selfhost/docs/vps.md
 
 [Timer]
-# A few minutes after boot, then every 10 minutes with jitter so many servers
+# A few minutes after boot, then every 5 minutes with jitter so many servers
 # do not hit the registry at the same second.
+#
+# A run that finds nothing new costs a couple of manifest requests: `pull
+# --quiet` fetches no layers, `up -d` does not recreate an unchanged container,
+# and the health check exits on its first poll. Five minutes is the point where
+# the wait stops being the timer's fault and starts being how often an image is
+# actually published, so going lower buys latency that does not exist.
 OnBootSec=3min
-OnUnitActiveSec=10min
-RandomizedDelaySec=2min
+OnUnitActiveSec=5min
+RandomizedDelaySec=1min
 Persistent=true
 
 [Install]
