@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "source": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
-  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A root is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19 and bank-2026-09-19 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve.",
+  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A root is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19 and bank-2026-09-19 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve. Rounds before bank-2026-09-19 recorded only admissions, so every record carried mainland_hosted true; from that round on a root that was checked and found outside the CN ranges, or that did not resolve, is recorded with mainland_hosted false rather than dropped, so the file shows what was rejected as well as what was admitted.",
   "counts": {
-    "roots": 3783,
-    "records": 3795,
-    "mainland_hosted": 3791
+    "roots": 3795,
+    "mainland_hosted": 3791,
+    "not_mainland_hosted": 4
   },
   "records": [
     {
