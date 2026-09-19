@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-044 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-045 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -935,6 +935,33 @@ Current verified canonical target:
 
 - 63 rule files, 64 ordered segments, 40 proxy groups;
 - 11,178 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-045 — Subject alternative names expose sibling domains
+
+**Type:** extension of an existing segment from the same evidence source
+
+Querying Certificate Transparency by organisation depends on guessing how a vendor's certificates are registered, and large vendors register under many names — ByteDance's certificates sit under Douyin, Volcano Engine and Lemon Inc. as well as its own. Querying by domain avoids the guess. A certificate covers every name it was issued for, so a multi-domain certificate for a vendor's main domain names the siblings it runs under unrelated-looking names: `bytedance.com` returns `bytedance.net`, `feishu.cn`, `larksuite.com` and `tiktok.com`.
+
+The tool now reads a term containing a dot as a domain and searches with `q` rather than `O`. 797 seeds — every mainland-hosted root confirmed so far, plus the origins of the first scan — attest 5,456 registrable roots, against 2,338 from the organisation search.
+
+3,424 match no existing rule; the APNIC probe finds 628 mainland-hosted, 1,241 foreign and 1,553 unresolved. One measurement root is removed as belonging to the advertising policy, leaving 627. `china-web` reaches 3,896 rules with first-match coverage unchanged at union 145.
+
+Progress against the imports, measured over the full independent evidence pool:
+
+| Import | Live entries | Independently attested | Still missing |
+|---|---:|---:|---:|
+| `china-domains-direct.list` | 1,448 | 480 (33.1%) | 968 |
+| `advertising.list` | 765 | 236 (30.8%) | 529 |
+
+The subject-alternative-name harvest added 627 rules but moved the mainland import's attestation by only 1.3 points, because it finds a different set of mainland domains rather than the import's. That gap is the honest shape of the remaining work.
+
+Current verified canonical target:
+
+- 63 rule files, 64 ordered segments, 40 proxy groups;
+- 11,805 rules including the unique FINAL;
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.

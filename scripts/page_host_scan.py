@@ -88,7 +88,12 @@ def fetch(url: str, limit: int) -> str | None:
     try:
         with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
             return decode(response.read(limit), response.headers.get("content-encoding"))
-    except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+    except Exception:
+        # A scan of the open web meets every failure mode a server can invent:
+        # truncated chunked bodies, bad redirects, malformed headers, expired
+        # certificates. None of them is worth aborting a run of thousands of
+        # origins over, and an unreachable origin is simply one without
+        # evidence, so every failure reads the same way here.
         return None
 
 

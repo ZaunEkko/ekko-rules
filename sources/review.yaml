@@ -626,3 +626,16 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: 48 of 75 Russian publishers served an ads.txt declaring 439 advertising systems, 273 by two or more. Of 126 uncovered candidates the delivery probe found 37 serving; review removed eight mixed-business roots, one publisher, one agency and ten video player platforms, leaving 17 that take the segment to 469 rules. 28.4 percent of the import's live Russian entries are now independently attested. The round also anchors page_host_scan.py against minified JavaScript trailing comments, which its bare double-slash pattern had been reading as hostnames; no rule was affected because every candidate passes the APNIC probe first and the noise never resolved.
+- id: certificate-san-sibling-discovery
+  status: accepted
+  scope: routing-policy
+  summary: Organisation search depends on guessing how a vendor registers its certificates, and large vendors register under many names.
+  evidence:
+  - scripts/vendor_domain_discovery.py
+  - https://crt.sh/
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: A certificate covers every name it was issued for, so querying by domain rather than organisation returns the siblings a vendor runs under unrelated-looking names - bytedance.com yields bytedance.net, feishu.cn, larksuite.com and tiktok.com. 797 seeds attest 5,456 roots against 2,338 from the organisation search; 3,424 are uncovered and the APNIC probe finds 628 mainland-hosted. One measurement root is removed and the remaining 627 take china-web to 3,896 rules with first-match coverage unchanged. The harvest moved the mainland import's independent attestation only from 31.8 to 33.1 percent because it finds a different set of mainland domains rather than the import's.
