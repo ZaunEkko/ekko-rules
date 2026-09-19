@@ -104,14 +104,28 @@ Both shapes emit eight client formats: Clash / Mihomo, sing-box, Surge 4+, Quant
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Mihomo/reversed-template.yaml
 ```
 
+The lite build has one too:
+
+```text
+https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Mihomo/reversed-template-lite.yaml
+```
+
 Download it, replace `PUT_YOUR_SUBSCRIPTION_URL_HERE` with your own subscription URL, and load it in Clash Verge Rev or another Mihomo client. The template supplies proxy providers, policy groups, rule providers, and rules only; it does not take over ports, DNS, TUN, the controller, or other client settings.
 
 ### With another Subconverter frontend
 
-The rules are public, so they also work in any Subconverter frontend that accepts a custom remote configuration: set the output to `Clash` and the remote configuration to
+The rules are public, so they also work in any Subconverter frontend that accepts a custom remote configuration: set the output to `Clash` and the remote configuration to one of these two.
+
+Full build, 42 policy groups:
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
+```
+
+Lite build, 10 policy groups, routing identical to the full one:
+
+```text
+https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules-lite.ini
 ```
 
 > **A conversion backend sees the complete subscription URL, token included.** That is inherent to online conversion: the backend must have the full address to fetch the nodes. Ekko Rules only publishes rules; it never receives and cannot see what anyone submits elsewhere, and self-hosting only the frontend while still calling a public backend hides nothing. If that matters to you, use one of the two shapes above. Never paste a tokenized subscription URL into an issue, a PR, a log, or a public chat.
@@ -126,7 +140,7 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Regional media**: US long-tail services use `🎬 美国流媒体`, with separate handling for HMT, Bilibili HMT, Southeast Asia, Japan, Korea, iQIYI, and mainland Chinese media; verified third-party mainland video APIs and their dedicated playback hosts use the default-direct `🌏 国内流媒体` group so high-volume playback does not fall through to the proxy fallback;
 - **Gaming**: mainland Chinese launchers, login, community, and voice services use the default-DIRECT `🌏 国内网站` group; dedicated download endpoints use default-DIRECT `🎮 游戏下载`; `🎮 游戏平台` is reserved for overseas platforms and defaults to `♻️ 手动切换`;
 - **Social and communication**: separate groups for social media, messaging, Discord, and email;
-- **Remote streaming and real-time communication**: `🖥️ 远程串流` defaults to `DIRECT` for remote-access paths such as Tailscale, ZeroTier, Moonlight, RustDesk, AnyDesk, and TeamViewer, plus mainland ToDesk, Sunlogin, RayLink, and mainstream RTC/IM foundations, preventing remote desktop, voice, or real-time traffic from unnecessarily traversing a proxy;
+- **Remote streaming and real-time communication**: split into two groups. `🖥️ 远程串流流量` defaults to `DIRECT` and carries the data plane — Tailscale's DERP relays and control plane, ZeroTier root servers, Parsec and RustDesk session endpoints, NetBird signalling and relay, Chrome Remote Desktop, plus mainland ToDesk, Sunlogin, RayLink and mainstream RTC/IM foundations — so remote desktop, voice and real-time traffic never traverses a proxy unnecessarily. `🖥️ 远程串流后台` defaults to `♻️ 手动切换` and holds only the vendors' admin consoles and websites (Tailscale, ZeroTier, NetBird, Parsec, RustDesk, AnyDesk, TeamViewer, Moonlight). They are separate because one vendor suffix covers two jobs at once: the console cannot be reached from the mainland on a direct path, while the relays beneath that same suffix carry the streaming payload — either policy applied alone is wrong for half the traffic;
 - **Mainland foundations**: CAPTCHA, push delivery, domestic code and model communities, collaborative documents, electronic certification, mainstream learning platforms, and clearly mainland smart-device or connected-car entry points reuse the default-direct `🌏 国内网站`; only official roots are included, without broadly directing globally shared device clouds;
 - **Developer services**: `🧑‍💻 开发服务` lists `♻️ 手动切换` first and now covers Linear, Notion, Slack, Atlassian, Postman, Sentry, Vercel, Supabase, mainstream CI/CD and observability platforms, developer databases, and online IDEs in addition to source hosting and language-package ecosystems; switch it temporarily to `DIRECT` when proxy traffic matters; generic CDNs, object storage, and user-hosted sites remain excluded;
 - **Cloud infrastructure**: `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
@@ -135,6 +149,23 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
 
 All groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects login, playback, purchases, notifications, or telemetry in a particular app, temporarily switch `🛑 广告拦截` to `DIRECT` or another policy.
+
+## Lite build: same routing, 10 policy groups
+
+Forty-two groups exist so that each kind of traffic can be pointed at its own node. If you do not need that, what you get instead is a screen of dropdowns to work through. The lite build folds them together:
+
+| | Full | Lite |
+|---|---|---|
+| Policy groups | 42 | 10 |
+| Routing segments | 64 | 64, unchanged |
+
+The ten that remain are `♻️ 手动切换`, `🌏 国内网站`, `🎬 流媒体`, `🧲 海外 AI`, `🎮 游戏平台`, `🎮 游戏下载`, `🚀 国外服务`, `🛑 广告拦截`, `🔞 NSFW`, and `🐟 漏网之鱼`.
+
+**Behaviour does not change.** Folding removes no rules; it retargets 47 segments onto the merged groups. The ones that each had a group of their own and all defaulted to a proxy — OpenAI, Claude, the individual streaming services, social, developer services, overseas cloud, overseas shopping — go to `🚀 国外服务` or `🎬 流媒体`; the mainland groups that defaulted to direct go to `🌏 国内网站`. Every segment still does what it did, and match order is untouched. A test holds this: comparing the effective action of every segment across both products gives 17 `DIRECT`, 45 `PROXY`, and 2 `REJECT` either way.
+
+**What it costs is granularity.** In the full build you can move Netflix to another node without touching YouTube; in the lite build they share `🎬 流媒体`, so they move together. If you need to pick routes per service, use the full build.
+
+In the converter's remote-configuration dropdown, the full build is first and the lite build second. The URLs for using the rules alone are in the previous section.
 
 ## Mainland domains, IPs, and DNS
 

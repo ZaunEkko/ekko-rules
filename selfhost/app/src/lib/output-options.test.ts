@@ -40,7 +40,10 @@ test("forces XUDP only for compatible Mihomo proxy types", () => {
 test("leaves Mihomo XUDP selection automatic unless forcing is enabled", () => {
   const input = "proxies:\n  - {name: VLESS, type: vless, xudp: false}\n";
   assert.equal(
-    applyTargetOutputOptions(input, "clash", DEFAULT_CONVERT_OPTIONS),
+    applyTargetOutputOptions(input, "clash", {
+      ...DEFAULT_CONVERT_OPTIONS,
+      xudp: false,
+    }),
     input,
   );
 });

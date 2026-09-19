@@ -11,6 +11,9 @@ from typing import Any
 
 from profile_model import (
     CORE_PRODUCT,
+    PRODUCTS,
+    PRODUCT_CONFIG_NAMES,
+    PRODUCT_TEMPLATE_NAMES,
     DESTINATION_IP_RULE_TYPES,
     GENERATED_RULESET_ALIASES,
     generated_ruleset_alias_entries,
@@ -114,8 +117,8 @@ def read_json(path: Path) -> Any:
 
 def expected_generated_files(sources: ProfileSources) -> set[str]:
     files = {
-        "config/ekko-rules.ini",
-        "Mihomo/reversed-template.yaml",
+        *(f"config/{name}" for name in PRODUCT_CONFIG_NAMES.values()),
+        *(f"Mihomo/{name}" for name in PRODUCT_TEMPLATE_NAMES.values()),
         "analysis.json",
         "README.md",
         "README_EN.md",
@@ -217,12 +220,13 @@ def expected_ini_rules(
     result: list[str] = []
     rules_base = sources.manifest["urls"]["rules_base"]
     for segment in sources.segments_for(product):
+        target = segment.target_for(product)
         if segment.kind == "terminal":
-            result.append(f"ruleset={segment.target},[]FINAL")
+            result.append(f"ruleset={target},[]FINAL")
         elif local:
-            result.append(f"ruleset={segment.target},Ruleset/{segment.slug}.list")
+            result.append(f"ruleset={target},Ruleset/{segment.slug}.list")
         else:
-            result.append(f"ruleset={segment.target},{rules_base}/{segment.slug}.list")
+            result.append(f"ruleset={target},{rules_base}/{segment.slug}.list")
     return result
 
 
@@ -239,11 +243,16 @@ def expected_ini_groups(sources: ProfileSources, *, product: str) -> list[str]:
 
 
 def validate_ini_presets(generated: Path, sources: ProfileSources) -> None:
-    filename = "ekko-rules.ini"
-    expected_rules = expected_ini_rules(
-        sources, product=CORE_PRODUCT, local=False
-    )
-    expected_groups = expected_ini_groups(sources, product=CORE_PRODUCT)
+    for product in PRODUCTS:
+        _validate_ini_preset(generated, sources, product=product)
+
+
+def _validate_ini_preset(
+    generated: Path, sources: ProfileSources, *, product: str
+) -> None:
+    filename = PRODUCT_CONFIG_NAMES[product]
+    expected_rules = expected_ini_rules(sources, product=product, local=False)
+    expected_groups = expected_ini_groups(sources, product=product)
     actual_rules, actual_groups, actual_base, actual_controls = parse_ini(
         generated / "config" / filename
     )
@@ -374,7 +383,7 @@ def validate_mihomo_product(
         "Mihomo rule-provider order differs",
     )
     expected_rules = [
-        f"RULE-SET,{segment.slug},{segment.target}"
+        f"RULE-SET,{segment.slug},{segment.target_for(product)}"
         for segment in product_segments
     ] + [f"MATCH,{sources.terminal.target}"]
     check(config["rules"] == expected_rules, "Mihomo ordered rules differ")
@@ -507,12 +516,13 @@ def main() -> int:
     generated_manifest = validate_file_set(generated, sources)
     validate_ini_presets(generated, sources)
     total_rules, destination_ip_rules = validate_rulesets(generated, sources)
-    validate_mihomo_product(
-        generated,
-        sources,
-        product=CORE_PRODUCT,
-        filename="reversed-template.yaml",
-    )
+    for product in PRODUCTS:
+        validate_mihomo_product(
+            generated,
+            sources,
+            product=product,
+            filename=PRODUCT_TEMPLATE_NAMES[product],
+        )
     validate_analysis(generated, sources, total_rules)
     validate_sensitive_content(generated)
     if not args.skip_generation_check:
@@ -522,13 +532,18 @@ def main() -> int:
         json.dumps(
             {
                 "status": "passed",
-                "product": {
-                    "segments": len(sources.segments_for(CORE_PRODUCT)),
-                    "rule_files": len(sources.rule_segments_for(CORE_PRODUCT)),
-                    "proxy_groups": len(sources.proxy_groups_for(CORE_PRODUCT)),
-                    "rules": build_analysis(sources)["products"][CORE_PRODUCT][
-                        "summary"
-                    ]["rule_count"],
+                # Both products are validated, so both are reported. A summary
+                # that named only one left no way to notice the other drifting.
+                "products": {
+                    product: {
+                        "segments": len(sources.segments_for(product)),
+                        "rule_files": len(sources.rule_segments_for(product)),
+                        "proxy_groups": len(sources.proxy_groups_for(product)),
+                        "rules": build_analysis(sources)["products"][product][
+                            "summary"
+                        ]["rule_count"],
+                    }
+                    for product in PRODUCTS
                 },
                 "provider_files": len(sources.rule_segments)
                 + sum(

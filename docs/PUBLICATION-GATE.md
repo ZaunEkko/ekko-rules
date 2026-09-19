@@ -2,18 +2,18 @@
 
 Status: **PREPARED — visibility change remains manual**
 
-The repository now has an MIT license, a closed single-product layout, deterministic generation, and local validation. Making the GitHub repository public remains an outward-facing operation and must be performed separately and explicitly.
+The repository now has an MIT license, a closed layout of one rule corpus published as two builds, deterministic generation, and local validation. Making the GitHub repository public remains an outward-facing operation and must be performed separately and explicitly.
 
 ## Completed in the publication-preparation branch
 
 - [x] Add a repository-wide MIT `LICENSE`.
 - [x] Update `NOTICE.md` and `docs/PROVENANCE.md` with factual source-overlap, trademark, and disclaimer language.
-- [x] Reduce the live product to one Subconverter entry and one Mihomo template backed by the same 61 rulesets.
+- [x] Reduce the live product to one rule corpus, published as a full and a lite build with one Subconverter entry and one Mihomo template each, all four backed by the same rulesets; the counts move with the product and are asserted against `sources/quality-baseline.yaml` rather than restated here. The two builds differ only in which policy a segment targets, and `LiteProductTests` holds them to the same effective action on every segment.
 - [x] Remove Full, local, Extended, EMBY community, Spotify legacy, Qobuz brand-defense, and repository base-config products.
 - [x] Remove automatic-latency groups and Mihomo proxy-provider health probing.
 - [x] Pin GitHub Actions to immutable full commit SHAs.
 - [x] Enforce anchored domain matching for every DIRECT-default policy.
-- [x] Confirm all 206 destination-IP rules carry `no-resolve` and all CIDRs are strict.
+- [x] Confirm every destination-IP rule carries `no-resolve` and all CIDRs are strict; `validate_generated.py` reports the count and fails on any rule without it.
 - [x] Preserve and validate the immutable Phase 2/3 migration and DIRECT-recovery ledgers.
 - [x] Validate the generated closed file set, SHA-256 manifest, sensitive-content gate, and deterministic clean render.
 - [x] Review the full Git history and Actions logs for live credentials; findings were false positives or masked values.

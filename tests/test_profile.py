@@ -30,7 +30,6 @@ AD_SERVING_PROBE = EVIDENCE / "ad-serving-probe-2026-09-19.json"
 CN_APNIC_VERDICTS = EVIDENCE / "cn-apnic-verdicts-2026-09-19.json"
 CN_OBSERVATION = EVIDENCE / "cn-observation-2026-09-19.json"
 CN_LEGACY_DIRECT = EVIDENCE / "cn-legacy-direct-2026-09-19.json"
-CN_REVIEW_ADMITTED = EVIDENCE / "cn-review-admitted-2026-09-19.json"
 ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
@@ -55,6 +54,8 @@ from scripts.profile_model import (  # noqa: E402
     ProfileError,
     compare_trees,
     coverage_metrics,
+    PRODUCTS,
+    build_analysis,
     first_match,
     load_profile_sources,
     parse_json_document,
@@ -149,10 +150,12 @@ class CanonicalSourceTests(unittest.TestCase):
     def test_shape_and_order_snapshot(self) -> None:
         self.assertEqual(len(self.sources.segments), 64)
         self.assertEqual(len(self.sources.rule_segments), 63)
-        self.assertEqual(len(self.sources.proxy_groups), 41)
+        # The raw list carries both products: 42 for the full one plus the two
+        # groups only the lite product publishes.
+        self.assertEqual(len(self.sources.proxy_groups), 44)
         self.assertEqual(len(self.sources.segments_for("core")), 64)
         self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 41)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 42)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -171,7 +174,8 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🗣 社交媒体",
                 "📲 聊天软件",
                 "🎙 Discord",
-                "🖥️ 远程串流",
+                "🖥️ 远程串流后台",
+                "🖥️ 远程串流流量",
                 "🧑‍💻 开发服务",
                 "🎬 YouTube",
                 "🎬 Netflix",
@@ -218,7 +222,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 ["REJECT", "♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
             )
         expected_group_members = {
-            "🖥️ 远程串流": [
+            "🖥️ 远程串流流量": [
                 "DIRECT",
                 "♻️ 手动切换",
                 "__ALL_SUBSCRIPTION_NODES__",
@@ -269,9 +273,9 @@ class CanonicalSourceTests(unittest.TestCase):
             [
                 "author-domain",
                 "private",
+                "remote-streaming-admin",
                 "remote-streaming",
                 "advertising-curated",
-                "openai",
             ],
         )
         self.assertFalse((SOURCES / "rules" / "direct-override.list").exists())
@@ -906,7 +910,7 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
                 ["REJECT", "♻️ 手动切换", "DIRECT"],
             )
         self.assertEqual(
-            mihomo_groups["🖥️ 远程串流"][:2],
+            mihomo_groups["🖥️ 远程串流流量"][:2],
             ["DIRECT", "♻️ 手动切换"],
         )
         self.assertEqual(
@@ -930,8 +934,15 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
                 "[]♻️ 手动切换`[]DIRECT`",
                 subconverter,
             )
+        # The split is visible in the published config: the admin console group
+        # leads with the manual selector and the data group leads with DIRECT.
         self.assertIn(
-            "custom_proxy_group=🖥️ 远程串流`select`[]DIRECT`"
+            "custom_proxy_group=🖥️ 远程串流后台`select`[]♻️ 手动切换`"
+            "[]DIRECT`",
+            subconverter,
+        )
+        self.assertIn(
+            "custom_proxy_group=🖥️ 远程串流流量`select`[]DIRECT`"
             "[]♻️ 手动切换`",
             subconverter,
         )
@@ -951,7 +962,7 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
             subconverter,
         )
         self.assertIn(
-            "ruleset=🖥️ 远程串流,https://raw.githubusercontent.com/"
+            "ruleset=🖥️ 远程串流流量,https://raw.githubusercontent.com/"
             "ZaunEkko/ekko-rules/main/generated/reversed-profile/Ruleset/"
             "remote-streaming.list",
             subconverter,
@@ -1113,7 +1124,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 "gemini.google",
             ),
             (
-                ("xai", "🧲 海外 AI", "DOMAIN-SUFFIX,x.ai"),
+                ("ai-platforms", "🧲 海外 AI", "DOMAIN-SUFFIX,x.ai"),
                 "api.x.ai",
             ),
             (
@@ -1297,7 +1308,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
 
     def test_remote_streaming_is_direct_first(self) -> None:
         domain_cases = [
-            ("DOMAIN-SUFFIX,tailscale.com", "login.tailscale.com"),
             ("DOMAIN-SUFFIX,tailscale.io", "control.tailscale.io"),
             ("DOMAIN-SUFFIX,ts.net", "host.example.ts.net"),
             ("DOMAIN,root-tok-01.zerotier.com", "root-tok-01.zerotier.com"),
@@ -1319,9 +1329,25 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for rule, domain in domain_cases:
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("remote-streaming", "🖥️ 远程串流", rule),
+                    ("remote-streaming", "🖥️ 远程串流流量", rule),
                     domain=domain,
                 )
+        # Tailscale is split on purpose. The data plane is peer-to-peer UDP to a
+        # peer address, so no domain rule reaches it and same-country peers stay
+        # direct through the GEOIP tail. What the domains carry is the control
+        # plane, the DERP relays and the admin console — and the console cannot
+        # be reached from the mainland on a direct path, which is why the whole
+        # tailscale.com surface sits under the developer policy while the
+        # process rules keep the daemon itself direct wherever they apply.
+        self.assert_match(
+            ("remote-streaming-admin", "🖥️ 远程串流后台", "DOMAIN,login.tailscale.com"),
+            domain="login.tailscale.com",
+        )
+        self.assert_match(
+            ("remote-streaming", "🖥️ 远程串流流量", "DOMAIN-SUFFIX,tailscale.io"),
+            domain="log.tailscale.io",
+        )
+
         for process_name in [
             "tailscaled.exe",
             "tailscale.exe",
@@ -1357,7 +1383,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 self.assert_match(
                     (
                         "remote-streaming",
-                        "🖥️ 远程串流",
+                        "🖥️ 远程串流流量",
                         f"PROCESS-NAME,{process_name}",
                     ),
                     process_name=process_name,
@@ -1517,7 +1543,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         self.assert_match(
             (
                 "remote-streaming",
-                "🖥️ 远程串流",
+                "🖥️ 远程串流流量",
                 "DOMAIN,root-mia-01.zerotier.com",
             ),
             domain="root-mia-01.zerotier.com",
@@ -2009,7 +2035,13 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "download.wegame.qq.com": "DOMAIN,download.wegame.qq.com",
             "patch.tapapks.com": "DOMAIN-SUFFIX,tapapks.com",
             "client.wmupd.com": "DOMAIN-SUFFIX,wmupd.com",
-            "dl.playstation.net": "DOMAIN-SUFFIX,dl.playstation.net",
+            # The apex does not resolve; the hosts that carry game content do.
+            # psnobj/psn-rsc under the same parent serve web images and belong
+            # with the platform instead, which ER-057 separates.
+            "gs2-sec.ww.prod.dl.playstation.net": (
+                "DOMAIN-SUFFIX,ww.prod.dl.playstation.net"
+            ),
+            "zeus.dl.playstation.net": "DOMAIN,zeus.dl.playstation.net",
             "blzdist-wow.necdn.leihuo.netease.com": (
                 "DOMAIN,blzdist-wow.necdn.leihuo.netease.com"
             ),
@@ -2248,6 +2280,13 @@ class GenerationTests(unittest.TestCase):
         self.assertEqual(
             GENERATED_RULESET_ALIASES,
             {
+                "xai": (
+                    "ai-platforms",
+                    22,
+                    25,
+                    "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
+                    "c528ddafca25108e32bca53a4de650b0ba9a96b20667ab02fc5b95a774cf3eb6",
+                ),
                 "onedrive": (
                     "cloud-storage",
                     0,
@@ -2833,16 +2872,7 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             value.lower()
             for value in json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))["values"]
         }
-        # The fourth route exists because the other three have a blind spot, not
-        # because review outranks them: an anycast probe endpoint answers from
-        # wherever you ask, so resolving it from outside the mainland says
-        # nothing. Every entry has to state the limitation that put it here.
-        reviewed = {
-            record["root"].lower()
-            for record in json.loads(CN_REVIEW_ADMITTED.read_text(encoding="utf-8"))["records"]
-            if record["verdict"] == "admit"
-        }
-        evidenced = apnic | observed | legacy | reviewed
+        evidenced = apnic | observed | legacy
         unmapped = [
             entry
             for slug in ("china-web", "china-direct-curated")
@@ -2850,30 +2880,6 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             if parse_rule(entry, context="mainland evidence")[1].lower() not in evidenced
         ]
         self.assertEqual(unmapped, [], "mainland rules with no committed evidence")
-
-    REVIEW_ADMITTED_LIMIT = 8
-
-    def test_review_admitted_roots_state_why_the_probes_could_not_decide(self) -> None:
-        """This route is the easiest one to abuse, so it carries the most proof.
-
-        A root here skipped both the scan and the APNIC verdict. What keeps that
-        honest is that the record must say which limitation applied, and that the
-        category stays small enough to read in full.
-        """
-        document = json.loads(CN_REVIEW_ADMITTED.read_text(encoding="utf-8"))
-        self.assertLessEqual(
-            len(document["records"]),
-            self.REVIEW_ADMITTED_LIMIT,
-            "the review-admitted route is a blind-spot patch, not a general entrance",
-        )
-        incomplete = [
-            record["root"]
-            for record in document["records"]
-            if not record.get("why_other_routes_failed")
-            or not record.get("reason")
-            or not record.get("vendor_attribution")
-        ]
-        self.assertEqual(incomplete, [], "review-admitted roots missing their justification")
 
     def test_the_mainland_grandfathered_set_is_closed(self) -> None:
         legacy = json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))
@@ -2883,3 +2889,104 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             self.CN_GRANDFATHERED_LIMIT,
             "the mainland grandfathered set may shrink, never grow",
         )
+
+
+class LiteProductTests(unittest.TestCase):
+    """The lite product is the same corpus behind fewer switches.
+
+    It exists so someone who does not want to think about forty-two policies
+    can still get the routing. What it may not do is change where traffic
+    goes: folding a group is a decision about how many knobs the user sees,
+    never about whether a rule ends up direct, proxied or rejected.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sources = load_profile_sources(SOURCES)
+        document = cls.sources.proxy_groups_document
+        cls.first_member = {
+            group["name"]: group["members"][0] for group in document["groups"]
+        }
+
+    def effective_action(self, target: str) -> str:
+        """DIRECT, REJECT, or PROXY — what the traffic actually does."""
+        if target in ("DIRECT", "REJECT"):
+            return target
+        leading = self.first_member[target]
+        return leading if leading in ("DIRECT", "REJECT") else "PROXY"
+
+    def test_both_products_carry_the_same_rules(self) -> None:
+        core = {
+            segment.slug: self.sources.rules[segment.slug]
+            for segment in self.sources.rule_segments_for("core")
+        }
+        lite = {
+            segment.slug: self.sources.rules[segment.slug]
+            for segment in self.sources.rule_segments_for("lite")
+        }
+        self.assertEqual(core, lite, "the lite product must not change a single rule")
+
+    def test_folding_a_group_never_changes_what_traffic_does(self) -> None:
+        changed = [
+            (
+                segment.slug,
+                segment.target_for("core"),
+                segment.target_for("lite"),
+            )
+            for segment in self.sources.rule_segments_for("core")
+            if self.effective_action(segment.target_for("core"))
+            != self.effective_action(segment.target_for("lite"))
+        ]
+        self.assertEqual(changed, [], "lite redirects that change direct/proxy/reject")
+
+    def test_lite_publishes_fewer_groups_and_every_target_exists(self) -> None:
+        core_groups = self.sources.proxy_groups_for("core")
+        lite_groups = self.sources.proxy_groups_for("lite")
+        self.assertLess(len(lite_groups), len(core_groups))
+        published = {group.name for group in lite_groups}
+        missing = [
+            segment.target_for("lite")
+            for segment in self.sources.rule_segments_for("lite")
+            if segment.target_for("lite") not in published
+            and segment.target_for("lite") != "DIRECT"
+        ]
+        self.assertEqual(missing, [], "lite segments pointing at groups lite does not publish")
+
+    def test_a_product_is_only_ever_described_by_its_own_policies(self) -> None:
+        """Published descriptions must not name groups the product lacks.
+
+        Both products come from the same segments, so anything reading
+        `segment.target` instead of `segment.target_for(product)` keeps the
+        full build's answer while claiming to describe the lite one. That
+        shipped: every one of the 47 retargeted segments appeared in the lite
+        analysis pointing at a group the lite configuration does not define,
+        and the target-derived quality metrics were the full build's.
+        """
+        analysis = build_analysis(self.sources)
+        for product in PRODUCTS:
+            available = {
+                group.name for group in self.sources.proxy_groups_for(product)
+            } | {"DIRECT", "REJECT"}
+            for record in analysis["products"][product]["segments"]:
+                self.assertIn(
+                    record["target"],
+                    available,
+                    f"{product} analysis names {record['target']}, which that "
+                    f"product does not define ({record['slug']})",
+                )
+
+    def test_asking_where_traffic_goes_answers_for_the_product_asked(self) -> None:
+        """`first_match` carried the same defect, unreported."""
+        for product in PRODUCTS:
+            available = {
+                group.name for group in self.sources.proxy_groups_for(product)
+            } | {"DIRECT", "REJECT"}
+            for domain in ("chat.openai.com", "www.netflix.com", "www.baidu.com"):
+                verdict = first_match(self.sources, product=product, domain=domain)
+                self.assertIn(
+                    verdict["target"],
+                    available,
+                    f"{product} routes {domain} to {verdict['target']}, which "
+                    f"that product does not define",
+                )
+

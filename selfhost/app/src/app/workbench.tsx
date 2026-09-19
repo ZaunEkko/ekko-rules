@@ -5,13 +5,13 @@ import { QRCodeSVG } from "qrcode.react";
 import {
   countEnabledOptions,
   DEFAULT_CONVERT_OPTIONS,
+  RECOMMENDED_CONVERT_OPTIONS,
   type ConvertOptions,
 } from "@/lib/options";
 import {
   clientInstallLabel,
   qrImportValue,
   supportsClientInstallQr,
-  type QrImportMode,
 } from "@/lib/qr-import";
 import {
   buildStatelessConvertQuery,
@@ -34,6 +34,9 @@ type Health = {
   deployment_error?: string | null;
   deployment_warning?: string | null;
   ekko_rules_version: string;
+  latest_ekko_rules_version?: string | null;
+  update_available?: boolean;
+  repo_stars?: number | null;
   subconverter_reachable: boolean;
   access_password_required: boolean;
   lan_access_enabled: boolean;
@@ -103,6 +106,108 @@ const FALLBACK_TARGETS: TargetCapability[] = [
 const BASE_URL_STORAGE_KEY = "ekko-rules.subscription-base-url";
 const BASE_URL_HISTORY_KEY = "ekko-rules.subscription-base-url-history";
 const BASE_URL_MODE_KEY = "ekko-rules.subscription-base-url-mode";
+// Remembered in this browser so a returning visitor picks an address instead of
+// pasting it again. Several, because one person often holds several providers
+// and switching between them is the whole point of keeping any of them.
+//
+// It never leaves the device: the server stores nothing either way. These
+// addresses carry tokens, so each one can be forgotten individually and the
+// list is capped rather than growing without end.
+const SOURCE_HISTORY_KEY = "ekko-rules.saved-links";
+const SAVED_LINK_LIMIT = 8;
+
+/**
+ * A link this browser produced before.
+ *
+ * The page rebuilds a link from scratch every visit, so someone who keeps one
+ * for each provider, or several with different advanced options, had no record
+ * of what they had already made — they rebuilt it to copy it again. This is
+ * that record, kept only so it can be copied.
+ *
+ * It lives in this browser alone. The server still stores nothing, which is why
+ * each entry can be forgotten on its own and the list is capped.
+ */
+type SavedLink = {
+  name: string;
+  link: string;
+  target: string;
+  /** What was ticked when this link was made, in the words the form uses. */
+  options: string[];
+  /** Enough to put the form back the way it was, so a record can be edited. */
+  restore: {
+    url: string;
+    remoteConfigId: string;
+    /* The id alone is not enough for a pasted config: "__custom__" says which
+       field was in use, not what was typed into it. Without this, restoring
+       such a record selected 自定义地址 with an empty box and then asked for a
+       URL the record already had. */
+    customRemoteConfig?: string;
+    convertOptions: ConvertOptions;
+  };
+  createdAt: number;
+};
+
+const OPTION_LABELS: ReadonlyArray<[keyof ConvertOptions, string]> = [
+  ["emoji", "Emoji 国旗"],
+  ["udp", "UDP"],
+  ["xudp", "XUDP"],
+  ["tfo", "TFO"],
+  ["tls13", "TLS 1.3"],
+  ["sort", "节点排序"],
+  ["autoUpdate", "自动更新"],
+  ["filterUnsupported", "过滤不支持节点"],
+  ["appendType", "显示协议类型"],
+  ["skipCertVerify", "跳过证书验证"],
+  ["singboxIpv6", "sing-box IPv6"],
+];
+
+/** The ticked options, named the way the form names them. */
+export function describeOptions(options: ConvertOptions): string[] {
+  const named = OPTION_LABELS.filter(([key]) => Boolean(options[key])).map(
+    ([, label]) => label,
+  );
+  if (options.include) named.push("包含节点");
+  if (options.exclude) named.push("排除节点");
+  if (options.rename) named.push("重命名");
+  if (options.customUserAgent) named.push("自定 UA");
+  return named;
+}
+
+const OPTION_KEYS = Object.keys(RECOMMENDED_CONVERT_OPTIONS) as Array<
+  keyof ConvertOptions
+>;
+
+const REPO_URL = "https://github.com/ZaunEkko/ekko-rules";
+
+/* Two halves, joined only in the browser. The rendered page shows the words
+   商务合作 and the server's HTML carries no address at all; a crawler would
+   have to run the bundle to find one. It is not a secret — anyone who wants it
+   can read it in the link — it just is not lying in the open. */
+const CONTACT_MAILBOX = "work";
+const CONTACT_DOMAIN = "zaunekko.com";
+
+/**
+ * The invitation to star, next to the buttons that finish the job.
+ *
+ * No page can star a repository for someone — that needs their GitHub login,
+ * and from a third party an OAuth grant this site has no business asking for.
+ * So it is a link, sitting in the space the actions leave rather than in a
+ * banner of its own, and it asks once at the moment the work is done.
+ */
+function StarInvite({ stars }: { stars?: number | null }) {
+  return (
+    <a
+      className="star-invite"
+      href={REPO_URL}
+      target="_blank"
+      rel="noreferrer noopener"
+      title="开源项目，欢迎到 GitHub 点亮 Star"
+    >
+      <span>欢迎 Star</span>
+      {typeof stars === "number" ? <b>★ {stars}</b> : null}
+    </a>
+  );
+}
 
 type BaseUrlMode =
   | "localhost"
@@ -158,6 +263,8 @@ function OptionToggle(props: {
   description: string;
   onChange: (checked: boolean) => void;
   caution?: boolean;
+  /** Marked on the few switches most people are better off turning on. */
+  recommended?: boolean;
 }) {
   return (
     <label className={`option-toggle ${props.caution ? "is-caution" : ""}`}>
@@ -168,7 +275,10 @@ function OptionToggle(props: {
       />
       <span className="switch-track" aria-hidden="true"><i /></span>
       <span className="option-copy">
-        <strong>{props.title}</strong>
+        <strong>
+          {props.title}
+          {props.recommended ? <em className="option-hint">建议开启</em> : null}
+        </strong>
         <small>{props.description}</small>
       </span>
     </label>
@@ -207,10 +317,11 @@ export function Workbench({
   initialStoresProfiles: boolean;
 }) {
   const [subscriptionUrl, setSubscriptionUrl] = useState("");
+  const [savedLinks, setSavedLinks] = useState<SavedLink[]>([]);
   const [profileName, setProfileName] = useState("");
   const [target, setTarget] = useState("clash");
   const [convertOptions, setConvertOptions] = useState<ConvertOptions>({
-    ...DEFAULT_CONVERT_OPTIONS,
+    ...RECOMMENDED_CONVERT_OPTIONS,
   });
   const [showUrl, setShowUrl] = useState(false);
   const [accessPassword, setAccessPassword] = useState("");
@@ -227,8 +338,10 @@ export function Workbench({
   const [error, setError] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [runtimeOrigin, setRuntimeOrigin] = useState("");
+  /* Assembled after mount so the address is never in the HTML this server
+     sends. A crawler that does not run scripts finds nothing to harvest. */
+  const [contactHref, setContactHref] = useState("");
   const [qrProfile, setQrProfile] = useState<Profile | null>(null);
-  const [qrMode, setQrMode] = useState<QrImportMode>("install");
   const [baseUrlOverride, setBaseUrlOverride] = useState("");
   const [baseUrlDraft, setBaseUrlDraft] = useState("");
   const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
@@ -263,6 +376,14 @@ export function Workbench({
   const remoteConfigOptions = capabilities?.remote_configs ?? [];
   const allowCustomRemoteConfig = Boolean(capabilities?.allow_custom_remote_config);
   const usingCustomRemoteConfig = remoteConfigId === "__custom__";
+  /* Whether this conversion's groups and rules come from somebody else.
+     Keyed off the preset's own builtin flag rather than a list of ids: this
+     repository publishes more than one build, and an operator can add presets
+     of their own, which are third-party however they are labelled. A pasted
+     URL is not in the list at all, so it warns too. */
+  const usingThirdPartyRemoteConfig = !remoteConfigOptions.some(
+    (option) => option.id === remoteConfigId && option.builtin,
+  );
   const siteLinks = capabilities?.site_links ?? [];
   const statelessQuery = useMemo(() => {
     if (storesProfiles || !subscriptionUrl.trim()) return "";
@@ -314,8 +435,15 @@ export function Workbench({
   const clientInstallQrAvailable = Boolean(
     qrProfile && supportsClientInstallQr(qrProfile.target),
   );
+  // One code, not a choice between two. Where a client registers a scheme the
+  // scheme code is the one that imports in a single tap, and the plain URL is
+  // still on screen underneath for anyone whose client wants that instead.
   const qrValue = qrProfile
-    ? qrImportValue(qrProfile.target, qrSubscriptionUrl, qrMode)
+    ? qrImportValue(
+        qrProfile.target,
+        qrSubscriptionUrl,
+        clientInstallQrAvailable ? "install" : "raw",
+      )
     : "";
 
   // The link is the product, so it reads the way a config file does: one
@@ -361,8 +489,123 @@ export function Workbench({
     }
   }, [accessPassword]);
 
+  // Restore a previously used address once, on mount. A private window, cleared
+  // site data, or a browser that refuses storage all land in the catch and the
+  // page simply starts empty, which is the same state a first visit has.
+  const writeSavedLinks = useCallback((next: SavedLink[]) => {
+    setSavedLinks(next);
+    try {
+      if (next.length) {
+        window.localStorage.setItem(SOURCE_HISTORY_KEY, JSON.stringify(next));
+      } else {
+        window.localStorage.removeItem(SOURCE_HISTORY_KEY);
+      }
+    } catch {
+      /* storage unavailable; the list simply does not survive this visit */
+    }
+  }, []);
+
+  // Restore once on mount. A private window, cleared site data, or a browser
+  // that refuses storage all land in the catch, and the page starts empty —
+  // the same state a first visit has.
+  useEffect(() => {
+    try {
+      const parsed: unknown = JSON.parse(
+        window.localStorage.getItem(SOURCE_HISTORY_KEY) || "[]",
+      );
+      if (!Array.isArray(parsed)) return;
+      const entries = parsed
+        .filter(
+          (entry): entry is SavedLink =>
+            Boolean(entry) &&
+            typeof entry === "object" &&
+            typeof (entry as SavedLink).link === "string" &&
+            (entry as SavedLink).link.startsWith("http"),
+        )
+        .slice(0, SAVED_LINK_LIMIT);
+      if (entries.length) setSavedLinks(entries);
+    } catch {
+      /* unreadable or absent; start empty */
+    }
+  }, []);
+
+  const rememberLink = useCallback(
+    (
+      link: string,
+      forTarget: string,
+      options: ConvertOptions,
+      name: string,
+      restore: SavedLink["restore"],
+    ) => {
+      const value = link.trim();
+      if (!value.startsWith("http")) return;
+      writeSavedLinks(
+        [
+          {
+            name: name.trim() || `记录 ${savedLinks.length + 1}`,
+            link: value,
+            target: forTarget,
+            options: describeOptions(options),
+            restore,
+            createdAt: Date.now(),
+          },
+          ...savedLinks.filter((entry) => entry.link !== value),
+        ].slice(0, SAVED_LINK_LIMIT),
+      );
+    },
+    [savedLinks, writeSavedLinks],
+  );
+
+  /** Put the form back where it was, so a record can be adjusted rather than rebuilt. */
+  const restoreLink = useCallback((entry: SavedLink) => {
+    if (!entry.restore) return;
+    setSubscriptionUrl(entry.restore.url);
+    setCustomRemoteConfig(entry.restore.customRemoteConfig ?? "");
+    setTarget(entry.target);
+    setRemoteConfigId(entry.restore.remoteConfigId);
+    setConvertOptions({
+      ...RECOMMENDED_CONVERT_OPTIONS,
+      ...entry.restore.convertOptions,
+    });
+    setProfileName(entry.name);
+  }, []);
+
+  /**
+   * Put the form back to how it opens.
+   *
+   * Restoring a record overwrites every field at once, and without this there
+   * was no way out of it: someone who opened an old record to look at it was
+   * left holding it. This clears the form only — the records themselves stay,
+   * because wanting a blank form is not wanting to lose them.
+   */
+  const resetForm = useCallback(() => {
+    setSubscriptionUrl("");
+    setProfileName("");
+    setTarget("clash");
+    setRemoteConfigId("ekko");
+    setCustomRemoteConfig("");
+    setConvertOptions({ ...RECOMMENDED_CONVERT_OPTIONS });
+  }, []);
+
+  const formTouched =
+    subscriptionUrl !== "" ||
+    profileName !== "" ||
+    target !== "clash" ||
+    remoteConfigId !== "ekko" ||
+    OPTION_KEYS.some(
+      (key) => convertOptions[key] !== RECOMMENDED_CONVERT_OPTIONS[key],
+    );
+
+  const forgetLink = useCallback(
+    (link: string) => {
+      writeSavedLinks(savedLinks.filter((entry) => entry.link !== link));
+    },
+    [savedLinks, writeSavedLinks],
+  );
+
   useEffect(() => {
     setRuntimeOrigin(window.location.origin);
+    setContactHref(`mailto:${CONTACT_MAILBOX}@${CONTACT_DOMAIN}`);
     const saved = window.localStorage.getItem(BASE_URL_STORAGE_KEY);
     const normalized = saved ? normalizeExportBaseUrl(saved) : null;
     if (normalized) {
@@ -575,7 +818,6 @@ export function Workbench({
   }
 
   function openQr(profile: Profile) {
-    setQrMode(supportsClientInstallQr(profile.target) ? "install" : "raw");
     setQrProfile(profile);
   }
 
@@ -712,6 +954,32 @@ export function Workbench({
                 <span className="top-link-label">{link.label}</span>
               </a>
             ))}
+            {/* Anyone with a proposal reaches it in one click, and the address
+                itself stays out of the page text. */}
+            <a
+              className="top-link-contact"
+              href={contactHref || undefined}
+              title="合作 · 推广 · 赞助"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                  d="M1.9 3.4h12.2v9.2H1.9z"
+                />
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m2.4 4.1 5.6 4.3 5.6-4.3"
+                />
+              </svg>
+              <span>商务合作</span>
+            </a>
           </nav>
         ) : null}
 
@@ -729,8 +997,39 @@ export function Workbench({
               actually serving — not what the repository currently holds. A
               visitor who reads the routing notes has no other way to tell
               whether this deployment has caught up with them. */}
-          <code title="服务器当前运行的规则版本">
+          {/* Saying which version runs here only answers half the question a
+              visitor has. A tag can be published minutes before this server
+              pulls it, and without the comparison the only way to tell was to
+              open GitHub.
+
+              This used to print nothing extra when the deployment was current,
+              on the reasoning that "up to date" is not news. That was wrong:
+              silence when current is indistinguishable from never having
+              checked, so a visitor still could not trust the number. It now
+              always says what the check found, and says nothing only when the
+              lookup itself failed — which is the one case where there is
+              genuinely nothing to report. */}
+          <code
+            title={
+              health?.update_available
+                ? `服务器运行 ${health.ekko_rules_version}，最新为 ${health.latest_ekko_rules_version}，镜像尚未拉取`
+                : health?.latest_ekko_rules_version
+                  ? `已是最新发布的规则版本（${health.latest_ekko_rules_version}）`
+                  : "服务器当前运行的规则版本"
+            }
+            data-stale={health?.update_available ? "true" : undefined}
+          >
             规则 {health?.ekko_rules_version ?? "—"}
+            {/* Both numbers, plainly. A badge that had to be decoded was worse
+                than two versions side by side. */}
+            {health?.latest_ekko_rules_version ? (
+              <>
+                {" · 最新 "}
+                <b className="version-latest">
+                  {health.latest_ekko_rules_version}
+                </b>
+              </>
+            ) : null}
           </code>
         </div>
 
@@ -880,7 +1179,22 @@ export function Workbench({
                     sourceReady && supportsClientInstallQr(target) ? "" : "is-primary"
                   }`}
                   disabled={!sourceReady}
-                  onClick={() => void copyUrl(buildStatelessProfile())}
+                  onClick={() => {
+                    const built = buildStatelessProfile();
+                    void copyUrl(built);
+                    rememberLink(
+                      absoluteLocalUrl(built.subscriptionPath, subscriptionBaseUrl),
+                      target,
+                      convertOptions,
+                      profileName || selectedTarget.short_label,
+                      {
+                        url: subscriptionUrl,
+                        remoteConfigId,
+                        customRemoteConfig,
+                        convertOptions,
+                      },
+                    );
+                  }}
                 >
                   {copying === "stateless" ? "已复制" : "复制链接"}
                 </button>
@@ -892,7 +1206,56 @@ export function Workbench({
                 >
                   扫码导入
                 </button>
+                <StarInvite stars={health?.repo_stars} />
               </div>
+              {savedLinks.length ? (
+                <div className="saved-links">
+                  <p className="saved-links-title">
+                    这台设备上生成过的链接
+                    <small>只存在本浏览器，服务器不知道</small>
+                    {formTouched ? (
+                      <button
+                        type="button"
+                        className="saved-links-reset"
+                        onClick={resetForm}
+                        title="清空上面的表单，记录不会删除"
+                      >
+                        重新配置
+                      </button>
+                    ) : null}
+                  </p>
+                  <ul>
+                    {savedLinks.map((entry) => (
+                      <li key={entry.link}>
+                        <button
+                          type="button"
+                          className="saved-link-copy"
+                          onClick={() => restoreLink(entry)}
+                          title="填回上面的表单，接着改"
+                        >
+                          <strong>{entry.name}</strong>
+                          {/* Only what was actually ticked. Saying nothing was
+                              ticked is noise: the absence already shows. */}
+                          <span>
+                            {[entry.target, ...entry.options].join(" · ")}
+                          </span>
+                        </button>
+                        <div className="saved-link-actions">
+                          <button
+                            type="button"
+                            onClick={() => void navigator.clipboard.writeText(entry.link)}
+                          >
+                            复制
+                          </button>
+                          <button type="button" onClick={() => forgetLink(entry.link)}>
+                            删除
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               {/* Clients ship switches that rewrite an imported profile —
                   a DNS override, smart group selection, global merge/script
                   hooks. Each one silently replaces part of what was just
@@ -907,9 +1270,15 @@ export function Workbench({
             </div>
 
             <dl className="open-facts">
+              {/* This used to read "留下的订阅 0 条" as a claim about the
+                  server. Standing next to a list of local records it read as a
+                  contradiction instead, so it now counts what is actually
+                  there. That the server keeps nothing is said in the hero and
+                  again in the footer, where it is a promise rather than a
+                  counter. */}
               <div data-role="direct">
-                <dt>留下的订阅</dt>
-                <dd>0 条</dd>
+                <dt>本机记录</dt>
+                <dd>{savedLinks.length} 条</dd>
               </div>
               <div data-role="proxy">
                 <dt>可选规则</dt>
@@ -957,7 +1326,7 @@ export function Workbench({
 
             <label className="field" htmlFor="subscription-url">
               <span className="field-label">
-                <strong>真实订阅地址</strong>
+                <strong>填写你的机场订阅</strong>
                 <small>
                   {storesProfiles
                     ? "不会出现在生成的本地 URL 中"
@@ -1126,6 +1495,7 @@ export function Workbench({
                   <OptionToggle
                     checked={convertOptions.emoji}
                     title="Emoji 国旗"
+                    recommended
                     description="按节点地区补充旗帜"
                     onChange={(emoji) =>
                       setConvertOptions((current) => ({ ...current, emoji }))
@@ -1134,6 +1504,7 @@ export function Workbench({
                   <OptionToggle
                     checked={convertOptions.udp}
                     title="启用 UDP"
+                    recommended
                     description="为目标支持的节点强制开启"
                     onChange={(udp) =>
                       setConvertOptions((current) => ({ ...current, udp }))
@@ -1143,6 +1514,7 @@ export function Workbench({
                     <OptionToggle
                       checked={convertOptions.xudp}
                       title="强制 XUDP"
+                      recommended
                       description="仅 VLESS / VMess；关闭时自动判断"
                       onChange={(xudp) =>
                         setConvertOptions((current) => ({ ...current, xudp }))
@@ -1176,7 +1548,7 @@ export function Workbench({
                   <OptionToggle
                     checked={convertOptions.autoUpdate}
                     title="自动更新"
-                    description="关闭后只在用户手动刷新时更新"
+                    description="部分机场需在后台允许后才能定时拉取"
                     onChange={(autoUpdate) =>
                       setConvertOptions((current) => ({
                         ...current,
@@ -1187,6 +1559,7 @@ export function Workbench({
                   <OptionToggle
                     checked={convertOptions.filterUnsupported}
                     title="过滤不支持节点"
+                    recommended
                     description="避免目标客户端收到无效条目"
                     onChange={(filterUnsupported) =>
                       setConvertOptions((current) => ({
@@ -1359,7 +1732,7 @@ export function Workbench({
                     maxLength={512}
                   />
                 ) : null}
-                {remoteConfigId !== "ekko" ? (
+                {usingThirdPartyRemoteConfig ? (
                   <small className="remote-config-note">
                     选择非 Ekko Rules 时，这次转换的分组、规则与基础配置全部来自对方项目。
                   </small>
@@ -1411,7 +1784,22 @@ export function Workbench({
                       sourceReady && supportsClientInstallQr(target) ? "" : "is-primary"
                     }`}
                     disabled={!sourceReady}
-                    onClick={() => void copyUrl(buildStatelessProfile())}
+                    onClick={() => {
+                    const built = buildStatelessProfile();
+                    void copyUrl(built);
+                    rememberLink(
+                      absoluteLocalUrl(built.subscriptionPath, subscriptionBaseUrl),
+                      target,
+                      convertOptions,
+                      profileName || selectedTarget.short_label,
+                      {
+                        url: subscriptionUrl,
+                        remoteConfigId,
+                        customRemoteConfig,
+                        convertOptions,
+                      },
+                    );
+                  }}
                   >
                     {copying === "stateless" ? "已复制" : "复制链接"}
                   </button>
@@ -1423,6 +1811,7 @@ export function Workbench({
                   >
                     扫码导入
                   </button>
+                  <StarInvite stars={health?.repo_stars} />
                 </div>
                 {/* The generated file carries its own DNS section. Clients ship
                     a DNS override that silently replaces it, and a visitor who
@@ -1747,31 +2136,11 @@ export function Workbench({
               <div>
                 <strong>{qrProfile.name}</strong>
                 <span>
-                  {qrMode === "install" && clientInstallQrAvailable
-                    ? "使用系统相机扫码，再选择 Clash / Mihomo 客户端打开。"
-                    : "请在 Clash / Mihomo 的“从 QR 码导入”入口扫描。"}
+                  {clientInstallQrAvailable
+                    ? "用系统相机或客户端的扫码入口都可以，扫到后选择 Clash / Mihomo 打开。"
+                    : "请在客户端的“从 QR 码导入”入口扫描。"}
                 </span>
               </div>
-              {clientInstallQrAvailable ? (
-                <div className="qr-mode-switch" role="group" aria-label="二维码导入方式">
-                  <button
-                    type="button"
-                    className={qrMode === "install" ? "is-active" : ""}
-                    aria-pressed={qrMode === "install"}
-                    onClick={() => setQrMode("install")}
-                  >
-                    系统相机一键导入
-                  </button>
-                  <button
-                    type="button"
-                    className={qrMode === "raw" ? "is-active" : ""}
-                    aria-pressed={qrMode === "raw"}
-                    onClick={() => setQrMode("raw")}
-                  >
-                    客户端内扫码
-                  </button>
-                </div>
-              ) : null}
               <QRCodeSVG
                 value={qrValue}
                 size={220}
@@ -1781,22 +2150,21 @@ export function Workbench({
               />
               <div className="qr-value">
                 <span>
-                  {qrMode === "install"
-                    ? "二维码内容（远程安装 scheme）"
+                  {clientInstallQrAvailable
+                    ? "二维码内容（一键导入 scheme）"
                     : "二维码内容（远程订阅 URL）"}
                 </span>
                 <code>{qrValue}</code>
               </div>
-              {qrMode === "install" ? (
+              {clientInstallQrAvailable ? (
                 <div className="qr-value">
                   <span>实际远程订阅地址</span>
                   <code>{qrSubscriptionUrl}</code>
                 </div>
-              ) : (
-                <small className="qr-note">
-                  CMFA 客户端内扫码会把这个地址保存为可刷新的 URL 订阅；不要改用系统相机直接打开。
-                </small>
-              )}
+              ) : null}
+              <small className="qr-note">
+                客户端会把它存成可刷新的 URL 订阅，之后规则更新不用重新扫。
+              </small>
               <button type="button" className="secondary-button" onClick={() => setQrProfile(null)}>关闭</button>
             </div>
           </div>

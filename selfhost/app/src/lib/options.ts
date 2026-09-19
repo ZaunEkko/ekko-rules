@@ -17,6 +17,17 @@ export type ConvertOptions = {
   singboxIpv6: boolean;
 };
 
+/**
+ * What an omitted parameter means.
+ *
+ * This is a contract with links that already exist. A stateless link carries
+ * only the choices that differ from these, so changing a value here silently
+ * changes what every link in the wild already means — someone who imported a
+ * link months ago would get a different configuration on its next refresh
+ * without touching anything. Treat these as frozen: a new recommendation goes
+ * in RECOMMENDED_CONVERT_OPTIONS, which only decides what the form starts
+ * with, and is then written into the link explicitly.
+ */
 export const DEFAULT_CONVERT_OPTIONS: ConvertOptions = {
   autoUpdate: false,
   emoji: true,
@@ -34,6 +45,24 @@ export const DEFAULT_CONVERT_OPTIONS: ConvertOptions = {
   customUserAgent: "",
   updateIntervalHours: 24,
   singboxIpv6: false,
+};
+
+/**
+ * What the form starts with.
+ *
+ * These four either add information or stop a client receiving entries it
+ * cannot use, and none of them reaches back to the provider, so someone who
+ * changes nothing is better off with them on. Because they differ from the
+ * wire defaults above, a generated link states them outright rather than
+ * relying on the reader's defaults — which is what makes the link mean the
+ * same thing tomorrow as it does today.
+ */
+export const RECOMMENDED_CONVERT_OPTIONS: ConvertOptions = {
+  ...DEFAULT_CONVERT_OPTIONS,
+  emoji: true,
+  udp: true,
+  xudp: true,
+  filterUnsupported: true,
 };
 
 const BOOLEAN_OPTIONS = [

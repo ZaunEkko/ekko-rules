@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 
 from profile_model import (
+    PRODUCTS,
     ProfileError,
     compare_trees,
     load_profile_sources,
@@ -154,10 +155,14 @@ def main() -> int:
                 {
                     "status": "generated",
                     "output": str(output_path),
-                    "product": {
-                        "segments": len(sources.segments_for("core")),
-                        "rule_files": len(sources.rule_segments_for("core")),
-                        "proxy_groups": len(sources.proxy_groups_for("core")),
+                    # Two products are written, so both are counted here.
+                    "products": {
+                        product: {
+                            "segments": len(sources.segments_for(product)),
+                            "rule_files": len(sources.rule_segments_for(product)),
+                            "proxy_groups": len(sources.proxy_groups_for(product)),
+                        }
+                        for product in PRODUCTS
                     },
                     "previous_output_was_current": diff.clean,
                     "previous_difference": diff.as_dict(),

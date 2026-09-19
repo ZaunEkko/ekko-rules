@@ -18,8 +18,13 @@ import yaml
 FINAL_TARGET = "🐟 漏网之鱼"
 NODE_PLACEHOLDER = "__ALL_SUBSCRIPTION_NODES__"
 CORE_PRODUCT = "core"
-PRODUCTS = (CORE_PRODUCT,)
-CORE_SCOPE = "core"
+LITE_PRODUCT = "lite"
+PRODUCTS = (CORE_PRODUCT, LITE_PRODUCT)
+# A segment or group is shared by both products, or belongs to exactly one.
+# The rule corpus is identical between them: the lite product differs only in
+# which policy a segment points at, so nothing here can change what a rule says.
+SHARED_SCOPE = "both"
+SCOPES = (SHARED_SCOPE, CORE_PRODUCT, LITE_PRODUCT)
 
 
 class GeneratedRulesetAlias(NamedTuple):
@@ -44,6 +49,17 @@ GENERATED_RULESET_ALIASES = {
         end=81,
         list_sha256="a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
         provider_sha256="b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
+    ),
+    # ER-058 funded the remote-streaming split by concatenating xai into
+    # ai-platforms under their shared 🧲 海外 AI policy. Routing is unchanged -
+    # every segment in that family targets the same group - and the retired Raw
+    # URL keeps serving its original three matchers from this slice.
+    "xai": GeneratedRulesetAlias(
+        canonical="ai-platforms",
+        start=22,
+        end=25,
+        list_sha256="82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
+        provider_sha256="c528ddafca25108e32bca53a4de650b0ba9a96b20667ab02fc5b95a774cf3eb6",
     ),
     "hbo-max": GeneratedRulesetAlias(
         canonical="hbo-go",
@@ -170,6 +186,18 @@ class Segment:
     scope: str
     source: str | None = None
     matcher: str | None = None
+    lite_target: str | None = None
+
+    def target_for(self, product: str) -> str:
+        """The policy this segment points at in ``product``.
+
+        Only the lite product may redirect, and only to a group the lite
+        product actually publishes; a segment without a redirect keeps the one
+        target both products share.
+        """
+        if product == LITE_PRODUCT and self.lite_target is not None:
+            return self.lite_target
+        return self.target
 
 
 @dataclass(frozen=True)
@@ -223,8 +251,12 @@ class ProfileSources:
         return self.segments[-1]
 
     def segments_for(self, product: str) -> tuple[Segment, ...]:
-        require(product == CORE_PRODUCT, f"Unknown product: {product}")
-        return self.segments
+        require(product in PRODUCTS, f"Unknown product: {product}")
+        return tuple(
+            segment
+            for segment in self.segments
+            if segment.scope in (SHARED_SCOPE, product)
+        )
 
     def rule_segments_for(self, product: str) -> tuple[Segment, ...]:
         return tuple(
@@ -234,8 +266,12 @@ class ProfileSources:
         )
 
     def proxy_groups_for(self, product: str) -> tuple[ProxyGroup, ...]:
-        require(product == CORE_PRODUCT, f"Unknown product: {product}")
-        return self.proxy_groups
+        require(product in PRODUCTS, f"Unknown product: {product}")
+        return tuple(
+            group
+            for group in self.proxy_groups
+            if group.scope in (SHARED_SCOPE, product)
+        )
 
 
 @dataclass(frozen=True)
@@ -501,6 +537,7 @@ def _validate_manifest(data: dict[str, Any]) -> tuple[Segment, ...]:
             require_keys(
                 record,
                 required={"order", "kind", "slug", "target", "scope", "source"},
+                optional={"lite_target"},
                 context=f"segment {expected_order}",
             )
         elif kind == "terminal":
@@ -521,11 +558,11 @@ def _validate_manifest(data: dict[str, Any]) -> tuple[Segment, ...]:
             f"Invalid segment target at {expected_order}",
         )
         require(
-            record["scope"] == CORE_SCOPE,
+            record["scope"] in SCOPES,
             f"Invalid segment scope at {expected_order}",
         )
         if kind == "terminal":
-            require(record["scope"] == CORE_SCOPE, "FINAL segment must be core")
+            require(record["scope"] == SHARED_SCOPE, "FINAL segment must be shared by both products")
         segments.append(
             Segment(
                 order=record["order"],
@@ -535,6 +572,7 @@ def _validate_manifest(data: dict[str, Any]) -> tuple[Segment, ...]:
                 scope=record["scope"],
                 source=record.get("source"),
                 matcher=record.get("matcher"),
+                lite_target=record.get("lite_target"),
             )
         )
 
@@ -602,7 +640,7 @@ def _validate_proxy_groups(data: dict[str, Any]) -> tuple[ProxyGroup, ...]:
         require(isinstance(record["name"], str) and record["name"], f"Invalid group name at {expected_order}")
         require(record["type"] == "select", f"Unsupported group type for {record['name']}")
         require(
-            record["scope"] == CORE_SCOPE,
+            record["scope"] in SCOPES,
             f"Invalid proxy-group scope for {record['name']}",
         )
         members = record["members"]
@@ -842,9 +880,16 @@ def _validate_rules(
         entries = read_rule_lines(source_path)
         for entry in entries:
             rule_type, value, _ = parse_rule(entry, context=source)
+            # Checked per product rather than on the full build's target. The
+            # two currently agree, but that is a property of how the lite build
+            # folds today, not a guarantee — a future fold that landed a
+            # keyword rule on a DIRECT policy would otherwise pass unnoticed.
             require(
                 not (
-                    segment.target in direct_default_targets
+                    any(
+                        segment.target_for(product) in direct_default_targets
+                        for product in PRODUCTS
+                    )
                     and rule_type == "DOMAIN-KEYWORD"
                 ),
                 f"DIRECT-default rules must use anchored domain matchers: {segment.slug}: {entry}",
@@ -926,14 +971,32 @@ def load_profile_sources(root: Path) -> ProfileSources:
         quality,
         direct_default_targets=direct_default_targets,
     )
-    for segment in segments:
-        if segment.kind == "ruleset":
+    for product in PRODUCTS:
+        published = {
+            group.name
+            for group in proxy_groups
+            if group.scope in (SHARED_SCOPE, product)
+        }
+        for segment in segments:
+            if segment.kind != "ruleset" or segment.scope not in (SHARED_SCOPE, product):
+                continue
+            target = segment.target_for(product)
             require(
-                segment.target == "DIRECT" or segment.target in group_names,
-                f"Ruleset {segment.slug} targets unknown policy {segment.target}",
+                target == "DIRECT" or target in published,
+                f"Ruleset {segment.slug} targets policy {target}, which {product} does not publish",
             )
+    # A redirect that points somewhere both products publish is not a redirect,
+    # it is a second way to write the same thing; the lite mapping stays legible
+    # only while every entry in it actually moves the segment somewhere else.
+    for segment in segments:
+        if segment.lite_target is None:
+            continue
+        require(
+            segment.lite_target != segment.target,
+            f"Ruleset {segment.slug} redirects to the policy it already uses",
+        )
     require(
-        segments[-1].kind == "terminal" and segments[-1].scope == CORE_SCOPE,
+        segments[-1].kind == "terminal" and segments[-1].scope == SHARED_SCOPE,
         "Every product must inherit one final terminal segment",
     )
 
@@ -1060,12 +1123,12 @@ def _subconverter_lines(
     lines = ["[custom]", ""]
     for segment in sources.segments_for(product):
         if segment.kind == "terminal":
-            lines.append(f"ruleset={segment.target},[]FINAL")
+            lines.append(f"ruleset={segment.target_for(product)},[]FINAL")
         elif local:
-            lines.append(f"ruleset={segment.target},Ruleset/{segment.slug}.list")
+            lines.append(f"ruleset={segment.target_for(product)},Ruleset/{segment.slug}.list")
         else:
             lines.append(
-                f"ruleset={segment.target},{urls['rules_base']}/{segment.slug}.list"
+                f"ruleset={segment.target_for(product)},{urls['rules_base']}/{segment.slug}.list"
             )
 
     node_filter = sources.proxy_groups_document["proxy_provider"]["subconverter_filter"]
@@ -1087,17 +1150,31 @@ def _subconverter_lines(
     return lines
 
 
+# The two products share every rule file; only the policy a segment points at
+# differs, so the lite entry point is a second rendering of the same corpus
+# rather than a second corpus.
+PRODUCT_CONFIG_NAMES = {
+    CORE_PRODUCT: "ekko-rules.ini",
+    LITE_PRODUCT: "ekko-rules-lite.ini",
+}
+PRODUCT_TEMPLATE_NAMES = {
+    CORE_PRODUCT: "reversed-template.yaml",
+    LITE_PRODUCT: "reversed-template-lite.yaml",
+}
+
+
 def _write_subconverter(output: Path, sources: ProfileSources) -> None:
-    write_text(
-        output / "config" / "ekko-rules.ini",
-        "\n".join(
-            _subconverter_lines(
-                sources,
-                product=CORE_PRODUCT,
-                local=False,
-            )
-        ),
-    )
+    for product in PRODUCTS:
+        write_text(
+            output / "config" / PRODUCT_CONFIG_NAMES[product],
+            "\n".join(
+                _subconverter_lines(
+                    sources,
+                    product=product,
+                    local=False,
+                )
+            ),
+        )
 
 
 def _mihomo_config(sources: ProfileSources, *, product: str) -> dict[str, Any]:
@@ -1107,7 +1184,7 @@ def _mihomo_config(sources: ProfileSources, *, product: str) -> dict[str, Any]:
     rules: list[str] = []
     for segment in sources.segments_for(product):
         if segment.kind == "terminal":
-            rules.append(f"MATCH,{segment.target}")
+            rules.append(f"MATCH,{segment.target_for(product)}")
             continue
         rule_providers[segment.slug] = {
             "type": provider_settings["type"],
@@ -1117,7 +1194,7 @@ def _mihomo_config(sources: ProfileSources, *, product: str) -> dict[str, Any]:
             "path": provider_settings["path_template"].format(slug=segment.slug),
             "interval": provider_settings["interval"],
         }
-        rules.append(f"RULE-SET,{segment.slug},{segment.target}")
+        rules.append(f"RULE-SET,{segment.slug},{segment.target_for(product)}")
 
     proxy_provider = sources.proxy_groups_document["proxy_provider"]
     config: dict[str, Any] = {}
@@ -1146,10 +1223,11 @@ def _mihomo_config(sources: ProfileSources, *, product: str) -> dict[str, Any]:
 
 
 def _write_mihomo(output: Path, sources: ProfileSources) -> None:
-    write_yaml(
-        output / "Mihomo" / "reversed-template.yaml",
-        _mihomo_config(sources, product=CORE_PRODUCT),
-    )
+    for product in PRODUCTS:
+        write_yaml(
+            output / "Mihomo" / PRODUCT_TEMPLATE_NAMES[product],
+            _mihomo_config(sources, product=product),
+        )
 
 
 def _restored_rule(entry: str, target: str) -> str:
@@ -1170,6 +1248,10 @@ def _product_analysis(sources: ProfileSources, product: str) -> dict[str, Any]:
     segment_records: list[dict[str, Any]] = []
     position = 1
     for product_index, segment in enumerate(sources.segments_for(product), start=1):
+        # A product's analysis must describe that product. Reading `target`
+        # here named the full build's policies in the lite build's analysis,
+        # for groups the lite configuration does not even define.
+        target = segment.target_for(product)
         if segment.kind == "terminal":
             segment_records.append(
                 {
@@ -1178,7 +1260,7 @@ def _product_analysis(sources: ProfileSources, product: str) -> dict[str, Any]:
                     "start": position,
                     "end": position,
                     "count": 1,
-                    "target": segment.target,
+                    "target": target,
                     "slug": segment.slug,
                     "scope": segment.scope,
                     "rule_types": {"MATCH": 1},
@@ -1188,9 +1270,9 @@ def _product_analysis(sources: ProfileSources, product: str) -> dict[str, Any]:
         entries = sources.rules[segment.slug]
         types = Counter(entry.split(",", 1)[0] for entry in entries)
         for entry in entries:
-            restored = _restored_rule(entry, segment.target)
+            restored = _restored_rule(entry, target)
             restored_rules.append(restored)
-            matcher_targets[_rule_matcher(entry)].add(segment.target)
+            matcher_targets[_rule_matcher(entry)].add(target)
         segment_records.append(
             {
                 "index": product_index,
@@ -1198,7 +1280,7 @@ def _product_analysis(sources: ProfileSources, product: str) -> dict[str, Any]:
                 "start": position,
                 "end": position + len(entries) - 1,
                 "count": len(entries),
-                "target": segment.target,
+                "target": target,
                 "slug": segment.slug,
                 "scope": segment.scope,
                 "rule_types": dict(types),
@@ -1268,16 +1350,19 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
     rulesets = len(sources.rule_segments_for(CORE_PRODUCT))
     segments = len(sources.segments_for(CORE_PRODUCT))
     groups = len(sources.proxy_groups_for(CORE_PRODUCT))
+    lite_groups = len(sources.proxy_groups_for(LITE_PRODUCT))
     chinese = f"""# Ekko Rules
 
 [English](README_EN.md)
 
-面向 Subconverter 与 Mihomo 的单一标准分流规则产品。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
+面向 Subconverter 与 Mihomo 的标准分流规则产品，同一套规则发布为两个构建：完整版 {groups} 个策略组，精简版 {lite_groups} 个。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
 
 ## 入口
 
-- `config/ekko-rules.ini`：Subconverter 在线预设，不接管 Clash 基础配置。
-- `Mihomo/reversed-template.yaml`：Mihomo 模板，使用前替换订阅地址占位符。
+- `config/ekko-rules.ini`：Subconverter 在线预设（完整版），不接管 Clash 基础配置。
+- `config/ekko-rules-lite.ini`：同上，精简版。
+- `Mihomo/reversed-template.yaml`：Mihomo 模板（完整版），使用前替换订阅地址占位符。
+- `Mihomo/reversed-template-lite.yaml`：同上，精简版。
 - `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留合并前原始内容的旧 Raw URL 兼容副本，不进入活动模板或规则计数。
 - `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
@@ -1300,11 +1385,13 @@ Ruleset 地址前缀：`{rules_base}`。
 - `🛑 广告拦截` 使用固定版本锚定域名规则并默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - OpenAI、Claude 独立，Gemini、Grok、Microsoft AI、Cursor、Figma 及 Kimi、Z.ai、Qwen、MiniMax 国际站等归入海外 AI；DeepSeek、小红书和国产 AI 大陆站进入默认直连的国内网站；
 - YouTube、Netflix、Disney+、Apple TV+、HBO GO/MAX、Prime Video、DAZN 等重点流媒体单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
-- 美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国和国内流媒体分别处理；
+- 美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、`🎬 爱奇艺国际` 和国内流媒体分别处理；
 - 游戏平台与游戏下载分开；社交、聊天、Discord 和邮件分别处理；
-- `🖥️ 远程串流` 默认 `DIRECT`，覆盖 Tailscale、ZeroTier、Moonlight、Sunshine、Parsec、RustDesk、AnyDesk、TeamViewer、NetBird、Chrome Remote Desktop、Steam Link 和 Microsoft RDP，防止远程访问大流量绕行代理；
+- `🖥️ 远程串流流量` 默认 `DIRECT`，承载数据面——Tailscale 的 DERP 中继与控制面、ZeroTier 根服务器、Parsec 与 RustDesk 会话端点、NetBird 信令与中继、Moonlight、Sunshine、TeamViewer、AnyDesk、Chrome 远程桌面、Steam Link 和 Microsoft RDP，防止远程访问大流量绕行代理；
+- `🖥️ 远程串流后台` 默认 `♻️ 手动切换`，只收各家管理后台与官网。分开是因为同一个厂商后缀盖着两件事：控制台在大陆直连打不开，而同后缀下的中继却承载串流负载；
 - `🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖主流开发官网、API、包仓库和下载链路；用户可临时改为 `DIRECT`；
 - `☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud 及国内厂商海外区域端点；广告和具体业务规则仍优先；
+- `🛒 海外购物` 默认 `♻️ 手动切换`，覆盖各区域亚马逊、eBay、Etsy、日本店铺与转运代购及地区电商——这类站点的店面内容与人机验证取决于出口 IP，独立成组便于单独挑节点；
 - 音乐、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
@@ -1328,18 +1415,20 @@ Ruleset 地址前缀：`{rules_base}`。
 
 末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
-唯一产品包含 {rulesets} 个 ruleset、{segments} 个区段和 {groups} 个策略组，不提供自动测速、Full、local 或 Extended 变体。
+两个构建共用 {rulesets} 个 ruleset 与 {segments} 个区段，只有策略组数量不同：完整版 {groups} 个，精简版 {lite_groups} 个。精简版不删除任何规则，只是把分段改指到合并后的策略组，每一段的最终动作与完整版一致；代价是不能按服务分别挑节点。不提供自动测速、Full、local 或 Extended 变体。
 """
     english = f"""# Ekko Rules
 
 [中文](README.md)
 
-A single standard routing-rules product for Subconverter and Mihomo. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
+A standard routing-rules product for Subconverter and Mihomo, published as two builds of the same rules: {groups} policy groups in the full build, {lite_groups} in the lite one. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
 
 ## Entry points
 
-- `config/ekko-rules.ini`: Online Subconverter preset without a Clash base override.
-- `Mihomo/reversed-template.yaml`: Mihomo template; replace the subscription URL placeholder before use.
+- `config/ekko-rules.ini`: Online Subconverter preset (full build) without a Clash base override.
+- `config/ekko-rules-lite.ini`: The same, lite build.
+- `Mihomo/reversed-template.yaml`: Mihomo template (full build); replace the subscription URL placeholder before use.
+- `Mihomo/reversed-template-lite.yaml`: The same, lite build.
 - `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
 - `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
@@ -1362,11 +1451,13 @@ Ruleset URL prefix: `{rules_base}`.
 - `🛑 广告拦截` uses pinned anchored domain rules and defaults to `REJECT`, while remaining manually switchable to a node or `DIRECT`;
 - OpenAI and Claude are independent; Gemini, Grok, Microsoft AI, Cursor, Figma, and international Kimi, Z.ai, Qwen, and MiniMax sites use Overseas AI; DeepSeek, Xiaohongshu, and mainland Chinese AI sites use the default-direct mainland group;
 - YouTube, Netflix, Disney+, Apple TV+, HBO GO/MAX, Prime Video, and DAZN are handled separately; HBO GO and Max share one group, while DAZN remains independent;
-- US long-tail services use `🎬 美国流媒体`; HMT, Bilibili HMT, Southeast Asia, Japan, Korea, and mainland media are handled separately;
+- US long-tail services use `🎬 美国流媒体`; HMT, Bilibili HMT, Southeast Asia, Japan, Korea, `🎬 爱奇艺国际`, and mainland media are handled separately;
 - game platforms are separate from game downloads; social, messaging, Discord, and email are separated;
-- `🖥️ 远程串流` defaults to `DIRECT` for Tailscale, ZeroTier, Moonlight, Sunshine, Parsec, RustDesk, AnyDesk, TeamViewer, NetBird, Chrome Remote Desktop, Steam Link, and Microsoft RDP so high-volume remote access does not traverse a proxy unnecessarily;
+- `🖥️ 远程串流流量` defaults to `DIRECT` and carries the data plane — Tailscale DERP relays and control plane, ZeroTier root servers, Parsec and RustDesk session endpoints, NetBird signalling and relay, Moonlight, Sunshine, TeamViewer, AnyDesk, Chrome Remote Desktop, Steam Link, and Microsoft RDP — so high-volume remote access does not traverse a proxy unnecessarily;
+- `🖥️ 远程串流后台` defaults to `♻️ 手动切换` and holds only the vendors' admin consoles and websites. They are separate because one vendor suffix covers two jobs: the console cannot be reached on a direct path from the mainland, while the relays beneath it carry the streaming payload;
 - `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers mainstream developer sites, APIs, registries, and downloads; it can be switched temporarily to `DIRECT`;
 - `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
+- `🛒 海外购物` defaults to `♻️ 手动切换` and covers the regional Amazon storefronts, eBay, Etsy, Japanese shops, cross-border forwarding services, and regional retailers — what these sites show and whether they challenge you depends on which exit reaches them, so a separate group lets you pick a node for shopping alone;
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
@@ -1390,7 +1481,7 @@ The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
-The sole product contains {rulesets} rulesets, {segments} segments, and {groups} proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+Both builds share {rulesets} rulesets and {segments} segments and differ only in the number of proxy groups: {groups} in the full build, {lite_groups} in the lite one. The lite build removes no rules; it retargets segments onto the merged groups, so every segment ends in the same action as it does in the full build. What it costs is the ability to pick a node per service. No automatic-latency, Full, local, or Extended variant is published.
 """
     write_text(output / "README.md", chinese)
     write_text(output / "README_EN.md", english)
@@ -1398,8 +1489,8 @@ The sole product contains {rulesets} rulesets, {segments} segments, and {groups}
 
 def expected_generated_files(sources: ProfileSources) -> set[str]:
     files = {
-        "config/ekko-rules.ini",
-        "Mihomo/reversed-template.yaml",
+        *(f"config/{name}" for name in PRODUCT_CONFIG_NAMES.values()),
+        *(f"Mihomo/{name}" for name in PRODUCT_TEMPLATE_NAMES.values()),
         "analysis.json",
         "README.md",
         "README_EN.md",
@@ -1859,11 +1950,13 @@ def first_match(
     ip: str | None = None,
     process_name: str | None = None,
 ) -> dict[str, str]:
+    # Same rule as the analysis: an answer about a product names that
+    # product's policy, not the full build's.
     for segment in sources.segments_for(product):
         if segment.kind == "terminal":
             return {
                 "slug": segment.slug,
-                "target": segment.target,
+                "target": segment.target_for(product),
                 "rule": "MATCH",
             }
         for entry in sources.rules[segment.slug]:
@@ -1875,7 +1968,7 @@ def first_match(
             ):
                 return {
                     "slug": segment.slug,
-                    "target": segment.target,
+                    "target": segment.target_for(product),
                     "rule": entry,
                 }
     raise ProfileError("Canonical profile has no terminal match")

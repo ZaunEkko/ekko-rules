@@ -20,6 +20,7 @@ export type RemoteConfigPreset = {
 };
 
 export const BUILTIN_REMOTE_CONFIG_ID = "ekko";
+export const LITE_REMOTE_CONFIG_ID = "ekko-lite";
 
 const ACL4SSR_RAW =
   "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config";
@@ -110,6 +111,24 @@ export function builtinRemoteConfig(fixedConfigPath: string): RemoteConfigPreset
   };
 }
 
+/**
+ * The lite product is the same rules behind fewer switches.
+ *
+ * It is derived from the full config's path so a deployment that points the
+ * engine somewhere else keeps both entries pointing at the same place. What it
+ * changes is only how many policy groups a client shows: every rule, and what
+ * each rule does, is identical to the full product.
+ */
+export function liteRemoteConfig(fixedConfigPath: string): RemoteConfigPreset {
+  return {
+    id: LITE_REMOTE_CONFIG_ID,
+    label: "Ekko Rules 精简",
+    description: "同一套规则，策略组从 42 个收成 10 个",
+    value: fixedConfigPath.replace(/\.ini$/, "-lite.ini"),
+    builtin: true,
+  };
+}
+
 function cleanText(value: unknown, limit: number): string {
   if (typeof value !== "string") return "";
   const trimmed = value.replace(/[\u0000-\u001f\u007f]/g, "").trim();
@@ -127,8 +146,11 @@ export function parseRemoteConfigPresets(
   includeThirdParty = true,
 ): RemoteConfigPreset[] {
   // Ekko Rules is always first and is what an empty `config` resolves to.
-  const presets = [builtinRemoteConfig(fixedConfigPath)];
-  const seen = new Set([BUILTIN_REMOTE_CONFIG_ID]);
+  const presets = [
+    builtinRemoteConfig(fixedConfigPath),
+    liteRemoteConfig(fixedConfigPath),
+  ];
+  const seen = new Set([BUILTIN_REMOTE_CONFIG_ID, LITE_REMOTE_CONFIG_ID]);
 
   if (includeThirdParty) {
     for (const preset of THIRD_PARTY_PRESETS) {

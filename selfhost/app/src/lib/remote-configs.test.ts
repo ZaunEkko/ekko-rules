@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   BUILTIN_REMOTE_CONFIG_ID,
+  LITE_REMOTE_CONFIG_ID,
   isCustomRemoteConfig,
   parseRemoteConfigPresets,
   resolveRemoteConfig,
@@ -25,13 +26,21 @@ test("ships third-party presets that can be switched off entirely", () => {
   const withThirdParty = parseRemoteConfigPresets(undefined, FIXED);
   assert.equal(withThirdParty.length > 1, true);
   assert.equal(
-    withThirdParty.every((preset) => preset.id === BUILTIN_REMOTE_CONFIG_ID || preset.value.startsWith("https://")),
+    withThirdParty.every(
+      (preset) =>
+        preset.builtin || preset.value.startsWith("https://"),
+    ),
     true,
   );
-  assert.equal(withThirdParty.filter((preset) => preset.builtin).length, 1);
+  // Both products this repository maintains are builtin; everything after them
+  // is somebody else's file on somebody else's server.
+  assert.equal(withThirdParty.filter((preset) => preset.builtin).length, 2);
 
   const ekkoOnly = parseRemoteConfigPresets(undefined, FIXED, false);
-  assert.deepEqual(ekkoOnly.map((preset) => preset.id), [BUILTIN_REMOTE_CONFIG_ID]);
+  assert.deepEqual(ekkoOnly.map((preset) => preset.id), [
+    BUILTIN_REMOTE_CONFIG_ID,
+    LITE_REMOTE_CONFIG_ID,
+  ]);
 });
 
 test("accepts operator presets and drops unusable entries", () => {
@@ -48,14 +57,14 @@ test("accepts operator presets and drops unusable entries", () => {
   );
   assert.deepEqual(
     presets.map((preset) => preset.id),
-    [BUILTIN_REMOTE_CONFIG_ID, "alt"],
+    [BUILTIN_REMOTE_CONFIG_ID, LITE_REMOTE_CONFIG_ID, "alt"],
   );
-  assert.equal(presets[1].value, "https://example.test/alt.ini");
+  assert.equal(presets[2].value, "https://example.test/alt.ini");
 });
 
 test("survives malformed REMOTE_CONFIGS without failing startup", () => {
-  assert.equal(parseRemoteConfigPresets("{not json", FIXED, false).length, 1);
-  assert.equal(parseRemoteConfigPresets('"a string"', FIXED, false).length, 1);
+  assert.equal(parseRemoteConfigPresets("{not json", FIXED, false).length, 2);
+  assert.equal(parseRemoteConfigPresets('"a string"', FIXED, false).length, 2);
 });
 
 test("resolves a link's config id and refuses anything unlisted", () => {

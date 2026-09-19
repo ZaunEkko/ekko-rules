@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { getRuntimeConfig } from "@/lib/convert";
 import { readDetectedLanAddress } from "@/lib/host-network";
 import { readMetrics } from "@/lib/metrics";
+import {
+  compareVersions,
+  readLatestVersion,
+  readRepoStars,
+} from "@/lib/latest-version";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,6 +20,17 @@ export async function GET() {
   const metrics = runtimeConfig.metricsEnabled
     ? await readMetrics(runtimeConfig.profileDataDir)
     : null;
+  const [{ latest: latestVersion }, repoStars] = await Promise.all([
+    readLatestVersion(),
+    readRepoStars(),
+  ]);
+  const running = runtimeConfig.ekkoRulesVersion;
+  // "local" is what an unbuilt image reports; it is not behind anything.
+  const updateAvailable =
+    Boolean(latestVersion) &&
+    running !== "local" &&
+    compareVersions(latestVersion as string, running) > 0;
+
   let subconverterReachable = false;
   try {
     const response = await fetch(`${runtimeConfig.subconverterBaseUrl}/version`, {
@@ -39,6 +55,9 @@ export async function GET() {
       deployment_error: runtimeConfig.deploymentError || null,
       deployment_warning: runtimeConfig.deploymentWarning || null,
       ekko_rules_version: runtimeConfig.ekkoRulesVersion,
+      latest_ekko_rules_version: latestVersion,
+      update_available: updateAvailable,
+      repo_stars: repoStars,
       subconverter_version: runtimeConfig.subconverterVersion,
       subconverter_reachable: subconverterReachable,
       access_password_required:
