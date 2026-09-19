@@ -1414,3 +1414,35 @@ The same log shows ZeroTier's data plane on the fallback:
 
 It is not fixed here, for two reasons. Its registered block `84.17.52.0/23` belongs to Datacamp, a CDN, so using it as a stand-in for ZeroTier would capture unrelated traffic. And direct access to a Zurich root from the mainland is not established to work, while the proxy path currently does — moving it to DIRECT on reasoning alone is the mistake ER-058 was written about. It needs a measurement first.
 
+## ER-062 — A cached "latest" told visitors they were current when they were not
+
+**Type:** correction; the version check stops caching and stops using the REST API
+
+`selfhost-v0.2.1` was published and the deployed page kept reading:
+
+```
+规则 0.2.0 · 最新 0.2.0
+```
+
+The health endpoint agreed: `latest_ekko_rules_version: "0.2.0"`, `update_available: false`. Nothing had failed. The answer was half an hour old, because ER-059's check cached for thirty minutes while the update timer pulls every five.
+
+That is not a tuning miss, it is the feature inverted. The check exists because a visitor could not otherwise tell whether a deployment had caught up; a stale cache does not merely withhold that — it states the opposite, with the same confidence as a correct answer. And once the image moved before the check did, the page would print a running version newer than the "latest" beside it, which reads as a bug to anyone who sees it.
+
+### Why it cached at all
+
+Because of where it was asking. Anonymous `api.github.com` allows 60 requests an hour per address, and this server makes the call for every visitor, so a lookup per page load would stop working for everybody the moment the site saw sixty visits in an hour. The cache was protecting the quota, and the quota was dictating the freshness.
+
+The quota is avoidable. Tags now come from git's ref advertisement — `https://github.com/<repo>.git/info/refs?service=git-upload-pack`, what `git ls-remote` reads — which is not metered that way. It is about 6 KB, less than the page it appears on. With the quota gone there is no reason left to cache, so the check now runs on every load and the displayed answer is as old as the request that produced it.
+
+What remains is a failure backoff. When the lookup is failing, asking again on every load would make each visitor wait out the timeout for an answer that is not coming, so a failure is held for a minute and the last known value is served meanwhile. Concurrent callers still share one request, so several people opening the page at once make one lookup rather than several.
+
+### The contradiction cannot be printed any more
+
+The running image was built from a published tag, so the newest published version is at least the one running here. If the check ever lags behind the image again, the health endpoint reports the running version as the latest rather than a smaller number, because a smaller number is both wrong and alarming.
+
+The star count keeps its own thirty-minute clock on the REST API. It does not need to be fresh, and leaving it there keeps the quota untouched for it.
+
+### Parsing
+
+`parseRefTagNames` scans for ref names rather than parsing the pkt-line framing: a name ends at the first character git forbids in one, which is the NUL or newline the framing puts there, or the caret of a peeled `^{}` entry. Tested against a body shaped like the real thing — pkt-line lengths, a NUL-delimited capability list on the first ref, peeled entries, and refs that are not tags — and against a body with no tags at all, which must yield nothing rather than a guess.
+

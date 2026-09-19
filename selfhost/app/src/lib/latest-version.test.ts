@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { compareVersions, pickLatestTag } from "./latest-version";
+import {
+  compareVersions,
+  parseRefTagNames,
+  pickLatestTag,
+} from "./latest-version";
 
 test("orders versions numerically, not as strings", () => {
   // The reason this function exists: "0.1.10" < "0.1.9" as text.
@@ -44,3 +48,38 @@ test("tag order in the response does not decide the answer", () => {
   assert.equal(pickLatestTag(names), "0.1.10");
   assert.equal(pickLatestTag([...names].reverse()), "0.1.10");
 });
+
+test("reads tag names out of a git ref advertisement", () => {
+  // Shaped like the real thing: pkt-line lengths, a NUL-delimited capability
+  // list on the first ref, peeled entries, and refs that are not tags.
+  const NUL = String.fromCharCode(0);
+  const body = [
+    "001e# service=git-upload-pack",
+    "0000015500000000000000000000000000000000 refs/heads/main" + NUL + "multi_ack thin-pack",
+    "003f1111111111111111111111111111111111111111 refs/tags/selfhost-v0.2.0",
+    "00412222222222222222222222222222222222222222 refs/tags/selfhost-v0.2.0^{}",
+    "003f3333333333333333333333333333333333333333 refs/tags/selfhost-v0.2.1",
+    "003f4444444444444444444444444444444444444444 refs/tags/selfhost-v0.1.9",
+    "0000",
+  ].join("\n");
+
+  const names = parseRefTagNames(body);
+  assert.deepEqual(names.sort(), [
+    "selfhost-v0.1.9",
+    "selfhost-v0.2.0",
+    "selfhost-v0.2.1",
+  ]);
+  // A peeled entry names the same tag; it must not leak the caret through.
+  assert.equal(
+    names.some((name) => name.includes("^")),
+    false,
+  );
+  assert.equal(pickLatestTag(names), "0.2.1");
+});
+
+test("a ref advertisement with no tags yields nothing rather than a guess", () => {
+  const body = ["001e# service=git-upload-pack", "0000"].join("\n");
+  assert.deepEqual(parseRefTagNames(body), []);
+  assert.equal(pickLatestTag(parseRefTagNames(body)), null);
+});
+

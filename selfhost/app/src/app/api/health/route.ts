@@ -20,11 +20,21 @@ export async function GET() {
   const metrics = runtimeConfig.metricsEnabled
     ? await readMetrics(runtimeConfig.profileDataDir)
     : null;
-  const [{ latest: latestVersion }, repoStars] = await Promise.all([
+  const running = runtimeConfig.ekkoRulesVersion;
+  const [{ latest: checkedLatest }, repoStars] = await Promise.all([
     readLatestVersion(),
     readRepoStars(),
   ]);
-  const running = runtimeConfig.ekkoRulesVersion;
+  // The running image was built from a published tag, so the newest published
+  // version is at least the one running here. Reporting a smaller number would
+  // print a running version ahead of "latest", which reads as a bug and tells
+  // the visitor nothing true.
+  const latestVersion =
+    checkedLatest &&
+    running !== "local" &&
+    compareVersions(running, checkedLatest) > 0
+      ? running
+      : checkedLatest;
   // "local" is what an unbuilt image reports; it is not behind anything.
   const updateAvailable =
     Boolean(latestVersion) &&
