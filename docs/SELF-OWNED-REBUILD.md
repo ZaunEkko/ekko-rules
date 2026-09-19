@@ -2,9 +2,11 @@
 
 ## Goal
 
-`sources/rules/china-domains-direct.list` (1,482 rules) and `sources/rules/advertising.list` (849 rules) are one-time deterministic imports of `v2fly/domain-list-community` data at revision `660198a5`. Together they are 2,331 rules, 29.8 percent of the published corpus. While that data ships, `NOTICE.md` and the two import ledgers discharge a mandatory `Copyright (c) 2018-2019 V2Ray` attribution.
+`sources/rules/china-domains-direct.list` (1,482 rules) and `sources/rules/advertising.list` (849 rules) were one-time deterministic imports of `v2fly/domain-list-community` data at revision `660198a5`. Together they were 2,331 rules, 29.8 percent of the published corpus, and while they shipped, `NOTICE.md` and the two import ledgers discharged a mandatory `Copyright (c) 2018-2019 V2Ray` attribution.
 
-The goal of this rebuild is to replace that data with rules this repository derived itself, so the attribution can be retired because the dependency is gone — not because the notice was removed from data that is still shipping.
+The goal of this rebuild was to replace that data with rules this repository derived itself, so the attribution could be retired because the dependency was gone — not because the notice was removed from data that was still shipping.
+
+**ER-047 completed it.** Both imports are deleted, their ledgers with them, and `NOTICE.md` no longer carries the attribution. What follows records how that was reached, including where the method stopped.
 
 ## Why a one-to-one replacement is the wrong target
 
@@ -88,37 +90,37 @@ A rule enters the rebuilt `advertising.list` only when all hold:
 
 Criterion 3 is the bottleneck and is not automatable from reach data.
 
-## Status
+## Status — complete
 
 Rules derived entirely from this repository's own evidence:
 
 | Segment | Rules | Evidence |
 |---|---:|---|
-| `advertising-curated` | 452 | traffic capture, publisher ads.txt declarations, delivery probe |
-| `china-web` additions | 2,899 | markup scan of mainland origins, Certificate Transparency vendor attestation, APNIC delegation records |
+| `advertising-curated` | 494 | traffic capture, publisher ads.txt declarations, delivery probe |
+| `china-web` | 4,219 | markup and script scans of mainland origins, Certificate Transparency vendor attestation, APNIC delegation records |
+| `china-direct-curated` | 9 | the broad vendor and CDN roots, held late so they do not preempt the cloud, media and AI segments |
 
-Measured improvement, with the pinned import alone and then with the import plus the curation:
+Measured improvement, with the retired import alone and then with the curation that replaced it:
 
-| Target | Import | Import and curated |
+| Target | Import | Curated |
 |---|---:|---:|
 | Third-party hosts observed on 21 origins | 7.3% | 42.3% |
 | Hosts this repository reviewed as advertising | 16.5% | 100.0% |
 | Advertising systems declared by two or more publishers | 1.3% | 44.9% |
+| Hostnames observed across 2,017 mainland origins | 7.7% | 60.9% |
+| Mainland origins scanned | 2.7% | 93.4% |
 
-On the mainland side the curation is purely additive. Eight major services — `zol.com.cn`, `ifeng.com`, `eastmoney.com`, `csdn.net`, `ithome.com`, `cnblogs.com`, `suning.com`, `dangdang.com` — reached the proxy fallback before it and are direct after it. First-match coverage never increased across any round.
+First-match unreachable coverage fell from 145 to 54 as the imports left, same-segment holding at 13 and cross-segment falling from 132 to 41: most dead rules in the product were theirs.
 
-## What retiring the imports still needs
+## Why the replacement is not a reproduction
 
-The attribution can only be retired once the imports no longer ship, and neither can be retired yet:
+Independent attestation of the imports' live entries reached 34.1 percent for the mainland list and 55.8 percent for the advertising one, and then saturated. The third crawl round confirmed 3,096 new mainland roots of which only 92 were referenced by more than one origin; a subject-alternative-name harvest added 627 rules and moved attestation 1.3 points. What the imports still held was mobile SDK endpoints, vendor backend domains and platform-native advertising hosts that neither public web traffic nor certificate logs reach from here.
 
-| Import | Live entries | Independently attested | Still missing |
-|---|---:|---:|---:|
-| `china-domains-direct.list` | 1,448 | 461 (31.8%) | 987 |
-| `advertising.list` | 765 | 215 (28.1%) | 550 |
+So the imports were not reproduced. They were replaced by a corpus that measures better against this repository's own evidence, which is a different and defensible claim — and the reason the table above compares coverage rather than counting matched entries.
 
-The remaining mainland entries are vendor-affiliated domains under obscure names — `byte00.net`, `bdurl.net`, `jcloud-cache.net`, `360os.com` — which the Certificate Transparency method reaches as the organisation list grows. The remaining advertising entries are mobile SDK and platform-native endpoints — `app-measurement.com`, `admob.com`, `2mdn.net`, `ads-twitter.com` — plus Russian and mainland ecosystems, which need a fourth source: vendor allowlist documentation, the method ER-023 used for cloud endpoints.
+Retiring them outright would still have cost coverage for 2,504 observed hostnames, including `baidu.com`, `163.com`, `126.net`, `7fresh.com` and `jddj.com`. Those were in this repository's own observation all along; the candidate filter had skipped them precisely because the import already covered them. 239 such roots were recovered before the swap, 163 confirmed mainland-hosted by APNIC and 61 admitted by per-host review, plus 41 added explicitly, taking measured loss to zero.
 
-Each batch lands as its own ER with its evidence committed alongside. The segment budget for either swap is already available: retiring an import frees the segment it occupies.
+One deliberate exception: `newrelic.com` is not re-added. The import blocked it; this repository's review classifies browser monitoring as neither advertising nor tracking, and the hold stands over parity.
 
 ## Status of the evidence tools
 

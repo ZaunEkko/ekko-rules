@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 63 rule files, 64 ordered segments including FINAL, 40 proxy groups, and 11,887 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines one standard product with 62 rule files, 63 ordered segments including FINAL, 40 proxy groups, and 9,831 rules including FINAL. Subconverter and Mihomo consume the same ordered corpus through one entry point each.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,18 +21,18 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 11,886 file rules are partitioned by evidence boundary:
+The 9,830 file rules are partitioned by evidence boundary:
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
-| Classic mainland-domain import | 1,482 | Direct pinned MIT input with immutable selection ledger |
-| Advertising import | 849 | Direct pinned MIT input with immutable selection and capture ledgers |
 | Current late recovery | 2,684 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
-| Observation-derived advertising curation | 469 | Derived solely from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
-| Observation-derived mainland direct curation | 3,608 | Derived from this repository's own scan of mainland origins, each root confirmed mainland-hosted against APNIC delegation records |
+| Observation-derived mainland direct curation | 3,858 | Derived from this repository's own markup and script scans of mainland origins, Certificate Transparency vendor attestation, and APNIC delegation records |
+| Observation-derived advertising curation | 494 | Derived from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
 | Specialized, private/local, and service corpus | 2,794 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
-The final 2,794-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than one of the two pinned import pipelines or the frozen recovery selection.
+No component of the current product derives from a third-party rule list. ER-047 retired the two pinned `v2fly/domain-list-community` imports that once carried 2,331 rules, and with them the `Copyright (c) 2018-2019 V2Ray` attribution they required.
+
+The final 2,794-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
 
 ## Direct canonical inputs
 
@@ -44,27 +44,11 @@ Six late-recovery rulesets derive from frozen Phase 2 repository evidence. They 
 
 ### Observation-derived mainland direct curation
 
-584 of `sources/rules/china-web.list` come from this repository's own measurement rather than the pinned import. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup references, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. The decision comes from a primary source: APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root only when every A record falls inside them.
+`sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 3,858 rules derived entirely from this repository's own measurement. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
 
-A second round seeded its origins from the roots the first confirmed, an expansion that stays inside this repository's own observation. Across both rounds 555 mainland origins were scanned; of 2,940 roots not already covered, 1,853 are mainland-hosted. Mainland advertising and analytics infrastructure is excluded because it belongs to the advertising policy rather than a direct one, as are malformed roots. A third round added a second discovery source. A homepage scan cannot reach the backend, sub-brand and infrastructure domains a large vendor also operates, because no homepage links to them. Certificate Transparency can: every publicly trusted certificate is logged with the organisation it was issued to, so `scripts/vendor_domain_discovery.py` querying by organisation returns the domains a vendor proved control of to a certificate authority — the vendor's own attestation rather than a third party's list. 118 mainland vendors attest 2,338 registrable roots, 553 of which are mainland-hosted and not already covered.
+The decision comes from a primary source wherever it can: APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root when its A records fall inside them. Where that test cannot answer — a mainland service on a global CDN, or a root whose apex carries no address — admission falls back to per-host review recorded against the observation that found it.
 
-The result changes real behaviour: `zol.com.cn`, `ifeng.com`, `eastmoney.com`, `csdn.net`, `ithome.com`, `cnblogs.com`, `suning.com` and `dangdang.com` all reached the proxy fallback before this curation and are direct after it.
-
-### Classic mainland-domain import
-
-`sources/rules/china-domains-direct.list` is a one-time deterministic import from `v2fly/domain-list-community` revision `660198a50bac2ab10c567d95a472a7b33915d1b0`, licensed under MIT (`Copyright (c) 2018-2019 V2Ray`).
-
-The selection reads direct `domain` and `full` entries from 31 named mainland service categories without recursively expanding includes. It excludes `!cn` entries, keywords, regular expressions, single-label suffixes, coverage within the selected bundle, and matchers already covered by earlier canonical rules.
-
-The emitted file contains 1,482 anchored matchers: 1,481 `DOMAIN-SUFFIX` entries and one `DOMAIN` entry. Revision, category list, input hashes, counts, output digest, and license digest are frozen in `tests/fixtures/china-domain-import-ledger.json`.
-
-### Advertising import
-
-`sources/rules/advertising.list` is a one-time deterministic import from `category-ads` at the same pinned MIT revision. The import reproduces the upstream parser's include and attribute-filter semantics, including selective `@ads` includes, and then applies Ekko Rules' anchored-rule boundary.
-
-The upstream category resolves to 850 entries: 677 domain roots, 172 exact full domains, and one regexp. The regexp is excluded; the emitted file contains 849 anchored matchers—677 `DOMAIN-SUFFIX` and 172 `DOMAIN`—with no keyword, regexp, single-label, or destination-IP rules.
-
-`category-ads-all` is deliberately excluded because it additionally pulls provider-company, analytics, messaging, and other broader service roots. Input/dependency hashes, parser hash, selection counts, output hash, and representative cases are frozen in `tests/fixtures/advertising-import-ledger.json`.
+`china-direct-curated` exists because ordering is semantics. Seven broad vendor roots plus two CDN roots must not run ahead of the cloud, media and AI segments that name specific hosts beneath them, so they sit in their own segment immediately before the GEOIP fallback, where the retired mainland import used to sit.
 
 ### Observation-derived advertising curation
 

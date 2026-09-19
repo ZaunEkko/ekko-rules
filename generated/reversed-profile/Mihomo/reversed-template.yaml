@@ -308,13 +308,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/remote-streaming.yaml
     path: ./ruleset/remote-streaming.yaml
     interval: 86400
-  advertising:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/advertising.yaml
-    path: ./ruleset/advertising.yaml
-    interval: 86400
   advertising-curated:
     type: http
     behavior: classical
@@ -714,12 +707,12 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google.yaml
     path: ./ruleset/google.yaml
     interval: 86400
-  china-domains-direct:
+  china-direct-curated:
     type: http
     behavior: classical
     format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-domains-direct.yaml
-    path: ./ruleset/china-domains-direct.yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/china-direct-curated.yaml
+    path: ./ruleset/china-direct-curated.yaml
     interval: 86400
   china-geoip-direct:
     type: http
@@ -732,7 +725,6 @@ rules:
 - RULE-SET,author-domain,🌏 国内网站
 - RULE-SET,private,DIRECT
 - RULE-SET,remote-streaming,🖥️ 远程串流
-- RULE-SET,advertising,🛑 广告拦截
 - RULE-SET,advertising-curated,🛑 广告拦截
 - RULE-SET,openai,🧲 OpenAI
 - RULE-SET,claude,🧲 Claude
@@ -790,6 +782,6 @@ rules:
 - RULE-SET,microsoft,🧩 微软服务
 - RULE-SET,microsoft-late-recovery,DIRECT
 - RULE-SET,google,🔎 Google
-- RULE-SET,china-domains-direct,🌏 国内网站
+- RULE-SET,china-direct-curated,🌏 国内网站
 - RULE-SET,china-geoip-direct,DIRECT
 - MATCH,🐟 漏网之鱼

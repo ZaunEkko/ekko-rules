@@ -37,11 +37,16 @@ payload:
 - DOMAIN-SUFFIX,33across.com
 - DOMAIN-SUFFIX,3lift.com
 - DOMAIN-SUFFIX,4strokemedia.com
+- DOMAIN-SUFFIX,51.la
 - DOMAIN-SUFFIX,9dotsmedia.com
+- DOMAIN-SUFFIX,acjs.aliyun.com
 - DOMAIN-SUFFIX,ad-stir.com
 - DOMAIN-SUFFIX,ad.plus
 - DOMAIN-SUFFIX,ad2iction.com
 - DOMAIN-SUFFIX,adapex.io
+- DOMAIN-SUFFIX,adash.man.aliyuncs.com
+- DOMAIN-SUFFIX,adashx.ut.amap.com
+- DOMAIN-SUFFIX,adashx.ut.ele.me
 - DOMAIN-SUFFIX,adbility-media.com
 - DOMAIN-SUFFIX,adbite.com
 - DOMAIN-SUFFIX,adbro.me
@@ -100,6 +105,7 @@ payload:
 - DOMAIN-SUFFIX,aja.vision
 - DOMAIN-SUFFIX,altavara.co
 - DOMAIN-SUFFIX,altitude-arena.com
+- DOMAIN-SUFFIX,amazon-adsystem.com
 - DOMAIN-SUFFIX,ampliffy.com
 - DOMAIN-SUFFIX,amxrtb.com
 - DOMAIN-SUFFIX,andbeyond.media
@@ -143,6 +149,7 @@ payload:
 - DOMAIN-SUFFIX,casalemedia.com
 - DOMAIN-SUFFIX,chartboost.com
 - DOMAIN-SUFFIX,chocolateplatform.com
+- DOMAIN-SUFFIX,clarity.ms
 - DOMAIN-SUFFIX,clickio.com
 - DOMAIN-SUFFIX,clickonometrics.pl
 - DOMAIN-SUFFIX,cnzz.com
@@ -170,6 +177,7 @@ payload:
 - DOMAIN-SUFFIX,display.io
 - DOMAIN-SUFFIX,districtm.io
 - DOMAIN-SUFFIX,dms-cg.com
+- DOMAIN-SUFFIX,doubleclick.net
 - DOMAIN-SUFFIX,doubleverify.com
 - DOMAIN-SUFFIX,durationmedia.net
 - DOMAIN-SUFFIX,dv.tech
@@ -205,11 +213,16 @@ payload:
 - DOMAIN-SUFFIX,getintent.com
 - DOMAIN-SUFFIX,gingerad.com
 - DOMAIN-SUFFIX,globalsun.io
+- DOMAIN-SUFFIX,google-analytics.com
+- DOMAIN-SUFFIX,googleadservices.com
+- DOMAIN-SUFFIX,googleoptimize.com
+- DOMAIN-SUFFIX,googlesyndication.com
 - DOMAIN-SUFFIX,gravite.net
 - DOMAIN-SUFFIX,greedygame.com
 - DOMAIN-SUFFIX,groundtruth.com
 - DOMAIN-SUFFIX,grouprvn.com
 - DOMAIN-SUFFIX,gumgum.com
+- DOMAIN-SUFFIX,h-adashx.ut.ele.me
 - DOMAIN-SUFFIX,hcodemedia.com
 - DOMAIN-SUFFIX,headerlift.com
 - DOMAIN-SUFFIX,hubvisor.io
@@ -232,6 +245,7 @@ payload:
 - DOMAIN-SUFFIX,interdogmedia.com
 - DOMAIN-SUFFIX,interworksmedia.co.kr
 - DOMAIN-SUFFIX,invamia.com
+- DOMAIN-SUFFIX,ipinyou.com
 - DOMAIN-SUFFIX,iqzone.com
 - DOMAIN-SUFFIX,ironsrc.com
 - DOMAIN-SUFFIX,jambojar.com
@@ -247,6 +261,7 @@ payload:
 - DOMAIN-SUFFIX,liftoff.io
 - DOMAIN-SUFFIX,lijit.com
 - DOMAIN-SUFFIX,liveintent.com
+- DOMAIN-SUFFIX,log-upload.mihoyo.com
 - DOMAIN-SUFFIX,logly.co.jp
 - DOMAIN-SUFFIX,lookverin.com
 - DOMAIN-SUFFIX,loopme.com
@@ -259,6 +274,7 @@ payload:
 - DOMAIN-SUFFIX,mediago.io
 - DOMAIN-SUFFIX,mediasniper.ru
 - DOMAIN-SUFFIX,mediasquare.fr
+- DOMAIN-SUFFIX,mediav.com
 - DOMAIN-SUFFIX,mediaverse.ai
 - DOMAIN-SUFFIX,mediawayss.com
 - DOMAIN-SUFFIX,mgid.com
@@ -267,6 +283,7 @@ payload:
 - DOMAIN-SUFFIX,mintegral.com
 - DOMAIN-SUFFIX,mixer.mobon.net
 - DOMAIN-SUFFIX,ml314.com
+- DOMAIN-SUFFIX,mobads-pre-config.cdn.bcebos.com
 - DOMAIN-SUFFIX,mobfox.com
 - DOMAIN-SUFFIX,mobilefuse.com
 - DOMAIN-SUFFIX,mobkoi.com
@@ -290,6 +307,7 @@ payload:
 - DOMAIN-SUFFIX,opamarketplace.com
 - DOMAIN-SUFFIX,openx.net
 - DOMAIN-SUFFIX,optad360.com
+- DOMAIN-SUFFIX,optaim.com
 - DOMAIN-SUFFIX,optidigital.com
 - DOMAIN-SUFFIX,optimatic.com
 - DOMAIN-SUFFIX,optoutadvertising.com
@@ -355,6 +373,7 @@ payload:
 - DOMAIN-SUFFIX,selectmedia.asia
 - DOMAIN-SUFFIX,sellwild.com
 - DOMAIN-SUFFIX,semseoymas.com
+- DOMAIN-SUFFIX,sensorsdata.cn
 - DOMAIN-SUFFIX,servenobid.com
 - DOMAIN-SUFFIX,setupad.com
 - DOMAIN-SUFFIX,sharethrough.com
@@ -384,8 +403,10 @@ payload:
 - DOMAIN-SUFFIX,strongmetrics.io
 - DOMAIN-SUFFIX,sunmedia.tv
 - DOMAIN-SUFFIX,superawesome.tv
+- DOMAIN-SUFFIX,syh.zybang.com
 - DOMAIN-SUFFIX,taboola.com
 - DOMAIN-SUFFIX,tagoras.io
+- DOMAIN-SUFFIX,tagtic.cn
 - DOMAIN-SUFFIX,tapjoy.com
 - DOMAIN-SUFFIX,tappx.com
 - DOMAIN-SUFFIX,targetspot.com
@@ -422,6 +443,7 @@ payload:
 - DOMAIN-SUFFIX,unrulymedia.com
 - DOMAIN-SUFFIX,upravel.com
 - DOMAIN-SUFFIX,urekamedia.com
+- DOMAIN-SUFFIX,v6-adashx.ut.ele.me
 - DOMAIN-SUFFIX,valuad.io
 - DOMAIN-SUFFIX,vdo.ai
 - DOMAIN-SUFFIX,vertamedia.com
@@ -452,6 +474,7 @@ payload:
 - DOMAIN-SUFFIX,welect.de
 - DOMAIN-SUFFIX,widesound.io
 - DOMAIN-SUFFIX,wunderkind.co
+- DOMAIN-SUFFIX,wwads.cn
 - DOMAIN-SUFFIX,xad.com
 - DOMAIN-SUFFIX,xandr.com
 - DOMAIN-SUFFIX,xapads.com
@@ -462,9 +485,11 @@ payload:
 - DOMAIN-SUFFIX,yieldmo.com
 - DOMAIN-SUFFIX,yieldmonk.com
 - DOMAIN-SUFFIX,yoc.com
+- DOMAIN-SUFFIX,youdaoads.com
 - DOMAIN-SUFFIX,yourbow.com
 - DOMAIN-SUFFIX,yumenetworks.com
 - DOMAIN-SUFFIX,zedo.com
+- DOMAIN-SUFFIX,zhugeio.com
 - DOMAIN-SUFFIX,zippormedia.com
 - DOMAIN-SUFFIX,zmaticoo.com
 - DOMAIN-SUFFIX,zoomd.com

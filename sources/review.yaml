@@ -652,3 +652,19 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The scanner now follows the first few scripts each page declares, which takes a re-run of 2,017 mainland origins from roughly 18,000 hostnames to 30,974 across 9,726 roots; the APNIC probe finds 3,096 of 6,317 uncovered candidates mainland-hosted. Only 92 are referenced by two or more independent origins, the rest being single-reference long-tail local sites a friendly-links section happens to name, so the threshold holds and 82 are admitted after removing nine measurement roots and one shadowing root. That ratio is the finding - the crawl has saturated on valuable discovery. Independent attestation reaches 34.1 percent of the mainland import's live entries and 55.8 percent of the advertising import's.
+- id: pinned-import-retirement
+  status: accepted
+  scope: product-boundary
+  summary: Full independent reproduction of the two pinned imports does not converge, while the curated replacement measures better on every axis this repository can measure.
+  evidence:
+  - NOTICE.md
+  - docs/PROVENANCE.md
+  - docs/SELF-OWNED-REBUILD.md
+  - sources/upstreams.yaml
+  - sources/rules/china-direct-curated.list
+  first_observed: 2026-09-19
+  last_verified: '2026-09-19'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Both imports, their ledgers and the advertising routing ledger are deleted, and NOTICE.md no longer carries the V2Ray attribution because nothing in the product requires it. Six evidence sources took independent attestation to 34.1 and 55.8 percent and then saturated, so the choice was between keeping data the product no longer depends on and replacing it with a corpus that measures better - 7.3 to 42.3 percent of observed third-party hosts, 16.5 to 100 percent of hosts reviewed as advertising, 7.7 to 60.9 percent of hostnames observed across mainland origins. The measurable gap was closed first - 239 roots that only the import covered were recovered from this repository's own observation, 163 confirmed by APNIC and 61 by per-host review, plus 41 added explicitly, taking measured loss to zero. newrelic.com is deliberately not re-added because this repository's review classifies browser monitoring as neither advertising nor tracking. A new china-direct-curated segment restores the ordering the import provided, holding nine broad vendor and CDN roots immediately before the GEOIP fallback so they do not run ahead of the cloud, media and AI segments.

@@ -58,4 +58,4 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 
 末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
-唯一产品包含 63 个 ruleset、64 个区段和 40 个策略组，不提供自动测速、Full、local 或 Extended 变体。
+唯一产品包含 62 个 ruleset、63 个区段和 40 个策略组，不提供自动测速、Full、local 或 Extended 变体。

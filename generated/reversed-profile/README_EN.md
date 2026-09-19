@@ -58,4 +58,4 @@ The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
-The sole product contains 63 rulesets, 64 segments, and 40 proxy groups. No automatic-latency, Full, local, or Extended variant is published.
+The sole product contains 62 rulesets, 63 segments, and 40 proxy groups. No automatic-latency, Full, local, or Extended variant is published.

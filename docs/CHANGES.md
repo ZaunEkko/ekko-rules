@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-046 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-047 use **2026-09-19**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -994,3 +994,45 @@ Current verified canonical target:
 - 206 destination-IP rules, all with `no-resolve`;
 - zero same-segment exact duplicates and zero non-strict CIDRs;
 - first-match unreachable union: 145; same-segment: 13; cross-segment-only: 132.
+
+## ER-047 — The pinned imports are retired and the attribution with them
+
+**Type:** product boundary change; two segments removed, one added
+
+The product no longer ships `v2fly/domain-list-community` data. `china-domains-direct.list` and `advertising.list` are deleted, their import ledgers and the advertising routing ledger with them, and `NOTICE.md` no longer carries the `Copyright (c) 2018-2019 V2Ray` attribution, because nothing in the product requires it.
+
+### Why now
+
+Full independent reproduction of the imports was attempted and does not converge. Six evidence sources took independent attestation of their live entries to 34.1 percent for the mainland import and 55.8 percent for the advertising one, and then saturated: a third crawl round confirmed 3,096 mainland roots of which only 92 were referenced by more than one origin, and a subject-alternative-name harvest added 627 rules while moving attestation by 1.3 points. What the imports still hold is mobile SDK endpoints, vendor backend domains and platform-native advertising hosts that neither public web traffic nor certificate logs reach from here.
+
+So the choice was not between reproducing them and keeping them. It was between keeping data the product no longer depends on for quality, and replacing it with a corpus that measures better. Against this repository's own evidence:
+
+| Target | Retired import | Curated replacement |
+|---|---:|---:|
+| Third-party hosts observed on 21 origins | 7.3% | 42.3% |
+| Hosts reviewed as advertising | 16.5% | 100% |
+| Advertising systems declared by two or more publishers | 1.3% | 44.9% |
+| Hostnames observed across 2,017 mainland origins | 7.7% | 60.9% |
+| Mainland origins scanned | 2.7% | 93.4% |
+
+### Closing the measurable gap first
+
+Retiring the imports outright would have cost coverage for 2,504 observed hostnames, including `baidu.com`, `163.com`, `126.net`, `7fresh.com` and `jddj.com`, which no other segment carried. Those domains were in this repository's own observation all along; the candidate filter had simply skipped them because an existing rule — the import — already covered them. 239 such roots were recovered, 163 confirmed mainland-hosted by APNIC and 61 admitted by per-host review after the probe could not answer for services on global CDNs. Two more, `cmpassport.com` and `jimeng.com`, were found by re-running the repository's own routing tests. Measured loss fell from 7.7 percent of observed hostnames to 2.0, and then to zero: the last 41 roots were added explicitly, 16 to advertising and 24 to mainland direct.
+
+One deliberate exception: `newrelic.com` is not re-added. The import blocked it; this repository's review classifies browser monitoring as neither advertising nor tracking, and the hold stands over parity.
+
+### Ordering is semantics
+
+Adding broad vendor roots to `china-web` broke cloud, media and AI routing — `cloud.baidu.com` reached the mainland web policy instead of mainland cloud, because `china-web` runs at 49 and `china-cloud` at 58, while the retired import ran at 62. The new `china-direct-curated` segment restores that ordering: nine broad roots sit immediately before the GEOIP fallback, exactly where the import used to be. Routing for `cloud.baidu.com`, `console.cloud.tencent.com`, `intl.cloud.tencent.com` and `music.126.net` is verified unchanged.
+
+### Shape
+
+The product goes from 63 rule files to 62 and from 11,887 rules to 9,831. First-match unreachable coverage falls from 145 to 54, same-segment stays at 13, cross-segment falls from 132 to 41 — the imports were the source of most dead rules. Intentional cloud captures fall from 71 to 19 and the cloud routing ledger is re-sealed; the advertising capture ledger is deleted along with the segment it described.
+
+Current verified canonical target:
+
+- 62 rule files, 63 ordered segments, 40 proxy groups;
+- 9,831 rules including the unique FINAL;
+- 206 destination-IP rules, all with `no-resolve`;
+- zero same-segment exact duplicates and zero non-strict CIDRs;
+- first-match unreachable union: 54; same-segment: 13; cross-segment-only: 41.

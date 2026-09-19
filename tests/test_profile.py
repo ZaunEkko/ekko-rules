@@ -63,6 +63,26 @@ from scripts.profile_model import (  # noqa: E402
 )
 
 
+# The seven broad vendor roots sit in china-direct-curated rather than
+# china-web, because they must not run ahead of the cloud, media and AI
+# segments that name specific hosts beneath them.
+BROAD_MAINLAND_ROOTS = frozenset(
+    {
+        "DOMAIN-SUFFIX,126.net",
+        "DOMAIN-SUFFIX,163.com",
+        "DOMAIN-SUFFIX,baidu.com",
+        "DOMAIN-SUFFIX,netease.com",
+        "DOMAIN-SUFFIX,qq.com",
+        "DOMAIN-SUFFIX,tencent.com",
+        "DOMAIN-SUFFIX,xiaomi.com",
+    }
+)
+
+
+def mainland_slug(rule: str) -> str:
+    return "china-direct-curated" if rule in BROAD_MAINLAND_ROOTS else "china-web"
+
+
 class CommunityHealthTests(unittest.TestCase):
     def test_issue_forms_are_structured_and_safe(self) -> None:
         config = yaml.safe_load(
@@ -125,11 +145,11 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 64)
-        self.assertEqual(len(self.sources.rule_segments), 63)
+        self.assertEqual(len(self.sources.segments), 63)
+        self.assertEqual(len(self.sources.rule_segments), 62)
         self.assertEqual(len(self.sources.proxy_groups), 40)
-        self.assertEqual(len(self.sources.segments_for("core")), 64)
-        self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
+        self.assertEqual(len(self.sources.segments_for("core")), 63)
+        self.assertEqual(len(self.sources.rule_segments_for("core")), 62)
         self.assertEqual(len(self.sources.proxy_groups_for("core")), 40)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
@@ -247,8 +267,8 @@ class CanonicalSourceTests(unittest.TestCase):
                 "author-domain",
                 "private",
                 "remote-streaming",
-                "advertising",
                 "advertising-curated",
+                "openai",
             ],
         )
         self.assertFalse((SOURCES / "rules" / "direct-override.list").exists())
@@ -290,17 +310,17 @@ class CanonicalSourceTests(unittest.TestCase):
             ["dazn"],
         )
         slugs = [segment.slug for segment in self.sources.segments]
-        self.assertLess(slugs.index("advertising"), slugs.index("overseas-cloud"))
+        self.assertLess(slugs.index("advertising-curated"), slugs.index("overseas-cloud"))
         self.assertLess(slugs.index("china-media-late-recovery"), slugs.index("overseas-cloud"))
         self.assertLess(slugs.index("overseas-cloud"), slugs.index("china-cloud"))
         self.assertLess(slugs.index("china-cloud"), slugs.index("microsoft"))
         self.assertLess(slugs.index("microsoft-late-recovery"), slugs.index("google"))
-        self.assertLess(slugs.index("google"), slugs.index("china-domains-direct"))
+        self.assertLess(slugs.index("google"), slugs.index("china-direct-curated"))
 
     def test_cloud_capture_ledger_is_frozen_and_closed(self) -> None:
         ledger = json.loads(CLOUD_ROUTING_LEDGER.read_text(encoding="utf-8"))
         self.assertEqual(ledger["schema_version"], 1)
-        self.assertEqual(ledger["count"], 71)
+        self.assertEqual(ledger["count"], 19)
         content = "".join(
             "\t".join(
                 (
@@ -351,11 +371,11 @@ class CanonicalSourceTests(unittest.TestCase):
         self.assertEqual(actual, ledger["rows"])
         self.assertEqual(
             Counter(row["cloud_slug"] for row in actual),
-            Counter({"china-cloud": 64, "overseas-cloud": 7}),
+            Counter({"china-cloud": 12, "overseas-cloud": 7}),
         )
         self.assertEqual(
             Counter(row["later_slug"] for row in actual),
-            Counter({"china-domains-direct": 52, "microsoft-late-recovery": 19}),
+            Counter({"microsoft-late-recovery": 19}),
         )
 
     def test_no_resolve_and_strict_cidr_gate(self) -> None:
@@ -382,9 +402,9 @@ class CanonicalSourceTests(unittest.TestCase):
         ]
         current = coverage_metrics(self.sources, product="core")
         self.assertEqual(current, baseline)
-        self.assertEqual(current["global"]["union"], 145)
+        self.assertEqual(current["global"]["union"], 54)
         self.assertEqual(current["within_same_segment"]["union"], 13)
-        self.assertEqual(current["cross_segment_only"]["union"], 132)
+        self.assertEqual(current["cross_segment_only"]["union"], 41)
 
     def test_direct_default_domain_keyword_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -813,7 +833,7 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         self.assertTrue(all(slug in slugs for slug in recovery_slugs))
         for slug in recovery_slugs:
             self.assertLess(slugs.index("china-web"), slugs.index(slug))
-            self.assertLess(slugs.index(slug), slugs.index("china-domains-direct"))
+            self.assertLess(slugs.index(slug), slugs.index("china-direct-curated"))
         for slug in recovery_slugs:
             if slug != "microsoft-late-recovery":
                 self.assertLess(slugs.index(slug), slugs.index("overseas-cloud"))
@@ -821,7 +841,7 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         self.assertLess(slugs.index("microsoft-late-recovery"), slugs.index("google"))
         self.assertEqual(
             slugs[-3:],
-            ["china-domains-direct", "china-geoip-direct", "final"],
+            ["china-direct-curated", "china-geoip-direct", "final"],
         )
         group_members = {
             group.name: list(group.members) for group in sources.proxy_groups
@@ -936,127 +956,10 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         self.assertEqual(
             mihomo["rules"][-3:],
             [
-                "RULE-SET,china-domains-direct,🌏 国内网站",
+                "RULE-SET,china-direct-curated,🌏 国内网站",
                 "RULE-SET,china-geoip-direct,DIRECT",
                 "MATCH,🐟 漏网之鱼",
             ],
-        )
-
-
-class AdvertisingImportTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.sources = load_profile_sources(SOURCES)
-        cls.ledger = json.loads(ADVERTISING_IMPORT_LEDGER.read_text(encoding="utf-8"))
-        cls.rules_path = SOURCES / "rules" / "advertising.list"
-        cls.rules = cls.rules_path.read_text(encoding="utf-8").splitlines()
-
-    def test_import_ledger_and_output_are_immutable(self) -> None:
-        self.assertEqual(
-            hashlib.sha256(ADVERTISING_IMPORT_LEDGER.read_bytes()).hexdigest(),
-            "2072cbc7408a435d572d23e116e817a3ed4f5704cbac0e04efcb4f14eab809ff",
-        )
-        selection = self.ledger["selection"]
-        self.assertEqual(selection["resolved_entries"], 850)
-        self.assertEqual(selection["excluded"]["regexp"], 1)
-        self.assertEqual(selection["emitted"], 849)
-        self.assertEqual(
-            selection["emitted_rule_types"],
-            {"DOMAIN": 172, "DOMAIN-SUFFIX": 677},
-        )
-        self.assertEqual(
-            hashlib.sha256(self.rules_path.read_bytes()).hexdigest(),
-            selection["emitted_sha256"],
-        )
-        self.assertEqual(len(self.rules), selection["emitted"])
-        upstream = next(
-            item
-            for item in self.sources.upstreams["upstreams"]
-            if item["id"] == "v2fly-domain-list-community-advertising"
-        )
-        self.assertEqual(upstream["revision"], self.ledger["source"]["revision"])
-        self.assertEqual(
-            upstream["license_sha256"], self.ledger["source"]["license_sha256"]
-        )
-        self.assertEqual(upstream["category"], self.ledger["source"]["category"])
-        self.assertEqual(upstream["output_path"], "rules/advertising.list")
-        self.assertEqual(
-            upstream["ledger"], "tests/fixtures/advertising-import-ledger.json"
-        )
-
-    def test_import_is_anchored_and_defaults_to_reject(self) -> None:
-        for rule in self.rules:
-            rule_type, value, has_no_resolve = parse_rule(
-                rule, context="Advertising import"
-            )
-            self.assertIn(rule_type, {"DOMAIN", "DOMAIN-SUFFIX"})
-            self.assertIn(".", value)
-            self.assertFalse(has_no_resolve)
-        group = next(
-            group for group in self.sources.proxy_groups if group.name == "🛑 广告拦截"
-        )
-        self.assertEqual(group.members[0], "REJECT")
-
-    def test_required_advertising_cases_match_before_services(self) -> None:
-        for domain in self.ledger["required_cases"].values():
-            with self.subTest(domain=domain):
-                result = first_match(self.sources, domain=domain)
-                self.assertEqual(result["slug"], "advertising")
-                self.assertEqual(result["target"], "🛑 广告拦截")
-
-    def test_intentional_cross_segment_captures_are_frozen(self) -> None:
-        self.assertEqual(
-            hashlib.sha256(ADVERTISING_ROUTING_LEDGER.read_bytes()).hexdigest(),
-            "2c896c2e3ab7503c81699116ba73f76e8890420c0849d05c9448dfc654fef456",
-        )
-        ledger = json.loads(
-            ADVERTISING_ROUTING_LEDGER.read_text(encoding="utf-8")
-        )
-        advertising = self.sources.rules["advertising"]
-        segments = self.sources.rule_segments_for("core")
-        start = next(
-            index for index, segment in enumerate(segments) if segment.slug == "advertising"
-        )
-        rows = []
-        for segment in segments[start + 1 :]:
-            for rule in self.sources.rules[segment.slug]:
-                covering = next(
-                    (
-                        candidate
-                        for candidate in advertising
-                        if rule_covers(candidate, rule)
-                    ),
-                    None,
-                )
-                if covering:
-                    rows.append(
-                        {
-                            "later_slug": segment.slug,
-                            "later_target": segment.target,
-                            "later_rule": rule,
-                            "advertising_rule": covering,
-                        }
-                    )
-        def row_key(row: dict[str, str]) -> tuple[str, str, str, str]:
-            return (
-                row["later_slug"],
-                row["later_target"],
-                row["later_rule"],
-                row["advertising_rule"],
-            )
-
-        ordered_rows = sorted(rows, key=row_key)
-        ordered_ledger_rows = sorted(ledger["rows"], key=row_key)
-        self.assertEqual(ordered_rows, ordered_ledger_rows)
-        self.assertEqual(len(rows), ledger["count"])
-        ledger_content = "".join(
-            f"{row['later_slug']}\t{row['later_target']}\t{row['later_rule']}\t"
-            f"{row['advertising_rule']}\n"
-            for row in ledger["rows"]
-        )
-        self.assertEqual(
-            hashlib.sha256(ledger_content.encode()).hexdigest(),
-            ledger["rows_sha256"],
         )
 
 
@@ -1128,61 +1031,6 @@ class PublicRuleExclusionTests(unittest.TestCase):
         sources = load_profile_sources(SOURCES)
         result = first_match(sources, domain="huaikhwang.central-world.org")
         self.assertEqual(result, {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"})
-
-
-class ChinaDomainDirectImportTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.sources = load_profile_sources(SOURCES)
-        cls.ledger = json.loads(CHINA_DOMAIN_IMPORT_LEDGER.read_text(encoding="utf-8"))
-        cls.rules_path = SOURCES / "rules" / "china-domains-direct.list"
-        cls.rules = cls.rules_path.read_text(encoding="utf-8").splitlines()
-
-    def test_import_ledger_and_output_are_immutable(self) -> None:
-        self.assertEqual(
-            hashlib.sha256(CHINA_DOMAIN_IMPORT_LEDGER.read_bytes()).hexdigest(),
-            "7de6a96aa36ea4b3db92899843f19419609edb11dc484879621e4f58f9a3af6b",
-        )
-        selection = self.ledger["selection"]
-        self.assertEqual(selection["emitted"], 1482)
-        self.assertEqual(selection["emitted_rule_types"], {"DOMAIN-SUFFIX": 1481, "DOMAIN": 1})
-        self.assertEqual(
-            hashlib.sha256(self.rules_path.read_bytes()).hexdigest(),
-            selection["emitted_sha256"],
-        )
-        self.assertEqual(len(self.rules), selection["emitted"])
-
-    def test_import_is_anchored_and_contains_no_geosite(self) -> None:
-        for rule in self.rules:
-            rule_type, value, has_no_resolve = parse_rule(
-                rule, context="China domain import"
-            )
-            self.assertIn(rule_type, {"DOMAIN", "DOMAIN-SUFFIX"})
-            self.assertIn(".", value)
-            self.assertFalse(has_no_resolve)
-            self.assertNotEqual(rule_type, "DOMAIN-KEYWORD")
-        self.assertFalse(any("GEOSITE" in rule for rule in self.rules))
-
-    def test_required_mainland_service_cases_match_before_final(self) -> None:
-        migrated_cloud_cases = {
-            "www.cloudflare-cn.com": (
-                "china-cloud",
-                "☁️ 国内云服务",
-                "DOMAIN-SUFFIX,cloudflare-cn.com",
-            ),
-        }
-        for domain in self.ledger["required_cases"].values():
-            with self.subTest(domain=domain):
-                result = first_match(self.sources, domain=domain)
-                expected = migrated_cloud_cases.get(domain)
-                if expected is None:
-                    self.assertEqual(result["slug"], "china-domains-direct")
-                    self.assertEqual(result["target"], "🌏 国内网站")
-                else:
-                    self.assertEqual(
-                        (result["slug"], result["target"], result["rule"]),
-                        expected,
-                    )
 
 
 class FirstMatchBaselineTests(unittest.TestCase):
@@ -1550,7 +1398,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in direct_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("china-web", "🌏 国内网站", rule),
+                    (mainland_slug(rule), "🌏 国内网站", rule),
                     domain=domain,
                 )
 
@@ -1561,12 +1409,12 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 "DOMAIN-SUFFIX,tencentcloudapi.com",
             ),
             "verify.cmpassport.com": (
-                "china-domains-direct",
+                "china-web",
                 "🌏 国内网站",
                 "DOMAIN-SUFFIX,cmpassport.com",
             ),
             "api.netease.im": (
-                "china-domains-direct",
+                "china-web",
                 "🌏 国内网站",
                 "DOMAIN-SUFFIX,netease.im",
             ),
@@ -1615,7 +1463,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in mainland_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("china-web", "🌏 国内网站", rule),
+                    (mainland_slug(rule), "🌏 国内网站", rule),
                     domain=domain,
                 )
 
@@ -1627,7 +1475,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             with self.subTest(domain=domain):
                 self.assert_match(
                     (
-                        "advertising",
+                        "advertising-curated",
                         "🛑 广告拦截",
                         f"DOMAIN-SUFFIX,{domain}",
                     ),
@@ -1645,7 +1493,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in existing_mainland_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("china-domains-direct", "🌏 国内网站", rule),
+                    (mainland_slug(rule), "🌏 国内网站", rule),
                     domain=domain,
                 )
 
@@ -1721,7 +1569,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in ai_video_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("china-web", "🌏 国内网站", rule),
+                    (mainland_slug(rule), "🌏 国内网站", rule),
                     domain=domain,
                 )
 
@@ -1735,7 +1583,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in existing_jimeng_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("china-domains-direct", "🌏 国内网站", rule),
+                    (mainland_slug(rule), "🌏 国内网站", rule),
                     domain=domain,
                 )
 
@@ -2092,7 +1940,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in advertising_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("advertising", "🛑 广告拦截", rule),
+                    ("advertising-curated", "🛑 广告拦截", rule),
                     domain=domain,
                 )
 
@@ -2149,7 +1997,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in game_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("china-web", "🌏 国内网站", rule),
+                    (mainland_slug(rule), "🌏 国内网站", rule),
                     domain=domain,
                 )
 
@@ -2216,7 +2064,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in web_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("china-web", "🌏 国内网站", rule),
+                    (mainland_slug(rule), "🌏 国内网站", rule),
                     domain=domain,
                 )
 
@@ -2228,7 +2076,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in advertising_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("advertising", "🛑 广告拦截", rule),
+                    ("advertising-curated", "🛑 广告拦截", rule),
                     domain=domain,
                 )
 
@@ -2315,7 +2163,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain, rule in existing_mainland_cases.items():
             with self.subTest(domain=domain):
                 self.assert_match(
-                    ("china-domains-direct", "🌏 国内网站", rule),
+                    (mainland_slug(rule), "🌏 国内网站", rule),
                     domain=domain,
                 )
 
@@ -2371,7 +2219,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 )
         self.assert_match(
             (
-                "china-domains-direct",
+                "china-web",
                 "🌏 国内网站",
                 "DOMAIN-SUFFIX,npmmirror.com",
             ),
@@ -2473,8 +2321,8 @@ class GenerationTests(unittest.TestCase):
                     self.assertNotIn(f"/{alias_slug}.list", active_text)
                     self.assertNotIn(f"/{alias_slug}.yaml", active_text)
                     self.assertNotIn(f"RULE-SET,{alias_slug},", active_text)
-        self.assertEqual(len(self.sources.rule_segments), 63)
-        self.assertEqual(len(self.sources.segments), 64)
+        self.assertEqual(len(self.sources.rule_segments), 62)
+        self.assertEqual(len(self.sources.segments), 63)
 
     def test_stale_file_is_detected_by_check_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
