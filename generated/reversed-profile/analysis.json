@@ -639,8 +639,8 @@
           "slug": "china-media",
           "scope": "both",
           "rule_types": {
-            "DOMAIN-SUFFIX": 195,
-            "DOMAIN": 7
+            "DOMAIN-SUFFIX": 196,
+            "DOMAIN": 6
           }
         },
         {
@@ -1585,8 +1585,8 @@
           "slug": "china-media",
           "scope": "both",
           "rule_types": {
-            "DOMAIN-SUFFIX": 195,
-            "DOMAIN": 7
+            "DOMAIN-SUFFIX": 196,
+            "DOMAIN": 6
           }
         },
         {

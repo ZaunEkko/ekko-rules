@@ -1548,3 +1548,19 @@ the Telecom endpoint: `https://id.189.cn/source/files/abilityPDF/preGetMobile.pd
 Tests freeze the five new rules, prove two Shumei overseas-region hosts still reach
 the fallback, and forbid a broad `fengkongcloud.com` suffix from silently undoing
 that boundary.
+
+## ER-066 — Douyin's rotating SMT CDN host needs a stable video boundary
+
+**Type:** routing correction; one brittle exact rule replaced without changing count
+
+ER-064 treated `2903b6af430652442ea0043b94efcead.v.smtcdns.com` as a stable tenant
+host. A second Recommended-page runtime capture disproved that assumption:
+`93cfd0529b8b10946f96508c75675cf7.v.smtcdns.com:443` carried the same video path
+but fell through to `MATCH`, because the 32-character edge label had rotated. The
+new host resolves to `101.69.174.19`, inside an APNIC CN allocation.
+
+The exact rule is replaced by `DOMAIN-SUFFIX,v.smtcdns.com`. This is the narrowest
+stable boundary visible to Mihomo: it covers the rotating video-edge label while
+still excluding the wider `smtcdns.com` smart-CDN root. Rule count is unchanged.
+Regression tests route both observed hashes and an arbitrary future child through
+`china-media`, forbid the retired exact hash, and keep the broad root absent.
