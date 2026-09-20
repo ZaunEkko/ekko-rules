@@ -1480,3 +1480,71 @@ Verdicts join `docs/evidence/cn-apnic-verdicts-2026-09-19.json` under the probe 
 the same registry and the same verdict type, and ER-057 already established that an
 evidence category holding one round of one thing is scaffolding rather than a route.
 
+## ER-064 — Runtime-only Douyin video and mainland ACE stay on the mainland path
+
+**Type:** routing correction; 3 exact hosts added, shared roots deliberately excluded
+
+Douyin's desktop web surface does not use one fixed media path. The Featured page can
+play without the host seen by the Recommended section, where a runtime capture found
+`2903b6af430652442ea0043b94efcead.v.smtcdns.com:443` falling to `🐟 漏网之鱼` and
+therefore taking a proxy. A mainland EDNS answer resolves that host to
+`61.240.216.134`, inside APNIC's `UNICOM` CN allocation. It enters `china-media` as
+an exact `DOMAIN`.
+
+The exactness is intentional. `smtcdns.com` is shared Tencent CDN and smart-DNS
+infrastructure, also used by services unrelated to Douyin. The existing
+`smtcdns.net` recovery rule remains where it is, and no `.com` suffix or synthetic
+hash pattern is introduced. A different tenant below `v.smtcdns.com` still falls
+through unless it is independently observed.
+
+The same runtime report found `tqos.anticheatexpert.com:8081` while WeGame's mainland
+Valorant client was running. Mainland EDNS returns `182.50.14.56` and
+`122.96.96.225`, both inside APNIC CN allocations, so the exact host enters
+`china-web` and defaults to `DIRECT`. `down.anticheatexpert.com` is the adjacent
+official ACE download host; its mainland answer lands on `119.188.48.21` and
+`122.195.144.16`, also APNIC CN allocations, so it enters the DIRECT-first
+`game-download` policy.
+
+The ACE root is not admitted. Certificate Transparency exposes both mainland and
+international services beneath it, and mainland resolution confirms the split:
+`tqos-yun.anticheatexpert.com` returns non-CN Tencent addresses while
+`riot-mtp.anticheatexpert.com` is sinkholed. Tests therefore freeze the three exact
+routes and prove that the shared CDN sibling, ACE cloud QoS, and Riot MTP sibling
+remain on the fallback. Port 8081 needs no separate matcher because Mihomo domain
+rules match the hostname independently of the destination port.
+
+## ER-065 — Domestic risk-control and carrier-auth SDKs avoid the proxy exit
+
+**Type:** routing correction; 5 rules added, regional and retired siblings excluded
+
+The JD runtime hosts reported by the browser capture were not a gap. `cactus.jd.com`,
+`gias.jd.com`, `jra.jd.com`, `passport.jd.com` and the other JD risk and login hosts
+already hit `DOMAIN-SUFFIX,jd.com`; the payment and cloud SSO hosts likewise hit the
+existing `jdpay.com`, `jingdong.com`, `yiyaojd.com` and `jdcloud.com` rules.
+
+The same audit did find two third-party risk-control gaps. Shumei's current device
+fingerprint documentation names `fp-it.fengkongcloud.com` as the domestic default and
+`fp-it-acc.fengkongcloud.com` for a mainland deployment serving a global user base.
+Both resolve wholly inside APNIC CN allocations and enter `china-web` as exact hosts.
+The root stays excluded: the same official endpoint table assigns other children to
+North America, Europe and Singapore, and `api-device-eur.fengkongcloud.com` resolves
+outside the CN ranges. Source:
+`https://help.ishumei.com/docs/tw/sdk/weapp/developDoc/`.
+
+Dingxiang's official captcha integration loads its UI and device fingerprint from
+`cdn`, `cap`, `static4` and `constid` hosts, while the assigned `apiServer` may be a
+tenant-specific child of `dingxiang-inc.com`. The dedicated vendor root is therefore
+the right boundary; its apex and the documented runtime hosts all resolve inside CN
+allocations. Source: `https://www.dingxiang-inc.com/docs/detail/captcha`.
+
+Two carrier-auth endpoints were also falling through. China Telecom's published
+pre-authorisation API uses the exact apex `id6.me`, and the current mainland
+number-verification corpus identifies `hs.wosms.cn` for China Unicom. Both exact
+hosts resolve wholly inside CN allocations and now use the domestic path. The old
+`opencloud.wostore.cn` policy page is not added because it currently returns no A
+record; candidate ownership is not a substitute for a routable endpoint. Source for
+the Telecom endpoint: `https://id.189.cn/source/files/abilityPDF/preGetMobile.pdf`.
+
+Tests freeze the five new rules, prove two Shumei overseas-region hosts still reach
+the fallback, and forbid a broad `fengkongcloud.com` suffix from silently undoing
+that boundary.

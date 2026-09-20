@@ -2025,6 +2025,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "cn.voice.gcloudcs.com": "DOMAIN-SUFFIX,gcloudcs.com",
             "gmeconf.qcloud.com": "DOMAIN,gmeconf.qcloud.com",
             "qcloud.rtc.qq.com": "DOMAIN,qcloud.rtc.qq.com",
+            "tqos.anticheatexpert.com": "DOMAIN,tqos.anticheatexpert.com",
         }
         for domain, rule in game_cases.items():
             with self.subTest(domain=domain):
@@ -2034,6 +2035,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 )
 
         download_cases = {
+            "down.anticheatexpert.com": "DOMAIN,down.anticheatexpert.com",
             "down.val.qq.com": "DOMAIN,down.val.qq.com",
             "download.wegame.qq.com": "DOMAIN,download.wegame.qq.com",
             "patch.tapapks.com": "DOMAIN-SUFFIX,tapapks.com",
@@ -2069,6 +2071,9 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 )
 
         media_cases = {
+            "2903b6af430652442ea0043b94efcead.v.smtcdns.com": (
+                "DOMAIN,2903b6af430652442ea0043b94efcead.v.smtcdns.com"
+            ),
             "www.douyin.com": "DOMAIN-SUFFIX,douyin.com",
             "api.amemv.com": "DOMAIN-SUFFIX,amemv.com",
             "aweme.snssdk.com": "DOMAIN,aweme.snssdk.com",
@@ -2083,6 +2088,12 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 )
 
         web_cases = {
+            "fp-it.fengkongcloud.com": "DOMAIN,fp-it.fengkongcloud.com",
+            "fp-it-acc.fengkongcloud.com": "DOMAIN,fp-it-acc.fengkongcloud.com",
+            "cap.dingxiang-inc.com": "DOMAIN-SUFFIX,dingxiang-inc.com",
+            "tenant-api.dingxiang-inc.com": "DOMAIN-SUFFIX,dingxiang-inc.com",
+            "id6.me": "DOMAIN,id6.me",
+            "hs.wosms.cn": "DOMAIN,hs.wosms.cn",
             "restapi.amap.com": "DOMAIN-SUFFIX,amap.com",
             "kyfw.12306.cn": "DOMAIN-SUFFIX,12306.cn",
             "www.dingtalk.com": "DOMAIN-SUFFIX,dingtalk.com",
@@ -2132,6 +2143,11 @@ class FirstMatchBaselineTests(unittest.TestCase):
 
         for domain in [
             "www.taptap.io",
+            "another-tenant.v.smtcdns.com",
+            "tqos-yun.anticheatexpert.com",
+            "riot-mtp.anticheatexpert.com",
+            "fp-na-it.fengkongcloud.com",
+            "api-device-eur.fengkongcloud.com",
         ]:
             with self.subTest(domain=domain):
                 self.assert_match(
@@ -2143,6 +2159,15 @@ class FirstMatchBaselineTests(unittest.TestCase):
         self.assertIn("DOMAIN-SUFFIX,snssdk.com", tiktok_rules)
         segments = [segment.slug for segment in self.sources.segments]
         self.assertLess(segments.index("china-media"), segments.index("tiktok"))
+        self.assertNotIn(
+            "DOMAIN-SUFFIX,smtcdns.com", self.sources.rules["china-media"]
+        )
+        self.assertNotIn(
+            "DOMAIN-SUFFIX,anticheatexpert.com", self.sources.rules["china-web"]
+        )
+        self.assertNotIn(
+            "DOMAIN-SUFFIX,fengkongcloud.com", self.sources.rules["china-web"]
+        )
         published_rules = {
             rule
             for entries in self.sources.rules.values()
@@ -3212,4 +3237,3 @@ class DocumentedRoutingOrderTests(unittest.TestCase):
         self.assertEqual(len(non_microsoft), 5, "the diagram says five of them")
         self.assertIn("五个非微软 late-recovery", self.diagram("README.md"))
         self.assertIn("five non-Microsoft late-recovery", self.diagram("README_EN.md"))
-
