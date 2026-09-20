@@ -1,13 +1,18 @@
 payload:
+- DOMAIN,fp-it-acc.fengkongcloud.com
+- DOMAIN,fp-it.fengkongcloud.com
 - DOMAIN,gmeconf.qcloud.com
 - DOMAIN,gmeosconf.qcloud.com
 - DOMAIN,gmespeech.qcloud.com
+- DOMAIN,hs.wosms.cn
+- DOMAIN,id6.me
 - DOMAIN,qcloud.rtc.qq.com
 - DOMAIN,rh-canvas-files.xiaoyaoyou.com
 - DOMAIN,rh-images.xiaoyaoyou.com
 - DOMAIN,rtc.qcloud.qq.com
 - DOMAIN,sg.global.gme.qcloud.com
 - DOMAIN,tcloud.tim.qq.com
+- DOMAIN,tqos.anticheatexpert.com
 - DOMAIN,wegame.gtimg.com
 - DOMAIN,yun.tim.qq.com
 - DOMAIN-SUFFIX,007swz.com
@@ -1203,6 +1208,7 @@ payload:
 - DOMAIN-SUFFIX,dingtalkapps.com
 - DOMAIN-SUFFIX,dingtalkcloud.com
 - DOMAIN-SUFFIX,dingtian.net.cn
+- DOMAIN-SUFFIX,dingxiang-inc.com
 - DOMAIN-SUFFIX,discuz.com
 - DOMAIN-SUFFIX,diyiyou.com
 - DOMAIN-SUFFIX,diyiziti.com

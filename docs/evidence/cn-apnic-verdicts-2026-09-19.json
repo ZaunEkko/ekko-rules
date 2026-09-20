@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "source": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
-  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A root is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19 and bank-2026-09-19 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve. Rounds before bank-2026-09-19 recorded only admissions, so every record carried mainland_hosted true; from that round on a root that was checked and found outside the CN ranges, or that did not resolve, is recorded with mainland_hosted false rather than dropped, so the file shows what was rejected as well as what was admitted.",
+  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A registrable root or deliberately exact runtime host is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19, bank-2026-09-19 and runtime-2026-09-20 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve. Rounds before bank-2026-09-19 recorded only admissions, so every record carried mainland_hosted true; from that round on a root that was checked and found outside the CN ranges, or that did not resolve, is recorded with mainland_hosted false rather than dropped, so the file shows what was rejected as well as what was admitted.",
   "counts": {
-    "roots": 3795,
-    "mainland_hosted": 3791,
+    "roots": 3801,
+    "mainland_hosted": 3797,
     "not_mainland_hosted": 4
   },
   "records": [
@@ -8833,6 +8833,14 @@
       "probe_round": "san-verdicts.json"
     },
     {
+      "root": "dingxiang-inc.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "60.204.222.130"
+      ],
+      "probe_round": "runtime-2026-09-20"
+    },
+    {
       "root": "discuz.com",
       "mainland_hosted": true,
       "addresses": [
@@ -10829,6 +10837,25 @@
         "175.178.31.185"
       ],
       "probe_round": "gap-verdicts.json"
+    },
+    {
+      "root": "fp-it-acc.fengkongcloud.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "61.164.117.101",
+        "183.134.11.39"
+      ],
+      "probe_round": "runtime-2026-09-20"
+    },
+    {
+      "root": "fp-it.fengkongcloud.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "36.110.225.218",
+        "152.136.248.158",
+        "152.136.248.239"
+      ],
+      "probe_round": "runtime-2026-09-20"
     },
     {
       "root": "fractal-technology.com",
@@ -13540,6 +13567,14 @@
       "probe_round": "cn-verdicts-r2.json"
     },
     {
+      "root": "hs.wosms.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "124.64.196.34"
+      ],
+      "probe_round": "runtime-2026-09-20"
+    },
+    {
       "root": "hsbank.cc",
       "mainland_hosted": false,
       "addresses": [],
@@ -14330,6 +14365,15 @@
         "123.58.32.85"
       ],
       "probe_round": "cn-verdicts-r3.json"
+    },
+    {
+      "root": "id6.me",
+      "mainland_hosted": true,
+      "addresses": [
+        "42.123.76.150",
+        "42.123.77.138"
+      ],
+      "probe_round": "runtime-2026-09-20"
     },
     {
       "root": "idastore.cn",
@@ -25676,6 +25720,15 @@
         "120.240.164.107"
       ],
       "probe_round": "cn-verdicts-r2.json"
+    },
+    {
+      "root": "tqos.anticheatexpert.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "122.96.96.225",
+        "182.50.14.56"
+      ],
+      "probe_round": "runtime-2026-09-20"
     },
     {
       "root": "transcode.cn",

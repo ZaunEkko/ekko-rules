@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines two builds of one product over the same corpus: 63 rule files, 64 ordered segments including FINAL, and 10,081 rules including FINAL, with 43 proxy groups in the full build and 10 in the lite build. The lite build changes only the policy a segment targets, never the rules or their order, and `LiteProductTests` holds the two to the same effective action on every segment. Subconverter and Mihomo consume the same ordered corpus through one entry point per build.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines two builds of one product over the same corpus: 63 rule files, 64 ordered segments including FINAL, and 10,089 rules including FINAL, with 43 proxy groups in the full build and 10 in the lite build. The lite build changes only the policy a segment targets, never the rules or their order, and `LiteProductTests` holds the two to the same effective action on every segment. Subconverter and Mihomo consume the same ordered corpus through one entry point per build.
 
 The product contains 206 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,7 +21,7 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 10,080 file rules are partitioned by evidence boundary. Each figure is the
+The 10,088 file rules are partitioned by evidence boundary. Each figure is the
 sum of the segments in that boundary, taken from the canonical tree rather than
 carried forward, because the previous revision of this table had drifted: it
 partitioned 10,027 rules and split the mainland and remainder categories 369
@@ -30,15 +30,15 @@ rules apart from what the sources actually held.
 | Component | Rules | Provenance treatment |
 |---|---:|---|
 | Current late recovery | 2,684 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
-| Observation-derived mainland direct curation | 4,237 | Derived from this repository's own markup and script scans of mainland origins, Certificate Transparency vendor attestation, and APNIC delegation records |
+| Observation-derived mainland direct curation | 4,243 | Derived from this repository's own markup and script scans of mainland origins, Certificate Transparency vendor attestation, and APNIC delegation records |
 | Observation-derived advertising curation | 590 | Derived from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
 | Overseas shopping curation | 76 | Reviewed per host: overseas retail and cross-border forwarding roots whose storefront, availability or bot challenge depends on which exit reaches them |
 | Finance and account registration curation | 44 | Reviewed per host: payments, virtual cards, SMS receipt and overseas banks and brokers, each resolved before admission and each geo-sensitive enough that the exit is part of the account |
-| Specialized, private/local, and service corpus | 2,449 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
+| Specialized, private/local, and service corpus | 2,451 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
 No component of the current product derives from a third-party rule list. ER-047 retired the two pinned `v2fly/domain-list-community` imports that once carried 2,331 rules, and with them the `Copyright (c) 2018-2019 V2Ray` attribution they required.
 
-The final 2,449-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
+The final 2,451-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
 
 ## Direct canonical inputs
 
@@ -50,7 +50,7 @@ Six late-recovery rulesets derive from frozen Phase 2 repository evidence. They 
 
 ### Observation-derived mainland direct curation
 
-`sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 4,237 rules derived entirely from this repository's own measurement. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
+`sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 4,243 rules derived entirely from this repository's own measurement. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
 
 The decision comes from a primary source wherever it can: APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root when its A records fall inside them. Where that test cannot answer — a mainland service on a global CDN, or a root whose apex carries no address — admission falls back to per-host review recorded against the observation that found it.
 
