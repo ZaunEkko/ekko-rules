@@ -2072,8 +2072,12 @@ class FirstMatchBaselineTests(unittest.TestCase):
 
         media_cases = {
             "2903b6af430652442ea0043b94efcead.v.smtcdns.com": (
-                "DOMAIN,2903b6af430652442ea0043b94efcead.v.smtcdns.com"
+                "DOMAIN-SUFFIX,v.smtcdns.com"
             ),
+            "93cfd0529b8b10946f96508c75675cf7.v.smtcdns.com": (
+                "DOMAIN-SUFFIX,v.smtcdns.com"
+            ),
+            "another-tenant.v.smtcdns.com": "DOMAIN-SUFFIX,v.smtcdns.com",
             "www.douyin.com": "DOMAIN-SUFFIX,douyin.com",
             "api.amemv.com": "DOMAIN-SUFFIX,amemv.com",
             "aweme.snssdk.com": "DOMAIN,aweme.snssdk.com",
@@ -2143,7 +2147,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
 
         for domain in [
             "www.taptap.io",
-            "another-tenant.v.smtcdns.com",
             "tqos-yun.anticheatexpert.com",
             "riot-mtp.anticheatexpert.com",
             "fp-na-it.fengkongcloud.com",
@@ -2161,6 +2164,13 @@ class FirstMatchBaselineTests(unittest.TestCase):
         self.assertLess(segments.index("china-media"), segments.index("tiktok"))
         self.assertNotIn(
             "DOMAIN-SUFFIX,smtcdns.com", self.sources.rules["china-media"]
+        )
+        self.assertIn(
+            "DOMAIN-SUFFIX,v.smtcdns.com", self.sources.rules["china-media"]
+        )
+        self.assertNotIn(
+            "DOMAIN,2903b6af430652442ea0043b94efcead.v.smtcdns.com",
+            self.sources.rules["china-media"],
         )
         self.assertNotIn(
             "DOMAIN-SUFFIX,anticheatexpert.com", self.sources.rules["china-web"]

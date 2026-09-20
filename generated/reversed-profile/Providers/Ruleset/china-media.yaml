@@ -38,7 +38,7 @@ payload:
 - DOMAIN-SUFFIX,y.qq.com
 - DOMAIN-SUFFIX,ykimg.com
 - DOMAIN-SUFFIX,youku.com
-- DOMAIN,2903b6af430652442ea0043b94efcead.v.smtcdns.com
+- DOMAIN-SUFFIX,v.smtcdns.com
 - DOMAIN-SUFFIX,activity-wbsj.com
 - DOMAIN-SUFFIX,amemv.cn
 - DOMAIN-SUFFIX,amemv.com
