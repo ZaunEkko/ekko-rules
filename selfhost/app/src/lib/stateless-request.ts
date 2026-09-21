@@ -28,14 +28,20 @@ export const STATELESS_SUBSCRIPTION_PATH = "/sub";
  */
 export const CLIENT_IMPORT_PATH = "/i";
 
+function safeImportFilename(name: string): string {
+  return (name.trim() || "Shadowrocket")
+    .replace(/\.(?:conf|yaml)$/i, "")
+    .replace(/[\u0000-\u001f\u007f/\\?#%]+/g, "-")
+    .replace(/^[-.\s]+|[-.\s]+$/g, "")
+    .slice(0, MAX_STATELESS_NAME_LENGTH) || "Shadowrocket";
+}
+
 /**
  * Builds the address a client stores after scanning.
  *
- * Shadowrocket decides both the kind and the display name of a remote profile
- * from the final path segment. `/i` therefore became a profile literally named
- * `i`, and its home-page scanner could no longer recognize the new native
- * configuration. Give that target a real `.conf` filename while retaining the
- * old `/i?p=...` shape for every other client.
+ * Shadowrocket derives a profile's name from the final path segment, so a
+ * bare `/i` can become a profile literally named `i`. Give its native config
+ * a `.conf` filename while retaining `/i?p=...` for the other clients.
  */
 export function clientImportPath(
   target: string,
@@ -46,12 +52,28 @@ export function clientImportPath(
     return `${CLIENT_IMPORT_PATH}?${packedQuery}`;
   }
 
-  const filename = (name.trim() || "Shadowrocket")
-    .replace(/\.conf$/i, "")
-    .replace(/[\u0000-\u001f\u007f/\\?#%]+/g, "-")
-    .replace(/^[-.\s]+|[-.\s]+$/g, "")
-    .slice(0, MAX_STATELESS_NAME_LENGTH) || "Shadowrocket";
+  const filename = safeImportFilename(name);
   return `${CLIENT_IMPORT_PATH}/${encodeURIComponent(filename)}.conf?${packedQuery}`;
+}
+
+/**
+ * Shadowrocket's home scanner accepts an HTTP node subscription, not a
+ * config/add URL or a native .conf file. Give that scanner a complete Clash
+ * document, which carries nodes, policy groups and rules in one response.
+ * The configuration-page URL remains native and independently refreshable.
+ */
+export function shadowrocketHomeImportPath(name: string, query: string): string {
+  const params = new URLSearchParams(query);
+  if (params.get("target") !== "shadowrocket") {
+    throw new Error("A Shadowrocket subscription is required.");
+  }
+  params.set("target", "clash");
+  const filename = encodeURIComponent(safeImportFilename(name));
+  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?srhome=1&${packStatelessQuery(params.toString())}`;
+}
+
+export function shadowrocketHomeProfilePath(id: string, name: string): string {
+  return `/sub/${encodeURIComponent(id)}/${encodeURIComponent(safeImportFilename(name))}.yaml`;
 }
 
 /**

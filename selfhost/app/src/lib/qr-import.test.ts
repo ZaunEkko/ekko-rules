@@ -50,19 +50,16 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("encodes the Shadowrocket home QR as an explicit configuration import", () => {
-  const namedConfig =
-    "https://sub.example.test/i/laomao-ssr.conf?p=dXJs";
+test("gives the Shadowrocket home scanner a named plain HTTPS YAML URL", () => {
+  const namedConfig = "https://sub.example.test/i/laomao-ssr.yaml?p=dXJs";
   assert.equal(
     qrCodeValue("shadowrocket", namedConfig, "laomao-ssr"),
-    `shadowrocket://config/add/${namedConfig}`,
+    namedConfig,
   );
   assert.equal(qrCodeValue("clash", namedConfig, "laomao-ssr"), namedConfig);
 });
 
 test("describes the separate Shadowrocket home-scan and config-page paths", () => {
-  // The home scanner receives an explicit config/add deep link. The raw named
-  // `.conf` address stays available for the configuration page and refreshes.
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
   assert.match(qrScanHint("shadowrocket"), /首页/);

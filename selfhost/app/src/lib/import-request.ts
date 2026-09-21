@@ -10,6 +10,9 @@ import { importPageAddress, renderImportPage } from "./import-page";
 import { rateLimitResponseHeaders } from "./rate-limit";
 import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "./request-guard";
 import {
+  buildStatelessConvertQuery,
+  clientImportPath,
+  packStatelessQuery,
   parseStatelessConvertQuery,
   STATELESS_SUBSCRIPTION_PATH,
 } from "./stateless-request";
@@ -32,17 +35,33 @@ export async function handleImportRequest(request: Request) {
   try {
     const url = new URL(request.url);
     const parsed = parseStatelessConvertQuery(url.searchParams);
-    const address = importPageAddress(
-      getRuntimeConfig().subscriptionBaseUrl,
-      url,
-    );
+    // A system-camera navigation should install the native config, while the
+    // very same QR is fetched as complete YAML by the home-page scanner.
+    const shadowrocketHome = url.searchParams.get("srhome") === "1" &&
+      url.pathname.endsWith(".yaml") && parsed.target === "clash";
+    const nativeQuery = shadowrocketHome
+      ? buildStatelessConvertQuery({
+          subscriptionUrl: parsed.subscriptionUrl,
+          target: "shadowrocket",
+          options: parsed.options,
+          name: parsed.name,
+          remoteConfig: parsed.remoteConfig,
+        })
+      : "";
+    const nativeUrl = shadowrocketHome
+      ? new URL(
+          clientImportPath("shadowrocket", parsed.name, packStatelessQuery(nativeQuery)),
+          url,
+        )
+      : url;
+    const address = importPageAddress(getRuntimeConfig().subscriptionBaseUrl, nativeUrl);
     safeLog("import.page", { target: parsed.target });
     return new NextResponse(
       renderImportPage({
-        target: parsed.target,
+        target: shadowrocketHome ? "shadowrocket" : parsed.target,
         subscriptionUrl: address,
         name: parsed.name,
-        downloadUrl: `${STATELESS_SUBSCRIPTION_PATH}${url.search}`,
+        downloadUrl: `${STATELESS_SUBSCRIPTION_PATH}${nativeUrl.search}`,
       }),
       {
         status: 200,

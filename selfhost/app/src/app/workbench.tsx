@@ -20,6 +20,8 @@ import {
   buildStatelessConvertQuery,
   clientImportPath,
   packStatelessQuery,
+  shadowrocketHomeImportPath,
+  shadowrocketHomeProfilePath,
   type StatelessConvertRequest,
 } from "@/lib/stateless-request";
 import {
@@ -476,10 +478,9 @@ export function Workbench({
   /**
    * One code, whoever is pointing at it.
    *
-   * It carries the `/i` address, named as a `.conf` where the target needs that
-   * signal. Most clients receive the handoff URL directly; Shadowrocket's home
-   * scanner receives config/add so it cannot mistake a complete configuration
-   * for a node subscription. A camera still opens the bridge page.
+   * Shadowrocket has two import contexts. Keep the native .conf for the
+   * configuration page and give the home scanner a complete YAML address;
+   * its scanner ignores config/add and cannot refresh a native .conf.
    */
   const qrAddressValue = qrProfile
     ? clientHandoffUrl(
@@ -488,8 +489,19 @@ export function Workbench({
         qrProfile.name,
       )
     : "";
+  const homeAddressValue = qrProfile?.target === "shadowrocket"
+    ? absoluteLocalUrl(
+        qrProfile.subscriptionPath.includes("?")
+          ? shadowrocketHomeImportPath(
+              qrProfile.name,
+              qrProfile.subscriptionPath.split("?").slice(1).join("?"),
+            )
+          : shadowrocketHomeProfilePath(qrProfile.id, qrProfile.name),
+        subscriptionBaseUrl,
+      )
+    : qrAddressValue;
   const qrValue = qrProfile
-    ? qrCodeValue(qrProfile.target, qrAddressValue, qrProfile.name)
+    ? qrCodeValue(qrProfile.target, homeAddressValue, qrProfile.name)
     : "";
 
   // The link is the product, so it reads the way a config file does: one
@@ -1829,11 +1841,6 @@ export function Workbench({
                     选择非 Ekko Rules 时，这次转换的分组、规则与基础配置全部来自对方项目。
                   </small>
                 ) : null}
-                {target === "shadowrocket" ? (
-                  <small className="remote-config-note">
-                    Shadowrocket 会把所选远程配置的策略组、规则和节点转换为原生配置；第三方模板仍保留自己的分组与默认顺序。
-                  </small>
-                ) : null}
               </div>
             )}
 
@@ -2228,18 +2235,14 @@ export function Workbench({
                 marginSize={4}
                 title={`${qrProfile.name} 本地订阅二维码`}
               />
-              {/* The Shadowrocket QR wraps this address in config/add so its
-                  home scanner cannot misfile it as a node subscription. Keep
-                  the raw HTTPS value visible for configuration-page imports
-                  and later refreshes. */}
               <div className="qr-value">
-                <span>远程订阅地址</span>
-                <code>{qrAddressValue}</code>
+                <span>{qrProfile.target === "shadowrocket" ? "首页扫码地址" : "远程订阅地址"}</span>
+                <code>{homeAddressValue}</code>
                 <button
                   type="button"
                   className="qr-copy"
                   onClick={() => {
-                    void copyText(qrAddressValue);
+                    void copyText(homeAddressValue);
                     setQrCopied(true);
                     window.setTimeout(() => setQrCopied(false), 1600);
                   }}
@@ -2247,9 +2250,16 @@ export function Workbench({
                   {qrCopied ? "已复制" : "复制地址"}
                 </button>
               </div>
+              {qrProfile.target === "shadowrocket" ? (
+                <div className="qr-value">
+                  <span>原生配置地址（配置页导入）</span>
+                  <code>{qrAddressValue}</code>
+                  <button type="button" className="qr-copy" onClick={() => void copyText(qrAddressValue)}>
+                    复制配置地址
+                  </button>
+                </div>
+              ) : null}
               <small className="qr-note">
-                {/* Not "订阅": Shadowrocket files this under configurations,
-                    which it refreshes from the same address. */}
                 {qrPasteHint(qrProfile.target)}
                 客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。它和页面
                 上那条链接一样，带着你的订阅凭据。
