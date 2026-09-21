@@ -16,6 +16,7 @@ import {
   publicErrorStatus,
   sanitizeSourceUserAgent,
   sanitizeSubscriptionUserinfo,
+  subscriptionUserinfoFromStatus,
   selectUpstreamUserAgent,
   upstreamUserAgentAttempts,
   isLoopbackBindHost,
@@ -413,6 +414,16 @@ test("drops a provider's traffic banner from a node list", () => {
     ).toString("utf8"),
     `${nodes.join("\n")}\n`,
   );
+});
+
+test("retains structured traffic metadata before removing a STATUS banner", () => {
+  const status = "STATUS=🚀↑:0.01GB,↓:5.98GB,TOT:100GB💡Expires:2026-11-26";
+  const list = Buffer.from(`${status}\nanytls://password@example.test:443#node\n`, "utf8").toString("base64");
+  const expected = "upload=10737418; download=6420976108; total=107374182400; expire=1795651200";
+  assert.equal(subscriptionUserinfoFromStatus(list), expected);
+  assert.equal(subscriptionUserinfoFromStatus(`${status}\nanytls://password@example.test:443#node`), expected);
+  assert.equal(subscriptionUserinfoFromStatus("proxies:\n  - name: node"), undefined);
+  assert.equal(subscriptionUserinfoFromStatus("STATUS=Expires:invalid"), undefined);
 });
 
 test("leaves an already clean list, and anything unrecognised, byte-identical", () => {

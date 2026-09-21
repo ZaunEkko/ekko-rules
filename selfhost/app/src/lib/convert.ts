@@ -87,6 +87,42 @@ export function sanitizeSubscriptionUserinfo(
   return normalized.length ? normalized.join("; ") : undefined;
 }
 
+/**
+ * Some providers send their counters only as a STATUS line inside a base64
+ * node list. That line must be removed before conversion, but its structured
+ * traffic values can still supply the same standard response header.
+ */
+export function subscriptionUserinfoFromStatus(content: string): string | undefined {
+  const text = decodeBase64NodeList(content) ?? content;
+  const status = text
+    .split(/\r?\n/)
+    .find((line) => /^STATUS\s*=/i.test(line.trim()));
+  if (!status) return undefined;
+  const bytes = (label: string): string | undefined => {
+    const match = status.match(
+      new RegExp(`${label}:\\s*(\\d+(?:\\.\\d{1,3})?)\\s*(KB|MB|GB|TB)`, "iu"),
+    );
+    if (!match) return undefined;
+    const unit = { KB: 1, MB: 2, GB: 3, TB: 4 }[
+      match[2].toUpperCase() as "KB" | "MB" | "GB" | "TB"
+    ];
+    const value = Math.round(Number(match[1]) * 1024 ** unit);
+    return Number.isSafeInteger(value) ? String(value) : undefined;
+  };
+  const upload = bytes("↑");
+  const download = bytes("↓");
+  const total = bytes("TOT");
+  const date = status.match(/Expires:\s*(\d{4}-\d{2}-\d{2})\b/i)?.[1];
+  const timestamp = date ? Date.parse(`${date}T00:00:00Z`) : NaN;
+  const expire =
+    Number.isFinite(timestamp) &&
+    new Date(timestamp).toISOString().startsWith(date ?? "!")
+      ? String(timestamp / 1000)
+      : undefined;
+  if (!upload || !download || !total || !expire) return undefined;
+  return sanitizeSubscriptionUserinfo(`upload=${upload}; download=${download}; total=${total}; expire=${expire}`);
+}
+
 export function sanitizeSourceUserAgent(
   value: string | null | undefined,
 ): string | undefined {
@@ -1010,7 +1046,7 @@ export async function convertSubscription(
   }
   const subscriptionUserinfo = sanitizeSubscriptionUserinfo(
     preflight.headers.get("subscription-userinfo"),
-  );
+  ) ?? subscriptionUserinfoFromStatus(preflight.body);
   const subscriptionBody = preflight.body;
 
   // A subscription that keeps its nodes in `proxy-providers:` hands over a
