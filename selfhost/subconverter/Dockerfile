@@ -13,6 +13,20 @@ COPY --chown=subconverter:subconverter base/ /base/base/
 COPY --chown=subconverter:subconverter snippets/ /base/snippets/
 COPY --chown=subconverter:subconverter rulesets/ /base/rulesets/
 
+# Which rules this image carries, answered by the image itself.
+#
+# The rules and the site are released on separate tags, so the version baked
+# into the web image cannot speak for the engine: a rules release changes what
+# this container serves without rebuilding that one. The gateway reads this
+# file over the internal network and reports what is actually running.
+ARG EKKO_RULES_VERSION=local
+ARG EKKO_RULES_BUILT=""
+RUN mkdir -p /base/public \
+  && printf '{"version":"%s","built":"%s"}\n' \
+       "${EKKO_RULES_VERSION}" "${EKKO_RULES_BUILT}" \
+       > /base/public/rules-version.json \
+  && chown -R subconverter:subconverter /base/public
+
 ENV PREF_PATH=/base/pref.yml
 USER subconverter
 EXPOSE 25500

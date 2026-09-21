@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   compareVersions,
   parseRefTagNames,
+  pickLatestReleases,
   pickLatestTag,
 } from "./latest-version";
 
@@ -83,3 +84,34 @@ test("a ref advertisement with no tags yields nothing rather than a guess", () =
   assert.equal(pickLatestTag(parseRefTagNames(body)), null);
 });
 
+test("reads the two release lines apart, and falls back to the shared one", () => {
+  // The rules and the site are published on their own tags now. Until a line
+  // has one, its newest release is the newest of the tag both used before the
+  // split — otherwise the page would report nothing for months.
+  assert.deepEqual(
+    pickLatestReleases([
+      "selfhost-v0.4.1",
+      "site-v0.4.2",
+      "rules-v1.0.0",
+      "rules-v0.9.0",
+    ]),
+    { site: "0.4.2", rules: "1.0.0" },
+  );
+  assert.deepEqual(pickLatestReleases(["selfhost-v0.4.1"]), {
+    site: "0.4.1",
+    rules: "0.4.1",
+  });
+  assert.deepEqual(pickLatestReleases(["site-v0.5.0", "selfhost-v0.4.1"]), {
+    site: "0.5.0",
+    rules: "0.4.1",
+  });
+  assert.deepEqual(pickLatestReleases(["v1.0.0", "nightly"]), {
+    site: null,
+    rules: null,
+  });
+  // One line's tag never answers for the other.
+  assert.deepEqual(pickLatestReleases(["rules-v2.0.0"]), {
+    site: null,
+    rules: "2.0.0",
+  });
+});

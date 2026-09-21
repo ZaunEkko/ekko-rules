@@ -11,6 +11,7 @@ import {
 import {
   clientInstallLabel,
   qrImportValue,
+  qrPasteHint,
   qrScanHint,
   supportsClientInstallQr,
 } from "@/lib/qr-import";
@@ -36,9 +37,14 @@ type Health = {
   } | null;
   deployment_error?: string | null;
   deployment_warning?: string | null;
-  ekko_rules_version: string;
-  latest_ekko_rules_version?: string | null;
-  update_available?: boolean;
+  site_version: string;
+  latest_site_version?: string | null;
+  site_update_available?: boolean;
+  /** Reported by the running engine; null while it is unreachable. */
+  rules_version?: string | null;
+  rules_built?: string | null;
+  latest_rules_version?: string | null;
+  rules_update_available?: boolean;
   repo_stars?: number | null;
   subconverter_reachable: boolean;
   access_password_required: boolean;
@@ -372,23 +378,6 @@ export function Workbench({
     xudp: supportsXudp && convertOptions.xudp,
     singboxIpv6: target === "singbox" && convertOptions.singboxIpv6,
   });
-  // Shadowrocket keeps nodes and configurations in two different places, and
-  // pasting this link into the wrong one silently drops every rule. It also
-  // brings its own DNS rather than reading the one in the file, so the promise
-  // made elsewhere on this page ("DNS 也配好了") does not hold there.
-  const shadowrocketNote =
-    target === "shadowrocket" ? (
-      <p className="open-client-note">
-        <b>Shadowrocket 要从「配置」进，不是「订阅」。</b>
-        一键按钮和二维码给的是 <code>shadowrocket://config/add/</code>，落在「配置」
-        页里，点一下使用即可；把同一条链接贴进首页的「添加订阅」只会拿到节点，规则不会
-        跟过去。手机上直接点按钮最稳，二维码要用系统相机扫——Shadowrocket 自带的扫码入口只收
-        节点订阅，扫这个码不会有反应；跨设备也可以复制链接，在「配置」页右上角 ➕ 粘贴。
-        它还不读 Clash 的 <code>dns:</code> 段，DNS 走 Shadowrocket 自己的设置，节点、策略组与
-        分流规则照常带入。
-      </p>
-    ) : null;
-
   const engineOk = Boolean(health?.subconverter_reachable);
   // Two shapes only: the personal deployment stores fixed addresses, the open
   // one stores nothing and puts every choice in the visitor own link. Which
@@ -1079,25 +1068,45 @@ export function Workbench({
               always says what the check found, and says nothing only when the
               lookup itself failed — which is the one case where there is
               genuinely nothing to report. */}
+          {/* Two numbers, because they are two things. The rules and the
+              site are released on separate tags: a site release changes
+              nothing about what gets matched, and printing one number for
+              both told visitors their rules had changed when they had not.
+              The rules version comes from the engine itself, so it is what is
+              running rather than what this image was built beside. */}
           <code
             title={
-              health?.update_available
-                ? `服务器运行 ${health.ekko_rules_version}，最新为 ${health.latest_ekko_rules_version}，镜像尚未拉取`
-                : health?.latest_ekko_rules_version
-                  ? `已是最新发布的规则版本（${health.latest_ekko_rules_version}）`
+              health?.rules_update_available
+                ? `服务器规则 ${health.rules_version}，最新为 ${health.latest_rules_version}，镜像尚未拉取`
+                : health?.latest_rules_version
+                  ? `已是最新发布的规则版本（${health.latest_rules_version}）`
                   : "服务器当前运行的规则版本"
             }
-            data-stale={health?.update_available ? "true" : undefined}
+            data-stale={health?.rules_update_available ? "true" : undefined}
           >
-            规则 {health?.ekko_rules_version ?? "—"}
-            {/* Both numbers, plainly. A badge that had to be decoded was worse
-                than two versions side by side. */}
-            {health?.latest_ekko_rules_version ? (
+            规则 {health?.rules_version ?? "—"}
+            {health?.rules_update_available ? (
               <>
                 {" · 最新 "}
-                <b className="version-latest">
-                  {health.latest_ekko_rules_version}
-                </b>
+                <b className="version-latest">{health.latest_rules_version}</b>
+              </>
+            ) : null}
+          </code>
+          <code
+            title={
+              health?.site_update_available
+                ? `站点 ${health.site_version}，最新为 ${health.latest_site_version}，镜像尚未拉取`
+                : health?.latest_site_version
+                  ? `已是最新发布的站点版本（${health.latest_site_version}）`
+                  : "这个站点自己的版本"
+            }
+            data-stale={health?.site_update_available ? "true" : undefined}
+          >
+            站点 {health?.site_version ?? "—"}
+            {health?.site_update_available ? (
+              <>
+                {" · 最新 "}
+                <b className="version-latest">{health.latest_site_version}</b>
               </>
             ) : null}
           </code>
@@ -1324,7 +1333,6 @@ export function Workbench({
                 导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
                 确实清楚自己在调什么再接管。
               </p>
-              {shadowrocketNote}
             </div>
 
             <dl className="open-facts">
@@ -1871,7 +1879,6 @@ export function Workbench({
                   导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
                   确实清楚自己在调什么再接管。
                 </p>
-                {shadowrocketNote}
               </div>
             )}
 
@@ -1932,7 +1939,7 @@ export function Workbench({
             )}
 
             <dl className="result-specs">
-              <div><dt>规则</dt><dd>Ekko Rules {health?.ekko_rules_version ?? "—"}</dd></div>
+              <div><dt>规则</dt><dd>Ekko Rules {health?.rules_version ?? "—"}</dd></div>
               <div><dt>协议</dt><dd>自动识别 · 无需手选</dd></div>
               <div>
                 <dt>{storesProfiles ? "重启后" : "服务器保存"}</dt>
@@ -2214,7 +2221,7 @@ export function Workbench({
               <small className="qr-note">
                 {/* Not "订阅": Shadowrocket files this under configurations,
                     which it refreshes from the same address. */}
-                扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。
+                {qrPasteHint(qrProfile.target)}
                 客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。它和页面
                 上那条链接一样，带着你的订阅凭据。
               </small>

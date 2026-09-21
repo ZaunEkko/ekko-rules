@@ -56,11 +56,11 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   shadowrocket: {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
-    // Its scan entry accepts an address but files it as a node subscription,
-    // which silently drops every rule. The camera route goes through the
-    // configuration entry instead, so that is the one to name.
+    // Its scan entry does accept this address — it just files it as a node
+    // subscription, which silently drops every rule. So the warning is about
+    // where it lands, not about the code failing to scan.
     qrHint:
-      "用手机相机扫，页面上点一下就按「配置文件」装进去。Shadowrocket 自带的扫码入口只会当成节点订阅，规则不会跟过去。",
+      "用手机相机扫，会打开一个页面替你唤起客户端，按「配置文件」装进去。别用 Shadowrocket 自带的扫码入口：它会把这条地址当节点订阅收下，规则不跟过去。",
   },
   singbox: {
     build: (url, name) =>
@@ -94,6 +94,21 @@ export function supportsClientInstallQr(target: string): boolean {
 
 export function clientInstallLabel(target: string): string {
   return INSTALL_SCHEMES[target]?.label ?? "";
+}
+
+/**
+ * What to do with the address instead of scanning it.
+ *
+ * For most clients the answer is the same either way — scan it or paste it
+ * into their URL import, same configuration. Shadowrocket is the exception
+ * worth spelling out: pasting into the wrong one of its two entries takes the
+ * nodes and leaves the rules behind.
+ */
+export function qrPasteHint(target: string): string {
+  if (target === "shadowrocket") {
+    return "也可以复制这条地址，粘进 Shadowrocket「配置」页右上角的 ➕；别贴进首页的「添加订阅」，那里只收节点。";
+  }
+  return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }
 
 export function qrScanHint(target: string): string {

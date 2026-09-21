@@ -98,9 +98,9 @@ Docker 发布端口时会写入 `DOCKER-USER` 链，可能绕过 `ufw`。这套�
 服务器不需要向 GitHub 开放任何入口，也不需要把 SSH 私钥交给 CI：**镜像由 CI 构建并推到 GHCR，服务器只负责拉。**
 
 ```text
-打 tag selfhost-v1.2.3
+打 tag rules-v1.2.3（规则）或 site-v1.2.3（站点）
         ↓
-GitHub Actions 构建两个镜像并推送 GHCR
+GitHub Actions 只构建对应的那个镜像并推送 GHCR
         ↓
 VPS 上的 systemd 定时器拉取新镜像
         ↓
@@ -111,7 +111,7 @@ VPS 上的 systemd 定时器拉取新镜像
 
 ### 一次性设置
 
-发布镜像（仓库侧）：打一个 `selfhost-v*` tag，或在 Actions 里手动运行 `Publish selfhost images`。tag `selfhost-v1.2.3` 会发布 `1.2.3`、`sha-<短哈希>` 与 `latest` 三个标签。首次发布后把 GHCR 上这两个包设为 public，服务器拉取就不需要任何凭据。
+发布镜像（仓库侧）：打一个 `rules-v*`（规则，重建引擎镜像）或 `site-v*`（站点，重建 web 镜像）tag，或在 Actions 里手动运行 `Publish selfhost images`（手动运行两个都建）。tag `rules-v1.2.3` 会把引擎镜像发布为 `1.2.3`、`sha-<短哈希>` 与 `latest` 三个标签，web 镜像不动；`site-v1.2.3` 反之。`selfhost-v*` 是拆分前两者共用的 tag，仍然可用，会同时重建两个。首次发布后把 GHCR 上这两个包设为 public，服务器拉取就不需要任何凭据。
 
 服务器侧：
 
@@ -154,19 +154,24 @@ journalctl -u ekko-selfhost-update.service -n 50
 
 ### 固定版本与回滚
 
-默认跟随 `latest`，打一个 `selfhost-v*` tag 就是一次发布：publish 工作流把 `latest`
-指到新镜像，服务器的定时器下一轮（最多 6 分钟）拉到并重建容器，不需要上机改任何东西。
+默认跟随 `latest`，打一个 `rules-v*` 或 `site-v*` tag 就是一次发布：publish 工作流只重建
+该 tag 对应的那个镜像并把它的 `latest` 指过去，服务器的定时器下一轮（最多 6 分钟）拉到
+并重建**那一个**容器，另一个不动——改一行页面文案不会再重启引擎、打断正在进行的转换。
 只有 tag 发布会移动 `latest`；手动 `workflow_dispatch` 只发 `sha-<commit>` 和你指定的额外
 tag，不会把跟随 `latest` 的机器带到未发布的构建上。
 
-页面上报的版本始终是镜像构建时烙进去的发布号，不是 `EKKO_IMAGE_TAG` 本身，
-所以跟随 `latest` 的机器依然会如实报出 `0.1.1` 这样的版本。
+页面上报的两个版本都来自镜像自身而不是 `.env`：站点版本烙在 web 镜像里，规则版本烙在引擎
+镜像里并由网关在内网向它询问。所以跟随 `latest` 的机器会如实报出两个各自的版号，且规则
+单独发版时网页上的规则号会跟着变。
 
-要可复现或需要回滚时，在 `.env` 里钉住版本：
+要可复现或需要回滚时，在 `.env` 里分别钉住：
 
 ```dotenv
-EKKO_IMAGE_TAG=1.2.3
+EKKO_ENGINE_TAG=1.2.3
+EKKO_WEB_TAG=0.9.0
 ```
+
+只想像以前那样一个值钉住两个，`EKKO_IMAGE_TAG=1.2.3` 仍然有效（两个都没设时才用它）。
 
 改完执行一次 `sudo systemctl start ekko-selfhost-update.service` 即可切换。回滚就是把这个值改回上一个 tag，不需要改代码或重新构建。
 
