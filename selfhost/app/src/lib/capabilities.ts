@@ -1,3 +1,12 @@
+/**
+ * Ordered by how many people actually use each client, because this order is
+ * the order of the chips on the page and the first two carry most of the
+ * traffic. Clash / Mihomo and Shadowrocket are not a judgement call; the rest
+ * are: sing-box is free and cross-platform and has grown fastest, Surge is
+ * paid but widely used, Loon sits under it on iOS with an active script
+ * community, Quantumult X still has an installed base but little development,
+ * and the last three are legacy. Reordering is one move of a key.
+ */
 export const TARGET_DEFINITIONS = {
   clash: {
     label: "Clash / Mihomo",
@@ -71,19 +80,6 @@ export const TARGET_DEFINITIONS = {
     protocolNote: "输入仍会自动识别，不兼容节点按 Surge 能力过滤",
     verifiedModernProtocols: [],
   },
-  quanx: {
-    label: "Quantumult X",
-    shortLabel: "QuanX",
-    engineTarget: "quanx",
-    engineParams: {},
-    extension: "conf",
-    contentType: "text/plain; charset=utf-8",
-    clientFamily: "Quantumult X",
-    clientExamples: ["Quantumult X"],
-    tier: "mainstream",
-    protocolNote: "输入仍会自动识别，不兼容节点按 Quantumult X 能力过滤",
-    verifiedModernProtocols: ["VLESS Reality"],
-  },
   loon: {
     label: "Loon",
     shortLabel: "Loon",
@@ -96,6 +92,19 @@ export const TARGET_DEFINITIONS = {
     tier: "mainstream",
     protocolNote: "输入仍会自动识别，不兼容节点按 Loon 能力过滤",
     verifiedModernProtocols: ["Hysteria2"],
+  },
+  quanx: {
+    label: "Quantumult X",
+    shortLabel: "QuanX",
+    engineTarget: "quanx",
+    engineParams: {},
+    extension: "conf",
+    contentType: "text/plain; charset=utf-8",
+    clientFamily: "Quantumult X",
+    clientExamples: ["Quantumult X"],
+    tier: "mainstream",
+    protocolNote: "输入仍会自动识别，不兼容节点按 Quantumult X 能力过滤",
+    verifiedModernProtocols: ["VLESS Reality"],
   },
   surfboard: {
     label: "Surfboard",

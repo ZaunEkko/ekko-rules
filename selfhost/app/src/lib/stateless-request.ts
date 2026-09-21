@@ -20,6 +20,15 @@ import {
 export const STATELESS_SUBSCRIPTION_PATH = "/sub";
 
 /**
+ * The address a QR code carries and a client ends up holding.
+ *
+ * Same conversion as `/sub`; it differs only in answering a browser with a
+ * page that opens the client, so one code works whether it is scanned by the
+ * client's own scan entry or by the phone's camera.
+ */
+export const CLIENT_IMPORT_PATH = "/i";
+
+/**
  * The whole query, packed into one parameter.
  *
  * A readable link is the right thing to show a person and the wrong thing to
