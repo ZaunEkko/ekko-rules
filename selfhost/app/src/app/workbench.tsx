@@ -1085,7 +1085,12 @@ export function Workbench({
             data-stale={health?.rules_update_available ? "true" : undefined}
           >
             规则 {health?.rules_version ?? "—"}
-            {health?.rules_update_available ? (
+            {/* Always says what the check found. Printing nothing when current
+                is indistinguishable from never having checked, and then the
+                number on the left cannot be trusted either — which is the
+                whole reason the check exists. Silence is kept for the one case
+                where there is genuinely nothing to report: the lookup failed. */}
+            {health?.latest_rules_version ? (
               <>
                 {" · 最新 "}
                 <b className="version-latest">{health.latest_rules_version}</b>
@@ -1103,7 +1108,7 @@ export function Workbench({
             data-stale={health?.site_update_available ? "true" : undefined}
           >
             站点 {health?.site_version ?? "—"}
-            {health?.site_update_available ? (
+            {health?.latest_site_version ? (
               <>
                 {" · 最新 "}
                 <b className="version-latest">{health.latest_site_version}</b>
