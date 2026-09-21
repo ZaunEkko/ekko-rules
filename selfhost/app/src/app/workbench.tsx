@@ -11,6 +11,7 @@ import {
 import {
   clientInstallLabel,
   qrImportValue,
+  qrPasteHint,
   qrScanHint,
   supportsClientInstallQr,
 } from "@/lib/qr-import";
@@ -372,23 +373,6 @@ export function Workbench({
     xudp: supportsXudp && convertOptions.xudp,
     singboxIpv6: target === "singbox" && convertOptions.singboxIpv6,
   });
-  // Shadowrocket keeps nodes and configurations in two different places, and
-  // pasting this link into the wrong one silently drops every rule. It also
-  // brings its own DNS rather than reading the one in the file, so the promise
-  // made elsewhere on this page ("DNS 也配好了") does not hold there.
-  const shadowrocketNote =
-    target === "shadowrocket" ? (
-      <p className="open-client-note">
-        <b>Shadowrocket 要从「配置」进，不是「订阅」。</b>
-        一键按钮和二维码给的是 <code>shadowrocket://config/add/</code>，落在「配置」
-        页里，点一下使用即可；把同一条链接贴进首页的「添加订阅」只会拿到节点，规则不会
-        跟过去。手机上直接点按钮最稳，二维码要用系统相机扫——Shadowrocket 自带的扫码入口只收
-        节点订阅，扫这个码不会有反应；跨设备也可以复制链接，在「配置」页右上角 ➕ 粘贴。
-        它还不读 Clash 的 <code>dns:</code> 段，DNS 走 Shadowrocket 自己的设置，节点、策略组与
-        分流规则照常带入。
-      </p>
-    ) : null;
-
   const engineOk = Boolean(health?.subconverter_reachable);
   // Two shapes only: the personal deployment stores fixed addresses, the open
   // one stores nothing and puts every choice in the visitor own link. Which
@@ -1324,7 +1308,6 @@ export function Workbench({
                 导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
                 确实清楚自己在调什么再接管。
               </p>
-              {shadowrocketNote}
             </div>
 
             <dl className="open-facts">
@@ -1871,7 +1854,6 @@ export function Workbench({
                   导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
                   确实清楚自己在调什么再接管。
                 </p>
-                {shadowrocketNote}
               </div>
             )}
 
@@ -2214,7 +2196,7 @@ export function Workbench({
               <small className="qr-note">
                 {/* Not "订阅": Shadowrocket files this under configurations,
                     which it refreshes from the same address. */}
-                扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。
+                {qrPasteHint(qrProfile.target)}
                 客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。它和页面
                 上那条链接一样，带着你的订阅凭据。
               </small>
