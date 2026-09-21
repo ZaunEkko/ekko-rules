@@ -49,15 +49,15 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("says where the single code works, and warns off the one entry that misfiles it", () => {
+test("says the named Shadowrocket config works in both scan entries", () => {
   // There is only one code now: it carries the /i address, which answers a
   // client with the configuration and a browser with a page that opens the
-  // client. Nobody has to choose. The one thing an address cannot fix is a
-  // client that files it under the wrong kind of thing, so that one is named.
+  // client. Shadowrocket gets a named .conf path, so its home and configuration
+  // scanners can both identify the address as a complete configuration.
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
-  assert.match(qrScanHint("shadowrocket"), /手机相机/);
-  assert.match(qrScanHint("shadowrocket"), /节点订阅/);
+  assert.match(qrScanHint("shadowrocket"), /首页/);
+  assert.match(qrScanHint("shadowrocket"), /配置/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {

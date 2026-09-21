@@ -296,6 +296,7 @@ async function assertShadowrocketNativeOutput() {
     "fixture-vless-reality = vless",
     "pbk=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg",
     "♻️ 手动切换 = select,DIRECT",
+    "hidden=0,policy-select-name=DIRECT",
     "policy-select-name=DIRECT",
     "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
     "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
@@ -317,6 +318,36 @@ async function assertShadowrocketNativeOutput() {
     special_policies: true,
     nested_groups: true,
     modern_nodes: modernLinks.map((item) => item.protocol),
+  }));
+}
+
+async function assertNamedShadowrocketImportRoute() {
+  const query = new URLSearchParams({
+    url: "http://fixture:8080/shadowrocket-modern-subscription.txt",
+    target: "shadowrocket",
+    name: "fixture-shadowrocket",
+  }).toString();
+  const packed = Buffer.from(query, "utf8").toString("base64url");
+  const path = `/i/fixture-shadowrocket.conf?p=${packed}`;
+
+  const clientResponse = await fetch(`${baseUrl}${path}`, {
+    headers: { "user-agent": "Shadowrocket/2.2.70" },
+  });
+  const config = await clientResponse.text();
+  if (
+    !clientResponse.ok ||
+    !config.includes("[Proxy Group]") ||
+    !config.includes("♻️ 手动切换 = select,DIRECT")
+  ) {
+    throw new Error(
+      `Named Shadowrocket import route did not return a complete config: HTTP ${clientResponse.status}`,
+    );
+  }
+
+  console.log(JSON.stringify({
+    phase: "shadowrocket-named-import",
+    path,
+    client_config: true,
   }));
 }
 
@@ -605,6 +636,7 @@ async function main() {
 
   await assertModernProtocolLinks();
   await assertShadowrocketNativeOutput();
+  await assertNamedShadowrocketImportRoute();
   await assertGatewayModernProtocolSubscriptions();
   await assertUserAgentFallback();
   await assertDefaultNodeOrderAndEmoji();

@@ -7,9 +7,25 @@ import {
 import {
   buildStatelessConvertQuery,
   buildStatelessSubscriptionUrl,
+  clientImportPath,
   packStatelessQuery,
   parseStatelessConvertQuery,
 } from "./stateless-request";
+
+test("gives Shadowrocket a named native configuration path", () => {
+  assert.equal(
+    clientImportPath("shadowrocket", "laomao-ssr", "p=abc123"),
+    "/i/laomao-ssr.conf?p=abc123",
+  );
+  assert.equal(
+    clientImportPath("shadowrocket", "测试/配置.conf", "p=abc123"),
+    `/i/${encodeURIComponent("测试-配置")}.conf?p=abc123`,
+  );
+  assert.equal(
+    clientImportPath("clash", "ignored", "p=abc123"),
+    "/i?p=abc123",
+  );
+});
 
 test("reads a stateless conversion request out of its own link", () => {
   const parsed = parseStatelessConvertQuery(

@@ -46,9 +46,7 @@ export async function serveStatelessSubscription(
       runtimeConfig.allowCustomRemoteConfig,
     );
     if (!isRemoteConfigTargetSupported(preset, parsed.target)) {
-      throw new Error(
-        "remoteConfig is not supported for Shadowrocket; use Ekko Rules or Ekko Rules 精简.",
-      );
+      throw new Error("remoteConfig is not supported for this target.");
     }
 
     const result = await convertSubscription(

@@ -39,7 +39,7 @@ test("builds native Shadowrocket groups with stable special-policy defaults", ()
 
   assert.match(
     output,
-    /^♻️ 手动切换 = select,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=DIRECT$/m,
+    /^♻️ 手动切换 = select,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,hidden=0,policy-select-name=DIRECT$/m,
   );
   assert.match(
     output,
@@ -58,6 +58,7 @@ test("builds native Shadowrocket groups with stable special-policy defaults", ()
     /^🌏 国内网站 = select,DIRECT,♻️ 手动切换,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=DIRECT$/m,
   );
   assert.match(output, /^DOMAIN-SUFFIX,example\.com,🧲 OpenAI$/m);
+  assert.match(output, /\[Proxy Group\]\n\n♻️ 手动切换 = select,/);
 });
 
 test("restores modern nodes omitted by the Surge renderer", () => {
