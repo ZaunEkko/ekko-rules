@@ -113,19 +113,35 @@ const DEFAULT_UPSTREAM_USER_AGENTS: Record<TargetFormat, string> = {
 };
 
 /**
- * Passing the requesting client's own agent upstream is right only while that
- * client is the one the output is written for. Shadowrocket is handed a Mihomo
- * config but asks as itself, and a provider that switches format by agent then
- * answers with a legacy node list — the shape the Mihomo path cannot be built
- * from. Measured against one provider: as `clash.meta` it answers with a 49 KB
- * Clash document, as `Shadowrocket/2.2.70` with a 22 KB base64 list, and the
- * conversion fails on the second. So a target whose output is Mihomo but whose
- * client is not Mihomo asks the way its output reads. An agent the user typed
- * still wins — overriding this is their call.
+ * What a client of the family each target's output is written for looks like.
+ *
+ * Passing the requesting client's own agent upstream buys something real: a
+ * provider that answers only to clients it knows sees one, instead of seeing a
+ * converter. But it buys that only while the client asking and the file being
+ * built are the same family. Shadowrocket asks as itself and is handed a
+ * Mihomo config; a provider that switches format by agent then answers with a
+ * legacy node list, which is not what that file is built from. Measured
+ * against one provider: as `clash.meta` a 49 KB Clash document, as
+ * `Shadowrocket/2.2.70` a 22 KB base64 list, and the conversion fails on the
+ * second.
+ *
+ * So the agent follows the output, not the caller — except when the caller is
+ * already of the output's family, where passing it on keeps the first benefit
+ * at no cost. Nobody has to know any of this: the field on the page is an
+ * override for a provider with its own ideas, not a step in the flow.
  */
-function inheritsClientUserAgent(target: TargetFormat): boolean {
-  return !usesMihomoOutput(target) || target === "clash";
-}
+const CLIENT_FAMILY_PATTERNS: Record<TargetFormat, RegExp> = {
+  clash: /clash|mihomo|meta|stash|flclash/i,
+  // Its output is a Mihomo config, so only a Mihomo-shaped agent may pass.
+  shadowrocket: /clash|mihomo|meta/i,
+  singbox: /sing-?box|sfa|sfi|sfm|sfw/i,
+  surge: /surge/i,
+  quanx: /quantumult\s*x/i,
+  loon: /loon/i,
+  surfboard: /surfboard/i,
+  quan: /quantumult/i,
+  mellow: /mellow/i,
+};
 
 export function selectUpstreamUserAgent(
   target: TargetFormat,
@@ -137,8 +153,8 @@ export function selectUpstreamUserAgent(
   const source = sanitizeSourceUserAgent(sourceValue);
   if (
     source &&
-    inheritsClientUserAgent(target) &&
-    !/^Mozilla\/5\.0\b/i.test(source)
+    !/^Mozilla\/5\.0\b/i.test(source) &&
+    CLIENT_FAMILY_PATTERNS[target].test(source)
   ) {
     return source;
   }

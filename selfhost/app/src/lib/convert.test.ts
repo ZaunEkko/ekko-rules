@@ -433,26 +433,48 @@ test("leaves an already clean list, and anything unrecognised, byte-identical", 
   assert.equal(normalizeSubscriptionContent(yaml), yaml);
 });
 
-test("asks the provider the way the output reads, not the way the client asked", () => {
+test("asks the provider the way the output reads when the caller is another family", () => {
   // Shadowrocket receives a Mihomo config, so a provider that switches format
   // by agent still has to be asked as Mihomo — otherwise the conversion has
-  // nothing to build from. An agent the user typed still wins.
+  // nothing to build from. Nobody has to configure this.
   assert.equal(
     selectUpstreamUserAgent("shadowrocket", "", "Shadowrocket/2.2.70"),
     "clash.meta",
   );
+  // The same mismatch through any other pairing: the file being built decides.
   assert.equal(
-    selectUpstreamUserAgent("shadowrocket", "MyAgent/1", "Shadowrocket/2.2.70"),
-    "MyAgent/1",
+    selectUpstreamUserAgent("clash", "", "Shadowrocket/2.2.70"),
+    "clash.meta",
   );
-  // A Mihomo client asking for the Mihomo target is still passed through.
+  assert.equal(selectUpstreamUserAgent("loon", "", "Stash/3.1"), "Loon");
+  assert.equal(
+    selectUpstreamUserAgent("singbox", "", "Shadowrocket/2.2.70"),
+    "sing-box",
+  );
+
+  // Caller and output of one family: pass it on, so a provider that only
+  // answers to clients it knows still sees one.
   assert.equal(
     selectUpstreamUserAgent("clash", "", "clash-verge-rev/2.4.3"),
     "clash-verge-rev/2.4.3",
   );
   assert.equal(
+    selectUpstreamUserAgent("clash", "", "mihomo-party/1.7.3"),
+    "mihomo-party/1.7.3",
+  );
+  assert.equal(
     selectUpstreamUserAgent("surge", "", "Surge iOS/2000"),
     "Surge iOS/2000",
+  );
+  assert.equal(
+    selectUpstreamUserAgent("singbox", "", "SFI/1.11.3 (sing-box 1.11.3)"),
+    "SFI/1.11.3 (sing-box 1.11.3)",
+  );
+
+  // An agent the user typed still wins over all of it.
+  assert.equal(
+    selectUpstreamUserAgent("shadowrocket", "MyAgent/1", "Shadowrocket/2.2.70"),
+    "MyAgent/1",
   );
 });
 

@@ -1679,7 +1679,10 @@ export function Workbench({
                     />
                   </label>
                   <label className="compact-field">
-                    <span><strong>自定义 User-Agent</strong><small>拉取上游时使用</small></span>
+                    {/* An override, not a step: the agent is picked from the
+                        output format on its own. Say so, or someone reads an
+                        empty field as something they forgot to fill in. */}
+                    <span><strong>自定义 User-Agent</strong><small>一般不用填</small></span>
                     <input
                       value={convertOptions.customUserAgent}
                       onChange={(event) =>
@@ -1689,7 +1692,7 @@ export function Workbench({
                         }))
                       }
                       maxLength={256}
-                      placeholder="留空使用 Ekko 默认值"
+                      placeholder="留空即可，按输出格式自动选择"
                     />
                   </label>
                   {convertOptions.autoUpdate ? (
