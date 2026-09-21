@@ -39,8 +39,9 @@ test("builds native Shadowrocket groups with stable special-policy defaults", ()
 
   assert.match(
     output,
-    /^♻️ 手动切换 = select,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,hidden=0,policy-select-name=DIRECT$/m,
+    /^♻️ 手动切换 = select,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=DIRECT$/m,
   );
+  assert.doesNotMatch(output, /^♻️ 手动切换 = .*\bhidden=/m);
   assert.match(
     output,
     /^🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=REJECT$/m,
@@ -81,6 +82,23 @@ test("restores modern nodes omitted by the Surge renderer", () => {
     /^Hysteria2 01 = hysteria2, 203\.0\.113\.14, 443, auth=hy-secret, udp=1, peer=hy\.example, allowInsecure=1, obfsParam=obfs-secret, upmbps=100, downmbps=200$/m,
   );
   assert.equal((output.match(/^Hysteria2 01 =/gm) ?? []).length, 1);
+});
+
+test("restores a manual selector that Surge collapsed into a direct proxy", () => {
+  const collapsed = SKELETON
+    .replace("DIRECT = direct", "DIRECT = direct\n♻️ 手动切换 = direct")
+    .replace(/^♻️ 手动切换 = select,.*\n/m, "");
+  const output = buildShadowrocketConfig(collapsed, NODES);
+
+  assert.doesNotMatch(output, /^♻️ 手动切换\s*=\s*direct$/m);
+  assert.match(
+    output,
+    /^\[Proxy Group\]\n\n♻️ 手动切换 = select,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=DIRECT$/m,
+  );
+  assert.match(
+    output,
+    /^🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT,/m,
+  );
 });
 
 test("reports and removes an omitted unsupported node without failing the config", () => {
