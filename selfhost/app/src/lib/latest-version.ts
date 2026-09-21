@@ -30,7 +30,18 @@ const REPO = "ZaunEkko/ekko-rules";
  */
 const REFS_URL = `https://github.com/${REPO}.git/info/refs?service=git-upload-pack`;
 const REPO_URL = `https://api.github.com/repos/${REPO}`;
-const TAG_PREFIX = "selfhost-v";
+/**
+ * Two release lines, and the one they grew out of.
+ *
+ * The rules and the site are published independently now: a rules release
+ * replaces the engine image, a site release replaces this one, and neither
+ * touches the other. `selfhost-v*` is what both were released under before
+ * the split, so it is still read — until a line has a tag of its own, its
+ * newest release is the newest of those.
+ */
+const SITE_TAG_PREFIX = "site-v";
+const RULES_TAG_PREFIX = "rules-v";
+const LEGACY_TAG_PREFIX = "selfhost-v";
 /**
  * There is no freshness interval: every load asks.
  *
@@ -49,11 +60,14 @@ const STARS_REFRESH_MS = 30 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 4_000;
 
 export type LatestVersion = {
-  latest: string | null;
+  /** Newest published site release, or null while nothing is known. */
+  site: string | null;
+  /** Newest published rules release. */
+  rules: string | null;
   checkedAt: number;
 };
 
-let cached: LatestVersion = { latest: null, checkedAt: 0 };
+let cached: LatestVersion = { site: null, rules: null, checkedAt: 0 };
 let inFlight: Promise<LatestVersion> | null = null;
 let lastFailureAt = 0;
 
@@ -71,15 +85,30 @@ export function compareVersions(a: string, b: string): number {
   return 0;
 }
 
-export function pickLatestTag(names: readonly string[]): string | null {
+export function pickLatestTag(
+  names: readonly string[],
+  prefix: string = LEGACY_TAG_PREFIX,
+): string | null {
   const versions = names
-    .filter((name) => name.startsWith(TAG_PREFIX))
-    .map((name) => name.slice(TAG_PREFIX.length))
+    .filter((name) => name.startsWith(prefix))
+    .map((name) => name.slice(prefix.length))
     .filter((version) => /^\d+(\.\d+)*$/.test(version));
   if (!versions.length) return null;
   return versions.reduce((best, current) =>
     compareVersions(current, best) > 0 ? current : best,
   );
+}
+
+/** Newest of each line, falling back to the tag both used before the split. */
+export function pickLatestReleases(names: readonly string[]): {
+  site: string | null;
+  rules: string | null;
+} {
+  const legacy = pickLatestTag(names, LEGACY_TAG_PREFIX);
+  return {
+    site: pickLatestTag(names, SITE_TAG_PREFIX) ?? legacy,
+    rules: pickLatestTag(names, RULES_TAG_PREFIX) ?? legacy,
+  };
 }
 
 /**
@@ -113,17 +142,17 @@ async function fetchLatest(): Promise<LatestVersion> {
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
-    if (!response.ok) return { latest: cached.latest, checkedAt: 0 };
-    const latest = pickLatestTag(parseRefTagNames(await response.text()));
+    if (!response.ok) return { ...cached, checkedAt: 0 };
+    const releases = pickLatestReleases(parseRefTagNames(await response.text()));
     // A response that parsed but named no version is as uninformative as a
     // failed one, so it is not recorded as a successful check either.
-    if (!latest) return { latest: cached.latest, checkedAt: 0 };
-    return { latest, checkedAt: Date.now() };
+    if (!releases.site && !releases.rules) return { ...cached, checkedAt: 0 };
+    return { ...releases, checkedAt: Date.now() };
   } catch {
     // A failed check keeps whatever was known before; it never clears it.
     // checkedAt stays 0 so the backoff, not the answer, decides what happens
     // next — see lastFailureAt.
-    return { latest: cached.latest, checkedAt: 0 };
+    return { ...cached, checkedAt: 0 };
   }
 }
 
@@ -203,7 +232,7 @@ export async function readRepoStars(): Promise<number | null> {
 }
 
 export function resetLatestVersionCacheForTests(): void {
-  cached = { latest: null, checkedAt: 0 };
+  cached = { site: null, rules: null, checkedAt: 0 };
   inFlight = null;
   lastFailureAt = 0;
   cachedStars = { stars: null, checkedAt: 0 };

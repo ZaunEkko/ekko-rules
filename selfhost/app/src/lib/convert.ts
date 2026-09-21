@@ -338,7 +338,20 @@ export function getRuntimeConfig() {
       "SUBCONVERTER_BASE_URL",
       "http://127.0.0.1:25500",
     ).replace(/\/$/, ""),
-    ekkoRulesVersion: requiredEnv("EKKO_RULES_VERSION", "local"),
+    /*
+     * What this image is, not what the rules are.
+     *
+     * The two are released on separate tags now, so this number answers only
+     * for the site. The rules answer for themselves: the engine image carries
+     * its own version and the gateway reads it at runtime.
+     *
+     * EKKO_RULES_VERSION is still accepted so a deployment whose .env predates
+     * the split keeps reporting something rather than "local".
+     */
+    siteVersion: requiredEnv(
+      "EKKO_SITE_VERSION",
+      requiredEnv("EKKO_RULES_VERSION", "local"),
+    ),
     subconverterVersion: requiredEnv(
       "SUBCONVERTER_VERSION",
       "v1.3.0",

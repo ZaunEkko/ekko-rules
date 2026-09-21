@@ -16,11 +16,13 @@
 ## 2. 发布镜像（在仓库侧做一次）
 
 ```bash
-git tag selfhost-v0.1.0
-git push origin selfhost-v0.1.0
+# 规则变了发这条（重建引擎镜像）
+git tag rules-v0.1.0 && git push origin rules-v0.1.0
+# 站点变了发这条（重建 web 镜像）
+git tag site-v0.1.0 && git push origin site-v0.1.0
 ```
 
-Actions 里的 `Publish selfhost images` 会构建两个镜像并推到 GHCR。首次发布后到
+Actions 里的 `Publish selfhost images` 只重建该 tag 对应的那个镜像并推到 GHCR，另一个原样留着。首次发布后到
 GitHub 的 Packages 页面把这两个包设为 **public**，服务器拉取才不需要凭据：
 
 - `ekko-rules-selfhost-web`
@@ -43,13 +45,14 @@ sudo chmod 600 .env
 SELFHOST_MODE=public
 WEB_BIND_HOST=127.0.0.1
 PUBLIC_BASE_URL=https://sub.example.com
-EKKO_IMAGE_TAG=latest
+EKKO_ENGINE_TAG=latest
+EKKO_WEB_TAG=latest
 ```
 
 `SELFHOST_MODE` 必须显式写上——`vps-update.sh` 会拒绝没有声明形态的 `.env`，
 因为静默落回 `lan` 意味着开始把访问者的订阅存在公网机器上。
 
-`EKKO_IMAGE_TAG=latest` 让这台机器跟随发布：打一个 `selfhost-v*` tag，定时器下一轮就会拉到它。
+两个 `latest` 让这台机器跟随发布：打一个 `rules-v*`（规则）或 `site-v*`（站点）tag，定时器下一轮就会拉到对应的那个镜像。
 `latest` 只会被 tag 发布移动，手动 `workflow_dispatch` 只发 `sha-<commit>`，不会把服务器
 带到未发布的构建上。要固定版本或回滚时再改成具体版号（见 `docs/vps.md`）。
 

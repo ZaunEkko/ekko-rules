@@ -4,11 +4,16 @@
 #   docker compose -f compose.yaml -f compose.ghcr.yaml up -d
 #
 # The base file keeps its `build:` sections, which stay unused unless you pass
-# --build. Pin EKKO_IMAGE_TAG to a released tag (selfhost-v1.2.3 publishes
-# 1.2.3) so a deploy is reproducible and a rollback is one variable away.
+# --build.
+#
+# The two images are released on their own tags — `rules-v1.2.3` publishes the
+# engine as 1.2.3, `site-v1.2.3` publishes the web image — so each is pinned on
+# its own. `EKKO_IMAGE_TAG` is what pinned both before the split and is still
+# honoured, so an existing .env keeps working; set the two below to pin them
+# apart, or leave everything unset to follow `latest`.
 services:
   subconverter:
-    image: ghcr.io/${EKKO_IMAGE_OWNER:-zaunekko}/ekko-rules-selfhost-subconverter:${EKKO_IMAGE_TAG:-latest}
+    image: ghcr.io/${EKKO_IMAGE_OWNER:-zaunekko}/ekko-rules-selfhost-subconverter:${EKKO_ENGINE_TAG:-${EKKO_IMAGE_TAG:-latest}}
 
   web:
-    image: ghcr.io/${EKKO_IMAGE_OWNER:-zaunekko}/ekko-rules-selfhost-web:${EKKO_IMAGE_TAG:-latest}
+    image: ghcr.io/${EKKO_IMAGE_OWNER:-zaunekko}/ekko-rules-selfhost-web:${EKKO_WEB_TAG:-${EKKO_IMAGE_TAG:-latest}}

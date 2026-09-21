@@ -7,6 +7,7 @@ import {
   readLatestVersion,
   readRepoStars,
 } from "@/lib/latest-version";
+import { readEngineRulesVersion } from "@/lib/rules-version";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,26 +21,38 @@ export async function GET() {
   const metrics = runtimeConfig.metricsEnabled
     ? await readMetrics(runtimeConfig.profileDataDir)
     : null;
-  const running = runtimeConfig.ekkoRulesVersion;
-  const [{ latest: checkedLatest }, repoStars] = await Promise.all([
-    readLatestVersion(),
-    readRepoStars(),
-  ]);
-  // The running image was built from a published tag, so the newest published
-  // version is at least the one running here. Reporting a smaller number would
-  // print a running version ahead of "latest", which reads as a bug and tells
-  // the visitor nothing true.
-  const latestVersion =
-    checkedLatest &&
-    running !== "local" &&
-    compareVersions(running, checkedLatest) > 0
-      ? running
-      : checkedLatest;
-  // "local" is what an unbuilt image reports; it is not behind anything.
-  const updateAvailable =
-    Boolean(latestVersion) &&
-    running !== "local" &&
-    compareVersions(latestVersion as string, running) > 0;
+  const runningSite = runtimeConfig.siteVersion;
+  const [{ site: checkedSite, rules: checkedRules }, repoStars, engineRules] =
+    await Promise.all([
+      readLatestVersion(),
+      readRepoStars(),
+      // The engine answers for its own rules; this image cannot, now that the
+      // two are released apart.
+      readEngineRulesVersion(runtimeConfig.subconverterBaseUrl),
+    ]);
+  const runningRules = engineRules?.version ?? null;
+
+  /**
+   * A running image was built from a published tag, so the newest published
+   * release is at least the one running here. Reporting a smaller number
+   * would print a running version ahead of "latest", which reads as a bug and
+   * tells the visitor nothing true. "local" is an unbuilt image: it is not
+   * behind anything.
+   */
+  const reconcile = (running: string | null, checked: string | null) => {
+    if (!running || running === "local") {
+      return { latest: checked, updateAvailable: false };
+    }
+    const latest =
+      checked && compareVersions(running, checked) > 0 ? running : checked;
+    return {
+      latest,
+      updateAvailable: Boolean(latest) && compareVersions(latest as string, running) > 0,
+    };
+  };
+
+  const site = reconcile(runningSite, checkedSite);
+  const rules = reconcile(runningRules, checkedRules);
 
   let subconverterReachable = false;
   try {
@@ -64,9 +77,15 @@ export async function GET() {
       stores_profiles: runtimeConfig.storedProfilesEnabled,
       deployment_error: runtimeConfig.deploymentError || null,
       deployment_warning: runtimeConfig.deploymentWarning || null,
-      ekko_rules_version: runtimeConfig.ekkoRulesVersion,
-      latest_ekko_rules_version: latestVersion,
-      update_available: updateAvailable,
+      // Two release lines, reported apart: a site release says nothing about
+      // the rules, and the page must stop implying that it does.
+      site_version: runningSite,
+      latest_site_version: site.latest,
+      site_update_available: site.updateAvailable,
+      rules_version: runningRules,
+      rules_built: engineRules?.built || null,
+      latest_rules_version: rules.latest,
+      rules_update_available: rules.updateAvailable,
       repo_stars: repoStars,
       subconverter_version: runtimeConfig.subconverterVersion,
       subconverter_reachable: subconverterReachable,

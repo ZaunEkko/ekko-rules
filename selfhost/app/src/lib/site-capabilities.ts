@@ -15,7 +15,7 @@ export function buildSiteCapabilities() {
   const runtime = getRuntimeConfig();
   return {
     ...buildCapabilitiesPayload(),
-    ekko_rules_version: runtime.ekkoRulesVersion,
+    site_version: runtime.siteVersion,
     subconverter_version: runtime.subconverterVersion,
     deploy_mode: runtime.deployMode,
     stores_profiles: runtime.storedProfilesEnabled,

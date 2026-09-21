@@ -30,7 +30,12 @@ common:
 server:
   listen: 0.0.0.0
   port: 25500
-  serve_file_root:
+  # One file, mounted at /: `rules-version.json`, which says which rules this
+  # image carries. The port is never published to the host, so this is only
+  # reachable by the gateway on the internal Docker network. Static files are
+  # served only where no route matches, so the engine's own endpoints keep
+  # their meaning.
+  serve_file_root: public
 
 advanced:
   log_level: warn

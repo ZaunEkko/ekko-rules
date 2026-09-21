@@ -37,9 +37,14 @@ type Health = {
   } | null;
   deployment_error?: string | null;
   deployment_warning?: string | null;
-  ekko_rules_version: string;
-  latest_ekko_rules_version?: string | null;
-  update_available?: boolean;
+  site_version: string;
+  latest_site_version?: string | null;
+  site_update_available?: boolean;
+  /** Reported by the running engine; null while it is unreachable. */
+  rules_version?: string | null;
+  rules_built?: string | null;
+  latest_rules_version?: string | null;
+  rules_update_available?: boolean;
   repo_stars?: number | null;
   subconverter_reachable: boolean;
   access_password_required: boolean;
@@ -1063,25 +1068,45 @@ export function Workbench({
               always says what the check found, and says nothing only when the
               lookup itself failed — which is the one case where there is
               genuinely nothing to report. */}
+          {/* Two numbers, because they are two things. The rules and the
+              site are released on separate tags: a site release changes
+              nothing about what gets matched, and printing one number for
+              both told visitors their rules had changed when they had not.
+              The rules version comes from the engine itself, so it is what is
+              running rather than what this image was built beside. */}
           <code
             title={
-              health?.update_available
-                ? `服务器运行 ${health.ekko_rules_version}，最新为 ${health.latest_ekko_rules_version}，镜像尚未拉取`
-                : health?.latest_ekko_rules_version
-                  ? `已是最新发布的规则版本（${health.latest_ekko_rules_version}）`
+              health?.rules_update_available
+                ? `服务器规则 ${health.rules_version}，最新为 ${health.latest_rules_version}，镜像尚未拉取`
+                : health?.latest_rules_version
+                  ? `已是最新发布的规则版本（${health.latest_rules_version}）`
                   : "服务器当前运行的规则版本"
             }
-            data-stale={health?.update_available ? "true" : undefined}
+            data-stale={health?.rules_update_available ? "true" : undefined}
           >
-            规则 {health?.ekko_rules_version ?? "—"}
-            {/* Both numbers, plainly. A badge that had to be decoded was worse
-                than two versions side by side. */}
-            {health?.latest_ekko_rules_version ? (
+            规则 {health?.rules_version ?? "—"}
+            {health?.rules_update_available ? (
               <>
                 {" · 最新 "}
-                <b className="version-latest">
-                  {health.latest_ekko_rules_version}
-                </b>
+                <b className="version-latest">{health.latest_rules_version}</b>
+              </>
+            ) : null}
+          </code>
+          <code
+            title={
+              health?.site_update_available
+                ? `站点 ${health.site_version}，最新为 ${health.latest_site_version}，镜像尚未拉取`
+                : health?.latest_site_version
+                  ? `已是最新发布的站点版本（${health.latest_site_version}）`
+                  : "这个站点自己的版本"
+            }
+            data-stale={health?.site_update_available ? "true" : undefined}
+          >
+            站点 {health?.site_version ?? "—"}
+            {health?.site_update_available ? (
+              <>
+                {" · 最新 "}
+                <b className="version-latest">{health.latest_site_version}</b>
               </>
             ) : null}
           </code>
@@ -1914,7 +1939,7 @@ export function Workbench({
             )}
 
             <dl className="result-specs">
-              <div><dt>规则</dt><dd>Ekko Rules {health?.ekko_rules_version ?? "—"}</dd></div>
+              <div><dt>规则</dt><dd>Ekko Rules {health?.rules_version ?? "—"}</dd></div>
               <div><dt>协议</dt><dd>自动识别 · 无需手选</dd></div>
               <div>
                 <dt>{storesProfiles ? "重启后" : "服务器保存"}</dt>
