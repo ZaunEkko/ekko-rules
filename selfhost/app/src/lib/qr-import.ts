@@ -56,11 +56,12 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   shadowrocket: {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
-    // The handoff address ends in the chosen `<name>.conf`, so both of the
-    // client's scanners can identify it as a complete configuration instead
-    // of filing the bare `/i` address as a node subscription.
+    // The home scanner treats a plain HTTPS value as a node subscription even
+    // when its path ends in `.conf`. The QR code therefore carries this
+    // explicit configuration scheme; the separately displayed/copyable value
+    // remains the refreshable HTTPS address for the configuration page.
     qrHint:
-      "Shadowrocket 首页或「配置」页的扫码入口都可以；也可以用手机相机扫，再按页面上的按钮导入完整配置。",
+      "Shadowrocket 首页扫码会直接走完整配置导入；也可以复制下方地址，从「配置」页添加。",
   },
   singbox: {
     build: (url, name) =>
@@ -129,4 +130,23 @@ export function qrImportValue(
     return subscriptionUrl;
   }
   return scheme.build(subscriptionUrl, name.trim());
+}
+
+/**
+ * The actual payload rendered into the single QR code.
+ *
+ * Most clients correctly classify the ordinary handoff URL themselves. The
+ * Shadowrocket home scanner does not: it files HTTPS as a node subscription,
+ * names it after the host, and then cannot parse the complete `.conf` during
+ * refresh. Give only that scanner the documented configuration deep link.
+ */
+export function qrCodeValue(
+  target: string,
+  subscriptionUrl: string,
+  name = "",
+): string {
+  if (target === "shadowrocket") {
+    return qrImportValue(target, subscriptionUrl, "install", name);
+  }
+  return subscriptionUrl;
 }

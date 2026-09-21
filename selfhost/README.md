@@ -122,16 +122,16 @@ Web UI 提供：
 - 自定义前缀：在家里、公司等网络切换后直接输入新的电脑 IP；
 - 曾用地址：在当前浏览器保留最近 8 个前缀，一键切换所有档案的显示、复制与二维码。
 
-**一个二维码，谁扫都行。** 两种扫码入口要的东西本来是相反的：客户端自带的扫码入口把扫到的文本直接写进它的地址栏，只认 `http(s)`（给它 scheme，ClashMetaForAndroid 会报 `Unsupported url clash://install-config?…`）；手机系统相机则把 scheme 交给系统唤起客户端，而一个 `https://` 地址只会被浏览器打开。
+**一个二维码，谁扫都行。** 多数客户端的扫码入口把 `http(s)` 地址写进自身配置，而手机系统相机会在浏览器中打开同一地址，再由中转页唤起客户端。Shadowrocket 首页扫码是例外：它会把普通 HTTPS 当成节点订阅，因此它的二维码直接使用 `shadowrocket://config/add/`，明确要求完整配置导入；二维码下方仍展示可刷新的 HTTPS `.conf` 地址，供「配置」页添加或复制。
 
-二维码因此不放 scheme，而是放 `/i` 这个地址，由它按来客作答：
+除 Shadowrocket 首页扫码这个例外外，二维码放 `/i` 地址，由它按来客作答：
 
 - **客户端来拉** → 返回配置，与 `/sub` 逐字节相同；
 - **浏览器来开**（系统相机扫到后打开的就是浏览器）→ 返回一个极简页面，自动跳客户端的导入 scheme，并附一个按钮（Safari 常常要点一下）、完整地址与「直接下载配置」。
 
 判定条件是三者同时成立：`Sec-Fetch-Mode: navigate`、`Accept` 含 `text/html`、`User-Agent` 以 `Mozilla/5.0` 开头。代理客户端不会同时具备这三样；判错的代价是给客户端发了 HTML，所以宁可漏判成客户端。
 
-二维码里的地址把全部参数打包成单个 base64url 参数（通常是 `/i?p=…`）：嵌套进 scheme 的查询串时，有的客户端只保留订阅地址问号之前的部分，机场 token 就丢了；打包后没有问号、没有 `&`、没有转义，无从解释错。Shadowrocket 使用 `/i/<名称>.conf?p=…`，让首页扫码器明确识别为完整配置，并避免把远程配置命名成 `i`。弹窗直接展示这条地址并提供复制按钮——它同样可以粘贴进客户端的配置 URL 入口。
+二维码使用的远程地址把全部参数打包成单个 base64url 参数（通常是 `/i?p=…`）：嵌套进 scheme 的查询串时，有的客户端只保留订阅地址问号之前的部分，机场 token 就丢了；打包后没有额外的 `&` 和嵌套转义，无从解释错。Shadowrocket 使用 `/i/<名称>.conf?p=…` 作为远程配置地址，避免配置被命名成 `i`；首页二维码再把它包装进 `shadowrocket://config/add/`，防止首页扫码器误建成以域名命名的节点订阅。弹窗展示并复制的仍是原始 HTTPS `.conf` 地址。
 
 **一键导入按钮**在手机上直接访问站点时最省事，覆盖各家自己公开的 scheme：Clash / Mihomo `clash://install-config?url=`、Shadowrocket `shadowrocket://config/add/<地址>`、sing-box `sing-box://import-remote-profile?url=…#名称`、Surge `surge:///install-config?url=`、Loon `loon://import?sub=`、Surfboard `surfboard:///install-config?url=`。Quantumult X 的 `update-configuration` 只接受远程资源而不是整份配置，Quantumult 与 Mellow 没有公开 scheme，这三个只给复制地址。
 
@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 使用原生分段 `.conf`，不再把 Clash / Mihomo YAML 直接交给它。转换时先按所选远程配置生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`，Ekko Rules 的 `♻️ 手动切换`显式使用 `hidden=0`。因此一次导入会同时保留节点、规则、`DIRECT`、`REJECT`、其他策略组引用和预设选择。这里仍不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉；二维码和一键按钮都指向带名称的原生配置地址。现代协议已做结构保留测试，但尚未逐个完成真机连通验证，所以页面不把它们标成「现代协议已验证」。内置 Ekko Rules 完整版、精简版、第三方预设和允许的自定义远程配置都会走同一套原生转换；第三方模板保留其自身分组、规则和默认顺序。
+Shadowrocket 使用原生分段 `.conf`，不再把 Clash / Mihomo YAML 直接交给它。转换时先按所选远程配置生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`，Ekko Rules 的 `♻️ 手动切换`不写 `hidden`，确保它在代理分组列表中可见。因此一次导入会同时保留节点、规则、`DIRECT`、`REJECT`、其他策略组引用和预设选择。这里仍不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉；首页二维码使用 `shadowrocket://config/add/` 明确触发完整配置导入，页面同时保留带名称的 HTTPS `.conf` 地址供「配置」页添加和后续刷新。现代协议已做结构保留测试，但尚未逐个完成真机连通验证，所以页面不把它们标成「现代协议已验证」。内置 Ekko Rules 完整版、精简版、第三方预设和允许的自定义远程配置都会走同一套原生转换；第三方模板保留其自身分组、规则和默认顺序。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 
