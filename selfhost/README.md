@@ -131,7 +131,7 @@ Web UI 提供：
 
 判定条件是三者同时成立：`Sec-Fetch-Mode: navigate`、`Accept` 含 `text/html`、`User-Agent` 以 `Mozilla/5.0` 开头。代理客户端不会同时具备这三样；判错的代价是给客户端发了 HTML，所以宁可漏判成客户端。
 
-二维码里的地址把全部参数打包成单个 base64url 参数（`/i?p=…`）：嵌套进 scheme 的查询串时，有的客户端只保留订阅地址问号之前的部分，机场 token 就丢了；打包后没有问号、没有 `&`、没有转义，无从解释错。弹窗直接展示这条地址并提供复制按钮——它同样可以粘贴进任何客户端的「从 URL 导入」。
+二维码里的地址把全部参数打包成单个 base64url 参数（通常是 `/i?p=…`）：嵌套进 scheme 的查询串时，有的客户端只保留订阅地址问号之前的部分，机场 token 就丢了；打包后没有问号、没有 `&`、没有转义，无从解释错。Shadowrocket 使用 `/i/<名称>.conf?p=…`，让首页扫码器明确识别为完整配置，并避免把远程配置命名成 `i`。弹窗直接展示这条地址并提供复制按钮——它同样可以粘贴进客户端的配置 URL 入口。
 
 **一键导入按钮**在手机上直接访问站点时最省事，覆盖各家自己公开的 scheme：Clash / Mihomo `clash://install-config?url=`、Shadowrocket `shadowrocket://config/add/<地址>`、sing-box `sing-box://import-remote-profile?url=…#名称`、Surge `surge:///install-config?url=`、Loon `loon://import?sub=`、Surfboard `surfboard:///install-config?url=`。Quantumult X 的 `update-configuration` 只接受远程资源而不是整份配置，Quantumult 与 Mellow 没有公开 scheme，这三个只给复制地址。
 
@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 使用原生分段 `.conf`，不再把 Clash / Mihomo YAML 直接交给它。转换时先生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`。因此一次导入会同时保留节点、规则、`DIRECT`、`REJECT`、其他策略组引用和预设选择。这里仍不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉；二维码继续使用配置入口 `shadowrocket://config/add/`。现代协议已做结构保留测试，但尚未逐个完成真机连通验证，所以页面不把它们标成「现代协议已验证」。当前这条原生输出只开放给内置的 Ekko Rules 完整版与精简版；第三方和自定义远程配置后续单独适配。
+Shadowrocket 使用原生分段 `.conf`，不再把 Clash / Mihomo YAML 直接交给它。转换时先按所选远程配置生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`，Ekko Rules 的 `♻️ 手动切换`显式使用 `hidden=0`。因此一次导入会同时保留节点、规则、`DIRECT`、`REJECT`、其他策略组引用和预设选择。这里仍不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉；二维码和一键按钮都指向带名称的原生配置地址。现代协议已做结构保留测试，但尚未逐个完成真机连通验证，所以页面不把它们标成「现代协议已验证」。内置 Ekko Rules 完整版、精简版、第三方预设和允许的自定义远程配置都会走同一套原生转换；第三方模板保留其自身分组、规则和默认顺序。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 
@@ -218,7 +218,7 @@ Mihomo 输出始终使用客户端要求的新字段名，完整配置始终展�
 
 Mihomo 固定地址每次被客户端刷新时，都会在本机即时拉取真实订阅并把节点直接内联到完整配置中。生成结果不会包含真实机场订阅 URL，也不会再引用仅容器内部可达的 provider 地址；客户端拿到一个文件即可获得节点、DNS、策略组与规则。
 
-订阅响应会通过 `Profile-Title` 和 `Content-Disposition` 同时传递用户填写的名称，避免客户端用随机 ID 命名；两处都不带文件扩展名，客户端里显示的是「ekko-rules」而不是「ekko-rules.yaml」。页面上的“下载”按钮走 `/api/convert`，那才是真的文件，仍然带扩展名。创建成功后页面不会清空真实订阅、名称或高级选项，用户可以直接微调后再次生成。
+订阅响应会通过 `Profile-Title` 和 `Content-Disposition` 同时传递用户填写的名称，避免客户端用随机 ID 命名；Shadowrocket 的扫码中转地址还会把名称写进最后一个 `.conf` 路径段，避免客户端把它命名为 `i`。响应头中的名称仍不带扩展名，其他客户端显示的是「ekko-rules」而不是「ekko-rules.yaml」。页面上的“下载”按钮走 `/api/convert`，那才是真的文件，仍然带扩展名。创建成功后页面不会清空真实订阅、名称或高级选项，用户可以直接微调后再次生成；完全相同的配置再次复制、扫码或一键导入时只复用现有浏览器记录，不会重复新增。
 
 固定地址也会把上游返回的 `Subscription-Userinfo` 中 `upload`、`download`、`total` 和 `expire` 数字字段安全透传给客户端，用于显示已用流量、套餐容量和到期时间。刷新时会沿用非浏览器订阅客户端的 User-Agent；从 Web UI 创建时会使用目标客户端的安全默认值，避免机场把普通浏览器识别成网页访问。若机场本身没有返回这些字段，本地服务不会从节点配置中猜测或伪造套餐信息。
 
@@ -438,7 +438,7 @@ cd selfhost
 node scripts/verify-remote-configs.mjs
 ```
 
-它会遍历 `/api/capabilities` 返回的全部远程配置，断言 Ekko Rules 永远排在首位且为内置项，对每一套跑一次完整 Mihomo 转换；内置完整版与精简版会额外验证 Shadowrocket 原生策略组，第三方配置则验证其余 8 种客户端格式。最后确认云元数据、回环、私网、明文 HTTP 和不存在的预设都被拒绝。预设列表变动或准备上线开放部署前跑一次。
+它会遍历 `/api/capabilities` 返回的全部远程配置，断言 Ekko Rules 永远排在首位且为内置项，对每一套跑一次完整 Mihomo 转换；内置完整版与精简版会验证 Shadowrocket 的固定策略默认值，第三方预设会覆盖包括 Shadowrocket 在内的 9 种客户端格式，允许自定义地址时还会验证自定义配置的 Mihomo 与 Shadowrocket 输出。最后确认云元数据、回环、私网、明文 HTTP 和不存在的预设都被拒绝。预设列表变动或准备上线开放部署前跑一次。
 
 端到端脚本会验证 9 种完整输出、Mihomo 与 sing-box 的 AnyTLS 等现代协议、Shadowrocket 原生策略组语义与现代节点结构、Emoji/UDP/筛选/重命名等高级选项、真实源地址不出现在 Mihomo 完整配置中、Mihomo 配置语法，以及固定 URL 在普通 Compose 重启后的可用性。可通过 `MIHOMO_BIN` 指定本机 Mihomo 可执行文件。
 

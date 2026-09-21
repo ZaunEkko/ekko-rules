@@ -357,16 +357,26 @@ function addStableDefaultsAndNodes(
     const members = (optionIndex < 0 ? fields : fields.slice(0, optionIndex))
       .filter((member) => !unavailableNames.has(member));
     const options = (optionIndex < 0 ? [] : fields.slice(optionIndex))
-      .filter((option) => !/^policy-select-name=/i.test(option));
+      .filter((option) => !/^policy-select-name=/i.test(option))
+      .filter(
+        (option) =>
+          groupName !== "♻️ 手动切换" || !/^hidden=/i.test(option),
+      );
     if (!members.length) {
       throw new Error(`Shadowrocket policy group ${groupName} has no members.`);
     }
     for (const name of extraNames) {
       if (!members.includes(name)) members.push(name);
     }
+    if (groupName === "♻️ 手动切换") options.push("hidden=0");
     options.push(`policy-select-name=${members[0]}`);
     lines[index] = `${groupName} = select,${[...members, ...options].join(",")}`;
   }
+}
+
+function ensureBlankLineAfterSection(lines: string[], heading: string): void {
+  const [start] = sectionRange(lines, heading);
+  if (lines[start + 1]?.trim()) lines.splice(start + 1, 0, "");
 }
 
 function skippedNodeComment(node: FlowMap, error: unknown): string {
@@ -379,9 +389,9 @@ function skippedNodeComment(node: FlowMap, error: unknown): string {
 
 /**
  * Builds a native Shadowrocket config from the engine's mature Surge skeleton
- * and a lossless Mihomo node list. The skeleton preserves all Ekko Rules and
- * policy relationships; the node list restores modern protocols filtered by
- * the older Surge renderer.
+ * and a lossless Mihomo node list. The skeleton preserves the selected remote
+ * config's rules and policy relationships; the node list restores modern
+ * protocols filtered by the older Surge renderer.
  */
 export function buildShadowrocketConfig(
   nativeSkeleton: string,
@@ -437,6 +447,11 @@ export function buildShadowrocketConfig(
     rendered.map((item) => item.name),
     skipped,
   );
+  // Keep the native section boundary explicit. On the affected device the
+  // only missing policy was the first entry immediately after this heading.
+  ensureBlankLineAfterSection(lines, "[Proxy]");
+  ensureBlankLineAfterSection(lines, "[Proxy Group]");
+  ensureBlankLineAfterSection(lines, "[Rule]");
 
   return lines.join("\n");
 }

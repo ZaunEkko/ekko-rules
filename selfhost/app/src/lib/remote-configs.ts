@@ -251,11 +251,8 @@ export function isCustomRemoteConfig(preset: RemoteConfigPreset): boolean {
 }
 
 export function isRemoteConfigTargetSupported(
-  preset: RemoteConfigPreset,
+  _preset: RemoteConfigPreset,
   target: string,
 ): boolean {
-  return (
-    isSupportedTarget(target) &&
-    (target !== "shadowrocket" || preset.builtin)
-  );
+  return isSupportedTarget(target);
 }

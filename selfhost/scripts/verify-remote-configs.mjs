@@ -253,26 +253,31 @@ async function main() {
   const results = await verifyPresets(presets);
   await verifyEkkoShadowrocket("ekko");
   await verifyEkkoShadowrocket("ekko-lite");
-  // Third-party policy dialects are outside Shadowrocket's built-in-config
-  // guarantee. Keep the existing coverage for every other client family;
-  // Ekko full and lite were checked natively just above.
-  const thirdParty = presets.find((preset) => !preset.builtin);
-  if (thirdParty) {
-    await verifyTargetCoverage(
-      thirdParty.id,
-      Object.keys(TARGET_MARKERS).filter((target) => target !== "shadowrocket"),
-    );
+  // A third-party policy dialect must survive the same native Shadowrocket
+  // assembly as the built-in configs, while keeping coverage for every other
+  // client family.
+  const thirdParty = presets.filter((preset) => !preset.builtin);
+  if (thirdParty.length) {
+    // One representative still exercises the full target matrix. Every
+    // offered third-party preset then gets its own native Shadowrocket pass,
+    // so a single incompatible ACL4SSR variant cannot hide behind that sample.
+    await verifyTargetCoverage(thirdParty[0].id);
+    for (const preset of thirdParty.slice(1)) {
+      await verifyTargetCoverage(preset.id, ["shadowrocket"]);
+    }
   }
   if (capabilities.allow_custom_remote_config) {
-    const pasted = await convert({
-      target: "clash",
-      config: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini",
-    });
-    if (pasted.status !== 200) {
-      throw new Error(`pasted config URL failed: HTTP ${pasted.status}`);
+    const customConfig = "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini";
+    for (const target of ["clash", "shadowrocket"]) {
+      const pasted = await convert({ target, config: customConfig });
+      if (pasted.status !== 200) {
+        throw new Error(
+          `pasted config URL + ${target} failed: HTTP ${pasted.status}`,
+        );
+      }
+      assertComplete(pasted.body, target, `pasted config URL + ${target}`);
+      console.log(JSON.stringify({ phase: "custom-url", target, status: 200 }));
     }
-    assertComplete(pasted.body, "clash", "pasted config URL");
-    console.log(JSON.stringify({ phase: "custom-url", status: 200 }));
   }
   await verifyRejections();
   await verifyStatelessSurface();
