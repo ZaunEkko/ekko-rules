@@ -122,7 +122,7 @@ test("a deployment can still refuse pasted config URLs", () => {
   );
 });
 
-test("limits native Shadowrocket output to the two built-in Ekko configs", () => {
+test("allows native Shadowrocket output for built-in and third-party configs", () => {
   const presets = parseRemoteConfigPresets(undefined, FIXED);
   const full = presets.find((preset) => preset.id === BUILTIN_REMOTE_CONFIG_ID)!;
   const lite = presets.find((preset) => preset.id === LITE_REMOTE_CONFIG_ID)!;
@@ -130,9 +130,6 @@ test("limits native Shadowrocket output to the two built-in Ekko configs", () =>
 
   assert.equal(isRemoteConfigTargetSupported(full, "shadowrocket"), true);
   assert.equal(isRemoteConfigTargetSupported(lite, "shadowrocket"), true);
-  assert.equal(
-    isRemoteConfigTargetSupported(thirdParty, "shadowrocket"),
-    false,
-  );
+  assert.equal(isRemoteConfigTargetSupported(thirdParty, "shadowrocket"), true);
   assert.equal(isRemoteConfigTargetSupported(thirdParty, "clash"), true);
 });

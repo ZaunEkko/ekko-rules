@@ -56,11 +56,11 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   shadowrocket: {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
-    // Its scan entry does accept this address — it just files it as a node
-    // subscription, which silently drops every rule. So the warning is about
-    // where it lands, not about the code failing to scan.
+    // The handoff address ends in the chosen `<name>.conf`, so both of the
+    // client's scanners can identify it as a complete configuration instead
+    // of filing the bare `/i` address as a node subscription.
     qrHint:
-      "用手机相机扫，会打开一个页面替你唤起客户端，按「配置文件」装进去。别用 Shadowrocket 自带的扫码入口：它会把这条地址当节点订阅收下，规则不跟过去。",
+      "Shadowrocket 首页或「配置」页的扫码入口都可以；也可以用手机相机扫，再按页面上的按钮导入完整配置。",
   },
   singbox: {
     build: (url, name) =>
@@ -106,7 +106,7 @@ export function clientInstallLabel(target: string): string {
  */
 export function qrPasteHint(target: string): string {
   if (target === "shadowrocket") {
-    return "也可以复制这条地址，粘进 Shadowrocket「配置」页右上角的 ➕；别贴进首页的「添加订阅」，那里只收节点。";
+    return "也可以复制这条地址，粘进 Shadowrocket「配置」页右上角的 ➕；手动粘贴时仍使用配置入口。";
   }
   return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }

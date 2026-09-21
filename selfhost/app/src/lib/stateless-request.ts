@@ -29,6 +29,32 @@ export const STATELESS_SUBSCRIPTION_PATH = "/sub";
 export const CLIENT_IMPORT_PATH = "/i";
 
 /**
+ * Builds the address a client stores after scanning.
+ *
+ * Shadowrocket decides both the kind and the display name of a remote profile
+ * from the final path segment. `/i` therefore became a profile literally named
+ * `i`, and its home-page scanner could no longer recognize the new native
+ * configuration. Give that target a real `.conf` filename while retaining the
+ * old `/i?p=...` shape for every other client.
+ */
+export function clientImportPath(
+  target: string,
+  name: string,
+  packedQuery: string,
+): string {
+  if (target !== "shadowrocket") {
+    return `${CLIENT_IMPORT_PATH}?${packedQuery}`;
+  }
+
+  const filename = (name.trim() || "Shadowrocket")
+    .replace(/\.conf$/i, "")
+    .replace(/[\u0000-\u001f\u007f/\\?#%]+/g, "-")
+    .replace(/^[-.\s]+|[-.\s]+$/g, "")
+    .slice(0, MAX_STATELESS_NAME_LENGTH) || "Shadowrocket";
+  return `${CLIENT_IMPORT_PATH}/${encodeURIComponent(filename)}.conf?${packedQuery}`;
+}
+
+/**
  * The whole query, packed into one parameter.
  *
  * A readable link is the right thing to show a person and the wrong thing to

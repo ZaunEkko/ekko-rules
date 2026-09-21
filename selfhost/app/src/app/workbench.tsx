@@ -17,10 +17,14 @@ import {
 } from "@/lib/qr-import";
 import {
   buildStatelessConvertQuery,
+  clientImportPath,
   packStatelessQuery,
-  CLIENT_IMPORT_PATH,
   type StatelessConvertRequest,
 } from "@/lib/stateless-request";
+import {
+  dedupeSavedLinks,
+  savedLinkIdentity,
+} from "@/lib/saved-link-history";
 import { Picker } from "./picker";
 import { SiteMark } from "./site-mark";
 import { Tally } from "./tally";
@@ -396,16 +400,6 @@ export function Workbench({
   const usingThirdPartyRemoteConfig = !remoteConfigOptions.some(
     (option) => option.id === remoteConfigId && option.builtin,
   );
-  const selectableRemoteConfigOptions = target === "shadowrocket"
-    ? remoteConfigOptions.filter((option) => option.builtin)
-    : remoteConfigOptions;
-  const allowCustomRemoteConfigForTarget =
-    allowCustomRemoteConfig && target !== "shadowrocket";
-  useEffect(() => {
-    if (target === "shadowrocket" && usingThirdPartyRemoteConfig) {
-      setRemoteConfigId("ekko");
-    }
-  }, [target, usingThirdPartyRemoteConfig]);
   const siteLinks = capabilities?.site_links ?? [];
   const statelessQuery = useMemo(() => {
     if (storesProfiles || !subscriptionUrl.trim()) return "";
@@ -454,24 +448,26 @@ export function Workbench({
   /**
    * The address handed to another program rather than to a person.
    *
-   * Two things are different about it. It points at `/i`, which answers a
-   * client with the configuration and a browser with a page that opens the
-   * client — one address, so one QR code. And its parameters travel packed
-   * into a single base64url value: inside a client's own import scheme the
-   * address rides in someone else's query, and clients disagree about how far
-   * to decode it — one keeps only what precedes the provider's `?`, which
-   * drops the token and imports a profile that fetches nothing.
+   * It points at `/i`, which answers a client with the configuration and a
+   * browser with a page that opens the client — one address, so one QR code.
+   * Shadowrocket receives `/i/<name>.conf`, because its scanner uses the last
+   * path segment for both file recognition and display naming. Parameters
+   * still travel packed into one base64url value so nested URLs survive.
    *
    * The link on the page, the one a person reads and copies, is untouched.
    */
-  function clientHandoffUrl(subscriptionPath: string): string {
+  function clientHandoffUrl(
+    subscriptionPath: string,
+    forTarget = target,
+    name = profileName.trim() || selectedTarget.short_label,
+  ): string {
     const separator = subscriptionPath.indexOf("?");
     if (separator < 0) {
       return absoluteLocalUrl(subscriptionPath, subscriptionBaseUrl);
     }
     const packed = packStatelessQuery(subscriptionPath.slice(separator + 1));
     return absoluteLocalUrl(
-      `${CLIENT_IMPORT_PATH}?${packed}`,
+      clientImportPath(forTarget, name, packed),
       subscriptionBaseUrl,
     );
   }
@@ -479,13 +475,17 @@ export function Workbench({
   /**
    * One code, whoever is pointing at it.
    *
-   * It carries the `/i` address, which answers a client with the file it came
-   * for and a browser with a page that hands the file to the client. The two
-   * scanners want opposite things — a client's scan entry stores an address, a
-   * camera opens one — and nobody should have to know which of those their own
-   * phone is about to do.
+   * It carries the `/i` address, named as a `.conf` where the target needs that
+   * signal. A client receives the file; a camera opens the bridge page. Nobody
+   * has to choose a second QR code or remember which scanner is in use.
    */
-  const qrValue = qrProfile ? clientHandoffUrl(qrProfile.subscriptionPath) : "";
+  const qrValue = qrProfile
+    ? clientHandoffUrl(
+        qrProfile.subscriptionPath,
+        qrProfile.target,
+        qrProfile.name,
+      )
+    : "";
 
   // The link is the product, so it reads the way a config file does: one
   // parameter per line, coloured by what that parameter decides.
@@ -555,15 +555,15 @@ export function Workbench({
         window.localStorage.getItem(SOURCE_HISTORY_KEY) || "[]",
       );
       if (!Array.isArray(parsed)) return;
-      const entries = parsed
-        .filter(
+      const entries = dedupeSavedLinks(
+        parsed.filter(
           (entry): entry is SavedLink =>
             Boolean(entry) &&
             typeof entry === "object" &&
             typeof (entry as SavedLink).link === "string" &&
             (entry as SavedLink).link.startsWith("http"),
-        )
-        .slice(0, SAVED_LINK_LIMIT);
+        ),
+      ).slice(0, SAVED_LINK_LIMIT);
       if (entries.length) setSavedLinks(entries);
     } catch {
       /* unreadable or absent; start empty */
@@ -580,17 +580,21 @@ export function Workbench({
     ) => {
       const value = link.trim();
       if (!value.startsWith("http")) return;
+      const nextEntry: SavedLink = {
+        name: name.trim() || `记录 ${savedLinks.length + 1}`,
+        link: value,
+        target: forTarget,
+        options: describeOptions(options),
+        restore,
+        createdAt: Date.now(),
+      };
+      const identity = savedLinkIdentity(nextEntry);
       writeSavedLinks(
         [
-          {
-            name: name.trim() || `记录 ${savedLinks.length + 1}`,
-            link: value,
-            target: forTarget,
-            options: describeOptions(options),
-            restore,
-            createdAt: Date.now(),
-          },
-          ...savedLinks.filter((entry) => entry.link !== value),
+          nextEntry,
+          ...savedLinks.filter(
+            (entry) => savedLinkIdentity(entry) !== identity,
+          ),
         ].slice(0, SAVED_LINK_LIMIT),
       );
     },
@@ -1786,13 +1790,13 @@ export function Workbench({
                     value={remoteConfigId}
                     onChange={setRemoteConfigId}
                     options={[
-                      ...selectableRemoteConfigOptions.map((option) => ({
+                      ...remoteConfigOptions.map((option) => ({
                         value: option.id,
                         label: option.label,
                         hint: option.description,
                         section: option.builtin ? "本项目" : "第三方规则",
                       })),
-                      ...(allowCustomRemoteConfigForTarget
+                      ...(allowCustomRemoteConfig
                         ? [
                             {
                               value: "__custom__",
@@ -1822,7 +1826,7 @@ export function Workbench({
                 ) : null}
                 {target === "shadowrocket" ? (
                   <small className="remote-config-note">
-                    Shadowrocket 原生配置当前支持 Ekko Rules 完整版与精简版；第三方配置后续单独适配。
+                    Shadowrocket 会把所选远程配置的策略组、规则和节点转换为原生配置；第三方模板仍保留自己的分组与默认顺序。
                   </small>
                 ) : null}
               </div>
