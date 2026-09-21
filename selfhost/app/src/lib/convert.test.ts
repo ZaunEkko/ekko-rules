@@ -435,9 +435,8 @@ test("leaves an already clean list, and anything unrecognised, byte-identical", 
 });
 
 test("asks the provider the way the output reads when the caller is another family", () => {
-  // Shadowrocket receives a Mihomo config, so a provider that switches format
-  // by agent still has to be asked as Mihomo — otherwise the conversion has
-  // nothing to build from. Nobody has to configure this.
+  // Shadowrocket's native config is supplemented from a Mihomo node pass, so a
+  // provider that switches format by agent still has to be asked as Mihomo.
   assert.equal(
     selectUpstreamUserAgent("shadowrocket", "", "Shadowrocket/2.2.70"),
     "clash.meta",
@@ -481,8 +480,8 @@ test("asks the provider the way the output reads when the caller is another fami
 
 test("asks a second time as the target's own client when the first answer is unusable", () => {
   // One provider answers Stash with an error page and Mihomo with a node
-  // list; another answers Shadowrocket with a legacy list where the requested
-  // output needs a Clash document. Both reached the visitor as a bare 502, so
+  // list; another answers Shadowrocket with a legacy list where the native
+  // renderer needs rich node fields. Both reached the visitor as a bare 502, so
   // a refused or unusable first answer is followed by one more question.
   assert.deepEqual(
     upstreamUserAgentAttempts("clash", "", "Stash/3.1.0 Clash/1.10.0"),

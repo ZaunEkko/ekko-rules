@@ -26,17 +26,15 @@ test("publishes the complete-config client targets", () => {
   assert.deepEqual(targetDefinition("surge").engineParams, { ver: "4" });
 });
 
-test("Shadowrocket is served the Mihomo file, not a node list", () => {
-  // Its configuration entry reads Clash YAML, so the rules travel with the
-  // nodes. Everything keyed on "the body is a Mihomo config" must see it.
-  assert.equal(targetDefinition("shadowrocket").engineTarget, "clash");
-  assert.equal(targetDefinition("shadowrocket").extension, "yaml");
-  assert.equal(usesMihomoOutput("shadowrocket"), true);
+test("Shadowrocket is served a native sectioned config", () => {
+  assert.equal(targetDefinition("shadowrocket").engineTarget, "surge");
+  assert.deepEqual(targetDefinition("shadowrocket").engineParams, { ver: "4" });
+  assert.equal(targetDefinition("shadowrocket").extension, "conf");
+  assert.equal(usesMihomoOutput("shadowrocket"), false);
   assert.equal(usesMihomoOutput("clash"), true);
   assert.equal(usesMihomoOutput("singbox"), false);
   assert.equal(usesMihomoOutput("surge"), false);
-  // Nothing has been confirmed against the client itself, so the page must not
-  // inherit Mihomo's verified-protocol claim.
+  // Structural retention does not claim a live connection verification.
   assert.deepEqual(
     targetDefinition("shadowrocket").verifiedModernProtocols,
     [],

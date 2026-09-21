@@ -33,6 +33,7 @@ import {
   stripProxyProviders,
 } from "./proxy-providers";
 import { parseRemoteConfigPresets } from "./remote-configs";
+import { buildShadowrocketConfig } from "./shadowrocket";
 
 export type ConvertRequest = {
   subscriptionUrl: string;
@@ -100,9 +101,9 @@ export function sanitizeSourceUserAgent(
 const DEFAULT_UPSTREAM_USER_AGENTS: Record<TargetFormat, string> = {
   clash: "clash.meta",
   singbox: "sing-box",
-  // Not "Shadowrocket": this target hands the client a Mihomo config, and a
-  // provider that serves a legacy base64 list to Shadowrocket would strip the
-  // very fields that config is built from. Ask the way the output reads.
+  // The native Shadowrocket config is assembled from a lossless Mihomo node
+  // pass. Asking a provider as Shadowrocket can instead return a reduced legacy
+  // list that has already discarded fields needed by that pass.
   shadowrocket: "clash.meta",
   surge: "Surge",
   quanx: "Quantumult X",
@@ -118,9 +119,9 @@ const DEFAULT_UPSTREAM_USER_AGENTS: Record<TargetFormat, string> = {
  * Passing the requesting client's own agent upstream buys something real: a
  * provider that answers only to clients it knows sees one, instead of seeing a
  * converter. But it buys that only while the client asking and the file being
- * built are the same family. Shadowrocket asks as itself and is handed a
- * Mihomo config; a provider that switches format by agent then answers with a
- * legacy node list, which is not what that file is built from. Measured
+ * built are the same family. Shadowrocket needs a lossless Mihomo node pass;
+ * a provider that switches format by agent can instead answer with a legacy
+ * node list that has already lost required fields. Measured
  * against one provider: as `clash.meta` a 49 KB Clash document, as
  * `Shadowrocket/2.2.70` a 22 KB base64 list, and the conversion fails on the
  * second.
@@ -132,7 +133,7 @@ const DEFAULT_UPSTREAM_USER_AGENTS: Record<TargetFormat, string> = {
  */
 const CLIENT_FAMILY_PATTERNS: Record<TargetFormat, RegExp> = {
   clash: /clash|mihomo|meta|stash|flclash/i,
-  // Its output is a Mihomo config, so only a Mihomo-shaped agent may pass.
+  // Its native config still depends on a lossless Mihomo node pass.
   shadowrocket: /clash|mihomo|meta/i,
   singbox: /sing-?box|sfa|sfi|sfm|sfw/i,
   surge: /surge/i,
@@ -1233,6 +1234,28 @@ export async function convertSubscription(
       const nodeBody = nodeResponse.body;
       body = inlineMihomoProviderNodes(body, nodeBody);
     }
+    if (request.target === "shadowrocket" && outputMode === "complete") {
+      // This second engine pass reads the same gateway-staged input file; it
+      // does not pull the provider subscription a second time. Only the output
+      // dialect changes so the native skeleton can recover rich node fields.
+      const nodeEndpoint = new URL(endpoint);
+      nodeEndpoint.searchParams.set("target", "clash");
+      nodeEndpoint.searchParams.delete("ver");
+      nodeEndpoint.searchParams.set("list", "true");
+      const nodeResponse = await requestTextWithLimits(nodeEndpoint.toString(), {
+        method: "GET",
+        timeoutMs: remainingMs(),
+        maxBytes: runtime.maxSubscriptionBytes * 4,
+        requestLabel: "Shadowrocket node conversion",
+        headers: { "user-agent": "clash.meta" },
+      });
+      if (!nodeResponse.ok) {
+        throw new Error(
+          `Shadowrocket node conversion failed with HTTP ${nodeResponse.status}.`,
+        );
+      }
+      body = buildShadowrocketConfig(body, nodeResponse.body);
+    }
     assertConvertedBody(body, request.target, outputMode);
     body = applyTargetOutputOptions(body, request.target, convertOptions);
     if (usesMihomoOutput(request.target)) {
@@ -1326,8 +1349,35 @@ function assertConvertedBody(
     return;
   }
 
+  if (target === "shadowrocket") {
+    const required = ["[Proxy]", "[Proxy Group]", "[Rule]"];
+    const lines = body.replace(/\r\n/g, "\n").split("\n");
+    const groupStart = lines.indexOf("[Proxy Group]");
+    const ruleStart = lines.indexOf("[Rule]");
+    const selectGroups = groupStart < 0 || ruleStart <= groupStart
+      ? []
+      : lines.slice(groupStart + 1, ruleStart).filter((line) => {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith(";")) {
+            return false;
+          }
+          const separator = line.indexOf("=");
+          return separator > 0 && /^\s*select\s*,/i.test(line.slice(separator + 1));
+        });
+    if (
+      !required.every((marker) => body.includes(marker)) ||
+      !selectGroups.length ||
+      selectGroups.some((line) => !/policy-select-name=/i.test(line))
+    ) {
+      throw new Error(
+        "Conversion result is not a complete native Shadowrocket config.",
+      );
+    }
+    return;
+  }
+
   const markers: Record<
-    Exclude<TargetFormat, MihomoTarget | "singbox">,
+    Exclude<TargetFormat, MihomoTarget | "singbox" | "shadowrocket">,
     string[]
   > = {
     surge: ["[Proxy]", "[Proxy Group]", "[Rule]"],

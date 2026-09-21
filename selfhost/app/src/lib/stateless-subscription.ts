@@ -7,7 +7,11 @@ import {
   safeLog,
 } from "./convert";
 import { rateLimitResponseHeaders } from "./rate-limit";
-import { isCustomRemoteConfig, resolveRemoteConfig } from "./remote-configs";
+import {
+  isCustomRemoteConfig,
+  isRemoteConfigTargetSupported,
+  resolveRemoteConfig,
+} from "./remote-configs";
 import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "./request-guard";
 import { recordMetric } from "./metrics";
 import { parseStatelessConvertQuery } from "./stateless-request";
@@ -41,6 +45,11 @@ export async function serveStatelessSubscription(
       runtimeConfig.remoteConfigs,
       runtimeConfig.allowCustomRemoteConfig,
     );
+    if (!isRemoteConfigTargetSupported(preset, parsed.target)) {
+      throw new Error(
+        "remoteConfig is not supported for Shadowrocket; use Ekko Rules or Ekko Rules 精简.",
+      );
+    }
 
     const result = await convertSubscription(
       {
