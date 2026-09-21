@@ -19,7 +19,7 @@ export const TARGET_DEFINITIONS = {
   },
   shadowrocket: {
     label: "Shadowrocket",
-    shortLabel: "小火箭",
+    shortLabel: "Shadowrocket",
     // Shadowrocket reads Clash YAML as a configuration file, and a Clash link
     // that carries nodes imports the configuration and the nodes together
     // (Shadowrocket 使用手册 · 配置文件). So this target is the Mihomo output,
@@ -36,7 +36,8 @@ export const TARGET_DEFINITIONS = {
     // output keeps, but which of them Shadowrocket's own YAML parser accepts
     // has not been confirmed against the client here. The page says "依客户端
     // 能力输出" instead of claiming a verification nobody ran.
-    protocolNote: "与 Clash / Mihomo 同一份配置，节点能不能跑取决于小火箭自己的解析",
+    protocolNote:
+      "与 Clash / Mihomo 同一份配置，节点能不能跑取决于 Shadowrocket 自己的解析",
     verifiedModernProtocols: [],
   },
   singbox: {

@@ -7,6 +7,7 @@ import {
 import {
   buildStatelessConvertQuery,
   buildStatelessSubscriptionUrl,
+  packStatelessQuery,
   parseStatelessConvertQuery,
 } from "./stateless-request";
 
@@ -147,4 +148,42 @@ test("an omitted parameter keeps the meaning it had when the link was made", () 
   );
   assert.equal(written.get("udp"), "true");
   assert.equal(written.get("xudp"), "true");
+});
+
+test("a packed link survives a client that re-reads the address its own way", () => {
+  // The failure it exists for: inside `clash://install-config?url=…` a client
+  // kept only what preceded the provider's own `?`, which dropped the token
+  // and left a profile that fetched nothing. Packed, the address has no `?`,
+  // no `&` and no escapes of its own.
+  const query = buildStatelessConvertQuery({
+    subscriptionUrl: "https://provider.example/api/v1/client/subscribe?token=abc123",
+    target: "shadowrocket",
+    options: { ...DEFAULT_CONVERT_OPTIONS, udp: true },
+    name: "laomao",
+  });
+  const packed = packStatelessQuery(query);
+  assert.match(packed, /^p=[A-Za-z0-9_-]+$/);
+
+  const parsed = parseStatelessConvertQuery(new URLSearchParams(packed));
+  assert.equal(
+    parsed.subscriptionUrl,
+    "https://provider.example/api/v1/client/subscribe?token=abc123",
+  );
+  assert.equal(parsed.target, "shadowrocket");
+  assert.equal(parsed.options.udp, true);
+  assert.equal(parsed.name, "laomao");
+
+  // Same request either way.
+  assert.deepEqual(parsed, parseStatelessConvertQuery(new URLSearchParams(query)));
+});
+
+test("a packed link that arrives damaged is refused rather than half-read", () => {
+  assert.throws(
+    () => parseStatelessConvertQuery(new URLSearchParams("p=not base64!")),
+    /supported subscription link/i,
+  );
+  assert.throws(
+    () => parseStatelessConvertQuery(new URLSearchParams("p=dGFyZ2V0PWNsYXNo")),
+    /subscriptionUrl is required/i,
+  );
 });
