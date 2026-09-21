@@ -41,12 +41,14 @@ export const TARGET_DEFINITIONS = {
     clientFamily: "Shadowrocket（配置文件读 Clash YAML）",
     clientExamples: ["Shadowrocket"],
     tier: "mainstream",
-    // Deliberately empty: the file keeps the same modern protocols the Mihomo
-    // output keeps, but which of them Shadowrocket's own YAML parser accepts
-    // has not been confirmed against the client here. The page says "依客户端
-    // 能力输出" instead of claiming a verification nobody ran.
+    // Confirmed on a device on 2026-09-21: scanning the code with the phone's
+    // camera installed the configuration and its nodes together, through the
+    // client's own configuration entry. What is still unconfirmed is narrower
+    // — which modern protocols its YAML parser accepts — so the list below
+    // stays empty and the page says "依客户端能力输出" rather than claiming a
+    // protocol verification nobody ran.
     protocolNote:
-      "与 Clash / Mihomo 同一份配置，节点能不能跑取决于 Shadowrocket 自己的解析",
+      "与 Clash / Mihomo 同一份配置；真机已确认配置与节点一并导入，具体协议看 Shadowrocket 自己的解析",
     verifiedModernProtocols: [],
   },
   singbox: {

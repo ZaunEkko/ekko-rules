@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 得到的字节与 Clash / Mihomo 那份完全相同：它的「配置文件」兼容 Clash YAML，含节点的配置一次导入就同时带进节点与规则，所以这里不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉。哪些现代协议能被 Shadowrocket 自己的 YAML 解析接受，未在真机上核对过，页面因此不给它挂「现代协议已验证」。
+Shadowrocket 得到的字节与 Clash / Mihomo 那份完全相同：它的「配置文件」兼容 Clash YAML，含节点的配置一次导入就同时带进节点与规则，所以这里不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉。真机已核对（2026-09-21）：系统相机扫码后经它自己的「配置文件」入口导入，配置与节点一并进入。仍未逐个核对的是哪些现代协议能被它的 YAML 解析接受，页面因此不给它挂「现代协议已验证」。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 
