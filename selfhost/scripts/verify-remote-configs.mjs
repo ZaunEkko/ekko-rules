@@ -24,6 +24,9 @@ const composeEnv = {
 
 const TARGET_MARKERS = {
   clash: ["proxies:", "proxy-groups:", "rules:"],
+  // The same Mihomo file, installed through Shadowrocket's configuration
+  // entry: a third-party rule config has to produce it just as completely.
+  shadowrocket: ["proxies:", "proxy-groups:", "rules:"],
   singbox: ['"outbounds"', '"route"'],
   surge: ["[Proxy]", "[Proxy Group]", "[Rule]"],
   quanx: ["[server_local]", "[policy]", "[filter_local]"],
@@ -87,7 +90,10 @@ function assertComplete(body, target, label) {
   if (missing.length) {
     throw new Error(`${label}: output is missing ${missing.join(", ")}`);
   }
-  if (target === "clash" && body.includes("proxy-providers:")) {
+  if (
+    (target === "clash" || target === "shadowrocket") &&
+    body.includes("proxy-providers:")
+  ) {
     throw new Error(`${label}: output still delegates nodes to a provider`);
   }
   if (!body.includes("fixture")) {

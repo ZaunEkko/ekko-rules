@@ -13,6 +13,8 @@ import {
 import {
   isSupportedTarget,
   targetDefinition,
+  usesMihomoOutput,
+  type MihomoTarget,
   type TargetFormat,
 } from "./capabilities";
 import {
@@ -98,6 +100,10 @@ export function sanitizeSourceUserAgent(
 const DEFAULT_UPSTREAM_USER_AGENTS: Record<TargetFormat, string> = {
   clash: "clash.meta",
   singbox: "sing-box",
+  // Not "Shadowrocket": this target hands the client a Mihomo config, and a
+  // provider that serves a legacy base64 list to Shadowrocket would strip the
+  // very fields that config is built from. Ask the way the output reads.
+  shadowrocket: "clash.meta",
   surge: "Surge",
   quanx: "Quantumult X",
   loon: "Loon",
@@ -1044,7 +1050,9 @@ export async function convertSubscription(
       timeoutMs: remainingMs(),
       maxBytes: runtime.maxSubscriptionBytes * 4,
       requestLabel: "Complete conversion",
-      headers: request.target === "clash" ? { "user-agent": "clash.meta" } : {},
+      headers: usesMihomoOutput(request.target)
+        ? { "user-agent": "clash.meta" }
+        : {},
     });
     if (!converted.ok) {
       throw new Error(`Conversion failed with HTTP ${converted.status}.`);
@@ -1052,7 +1060,7 @@ export async function convertSubscription(
 
     let body = converted.body;
     if (
-      request.target === "clash" &&
+      usesMihomoOutput(request.target) &&
       outputMode === "complete" &&
       body.includes("proxy-providers:")
     ) {
@@ -1073,7 +1081,7 @@ export async function convertSubscription(
     }
     assertConvertedBody(body, request.target, outputMode);
     body = applyTargetOutputOptions(body, request.target, convertOptions);
-    if (request.target === "clash") {
+    if (usesMihomoOutput(request.target)) {
       // Last stop before the client parses it. A credential the engine wrote
       // back unquoted would be reinterpreted there instead of here.
       body = quoteCredentialsForClient(body);
@@ -1140,7 +1148,7 @@ function assertConvertedBody(
     return;
   }
 
-  if (target === "clash") {
+  if (usesMihomoOutput(target)) {
     if (
       !body.includes("proxies:") ||
       body.includes("proxy-providers:") ||
@@ -1164,7 +1172,10 @@ function assertConvertedBody(
     return;
   }
 
-  const markers: Record<Exclude<TargetFormat, "clash" | "singbox">, string[]> = {
+  const markers: Record<
+    Exclude<TargetFormat, MihomoTarget | "singbox">,
+    string[]
+  > = {
     surge: ["[Proxy]", "[Proxy Group]", "[Rule]"],
     quanx: ["[server_local]", "[policy]", "[filter_local]"],
     loon: ["[Proxy]", "[Proxy Group]", "[Rule]"],

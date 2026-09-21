@@ -17,6 +17,28 @@ export const TARGET_DEFINITIONS = {
       "VLESS Reality",
     ],
   },
+  shadowrocket: {
+    label: "Shadowrocket",
+    shortLabel: "小火箭",
+    // Shadowrocket reads Clash YAML as a configuration file, and a Clash link
+    // that carries nodes imports the configuration and the nodes together
+    // (Shadowrocket 使用手册 · 配置文件). So this target is the Mihomo output,
+    // handed over through the client's own configuration entry rather than
+    // through the node-subscription entry, which would carry no rules at all.
+    engineTarget: "clash",
+    engineParams: {},
+    extension: "yaml",
+    contentType: "text/yaml; charset=utf-8",
+    clientFamily: "Shadowrocket（配置文件读 Clash YAML）",
+    clientExamples: ["Shadowrocket"],
+    tier: "mainstream",
+    // Deliberately empty: the file keeps the same modern protocols the Mihomo
+    // output keeps, but which of them Shadowrocket's own YAML parser accepts
+    // has not been confirmed against the client here. The page says "依客户端
+    // 能力输出" instead of claiming a verification nobody ran.
+    protocolNote: "与 Clash / Mihomo 同一份配置，节点能不能跑取决于小火箭自己的解析",
+    verifiedModernProtocols: [],
+  },
   singbox: {
     label: "sing-box",
     shortLabel: "sing-box",
@@ -123,6 +145,26 @@ export const SUPPORTED_TARGETS = Object.keys(
 
 export function isSupportedTarget(value: string): value is TargetFormat {
   return Object.hasOwn(TARGET_DEFINITIONS, value);
+}
+
+/**
+ * Targets whose body is a Mihomo configuration file. Derived from the table
+ * above rather than listed again, so a new client that reads the same YAML
+ * joins this set by declaring its engine target and nothing else.
+ */
+export type MihomoTarget = {
+  [Key in TargetFormat]: (typeof TARGET_DEFINITIONS)[Key]["engineTarget"] extends "clash"
+    ? Key
+    : never;
+}[TargetFormat];
+
+/**
+ * Shadowrocket imports the same YAML through its configuration entry, so every
+ * step that exists because the output is Mihomo — the provider inlining, the
+ * credential quoting, the completeness check — has to run for it too.
+ */
+export function usesMihomoOutput(target: TargetFormat): target is MihomoTarget {
+  return TARGET_DEFINITIONS[target].engineTarget === "clash";
 }
 
 export function targetDefinition(target: TargetFormat) {
