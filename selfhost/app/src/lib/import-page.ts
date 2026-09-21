@@ -15,6 +15,32 @@ import { targetDefinition, type TargetFormat } from "./capabilities";
  * probably about to leave it again.
  */
 
+/**
+ * The address to put in front of the client.
+ *
+ * `request.url` is the address this process was reached at, which behind a
+ * reverse proxy is the container's own bind address — a client handed
+ * `https://0.0.0.0:3000/i?…` imports a profile that can never refresh. So the
+ * page is built from the origin the deployment publishes, the same one the
+ * page's own links use, and falls back to the request only when none is set
+ * (a personal deployment reached directly).
+ */
+export function importPageAddress(
+  publicBaseUrl: string,
+  requestUrl: URL,
+): string {
+  const base = (publicBaseUrl || "").trim();
+  if (!base) return requestUrl.toString();
+  try {
+    return new URL(
+      `${requestUrl.pathname}${requestUrl.search}`,
+      base,
+    ).toString();
+  } catch {
+    return requestUrl.toString();
+  }
+}
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
