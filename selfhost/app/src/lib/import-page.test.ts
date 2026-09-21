@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { renderImportPage } from "./import-page";
+import { importPageAddress, renderImportPage } from "./import-page";
 
 const address =
   "https://sub.example.test/i?p=dXJsPWh0dHBzJTNBJTJGJTJGcHJvdmlkZXI&x=1";
@@ -53,4 +53,20 @@ test("puts nothing on the page that could rewrite it", () => {
   assert.match(page, /&lt;script&gt;alert\(2\)&lt;\/script&gt;/);
   // Inside the script the same value is a JSON string with no way out of it.
   assert.doesNotMatch(page, /var address = "[^"]*<\/script>/);
+});
+
+test("builds the address from the origin the site publishes, not the one it was reached at", () => {
+  // Behind the reverse proxy the request arrives at the container's own bind
+  // address. Handing that to a client imports a profile that can never
+  // refresh — which is exactly what the first deploy of this page did.
+  const reached = new URL("https://0.0.0.0:3000/i?p=dXJs&x=1");
+  assert.equal(
+    importPageAddress("https://sub.example.test", reached),
+    "https://sub.example.test/i?p=dXJs&x=1",
+  );
+  // A personal deployment publishes no origin and is reached directly.
+  assert.equal(importPageAddress("", reached), reached.toString());
+  assert.equal(importPageAddress("   ", reached), reached.toString());
+  // An origin that cannot be parsed is not worth failing the page over.
+  assert.equal(importPageAddress("not an origin", reached), reached.toString());
 });

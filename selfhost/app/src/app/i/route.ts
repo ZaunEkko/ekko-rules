@@ -1,10 +1,18 @@
 import { NextResponse } from "next/server";
 import { looksLikeBrowserNavigation } from "@/lib/browser-request";
-import { publicErrorMessage, publicErrorStatus, safeLog } from "@/lib/convert";
-import { renderImportPage } from "@/lib/import-page";
+import {
+  getRuntimeConfig,
+  publicErrorMessage,
+  publicErrorStatus,
+  safeLog,
+} from "@/lib/convert";
+import { importPageAddress, renderImportPage } from "@/lib/import-page";
 import { rateLimitResponseHeaders } from "@/lib/rate-limit";
 import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "@/lib/request-guard";
-import { parseStatelessConvertQuery } from "@/lib/stateless-request";
+import {
+  parseStatelessConvertQuery,
+  STATELESS_SUBSCRIPTION_PATH,
+} from "@/lib/stateless-request";
 import { serveStatelessSubscription } from "@/lib/stateless-subscription";
 
 export const runtime = "nodejs";
@@ -42,14 +50,21 @@ export async function GET(request: Request) {
     // Parsed for the same reasons the conversion parses it: an address this
     // page cannot describe is one it must not offer to install.
     const parsed = parseStatelessConvertQuery(url.searchParams);
-    const downloadUrl = `/sub${url.search}`;
+    // Not `request.url`: behind the reverse proxy that is the container's own
+    // bind address, and the client would be handed `https://0.0.0.0:3000/i?…`
+    // — a profile that can never refresh. The deployment's own origin is the
+    // one every other address on this site is built from.
+    const address = importPageAddress(
+      getRuntimeConfig().subscriptionBaseUrl,
+      url,
+    );
     safeLog("import.page", { target: parsed.target });
     return new NextResponse(
       renderImportPage({
         target: parsed.target,
-        subscriptionUrl: url.toString(),
+        subscriptionUrl: address,
         name: parsed.name,
-        downloadUrl,
+        downloadUrl: `${STATELESS_SUBSCRIPTION_PATH}${url.search}`,
       }),
       {
         status: 200,
