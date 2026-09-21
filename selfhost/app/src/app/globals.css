@@ -702,6 +702,12 @@ html[data-shell] body {
   color: var(--ink-soft);
 }
 [data-shell] .open-client-note b { color: var(--ink); }
+[data-shell] .open-client-note code {
+  font-family: var(--mono);
+  font-size: .95em;
+  color: var(--ink);
+  word-break: break-all;
+}
 
 /* the form, read as a config document ------------------------------------- */
 

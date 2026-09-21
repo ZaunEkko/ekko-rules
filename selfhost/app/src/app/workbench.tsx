@@ -10,6 +10,7 @@ import {
 } from "@/lib/options";
 import {
   clientInstallLabel,
+  clientInstallQrHint,
   qrImportValue,
   supportsClientInstallQr,
 } from "@/lib/qr-import";
@@ -359,12 +360,30 @@ export function Workbench({
   const compatibilityTargets = targets.filter(
     (item) => item.tier === "compatibility",
   );
-  const supportsXudp = target === "clash" || target === "singbox";
+  // Mihomo-shaped outputs carry `packet-encoding`, and Shadowrocket is handed
+  // the same file, so the switch stays meaningful there too.
+  const supportsXudp =
+    target === "clash" || target === "shadowrocket" || target === "singbox";
   const enabledOptionCount = countEnabledOptions({
     ...convertOptions,
     xudp: supportsXudp && convertOptions.xudp,
     singboxIpv6: target === "singbox" && convertOptions.singboxIpv6,
   });
+  // Shadowrocket keeps nodes and configurations in two different places, and
+  // pasting this link into the wrong one silently drops every rule. It also
+  // brings its own DNS rather than reading the one in the file, so the promise
+  // made elsewhere on this page ("DNS 也配好了") does not hold there.
+  const shadowrocketNote =
+    target === "shadowrocket" ? (
+      <p className="open-client-note">
+        <b>小火箭要从「配置」进，不是「订阅」。</b>
+        一键按钮和二维码给的是 <code>shadowrocket://config/add/</code>，落在「配置」
+        页里，点一下使用即可；把同一条链接贴进首页的「添加订阅」只会拿到节点，规则不会
+        跟过去。它也不读 Clash 的 <code>dns:</code> 段，DNS 走小火箭自己的设置，节点、
+        策略组与分流规则照常带入。
+      </p>
+    ) : null;
+
   const engineOk = Boolean(health?.subconverter_reachable);
   // Two shapes only: the personal deployment stores fixed addresses, the open
   // one stores nothing and puts every choice in the visitor own link. Which
@@ -1267,6 +1286,7 @@ export function Workbench({
                 导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
                 确实清楚自己在调什么再接管。
               </p>
+              {shadowrocketNote}
             </div>
 
             <dl className="open-facts">
@@ -1823,6 +1843,7 @@ export function Workbench({
                   导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
                   确实清楚自己在调什么再接管。
                 </p>
+                {shadowrocketNote}
               </div>
             )}
 
@@ -2135,11 +2156,7 @@ export function Workbench({
             <div className="qr-card">
               <div>
                 <strong>{qrProfile.name}</strong>
-                <span>
-                  {clientInstallQrAvailable
-                    ? "用系统相机或客户端的扫码入口都可以，扫到后选择 Clash / Mihomo 打开。"
-                    : "请在客户端的“从 QR 码导入”入口扫描。"}
-                </span>
+                <span>{clientInstallQrHint(qrProfile.target)}</span>
               </div>
               <QRCodeSVG
                 value={qrValue}
@@ -2163,7 +2180,9 @@ export function Workbench({
                 </div>
               ) : null}
               <small className="qr-note">
-                客户端会把它存成可刷新的 URL 订阅，之后规则更新不用重新扫。
+                {/* Not "订阅": Shadowrocket files this under configurations,
+                    which it refreshes from the same address. */}
+                客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。
               </small>
               <button type="button" className="secondary-button" onClick={() => setQrProfile(null)}>关闭</button>
             </div>

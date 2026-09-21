@@ -5,12 +5,14 @@ import {
   buildCapabilitiesPayload,
   isSupportedTarget,
   targetDefinition,
+  usesMihomoOutput,
 } from "./capabilities";
 import { parseConvertRequest } from "./convert";
 
 test("publishes the complete-config client targets", () => {
   assert.deepEqual(SUPPORTED_TARGETS, [
     "clash",
+    "shadowrocket",
     "singbox",
     "surge",
     "quanx",
@@ -24,9 +26,26 @@ test("publishes the complete-config client targets", () => {
   assert.deepEqual(targetDefinition("surge").engineParams, { ver: "4" });
 });
 
+test("Shadowrocket is served the Mihomo file, not a node list", () => {
+  // Its configuration entry reads Clash YAML, so the rules travel with the
+  // nodes. Everything keyed on "the body is a Mihomo config" must see it.
+  assert.equal(targetDefinition("shadowrocket").engineTarget, "clash");
+  assert.equal(targetDefinition("shadowrocket").extension, "yaml");
+  assert.equal(usesMihomoOutput("shadowrocket"), true);
+  assert.equal(usesMihomoOutput("clash"), true);
+  assert.equal(usesMihomoOutput("singbox"), false);
+  assert.equal(usesMihomoOutput("surge"), false);
+  // Nothing has been confirmed against the client itself, so the page must not
+  // inherit Mihomo's verified-protocol claim.
+  assert.deepEqual(
+    targetDefinition("shadowrocket").verifiedModernProtocols,
+    [],
+  );
+});
+
 test("capabilities describe restart-safe local subscription profiles", () => {
   const payload = buildCapabilitiesPayload();
-  assert.equal(payload.supported_targets.length, 8);
+  assert.equal(payload.supported_targets.length, 9);
   assert.equal(payload.profile_behavior.survives_restart, true);
   assert.equal(payload.profile_behavior.stores_generated_configs, false);
   assert.equal(payload.profile_behavior.auto_update_default, false);
