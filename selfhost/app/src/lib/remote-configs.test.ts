@@ -4,6 +4,7 @@ import {
   BUILTIN_REMOTE_CONFIG_ID,
   LITE_REMOTE_CONFIG_ID,
   isCustomRemoteConfig,
+  isRemoteConfigTargetSupported,
   parseRemoteConfigPresets,
   resolveRemoteConfig,
 } from "./remote-configs";
@@ -119,4 +120,19 @@ test("a deployment can still refuse pasted config URLs", () => {
     () => resolveRemoteConfig("https://example.test/own.ini", presets, false),
     /remoteConfig is not an available option/,
   );
+});
+
+test("limits native Shadowrocket output to the two built-in Ekko configs", () => {
+  const presets = parseRemoteConfigPresets(undefined, FIXED);
+  const full = presets.find((preset) => preset.id === BUILTIN_REMOTE_CONFIG_ID)!;
+  const lite = presets.find((preset) => preset.id === LITE_REMOTE_CONFIG_ID)!;
+  const thirdParty = presets.find((preset) => !preset.builtin)!;
+
+  assert.equal(isRemoteConfigTargetSupported(full, "shadowrocket"), true);
+  assert.equal(isRemoteConfigTargetSupported(lite, "shadowrocket"), true);
+  assert.equal(
+    isRemoteConfigTargetSupported(thirdParty, "shadowrocket"),
+    false,
+  );
+  assert.equal(isRemoteConfigTargetSupported(thirdParty, "clash"), true);
 });

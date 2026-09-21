@@ -48,9 +48,7 @@ const modernLinks = [
 
 const targetMarkers = {
   clash: ["proxies:", "proxy-groups:", "rules:"],
-  // Shadowrocket is handed the same Mihomo file through its configuration
-  // entry, so it has to pass the same completeness check.
-  shadowrocket: ["proxies:", "proxy-groups:", "rules:"],
+  shadowrocket: ["[Proxy]", "[Proxy Group]", "[Rule]"],
   singbox: ['"outbounds"', '"route"'],
   surge: ["[Proxy]", "[Proxy Group]", "[Rule]"],
   quanx: ["[server_local]", "[policy]", "[filter_local]"],
@@ -272,6 +270,54 @@ async function assertModernProtocolLinks() {
       }));
     }
   }
+}
+
+async function assertShadowrocketNativeOutput() {
+  const response = await fetch(`${baseUrl}/api/convert`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      subscriptionUrl:
+        "http://fixture:8080/shadowrocket-modern-subscription.txt",
+      target: "shadowrocket",
+    }),
+  });
+  const output = await response.text();
+  if (!response.ok) {
+    throw new Error(
+      `Shadowrocket native conversion failed: HTTP ${response.status} ${output}`,
+    );
+  }
+
+  const required = [
+    "fixture-anytls-link = anytls",
+    "fixture-hysteria2-link = hysteria2",
+    "fixture-tuic-link = tuic",
+    "fixture-vless-reality = vless",
+    "pbk=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg",
+    "♻️ 手动切换 = select,DIRECT",
+    "policy-select-name=DIRECT",
+    "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
+    "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
+    "policy-select-name=REJECT",
+    "🧲 OpenAI = select,♻️ 手动切换,DIRECT",
+    "policy-select-name=♻️ 手动切换",
+  ];
+  const missing = required.filter((marker) => !output.includes(marker));
+  if (missing.length) {
+    throw new Error(
+      `Shadowrocket native output missing: ${missing.join(", ")}`,
+    );
+  }
+  if (/^DIRECT\s*=\s*direct\s*$/m.test(output) || /^proxies:\s*$/m.test(output)) {
+    throw new Error("Shadowrocket output still contains the lossy Clash shape.");
+  }
+  console.log(JSON.stringify({
+    phase: "shadowrocket-native",
+    special_policies: true,
+    nested_groups: true,
+    modern_nodes: modernLinks.map((item) => item.protocol),
+  }));
 }
 
 async function assertGatewayModernProtocolSubscriptions() {
@@ -558,6 +604,7 @@ async function main() {
   }
 
   await assertModernProtocolLinks();
+  await assertShadowrocketNativeOutput();
   await assertGatewayModernProtocolSubscriptions();
   await assertUserAgentFallback();
   await assertDefaultNodeOrderAndEmoji();

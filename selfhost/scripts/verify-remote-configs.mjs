@@ -24,9 +24,7 @@ const composeEnv = {
 
 const TARGET_MARKERS = {
   clash: ["proxies:", "proxy-groups:", "rules:"],
-  // The same Mihomo file, installed through Shadowrocket's configuration
-  // entry: a third-party rule config has to produce it just as completely.
-  shadowrocket: ["proxies:", "proxy-groups:", "rules:"],
+  shadowrocket: ["[Proxy]", "[Proxy Group]", "[Rule]"],
   singbox: ['"outbounds"', '"route"'],
   surge: ["[Proxy]", "[Proxy Group]", "[Rule]"],
   quanx: ["[server_local]", "[policy]", "[filter_local]"],
@@ -91,13 +89,67 @@ function assertComplete(body, target, label) {
     throw new Error(`${label}: output is missing ${missing.join(", ")}`);
   }
   if (
-    (target === "clash" || target === "shadowrocket") &&
+    target === "clash" &&
     body.includes("proxy-providers:")
   ) {
     throw new Error(`${label}: output still delegates nodes to a provider`);
   }
+  if (target === "shadowrocket") {
+    if (
+      !body.includes("policy-select-name=") ||
+      /^proxies:\s*$/m.test(body) ||
+      /^DIRECT\s*=\s*direct\s*$/m.test(body)
+    ) {
+      throw new Error(
+        `${label}: native Shadowrocket structure is incomplete`,
+      );
+    }
+  }
   if (!body.includes("fixture")) {
     throw new Error(`${label}: output contains none of the fixture nodes`);
+  }
+}
+
+function shadowrocketGroupLines(body) {
+  const lines = body.replace(/\r\n/g, "\n").split("\n");
+  const start = lines.indexOf("[Proxy Group]");
+  const end = lines.indexOf("[Rule]");
+  if (start < 0 || end <= start) return [];
+  return lines
+    .slice(start + 1, end)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function assertEkkoShadowrocketPolicies(body, configId) {
+  const shared = [
+    "♻️ 手动切换 = select,DIRECT",
+    "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
+    "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
+    "🌏 国内网站 = select,DIRECT,♻️ 手动切换",
+  ];
+  const liteOnly = [
+    "🧲 海外 AI = select,♻️ 手动切换,DIRECT",
+    "🎮 游戏平台 = select,♻️ 手动切换,DIRECT",
+    "🎮 游戏下载 = select,DIRECT,♻️ 手动切换",
+    "🎬 流媒体 = select,♻️ 手动切换,DIRECT",
+    "🚀 国外服务 = select,♻️ 手动切换,DIRECT",
+    "🐟 漏网之鱼 = select,♻️ 手动切换,DIRECT",
+  ];
+  const expected = configId === "ekko-lite" ? [...shared, ...liteOnly] : shared;
+  const missing = expected.filter((marker) => !body.includes(marker));
+  if (missing.length) {
+    throw new Error(
+      `${configId}: native Shadowrocket defaults are incomplete: ${missing.join(", ")}`,
+    );
+  }
+  if (configId === "ekko-lite") {
+    const groups = shadowrocketGroupLines(body);
+    if (groups.length !== 10) {
+      throw new Error(
+        `ekko-lite: expected 10 native Shadowrocket groups, got ${groups.length}`,
+      );
+    }
   }
 }
 
@@ -120,8 +172,8 @@ async function verifyPresets(presets) {
   return results;
 }
 
-async function verifyTargetCoverage(configId) {
-  for (const target of Object.keys(TARGET_MARKERS)) {
+async function verifyTargetCoverage(configId, targets = Object.keys(TARGET_MARKERS)) {
+  for (const target of targets) {
     const result = await convert({ target, config: configId });
     if (result.status !== 200) {
       throw new Error(`${configId} + ${target}: HTTP ${result.status} ${result.body.slice(0, 200)}`);
@@ -129,6 +181,24 @@ async function verifyTargetCoverage(configId) {
     assertComplete(result.body, target, `${configId} + ${target}`);
     console.log(JSON.stringify({ phase: "target", config: configId, target, bytes: result.body.length }));
   }
+}
+
+async function verifyEkkoShadowrocket(configId) {
+  const result = await convert({ target: "shadowrocket", config: configId });
+  if (result.status !== 200) {
+    throw new Error(
+      `${configId} + shadowrocket: HTTP ${result.status} ${result.body.slice(0, 200)}`,
+    );
+  }
+  assertComplete(result.body, "shadowrocket", `${configId} + shadowrocket`);
+  assertEkkoShadowrocketPolicies(result.body, configId);
+  console.log(JSON.stringify({
+    phase: "ekko-shadowrocket",
+    config: configId,
+    groups: shadowrocketGroupLines(result.body).length,
+    nsfw_default: "REJECT",
+    bytes: result.body.length,
+  }));
 }
 
 async function verifyStatelessSurface() {
@@ -181,9 +251,18 @@ async function main() {
   }
 
   const results = await verifyPresets(presets);
-  // Every client format must survive a third-party config, not just Mihomo.
+  await verifyEkkoShadowrocket("ekko");
+  await verifyEkkoShadowrocket("ekko-lite");
+  // Third-party policy dialects are outside Shadowrocket's built-in-config
+  // guarantee. Keep the existing coverage for every other client family;
+  // Ekko full and lite were checked natively just above.
   const thirdParty = presets.find((preset) => !preset.builtin);
-  if (thirdParty) await verifyTargetCoverage(thirdParty.id);
+  if (thirdParty) {
+    await verifyTargetCoverage(
+      thirdParty.id,
+      Object.keys(TARGET_MARKERS).filter((target) => target !== "shadowrocket"),
+    );
+  }
   if (capabilities.allow_custom_remote_config) {
     const pasted = await convert({
       target: "clash",
