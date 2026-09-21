@@ -19,6 +19,63 @@ import {
 
 export const STATELESS_SUBSCRIPTION_PATH = "/sub";
 
+/**
+ * The whole query, packed into one parameter.
+ *
+ * A readable link is the right thing to show a person and the wrong thing to
+ * hand another program. Inside `clash://install-config?url=…` the address is
+ * a value in someone else's query, and clients disagree about how many times
+ * to decode it: one of them keeps only what comes before the subscription's
+ * own `?`, which drops the provider's token, and the visitor gets a profile
+ * that fetches nothing. Measured against the deployed site, the same link
+ * with its token cut answers 502 while every other reading answers 200.
+ *
+ * So the address handed to a client carries a single parameter whose value is
+ * base64url — no `?`, no `&`, no escapes, nothing left to disagree about. The
+ * link a person copies stays as it reads.
+ *
+ * It is encoding, not secrecy: the credential is still in there, exactly as
+ * it is in the readable form.
+ */
+export const PACKED_QUERY_PARAM = "p";
+
+function toBase64Url(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  const base64 =
+    typeof btoa === "function"
+      ? btoa(binary)
+      : Buffer.from(value, "utf8").toString("base64");
+  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function fromBase64Url(value: string): string | null {
+  if (!/^[A-Za-z0-9_-]+$/.test(value)) return null;
+  const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64.padEnd(
+    base64.length + ((4 - (base64.length % 4)) % 4),
+    "=",
+  );
+  try {
+    if (typeof atob === "function") {
+      const binary = atob(padded);
+      const bytes = Uint8Array.from(binary, (character) =>
+        character.charCodeAt(0),
+      );
+      return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    }
+    return Buffer.from(padded, "base64").toString("utf8");
+  } catch {
+    return null;
+  }
+}
+
+/** Packs a built query for handing to a client. */
+export function packStatelessQuery(query: string): string {
+  return `${PACKED_QUERY_PARAM}=${toBase64Url(query)}`;
+}
+
 const BOOLEAN_PARAMS = {
   emoji: "emoji",
   udp: "udp",
@@ -60,6 +117,17 @@ function parseBooleanParam(raw: string, name: string): boolean {
 export function parseStatelessConvertQuery(
   params: URLSearchParams,
 ): StatelessConvertRequest {
+  // A packed link carries every choice inside the one parameter; whatever else
+  // rode along on the outside was not part of what the page built.
+  const packed = params.get(PACKED_QUERY_PARAM);
+  if (packed !== null) {
+    const expanded = fromBase64Url(packed.trim());
+    if (expanded === null) {
+      throw new Error("A supported subscription link is required.");
+    }
+    return parseStatelessConvertQuery(new URLSearchParams(expanded));
+  }
+
   const subscriptionUrl = (params.get("url") || "").trim();
   if (!subscriptionUrl) {
     throw new Error("subscriptionUrl is required.");

@@ -17,6 +17,7 @@ import {
   sanitizeSourceUserAgent,
   sanitizeSubscriptionUserinfo,
   selectUpstreamUserAgent,
+  upstreamUserAgentAttempts,
   isLoopbackBindHost,
   normalizeSubscriptionBaseUrl,
   requestTextWithLimits,
@@ -381,6 +382,126 @@ test("normalizes a mixed plaintext node list but leaves configs unchanged", () =
 
   const yaml = "proxies:\n  - name: AnyTLS\n    type: anytls\n";
   assert.equal(normalizeSubscriptionContent(yaml), yaml);
+});
+
+test("drops a provider's traffic banner from a node list", () => {
+  // What one provider actually answers to a Shadowrocket agent: a counter line
+  // first, nodes after. The Mihomo bridge refuses the whole list over that one
+  // line, and it reached the visitor as a 502.
+  const banner =
+    "STATUS=\u{1F680}↑:0.01GB,↓:5.98GB,TOT:100GB\u{1F4A1}Expires:2026-11-26";
+  const nodes = [
+    "anytls://password@example.com:443?sni=example.com&insecure=1#AnyTLS",
+    "vmess://eyJ2IjoiMiIsInBzIjoiVk1lc3MifQ==",
+  ];
+  const encoded = Buffer.from(
+    `${[banner, ...nodes].join("\r\n")}\r\n`,
+    "utf8",
+  ).toString("base64");
+
+  assert.equal(
+    Buffer.from(normalizeSubscriptionContent(encoded), "base64").toString(
+      "utf8",
+    ),
+    `${nodes.join("\n")}\n`,
+  );
+  // The same list in the clear.
+  assert.equal(
+    Buffer.from(
+      normalizeSubscriptionContent([banner, ...nodes].join("\n")),
+      "base64",
+    ).toString("utf8"),
+    `${nodes.join("\n")}\n`,
+  );
+});
+
+test("leaves an already clean list, and anything unrecognised, byte-identical", () => {
+  const clean = Buffer.from(
+    "anytls://password@example.com:443#AnyTLS\nvmess://eyJ2IjoiMiJ9\n",
+    "utf8",
+  ).toString("base64");
+  assert.equal(normalizeSubscriptionContent(clean), clean);
+
+  // A line that is not a node but carries a URL means this is a format the
+  // filter does not understand; half-rewriting it is worse than passing it on.
+  const withUrlLine = [
+    "# subscribe at https://provider.example/buy",
+    "anytls://password@example.com:443#AnyTLS",
+  ].join("\n");
+  assert.equal(normalizeSubscriptionContent(withUrlLine), withUrlLine);
+
+  const yaml = "proxies:\n  - name: AnyTLS\n    type: anytls\n";
+  assert.equal(normalizeSubscriptionContent(yaml), yaml);
+});
+
+test("asks the provider the way the output reads when the caller is another family", () => {
+  // Shadowrocket receives a Mihomo config, so a provider that switches format
+  // by agent still has to be asked as Mihomo — otherwise the conversion has
+  // nothing to build from. Nobody has to configure this.
+  assert.equal(
+    selectUpstreamUserAgent("shadowrocket", "", "Shadowrocket/2.2.70"),
+    "clash.meta",
+  );
+  // The same mismatch through any other pairing: the file being built decides.
+  assert.equal(
+    selectUpstreamUserAgent("clash", "", "Shadowrocket/2.2.70"),
+    "clash.meta",
+  );
+  assert.equal(selectUpstreamUserAgent("loon", "", "Stash/3.1"), "Loon");
+  assert.equal(
+    selectUpstreamUserAgent("singbox", "", "Shadowrocket/2.2.70"),
+    "sing-box",
+  );
+
+  // Caller and output of one family: pass it on, so a provider that only
+  // answers to clients it knows still sees one.
+  assert.equal(
+    selectUpstreamUserAgent("clash", "", "clash-verge-rev/2.4.3"),
+    "clash-verge-rev/2.4.3",
+  );
+  assert.equal(
+    selectUpstreamUserAgent("clash", "", "mihomo-party/1.7.3"),
+    "mihomo-party/1.7.3",
+  );
+  assert.equal(
+    selectUpstreamUserAgent("surge", "", "Surge iOS/2000"),
+    "Surge iOS/2000",
+  );
+  assert.equal(
+    selectUpstreamUserAgent("singbox", "", "SFI/1.11.3 (sing-box 1.11.3)"),
+    "SFI/1.11.3 (sing-box 1.11.3)",
+  );
+
+  // An agent the user typed still wins over all of it.
+  assert.equal(
+    selectUpstreamUserAgent("shadowrocket", "MyAgent/1", "Shadowrocket/2.2.70"),
+    "MyAgent/1",
+  );
+});
+
+test("asks a second time as the target's own client when the first answer is unusable", () => {
+  // One provider answers Stash with an error page and Mihomo with a node
+  // list; another answers Shadowrocket with a legacy list where the requested
+  // output needs a Clash document. Both reached the visitor as a bare 502, so
+  // a refused or unusable first answer is followed by one more question.
+  assert.deepEqual(
+    upstreamUserAgentAttempts("clash", "", "Stash/3.1.0 Clash/1.10.0"),
+    ["Stash/3.1.0 Clash/1.10.0", "clash.meta"],
+  );
+  // Where the agent already follows the output, there is nothing to retry.
+  assert.deepEqual(
+    upstreamUserAgentAttempts("shadowrocket", "", "Shadowrocket/2.2.70"),
+    ["clash.meta"],
+  );
+  assert.deepEqual(upstreamUserAgentAttempts("clash", "", "clash.meta"), [
+    "clash.meta",
+  ]);
+  // An agent the person typed is used alone: overriding this is the point of
+  // the field, and a silent second question would undo it.
+  assert.deepEqual(
+    upstreamUserAgentAttempts("clash", "MyAgent/1", "Stash/3.1.0"),
+    ["MyAgent/1"],
+  );
 });
 
 test("always tells the conversion engine whether node sorting is enabled", () => {

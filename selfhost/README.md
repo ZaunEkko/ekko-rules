@@ -122,7 +122,7 @@ Web UI 提供：
 - 自定义前缀：在家里、公司等网络切换后直接输入新的电脑 IP；
 - 曾用地址：在当前浏览器保留最近 8 个前缀，一键切换所有档案的显示、复制与二维码。
 
-Clash / Mihomo 与 Shadowrocket 的二维码默认使用客户端自己的导入 scheme：前者是 `clash://install-config?url=`，后者是 `shadowrocket://config/add/<地址>`（小火箭的 `shadowrocket://add/` 是节点订阅入口，不带规则，所以这里不用它）。用系统相机扫描后请选择对应客户端打开；切换到“客户端内扫码”时，二维码内容就是同一个原始订阅 URL，应在客户端内置扫码入口扫描。弹窗会分别展示真实二维码内容与底层远程订阅地址，避免两个入口看起来相同。
+Clash / Mihomo 与 Shadowrocket 的二维码默认使用客户端自己的导入 scheme：前者是 `clash://install-config?url=`，后者是 `shadowrocket://config/add/<地址>`（`shadowrocket://add/` 是它的节点订阅入口，不带规则，所以这里不用它）。用系统相机扫描后请选择对应客户端打开；切换到“客户端内扫码”时，二维码内容就是同一个原始订阅 URL，应在客户端内置扫码入口扫描。弹窗会分别展示真实二维码内容与底层远程订阅地址，避免两个入口看起来相同。
 
 换网络不会改变 `/sub/<随机 ID>`，Web UI 与二维码会在局域网模式下自动显示新 IP；但已经导入手机或路由器的旧 URL 无法跨网络自己修改主机部分。到达新网络后，请用自动更新后的二维码重新导入一次，或只修改客户端中的地址前缀。若希望完全避免修改，可在路由器中为电脑设置固定 DHCP 地址、使用可靠的局域网主机名，或使用 Tailscale 等具有稳定地址的虚拟局域网。
 
@@ -185,7 +185,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 得到的字节与 Clash / Mihomo 那份完全相同：它的「配置文件」兼容 Clash YAML，含节点的配置一次导入就同时带进节点与规则，所以这里不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉。哪些现代协议能被小火箭自己的 YAML 解析接受，未在真机上核对过，页面因此不给它挂「现代协议已验证」。
+Shadowrocket 得到的字节与 Clash / Mihomo 那份完全相同：它的「配置文件」兼容 Clash YAML，含节点的配置一次导入就同时带进节点与规则，所以这里不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉。哪些现代协议能被 Shadowrocket 自己的 YAML 解析接受，未在真机上核对过，页面因此不给它挂「现代协议已验证」。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 

@@ -32,7 +32,11 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   shadowrocket: {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
-    qrHint: "用系统相机扫，弹出的提示选择用 Shadowrocket 打开，会按「配置文件」装进去。",
+    // The client's own scanner only takes node subscriptions, so it does
+    // nothing with this code and looks broken. Say where the code does work
+    // before someone scans it in the wrong place.
+    qrHint:
+      "用系统相机扫，弹出的提示选择 Shadowrocket 打开，会按「配置文件」装进去。Shadowrocket 自带的扫码入口只收节点订阅，扫这个码不会有反应。",
   },
 };
 

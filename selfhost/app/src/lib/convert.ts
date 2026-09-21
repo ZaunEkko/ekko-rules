@@ -112,6 +112,69 @@ const DEFAULT_UPSTREAM_USER_AGENTS: Record<TargetFormat, string> = {
   mellow: "Mellow",
 };
 
+/**
+ * What a client of the family each target's output is written for looks like.
+ *
+ * Passing the requesting client's own agent upstream buys something real: a
+ * provider that answers only to clients it knows sees one, instead of seeing a
+ * converter. But it buys that only while the client asking and the file being
+ * built are the same family. Shadowrocket asks as itself and is handed a
+ * Mihomo config; a provider that switches format by agent then answers with a
+ * legacy node list, which is not what that file is built from. Measured
+ * against one provider: as `clash.meta` a 49 KB Clash document, as
+ * `Shadowrocket/2.2.70` a 22 KB base64 list, and the conversion fails on the
+ * second.
+ *
+ * So the agent follows the output, not the caller — except when the caller is
+ * already of the output's family, where passing it on keeps the first benefit
+ * at no cost. Nobody has to know any of this: the field on the page is an
+ * override for a provider with its own ideas, not a step in the flow.
+ */
+const CLIENT_FAMILY_PATTERNS: Record<TargetFormat, RegExp> = {
+  clash: /clash|mihomo|meta|stash|flclash/i,
+  // Its output is a Mihomo config, so only a Mihomo-shaped agent may pass.
+  shadowrocket: /clash|mihomo|meta/i,
+  singbox: /sing-?box|sfa|sfi|sfm|sfw/i,
+  surge: /surge/i,
+  quanx: /quantumult\s*x/i,
+  loon: /loon/i,
+  surfboard: /surfboard/i,
+  quan: /quantumult/i,
+  mellow: /mellow/i,
+};
+
+/** The agent a target's own output is written for. */
+export function defaultUpstreamUserAgent(target: TargetFormat): string {
+  return DEFAULT_UPSTREAM_USER_AGENTS[target];
+}
+
+/**
+ * The agents to try upstream, in order.
+ *
+ * Providers decide what to answer by who is asking, and they get it wrong in
+ * both directions: one hands Stash an error page ("遇到了些问题，我们正在进行
+ * 处理"), another hands Shadowrocket a legacy node list where the requested
+ * output needs a Clash document. Both reached the visitor as a 502 that named
+ * nothing, and neither is something a visitor could be expected to diagnose.
+ *
+ * So the agent is not a single guess: the first attempt suits the caller, and
+ * the second is the client this target's own output is written for. An agent
+ * the person typed is used alone — overriding this is exactly what they asked
+ * for by typing it.
+ */
+export function upstreamUserAgentAttempts(
+  target: TargetFormat,
+  customValue: string | null | undefined,
+  sourceValue: string | null | undefined,
+): string[] {
+  const chosen = selectUpstreamUserAgent(target, customValue, sourceValue);
+  const fallback = defaultUpstreamUserAgent(target);
+  if (sanitizeSourceUserAgent(customValue) || chosen === fallback) {
+    return [chosen];
+  }
+  return [chosen, fallback];
+}
+
 export function selectUpstreamUserAgent(
   target: TargetFormat,
   customValue: string | null | undefined,
@@ -120,7 +183,13 @@ export function selectUpstreamUserAgent(
   const custom = sanitizeSourceUserAgent(customValue);
   if (custom) return custom;
   const source = sanitizeSourceUserAgent(sourceValue);
-  if (source && !/^Mozilla\/5\.0\b/i.test(source)) return source;
+  if (
+    source &&
+    !/^Mozilla\/5\.0\b/i.test(source) &&
+    CLIENT_FAMILY_PATTERNS[target].test(source)
+  ) {
+    return source;
+  }
   return DEFAULT_UPSTREAM_USER_AGENTS[target];
 }
 
@@ -556,15 +625,66 @@ export function looksLikeSubscription(content: string): boolean {
   return false;
 }
 
+/**
+ * Decode a base64 subscription body, or return null when it is not one.
+ *
+ * A node list arrives base64-encoded far more often than in the clear, and the
+ * junk this exists to find sits inside that encoding, not outside it.
+ */
+function decodeBase64NodeList(content: string): string | null {
+  const compact = content.replace(/\s+/g, "");
+  if (compact.length < 32 || !/^[A-Za-z0-9+/_=-]+$/.test(compact)) return null;
+  const standard = compact.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = standard.padEnd(
+    standard.length + ((4 - (standard.length % 4)) % 4),
+    "=",
+  );
+  let decoded: string;
+  try {
+    decoded = Buffer.from(padded, "base64").toString("utf8");
+  } catch {
+    return null;
+  }
+  // A wrong guess decodes to bytes, not to a node list. Requiring a link back
+  // keeps this from rewriting anything it merely managed to decode.
+  if (
+    !decoded.split(/\r?\n/).some((line) => NODE_LINK_PATTERN.test(line.trim()))
+  ) {
+    return null;
+  }
+  return decoded;
+}
+
+/**
+ * Hand the engine a node list with nothing in it but nodes.
+ *
+ * Providers routinely keep their traffic counter in the list itself, as a
+ * first line like `STATUS=🚀↑:0.01GB,↓:5.98GB,TOT:100GB💡Expires:2026-11-26`.
+ * The compatible parser skips a line it cannot read; the Mihomo bridge refuses
+ * the whole list, and that reaches the visitor as a 502 that says nothing
+ * about which line was at fault. Reproduced against the deployed site with two
+ * fixtures differing only by that line: with it `target=clash` answers 502 and
+ * `target=surge` answers 200; without it both answer 200.
+ *
+ * Only a line carrying no URL at all is dropped. Anything else — a format this
+ * does not recognise, a document that merely happens to hold a node link — is
+ * left exactly as it arrived rather than half-rewritten.
+ */
 export function normalizeSubscriptionContent(content: string): string {
-  const lines = content
+  const decoded = decodeBase64NodeList(content);
+  const lines = (decoded ?? content)
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
-  if (lines.length > 0 && lines.every((line) => NODE_LINK_PATTERN.test(line))) {
-    return Buffer.from(`${lines.join("\n")}\n`, "utf8").toString("base64");
-  }
-  return content;
+  const nodes = lines.filter((line) => NODE_LINK_PATTERN.test(line));
+  if (!nodes.length) return content;
+
+  const others = lines.filter((line) => !NODE_LINK_PATTERN.test(line));
+  if (others.some((line) => line.includes("://"))) return content;
+  // Already clean and already encoded: re-encoding would only churn the bytes.
+  if (decoded !== null && !others.length) return content;
+
+  return Buffer.from(`${nodes.join("\n")}\n`, "utf8").toString("base64");
 }
 
 const CONVERSION_WORK_DIR_PATTERN =
@@ -839,24 +959,51 @@ export async function convertSubscription(
     remainingMs(),
   );
 
-  const preflight = await requestTextWithLimits(safeUrl.href, {
-    method: "GET",
-    timeoutMs: remainingMs(),
-    maxBytes: runtime.maxSubscriptionBytes,
-    userAgent: upstreamUserAgent,
-    requestLabel: "Subscription fetch",
-    resolvedAddresses,
-  });
-  if (!preflight.ok) {
-    throw new Error(`Subscription fetch failed with HTTP ${preflight.status}.`);
+  // Ordered by `upstreamUserAgentAttempts`: the caller's agent first, then the
+  // one this target's output is written for. A provider that refuses the first
+  // or answers it with something no subscription can be built from gets a
+  // second question rather than handing the visitor an unexplained 502.
+  const userAgentAttempts = upstreamUserAgentAttempts(
+    request.target,
+    convertOptions.customUserAgent,
+    options.sourceUserAgent,
+  );
+
+  let preflight: Awaited<ReturnType<typeof requestTextWithLimits>> | undefined;
+  let effectiveUserAgent = upstreamUserAgent;
+  let refusal = "Subscription content is empty or unsupported.";
+  for (const agent of userAgentAttempts) {
+    const attempt = await requestTextWithLimits(safeUrl.href, {
+      method: "GET",
+      timeoutMs: remainingMs(),
+      maxBytes: runtime.maxSubscriptionBytes,
+      userAgent: agent,
+      requestLabel: "Subscription fetch",
+      resolvedAddresses,
+    });
+    if (!attempt.ok) {
+      refusal = `Subscription fetch failed with HTTP ${attempt.status}.`;
+      continue;
+    }
+    if (!looksLikeSubscription(attempt.body)) {
+      refusal = "Subscription content is empty or unsupported.";
+      continue;
+    }
+    preflight = attempt;
+    effectiveUserAgent = agent;
+    break;
+  }
+  if (!preflight) {
+    throw new Error(refusal);
+  }
+  if (effectiveUserAgent !== upstreamUserAgent) {
+    // The agent itself is never logged: it is the calling client's, not ours.
+    safeLog("subscription.user_agent_fallback", { target: request.target });
   }
   const subscriptionUserinfo = sanitizeSubscriptionUserinfo(
     preflight.headers.get("subscription-userinfo"),
   );
   const subscriptionBody = preflight.body;
-  if (!looksLikeSubscription(subscriptionBody)) {
-    throw new Error("Subscription content is empty or unsupported.");
-  }
 
   // A subscription that keeps its nodes in `proxy-providers:` hands over a
   // config, not nodes. Follow those URLs here, under the same checks the
@@ -887,7 +1034,7 @@ export async function convertSubscription(
         method: "GET",
         timeoutMs: providerRemainingMs(),
         maxBytes: runtime.maxSubscriptionBytes,
-        userAgent: upstreamUserAgent,
+        userAgent: effectiveUserAgent,
         requestLabel: "Proxy provider fetch",
         resolvedAddresses: providerAddresses,
       });

@@ -16,6 +16,7 @@ import {
 } from "@/lib/qr-import";
 import {
   buildStatelessConvertQuery,
+  packStatelessQuery,
   type StatelessConvertRequest,
 } from "@/lib/stateless-request";
 import { Picker } from "./picker";
@@ -376,11 +377,13 @@ export function Workbench({
   const shadowrocketNote =
     target === "shadowrocket" ? (
       <p className="open-client-note">
-        <b>小火箭要从「配置」进，不是「订阅」。</b>
+        <b>Shadowrocket 要从「配置」进，不是「订阅」。</b>
         一键按钮和二维码给的是 <code>shadowrocket://config/add/</code>，落在「配置」
         页里，点一下使用即可；把同一条链接贴进首页的「添加订阅」只会拿到节点，规则不会
-        跟过去。它也不读 Clash 的 <code>dns:</code> 段，DNS 走小火箭自己的设置，节点、
-        策略组与分流规则照常带入。
+        跟过去。手机上直接点按钮最稳，二维码要用系统相机扫——Shadowrocket 自带的扫码入口只收
+        节点订阅，扫这个码不会有反应；跨设备也可以复制链接，在「配置」页右上角 ➕ 粘贴。
+        它还不读 Clash 的 <code>dns:</code> 段，DNS 走 Shadowrocket 自己的设置，节点、策略组与
+        分流规则照常带入。
       </p>
     ) : null;
 
@@ -448,8 +451,30 @@ export function Workbench({
     current.hostname = "localhost";
     return current.origin;
   }, [runtimeOrigin]);
+  /**
+   * The address handed to another program rather than to a person.
+   *
+   * Inside a client's own import scheme the subscription rides as a value in
+   * someone else's query, and clients disagree about how far to decode it —
+   * one of them keeps only what precedes the provider's `?`, which drops the
+   * token and imports a profile that fetches nothing. Packed into a single
+   * base64url parameter there is nothing left to disagree about. The link on
+   * the page, the one a person reads and copies, is untouched.
+   */
+  function clientHandoffUrl(subscriptionPath: string): string {
+    const separator = subscriptionPath.indexOf("?");
+    if (separator < 0) {
+      return absoluteLocalUrl(subscriptionPath, subscriptionBaseUrl);
+    }
+    const packed = packStatelessQuery(subscriptionPath.slice(separator + 1));
+    return absoluteLocalUrl(
+      `${subscriptionPath.slice(0, separator)}?${packed}`,
+      subscriptionBaseUrl,
+    );
+  }
+
   const qrSubscriptionUrl = qrProfile
-    ? absoluteLocalUrl(qrProfile.subscriptionPath, subscriptionBaseUrl)
+    ? clientHandoffUrl(qrProfile.subscriptionPath)
     : "";
   const clientInstallQrAvailable = Boolean(
     qrProfile && supportsClientInstallQr(qrProfile.target),
@@ -787,6 +812,30 @@ export function Workbench({
     };
   }
 
+  /**
+   * Every way of taking a link away counts as having made it.
+   *
+   * The record used to be written only by the copy button, so someone who
+   * imported in one tap, or scanned the code with a phone, came back to an
+   * empty list and had to rebuild the link to see it again. Copy, scan and
+   * one-tap import now leave the same record.
+   */
+  function recordCurrentLink(profile: Profile = buildStatelessProfile()): Profile {
+    rememberLink(
+      absoluteLocalUrl(profile.subscriptionPath, subscriptionBaseUrl),
+      target,
+      convertOptions,
+      profileName || selectedTarget.short_label,
+      {
+        url: subscriptionUrl,
+        remoteConfigId,
+        customRemoteConfig,
+        convertOptions,
+      },
+    );
+    return profile;
+  }
+
   async function createProfile(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -798,7 +847,7 @@ export function Workbench({
         setError("请填写远程配置地址，或改回内置选项。");
         return;
       }
-      const profile = buildStatelessProfile();
+      const profile = recordCurrentLink();
       setCreatedProfile(profile);
       openQr(profile);
       return;
@@ -1185,9 +1234,10 @@ export function Workbench({
                     className="open-action is-primary"
                     href={qrImportValue(
                       target,
-                      absoluteLocalUrl(`/sub?${statelessQuery}`, subscriptionBaseUrl),
+                      clientHandoffUrl(`/sub?${statelessQuery}`),
                       "install",
                     )}
+                    onClick={() => recordCurrentLink()}
                   >
                     {clientInstallLabel(target)}
                   </a>
@@ -1198,22 +1248,7 @@ export function Workbench({
                     sourceReady && supportsClientInstallQr(target) ? "" : "is-primary"
                   }`}
                   disabled={!sourceReady}
-                  onClick={() => {
-                    const built = buildStatelessProfile();
-                    void copyUrl(built);
-                    rememberLink(
-                      absoluteLocalUrl(built.subscriptionPath, subscriptionBaseUrl),
-                      target,
-                      convertOptions,
-                      profileName || selectedTarget.short_label,
-                      {
-                        url: subscriptionUrl,
-                        remoteConfigId,
-                        customRemoteConfig,
-                        convertOptions,
-                      },
-                    );
-                  }}
+                  onClick={() => void copyUrl(recordCurrentLink())}
                 >
                   {copying === "stateless" ? "已复制" : "复制链接"}
                 </button>
@@ -1221,7 +1256,7 @@ export function Workbench({
                   type="button"
                   className="open-action"
                   disabled={!sourceReady}
-                  onClick={() => openQr(buildStatelessProfile())}
+                  onClick={() => openQr(recordCurrentLink())}
                 >
                   扫码导入
                 </button>
@@ -1667,7 +1702,10 @@ export function Workbench({
                     />
                   </label>
                   <label className="compact-field">
-                    <span><strong>自定义 User-Agent</strong><small>拉取上游时使用</small></span>
+                    {/* An override, not a step: the agent is picked from the
+                        output format on its own. Say so, or someone reads an
+                        empty field as something they forgot to fill in. */}
+                    <span><strong>自定义 User-Agent</strong><small>一般不用填</small></span>
                     <input
                       value={convertOptions.customUserAgent}
                       onChange={(event) =>
@@ -1677,7 +1715,7 @@ export function Workbench({
                         }))
                       }
                       maxLength={256}
-                      placeholder="留空使用 Ekko 默认值"
+                      placeholder="留空即可，按输出格式自动选择"
                     />
                   </label>
                   {convertOptions.autoUpdate ? (
@@ -1791,9 +1829,10 @@ export function Workbench({
                       className="open-action is-primary"
                       href={qrImportValue(
                         target,
-                        absoluteLocalUrl(`/sub?${statelessQuery}`, subscriptionBaseUrl),
+                        clientHandoffUrl(`/sub?${statelessQuery}`),
                         "install",
                       )}
+                      onClick={() => recordCurrentLink()}
                     >
                       {clientInstallLabel(target)}
                     </a>
@@ -1804,22 +1843,7 @@ export function Workbench({
                       sourceReady && supportsClientInstallQr(target) ? "" : "is-primary"
                     }`}
                     disabled={!sourceReady}
-                    onClick={() => {
-                    const built = buildStatelessProfile();
-                    void copyUrl(built);
-                    rememberLink(
-                      absoluteLocalUrl(built.subscriptionPath, subscriptionBaseUrl),
-                      target,
-                      convertOptions,
-                      profileName || selectedTarget.short_label,
-                      {
-                        url: subscriptionUrl,
-                        remoteConfigId,
-                        customRemoteConfig,
-                        convertOptions,
-                      },
-                    );
-                  }}
+                    onClick={() => void copyUrl(recordCurrentLink())}
                   >
                     {copying === "stateless" ? "已复制" : "复制链接"}
                   </button>
@@ -1827,7 +1851,7 @@ export function Workbench({
                     type="button"
                     className="open-action"
                     disabled={!sourceReady}
-                    onClick={() => openQr(buildStatelessProfile())}
+                    onClick={() => openQr(recordCurrentLink())}
                   >
                     扫码导入
                   </button>
@@ -2183,6 +2207,8 @@ export function Workbench({
                 {/* Not "订阅": Shadowrocket files this under configurations,
                     which it refreshes from the same address. */}
                 客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。
+                这里的参数打包成了一段，免得客户端把嵌套的订阅地址截断；内容与
+                页面上那条链接完全一样，一样带着你的订阅凭据。
               </small>
               <button type="button" className="secondary-button" onClick={() => setQrProfile(null)}>关闭</button>
             </div>
