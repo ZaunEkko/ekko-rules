@@ -11,8 +11,11 @@ import {
 import {
   clientInstallLabel,
   clientInstallQrHint,
+  defaultQrImportMode,
   qrImportValue,
+  qrModeLabel,
   supportsClientInstallQr,
+  type QrImportMode,
 } from "@/lib/qr-import";
 import {
   buildStatelessConvertQuery,
@@ -344,6 +347,9 @@ export function Workbench({
      sends. A crawler that does not run scripts finds nothing to harvest. */
   const [contactHref, setContactHref] = useState("");
   const [qrProfile, setQrProfile] = useState<Profile | null>(null);
+  // Which of the two codes is on screen. Opening the dialog picks the one that
+  // this client's own import entry can actually read.
+  const [qrMode, setQrMode] = useState<QrImportMode>("raw");
   const [baseUrlOverride, setBaseUrlOverride] = useState("");
   const [baseUrlDraft, setBaseUrlDraft] = useState("");
   const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
@@ -473,21 +479,25 @@ export function Workbench({
     );
   }
 
-  const qrSubscriptionUrl = qrProfile
-    ? clientHandoffUrl(qrProfile.subscriptionPath)
-    : "";
   const clientInstallQrAvailable = Boolean(
     qrProfile && supportsClientInstallQr(qrProfile.target),
   );
-  // One code, not a choice between two. Where a client registers a scheme the
-  // scheme code is the one that imports in a single tap, and the plain URL is
-  // still on screen underneath for anyone whose client wants that instead.
+  const activeQrMode: QrImportMode = clientInstallQrAvailable ? qrMode : "raw";
+  /**
+   * The address in the code, in the form the scanner on the other side reads.
+   *
+   * A scheme code is scanned by the phone's camera and handed to the client by
+   * the system, so its address rides inside another URL and travels packed. A
+   * plain code is read by the client's own scan entry, which writes it into
+   * its address field as-is — so that one stays the readable link.
+   */
+  const qrSubscriptionUrl = qrProfile
+    ? activeQrMode === "install"
+      ? clientHandoffUrl(qrProfile.subscriptionPath)
+      : absoluteLocalUrl(qrProfile.subscriptionPath, subscriptionBaseUrl)
+    : "";
   const qrValue = qrProfile
-    ? qrImportValue(
-        qrProfile.target,
-        qrSubscriptionUrl,
-        clientInstallQrAvailable ? "install" : "raw",
-      )
+    ? qrImportValue(qrProfile.target, qrSubscriptionUrl, activeQrMode)
     : "";
 
   // The link is the product, so it reads the way a config file does: one
@@ -886,6 +896,7 @@ export function Workbench({
   }
 
   function openQr(profile: Profile) {
+    setQrMode(defaultQrImportMode(profile.target));
     setQrProfile(profile);
   }
 
@@ -2180,8 +2191,29 @@ export function Workbench({
             <div className="qr-card">
               <div>
                 <strong>{qrProfile.name}</strong>
-                <span>{clientInstallQrHint(qrProfile.target)}</span>
+                <span>{clientInstallQrHint(qrProfile.target, activeQrMode)}</span>
               </div>
+              {/* Two scanners, two codes. The client's own scan entry writes
+                  what it reads into its address field and refuses a scheme
+                  ("Unsupported url"); the phone's camera hands a scheme to the
+                  system and can only open an address in a browser. Neither is
+                  wrong, so the person picks the one they are pointing. */}
+              {clientInstallQrAvailable ? (
+                <div className="qr-modes" role="radiogroup" aria-label="扫码方式">
+                  {(["raw", "install"] as QrImportMode[]).map((mode) => (
+                    <button
+                      type="button"
+                      key={mode}
+                      role="radio"
+                      aria-checked={activeQrMode === mode}
+                      className="qr-mode"
+                      onClick={() => setQrMode(mode)}
+                    >
+                      {qrModeLabel(mode)}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
               <QRCodeSVG
                 value={qrValue}
                 size={220}
@@ -2191,15 +2223,15 @@ export function Workbench({
               />
               <div className="qr-value">
                 <span>
-                  {clientInstallQrAvailable
-                    ? "二维码内容（一键导入 scheme）"
-                    : "二维码内容（远程订阅 URL）"}
+                  {activeQrMode === "install"
+                    ? "二维码内容（客户端 scheme）"
+                    : "二维码内容（远程订阅地址）"}
                 </span>
                 <code>{qrValue}</code>
               </div>
-              {clientInstallQrAvailable ? (
+              {activeQrMode === "install" ? (
                 <div className="qr-value">
-                  <span>实际远程订阅地址</span>
+                  <span>其中的远程订阅地址</span>
                   <code>{qrSubscriptionUrl}</code>
                 </div>
               ) : null}
@@ -2207,8 +2239,10 @@ export function Workbench({
                 {/* Not "订阅": Shadowrocket files this under configurations,
                     which it refreshes from the same address. */}
                 客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。
-                这里的参数打包成了一段，免得客户端把嵌套的订阅地址截断；内容与
-                页面上那条链接完全一样，一样带着你的订阅凭据。
+                {activeQrMode === "install"
+                  ? "地址里的参数打包成了一段，免得客户端把嵌套的订阅地址截断；"
+                  : ""}
+                内容与页面上那条链接一样，一样带着你的订阅凭据。
               </small>
               <button type="button" className="secondary-button" onClick={() => setQrProfile(null)}>关闭</button>
             </div>
