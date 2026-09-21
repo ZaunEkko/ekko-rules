@@ -286,6 +286,19 @@ async function assertGatewayModernProtocolSubscriptions() {
       url: "http://fixture:8080/hy2-subscription.txt",
       markers: ["type: hysteria2", "fixture-hy2-http"],
     },
+    // A provider's traffic counter sitting in the node list. The Mihomo bridge
+    // refuses the whole list over that line, so the gateway drops it on the
+    // way in; the pair without the banner is the control.
+    {
+      protocol: "Traffic banner",
+      url: "http://fixture:8080/status-banner-subscription.txt",
+      markers: ["type: anytls", "fixture-anytls-link", "fixture-anytls-2"],
+    },
+    {
+      protocol: "Banner-free control",
+      url: "http://fixture:8080/anytls-pair-subscription.txt",
+      markers: ["type: anytls", "fixture-anytls-link", "fixture-anytls-2"],
+    },
   ];
 
   for (const fixture of fixtures) {

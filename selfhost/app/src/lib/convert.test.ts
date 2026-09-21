@@ -383,6 +383,79 @@ test("normalizes a mixed plaintext node list but leaves configs unchanged", () =
   assert.equal(normalizeSubscriptionContent(yaml), yaml);
 });
 
+test("drops a provider's traffic banner from a node list", () => {
+  // What one provider actually answers to a Shadowrocket agent: a counter line
+  // first, nodes after. The Mihomo bridge refuses the whole list over that one
+  // line, and it reached the visitor as a 502.
+  const banner =
+    "STATUS=\u{1F680}↑:0.01GB,↓:5.98GB,TOT:100GB\u{1F4A1}Expires:2026-11-26";
+  const nodes = [
+    "anytls://password@example.com:443?sni=example.com&insecure=1#AnyTLS",
+    "vmess://eyJ2IjoiMiIsInBzIjoiVk1lc3MifQ==",
+  ];
+  const encoded = Buffer.from(
+    `${[banner, ...nodes].join("\r\n")}\r\n`,
+    "utf8",
+  ).toString("base64");
+
+  assert.equal(
+    Buffer.from(normalizeSubscriptionContent(encoded), "base64").toString(
+      "utf8",
+    ),
+    `${nodes.join("\n")}\n`,
+  );
+  // The same list in the clear.
+  assert.equal(
+    Buffer.from(
+      normalizeSubscriptionContent([banner, ...nodes].join("\n")),
+      "base64",
+    ).toString("utf8"),
+    `${nodes.join("\n")}\n`,
+  );
+});
+
+test("leaves an already clean list, and anything unrecognised, byte-identical", () => {
+  const clean = Buffer.from(
+    "anytls://password@example.com:443#AnyTLS\nvmess://eyJ2IjoiMiJ9\n",
+    "utf8",
+  ).toString("base64");
+  assert.equal(normalizeSubscriptionContent(clean), clean);
+
+  // A line that is not a node but carries a URL means this is a format the
+  // filter does not understand; half-rewriting it is worse than passing it on.
+  const withUrlLine = [
+    "# subscribe at https://provider.example/buy",
+    "anytls://password@example.com:443#AnyTLS",
+  ].join("\n");
+  assert.equal(normalizeSubscriptionContent(withUrlLine), withUrlLine);
+
+  const yaml = "proxies:\n  - name: AnyTLS\n    type: anytls\n";
+  assert.equal(normalizeSubscriptionContent(yaml), yaml);
+});
+
+test("asks the provider the way the output reads, not the way the client asked", () => {
+  // Shadowrocket receives a Mihomo config, so a provider that switches format
+  // by agent still has to be asked as Mihomo — otherwise the conversion has
+  // nothing to build from. An agent the user typed still wins.
+  assert.equal(
+    selectUpstreamUserAgent("shadowrocket", "", "Shadowrocket/2.2.70"),
+    "clash.meta",
+  );
+  assert.equal(
+    selectUpstreamUserAgent("shadowrocket", "MyAgent/1", "Shadowrocket/2.2.70"),
+    "MyAgent/1",
+  );
+  // A Mihomo client asking for the Mihomo target is still passed through.
+  assert.equal(
+    selectUpstreamUserAgent("clash", "", "clash-verge-rev/2.4.3"),
+    "clash-verge-rev/2.4.3",
+  );
+  assert.equal(
+    selectUpstreamUserAgent("surge", "", "Surge iOS/2000"),
+    "Surge iOS/2000",
+  );
+});
+
 test("always tells the conversion engine whether node sorting is enabled", () => {
   const preserved = new URL("http://subconverter.test/sub");
   applyConvertOptions(preserved, DEFAULT_CONVERT_OPTIONS, "clash");

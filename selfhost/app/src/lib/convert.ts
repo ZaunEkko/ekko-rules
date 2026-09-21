@@ -112,6 +112,21 @@ const DEFAULT_UPSTREAM_USER_AGENTS: Record<TargetFormat, string> = {
   mellow: "Mellow",
 };
 
+/**
+ * Passing the requesting client's own agent upstream is right only while that
+ * client is the one the output is written for. Shadowrocket is handed a Mihomo
+ * config but asks as itself, and a provider that switches format by agent then
+ * answers with a legacy node list — the shape the Mihomo path cannot be built
+ * from. Measured against one provider: as `clash.meta` it answers with a 49 KB
+ * Clash document, as `Shadowrocket/2.2.70` with a 22 KB base64 list, and the
+ * conversion fails on the second. So a target whose output is Mihomo but whose
+ * client is not Mihomo asks the way its output reads. An agent the user typed
+ * still wins — overriding this is their call.
+ */
+function inheritsClientUserAgent(target: TargetFormat): boolean {
+  return !usesMihomoOutput(target) || target === "clash";
+}
+
 export function selectUpstreamUserAgent(
   target: TargetFormat,
   customValue: string | null | undefined,
@@ -120,7 +135,13 @@ export function selectUpstreamUserAgent(
   const custom = sanitizeSourceUserAgent(customValue);
   if (custom) return custom;
   const source = sanitizeSourceUserAgent(sourceValue);
-  if (source && !/^Mozilla\/5\.0\b/i.test(source)) return source;
+  if (
+    source &&
+    inheritsClientUserAgent(target) &&
+    !/^Mozilla\/5\.0\b/i.test(source)
+  ) {
+    return source;
+  }
   return DEFAULT_UPSTREAM_USER_AGENTS[target];
 }
 
@@ -556,15 +577,66 @@ export function looksLikeSubscription(content: string): boolean {
   return false;
 }
 
+/**
+ * Decode a base64 subscription body, or return null when it is not one.
+ *
+ * A node list arrives base64-encoded far more often than in the clear, and the
+ * junk this exists to find sits inside that encoding, not outside it.
+ */
+function decodeBase64NodeList(content: string): string | null {
+  const compact = content.replace(/\s+/g, "");
+  if (compact.length < 32 || !/^[A-Za-z0-9+/_=-]+$/.test(compact)) return null;
+  const standard = compact.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = standard.padEnd(
+    standard.length + ((4 - (standard.length % 4)) % 4),
+    "=",
+  );
+  let decoded: string;
+  try {
+    decoded = Buffer.from(padded, "base64").toString("utf8");
+  } catch {
+    return null;
+  }
+  // A wrong guess decodes to bytes, not to a node list. Requiring a link back
+  // keeps this from rewriting anything it merely managed to decode.
+  if (
+    !decoded.split(/\r?\n/).some((line) => NODE_LINK_PATTERN.test(line.trim()))
+  ) {
+    return null;
+  }
+  return decoded;
+}
+
+/**
+ * Hand the engine a node list with nothing in it but nodes.
+ *
+ * Providers routinely keep their traffic counter in the list itself, as a
+ * first line like `STATUS=🚀↑:0.01GB,↓:5.98GB,TOT:100GB💡Expires:2026-11-26`.
+ * The compatible parser skips a line it cannot read; the Mihomo bridge refuses
+ * the whole list, and that reaches the visitor as a 502 that says nothing
+ * about which line was at fault. Reproduced against the deployed site with two
+ * fixtures differing only by that line: with it `target=clash` answers 502 and
+ * `target=surge` answers 200; without it both answer 200.
+ *
+ * Only a line carrying no URL at all is dropped. Anything else — a format this
+ * does not recognise, a document that merely happens to hold a node link — is
+ * left exactly as it arrived rather than half-rewritten.
+ */
 export function normalizeSubscriptionContent(content: string): string {
-  const lines = content
+  const decoded = decodeBase64NodeList(content);
+  const lines = (decoded ?? content)
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
-  if (lines.length > 0 && lines.every((line) => NODE_LINK_PATTERN.test(line))) {
-    return Buffer.from(`${lines.join("\n")}\n`, "utf8").toString("base64");
-  }
-  return content;
+  const nodes = lines.filter((line) => NODE_LINK_PATTERN.test(line));
+  if (!nodes.length) return content;
+
+  const others = lines.filter((line) => !NODE_LINK_PATTERN.test(line));
+  if (others.some((line) => line.includes("://"))) return content;
+  // Already clean and already encoded: re-encoding would only churn the bytes.
+  if (decoded !== null && !others.length) return content;
+
+  return Buffer.from(`${nodes.join("\n")}\n`, "utf8").toString("base64");
 }
 
 const CONVERSION_WORK_DIR_PATTERN =
