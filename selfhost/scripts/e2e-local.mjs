@@ -378,6 +378,8 @@ async function assertNamedShadowrocketImportRoute() {
     !clientResponse.ok ||
     !config.includes("[Proxy Group]") ||
     !config.includes("♻️ 手动切换 = select,DIRECT") ||
+    clientResponse.headers.get("subscription-userinfo") !==
+      "upload=512; download=1024; total=10737418240; expire=1798761600" ||
     /^♻️ 手动切换 = .*\bhidden=/m.test(config)
   ) {
     throw new Error(
@@ -390,6 +392,62 @@ async function assertNamedShadowrocketImportRoute() {
     path,
     client_config: true,
   }));
+
+  const homeQuery = new URLSearchParams(query);
+  homeQuery.set("target", "clash");
+  const homePacked = Buffer.from(homeQuery.toString(), "utf8").toString("base64url");
+  const homePath = `/i/fixture-shadowrocket.yaml?srhome=1&p=${homePacked}`;
+  const homeResponse = await fetch(`${baseUrl}${homePath}`, {
+    headers: { "user-agent": "Shadowrocket/2.2.70" },
+  });
+  const yaml = await homeResponse.text();
+  for (const marker of ["proxies:", "proxy-groups:", "rules:", "♻️ 手动切换", "🔞 NSFW"]) {
+    if (!yaml.includes(marker)) throw new Error(`Shadowrocket home response lacks ${marker}`);
+  }
+  if (!homeResponse.ok || homeResponse.headers.get("subscription-userinfo") !==
+      "upload=512; download=1024; total=10737418240; expire=1798761600") {
+    throw new Error("Shadowrocket home response lost provider usage metadata.");
+  }
+  // Node's fetch owns Sec-Fetch-Mode and overrides a forged navigation value.
+  const { stdout: page } = await run("curl.exe", [
+    "-fsS",
+    "-H", "Sec-Fetch-Mode: navigate",
+    "-H", "Sec-Fetch-Dest: document",
+    "-H", "Accept: text/html",
+    "-H", "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)",
+    `${baseUrl}${homePath}`,
+  ]);
+  if (!page.includes("shadowrocket://config/add/") ||
+      !page.includes("fixture-shadowrocket.conf") || page.includes("clash://install-config")) {
+    throw new Error("System camera did not receive the native Shadowrocket config bridge.");
+  }
+  console.log(JSON.stringify({ phase: "shadowrocket-home-import", yaml: true, metadata: true, native_browser_bridge: true }));
+}
+
+async function assertStoredShadowrocketHomeRoute() {
+  const created = await fetch(`${baseUrl}/api/profiles`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      subscriptionUrl: "http://fixture:8080/shadowrocket-modern-subscription.txt",
+      target: "shadowrocket",
+      name: "stored-shadowrocket",
+    }),
+  });
+  if (!created.ok) throw new Error(`Stored Shadowrocket profile failed: HTTP ${created.status}`);
+  const { profile } = await created.json();
+  createdProfiles.set(profile.id, profile);
+  const response = await fetch(`${baseUrl}${profile.subscriptionPath}/stored-shadowrocket.yaml`, {
+    headers: { "user-agent": "Shadowrocket/2.2.70" },
+  });
+  const body = await response.text();
+  if (!response.ok || !body.includes("proxy-groups:") || !body.includes("🔞 NSFW") ||
+      response.headers.get("subscription-userinfo") !==
+        "upload=512; download=1024; total=10737418240; expire=1798761600") {
+    throw new Error(`Stored Shadowrocket home URL lost rules or traffic info: HTTP ${response.status}`);
+  }
+  await deleteProfile(profile);
+  console.log(JSON.stringify({ phase: "shadowrocket-stored-home", rules: true, metadata: true }));
 }
 
 async function assertGatewayModernProtocolSubscriptions() {
@@ -679,6 +737,7 @@ async function main() {
   await assertShadowrocketNativeOutput();
   await assertShadowrocketAllModernManualSelector();
   await assertNamedShadowrocketImportRoute();
+  await assertStoredShadowrocketHomeRoute();
   await assertGatewayModernProtocolSubscriptions();
   await assertUserAgentFallback();
   await assertDefaultNodeOrderAndEmoji();

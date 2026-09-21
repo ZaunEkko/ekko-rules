@@ -10,6 +10,8 @@ import {
   clientImportPath,
   packStatelessQuery,
   parseStatelessConvertQuery,
+  shadowrocketHomeImportPath,
+  shadowrocketHomeProfilePath,
 } from "./stateless-request";
 
 test("gives Shadowrocket a named native configuration path", () => {
@@ -25,6 +27,26 @@ test("gives Shadowrocket a named native configuration path", () => {
     clientImportPath("clash", "ignored", "p=abc123"),
     "/i?p=abc123",
   );
+});
+
+test("keeps the same choices for a named Shadowrocket home-scanner YAML", () => {
+  const query = buildStatelessConvertQuery({
+    subscriptionUrl: "https://example.test/private?token=abc",
+    target: "shadowrocket",
+    name: "laomao-ssr",
+    remoteConfig: "ekko-lite",
+    options: { emoji: true, udp: true },
+  });
+  const path = shadowrocketHomeImportPath("laomao-ssr", query);
+  assert.match(path, /^\/i\/laomao-ssr\.yaml\?srhome=1&p=[A-Za-z0-9_-]+$/);
+  const parsed = parseStatelessConvertQuery(new URL(path, "https://example.test").searchParams);
+  assert.equal(parsed.target, "clash");
+  assert.equal(parsed.subscriptionUrl, "https://example.test/private?token=abc");
+  assert.equal(parsed.remoteConfig, "ekko-lite");
+  assert.equal(parsed.options.udp, true);
+  assert.equal(parsed.name, "laomao-ssr");
+  assert.equal(shadowrocketHomeProfilePath("abc", "手机/节点.conf"),
+    `/sub/abc/${encodeURIComponent("手机-节点")}.yaml`);
 });
 
 test("reads a stateless conversion request out of its own link", () => {
