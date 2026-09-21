@@ -27,9 +27,9 @@
 
 **1.** 打开 **[sub.boxnook.cc](https://sub.boxnook.cc)**
 **2.** 粘贴机场订阅地址（输入框默认打码）
-**3.** 点「一键导入 Clash / Mihomo」（iPhone 上选 Shadowrocket 就是「一键导入 Shadowrocket」）
+**3.** 点「一键导入 Clash / Mihomo」（选哪个客户端，按钮就变成哪个）
 
-完了。需要的话在「高级选项」里勾 UDP、XUDP 这类开关，链接会当场跟着变；也可以复制链接或用手机扫码导入。
+完了。需要的话在「高级选项」里勾 UDP、XUDP 这类开关，链接会当场跟着变；也可以复制链接，或用手机扫那个二维码——客户端自带的扫码入口和系统相机扫同一个码都行。
 
 **这个站不保存你的订阅。** 没有账号也没有档案列表，转换用的订阅正文只写进内存、转换完即删，日志里不记录订阅地址。代价是**链接里带着你的订阅凭据**——只导入自己的客户端，不要转发。
 
@@ -85,7 +85,7 @@ Windows 首次部署可以改用 `setup.cmd`，它顺带安装一个随登录运
 | 固定地址 | 链接自带全部参数 | `/sub/<随机 ID>` |
 | 需要装什么 | 什么都不用 | Docker + Compose v2 |
 
-两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Quantumult X、Loon、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 拿到的就是那份 Mihomo 配置——它的「配置文件」兼容 Clash YAML，一次导入把节点和规则一起装进去，一键按钮和二维码都走 `shadowrocket://config/add/`。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会透传流量、容量与到期时间。
+两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 拿到的就是那份 Mihomo 配置——它的「配置文件」兼容 Clash YAML，一次导入把节点和规则一起装进去，一键按钮和二维码都走 `shadowrocket://config/add/`。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会透传流量、容量与到期时间。
 
 
 ## 只要规则，不要转换

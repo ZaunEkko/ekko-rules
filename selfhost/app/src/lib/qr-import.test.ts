@@ -2,9 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   clientInstallLabel,
-  clientInstallQrHint,
-  defaultQrImportMode,
   qrImportValue,
+  qrScanHint,
   supportsClientInstallQr,
 } from "./qr-import";
 
@@ -38,34 +37,61 @@ test("installs Shadowrocket through its configuration entry", () => {
     "shadowrocket://config/add/https://sub.example.test/sub?url=https%3A%2F%2Fprovider.test%2Fs&emoji=true",
   );
   assert.equal(clientInstallLabel("shadowrocket"), "一键导入 Shadowrocket");
-  assert.match(clientInstallQrHint("shadowrocket"), /Shadowrocket/);
 });
 
 test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(qrImportValue("clash", subscriptionUrl, "raw"), subscriptionUrl);
-  assert.equal(supportsClientInstallQr("singbox"), false);
+  assert.equal(supportsClientInstallQr("quanx"), false);
   assert.equal(
-    qrImportValue("singbox", subscriptionUrl, "install"),
+    qrImportValue("quanx", subscriptionUrl, "install"),
     subscriptionUrl,
   );
-  assert.equal(clientInstallLabel("singbox"), "");
-  assert.match(clientInstallQrHint("singbox"), /QR/);
+  assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("shows the code the client's own import entry can actually read", () => {
-  // Each scanner refuses what the other one needs. ClashMetaForAndroid's scan
-  // entry answers "Unsupported url clash://install-config?…" and writes plain
-  // addresses straight into its address field, so Mihomo clients open on the
-  // address. Shadowrocket's scan entry takes node subscriptions only, which
-  // would drop every rule, so that one opens on the scheme.
-  assert.equal(defaultQrImportMode("clash"), "raw");
-  assert.equal(defaultQrImportMode("shadowrocket"), "install");
-  assert.equal(defaultQrImportMode("singbox"), "raw");
+test("says where the single code works, and warns off the one entry that misfiles it", () => {
+  // There is only one code now: it carries the /i address, which answers a
+  // client with the configuration and a browser with a page that opens the
+  // client. Nobody has to choose. The one thing an address cannot fix is a
+  // client that files it under the wrong kind of thing, so that one is named.
+  assert.match(qrScanHint("clash"), /扫哪个都行/);
+  assert.match(qrScanHint("singbox"), /扫哪个都行/);
+  assert.match(qrScanHint("shadowrocket"), /手机相机/);
+  assert.match(qrScanHint("shadowrocket"), /节点订阅/);
+});
 
-  // Both codes stay available, and each hint names the entry that reads it.
-  assert.match(clientInstallQrHint("clash", "raw"), /客户端/);
-  assert.match(clientInstallQrHint("clash", "install"), /系统相机/);
-  assert.match(clientInstallQrHint("clash", "install"), /Unsupported url/);
-  assert.match(clientInstallQrHint("shadowrocket", "install"), /系统相机/);
-  assert.match(clientInstallQrHint("shadowrocket", "raw"), /节点订阅/);
+test("every client whose vendor documents a scheme gets a one-tap button", () => {
+  // A phone visiting the site should not have to copy anything. Each of these
+  // is the form its own vendor documents; Quantumult X is absent on purpose,
+  // because its scheme takes remote resources rather than a whole config.
+  const url = "https://sub.example.test/i?p=dXJs";
+  assert.equal(
+    qrImportValue("singbox", url, "install", "家里"),
+    `sing-box://import-remote-profile?url=${encodeURIComponent(url)}#${encodeURIComponent("家里")}`,
+  );
+  assert.equal(
+    qrImportValue("singbox", url, "install"),
+    `sing-box://import-remote-profile?url=${encodeURIComponent(url)}`,
+  );
+  assert.equal(
+    qrImportValue("surge", url, "install"),
+    `surge:///install-config?url=${encodeURIComponent(url)}`,
+  );
+  assert.equal(
+    qrImportValue("loon", url, "install"),
+    `loon://import?sub=${encodeURIComponent(url)}`,
+  );
+  assert.equal(
+    qrImportValue("surfboard", url, "install"),
+    `surfboard:///install-config?url=${encodeURIComponent(url)}`,
+  );
+  for (const target of ["singbox", "surge", "loon", "surfboard"]) {
+    assert.match(clientInstallLabel(target), /^一键导入 /);
+  }
+
+  // Left out until their own vendor documents one.
+  for (const target of ["quanx", "quan", "mellow"]) {
+    assert.equal(supportsClientInstallQr(target), false);
+    assert.equal(qrImportValue(target, url, "install"), url);
+  }
 });

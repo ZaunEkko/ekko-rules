@@ -122,16 +122,18 @@ Web UI 提供：
 - 自定义前缀：在家里、公司等网络切换后直接输入新的电脑 IP；
 - 曾用地址：在当前浏览器保留最近 8 个前缀，一键切换所有档案的显示、复制与二维码。
 
-**两种扫码入口要的东西正好相反，所以二维码有两种内容。** 客户端自带的扫码入口是把扫到的文本直接写进它的地址栏，只认 `http(s)` 地址：给它客户端自己的 scheme，ClashMetaForAndroid 会报 `Unsupported url clash://install-config?…`，Shadowrocket 则毫无反应。手机系统相机反过来，它把 scheme 交给系统去唤起客户端，而一个 `https://` 地址只会被浏览器打开。
+**一个二维码，谁扫都行。** 两种扫码入口要的东西本来是相反的：客户端自带的扫码入口把扫到的文本直接写进它的地址栏，只认 `http(s)`（给它 scheme，ClashMetaForAndroid 会报 `Unsupported url clash://install-config?…`）；手机系统相机则把 scheme 交给系统唤起客户端，而一个 `https://` 地址只会被浏览器打开。
 
-弹窗因此提供「客户端里扫」与「系统相机扫」两个选项，默认选中该客户端真正能导入完整配置的那一种：
+二维码因此不放 scheme，而是放 `/i` 这个地址，由它按来客作答：
 
-| 输出 | 默认 | 内容 |
-|---|---|---|
-| Clash / Mihomo | 客户端里扫 | 原始订阅地址；Clash Verge Rev、Mihomo Party、ClashMetaForAndroid 的「新建配置 / 扫码」入口都能读 |
-| Shadowrocket | 系统相机扫 | `shadowrocket://config/add/<地址>`；它自带的扫码入口只收节点订阅，扫了规则不会跟过去 |
+- **客户端来拉** → 返回配置，与 `/sub` 逐字节相同；
+- **浏览器来开**（系统相机扫到后打开的就是浏览器）→ 返回一个极简页面，自动跳客户端的导入 scheme，并附一个按钮（Safari 常常要点一下）、完整地址与「直接下载配置」。
 
-选「系统相机扫」时，scheme 里的那个地址会把全部参数打包成单个 base64url 参数（`/sub?p=…`）。嵌套在别人的查询串里时，有的客户端只保留订阅地址问号之前的部分，机场 token 就丢了；打包后没有问号、没有 `&`、没有转义，无从解释错。弹窗会同时展示二维码内容与其中的远程订阅地址。
+判定条件是三者同时成立：`Sec-Fetch-Mode: navigate`、`Accept` 含 `text/html`、`User-Agent` 以 `Mozilla/5.0` 开头。代理客户端不会同时具备这三样；判错的代价是给客户端发了 HTML，所以宁可漏判成客户端。
+
+二维码里的地址把全部参数打包成单个 base64url 参数（`/i?p=…`）：嵌套进 scheme 的查询串时，有的客户端只保留订阅地址问号之前的部分，机场 token 就丢了；打包后没有问号、没有 `&`、没有转义，无从解释错。弹窗直接展示这条地址并提供复制按钮——它同样可以粘贴进任何客户端的「从 URL 导入」。
+
+**一键导入按钮**在手机上直接访问站点时最省事，覆盖各家自己公开的 scheme：Clash / Mihomo `clash://install-config?url=`、Shadowrocket `shadowrocket://config/add/<地址>`、sing-box `sing-box://import-remote-profile?url=…#名称`、Surge `surge:///install-config?url=`、Loon `loon://import?sub=`、Surfboard `surfboard:///install-config?url=`。Quantumult X 的 `update-configuration` 只接受远程资源而不是整份配置，Quantumult 与 Mellow 没有公开 scheme，这三个只给复制地址。
 
 换网络不会改变 `/sub/<随机 ID>`，Web UI 与二维码会在局域网模式下自动显示新 IP；但已经导入手机或路由器的旧 URL 无法跨网络自己修改主机部分。到达新网络后，请用自动更新后的二维码重新导入一次，或只修改客户端中的地址前缀。若希望完全避免修改，可在路由器中为电脑设置固定 DHCP 地址、使用可靠的局域网主机名，或使用 Tailscale 等具有稳定地址的虚拟局域网。
 
@@ -188,8 +190,8 @@ uninstall-helper.cmd
 | Shadowrocket | Shadowrocket | YAML |
 | sing-box | sing-box、SFI、SFA | JSON |
 | Surge 4+ | Surge for macOS / iOS | CONF |
-| Quantumult X | Quantumult X | CONF |
 | Loon | Loon | CONF |
+| Quantumult X | Quantumult X | CONF |
 | Surfboard | Surfboard | CONF |
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
