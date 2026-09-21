@@ -3,7 +3,10 @@ interface FlowMap {
   [key: string]: FlowValue;
 }
 
-const NATIVE_OPTION_PREFIX = /^(?:url|interval|timeout|tolerance|evaluate-before-use|policy-select-name|hidden|include-other-group|include-all-proxies|filter|update-interval)=/i;
+// These mappings are deliberately isolated here: their structure is covered
+// by tests, while live connectivity for every modern protocol remains a device
+// acceptance item rather than a capability claim in the UI.
+const NATIVE_OPTION_PREFIX = /^(?:url|interval|timeout|tolerance|evaluate-before-use|policy-select-name|policy-path|policy-regex-filter|no-alert|hidden|include-other-group|include-all-proxies|filter|update-interval)=/i;
 
 function splitTopLevel(value: string, delimiter = ","): string[] {
   const parts: string[] = [];
@@ -115,6 +118,11 @@ function parseMihomoFlowProxies(body: string): FlowMap[] {
   const nodes: FlowMap[] = [];
   for (const line of lines.slice(start + 1)) {
     if (/^[A-Za-z][A-Za-z0-9-]*:/.test(line)) break;
+    if (/^\s*-\s+name\s*:/i.test(line)) {
+      throw new Error(
+        "Shadowrocket node conversion unexpectedly used block-style YAML.",
+      );
+    }
     const match = line.match(/^\s*-\s*(\{.*\})\s*$/);
     if (!match) continue;
     const node = parseFlowMap(match[1]);
@@ -208,6 +216,11 @@ function renderTuic(node: FlowMap): string {
 }
 
 function renderHysteria2(node: FlowMap): string {
+  if (scalar(node, "ports")) {
+    throw new Error(
+      "Shadowrocket Hysteria2 port hopping is not supported by the native renderer.",
+    );
+  }
   const options = [
     nodeName(node),
     "= hysteria2",
@@ -218,14 +231,18 @@ function renderHysteria2(node: FlowMap): string {
   appendTransportOptions(options, node);
   appendTlsOptions(options, node);
   const obfs = scalar(node, "obfs");
-  if (obfs) {
-    appendOption(options, "obfs", obfs);
-    appendOption(options, "obfsParam", scalar(node, "obfs-password"));
+  if (obfs && obfs.toLowerCase() !== "salamander") {
+    throw new Error(`Shadowrocket Hysteria2 obfs ${obfs} is not supported.`);
   }
+  appendOption(options, "obfsParam", scalar(node, "obfs-password"));
+  appendOption(options, "upmbps", scalar(node, "up"));
+  appendOption(options, "downmbps", scalar(node, "down"));
   return `${options[0]} ${options.slice(1).join(", ")}`;
 }
 
 function renderVless(node: FlowMap): string {
+  const reality = nested(node, "reality-opts");
+  const tlsEnabled = enabled(node, "tls") || Boolean(reality);
   const options = [
     nodeName(node),
     "= vless",
@@ -234,12 +251,11 @@ function renderVless(node: FlowMap): string {
     `password=${required(node, "uuid")}`,
   ];
   appendOption(options, "flow", scalar(node, "flow"));
-  if (enabled(node, "tls")) options.push("tls=true");
+  if (tlsEnabled) options.push("tls=true");
   appendTlsOptions(options, node);
   appendTransportOptions(options, node);
   appendOption(options, "fp", scalar(node, "client-fingerprint"));
 
-  const reality = nested(node, "reality-opts");
   if (reality) {
     options.push("security=reality");
     appendOption(options, "pbk", scalar(reality, "public-key"));
@@ -255,7 +271,7 @@ function renderVless(node: FlowMap): string {
       scalar(nested(node, "grpc-opts") ?? {}, "grpc-service-name"),
     );
   } else if (network === "ws") {
-    options.push(`obfs=${enabled(node, "tls") ? "wss" : "websocket"}`);
+    options.push(`obfs=${tlsEnabled ? "wss" : "websocket"}`);
     const ws = nested(node, "ws-opts") ?? {};
     appendOption(options, "path", scalar(ws, "path"));
     const host = scalar(nested(ws, "headers") ?? {}, "Host");
@@ -300,39 +316,65 @@ function sectionRange(lines: string[], heading: string): [number, number] {
   return [start, relativeEnd < 0 ? lines.length : start + 1 + relativeEnd];
 }
 
+function nativeAssignmentName(line: string): string | undefined {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith(";")) {
+    return undefined;
+  }
+  const separator = line.indexOf("=");
+  if (separator < 1) return undefined;
+  const name = line.slice(0, separator).trim();
+  return name || undefined;
+}
+
 function proxyNames(lines: string[]): Set<string> {
   const [start, end] = sectionRange(lines, "[Proxy]");
   return new Set(
-    lines.slice(start + 1, end).flatMap((line) => {
-      const match = line.match(/^\s*([^#=]+?)\s*=/);
-      return match ? [match[1].trim()] : [];
-    }),
+    lines
+      .slice(start + 1, end)
+      .flatMap((line) => nativeAssignmentName(line) ?? []),
   );
 }
 
 function addStableDefaultsAndNodes(
   lines: string[],
   extraNames: string[],
+  unavailableNames: ReadonlySet<string>,
 ): void {
   const [start, end] = sectionRange(lines, "[Proxy Group]");
   for (let index = start + 1; index < end; index += 1) {
-    const match = lines[index].match(/^\s*([^#=]+?)\s*=\s*select\s*,\s*(.*)$/i);
+    const groupName = nativeAssignmentName(lines[index]);
+    if (!groupName) continue;
+    const separator = lines[index].indexOf("=");
+    const value = lines[index].slice(separator + 1).trim();
+    const match = value.match(/^select\s*,\s*(.*)$/i);
     if (!match) continue;
-    const fields = splitTopLevel(match[2]);
+    const fields = splitTopLevel(match[1]);
+    if (fields.some((field) => !field)) {
+      throw new Error(`Shadowrocket policy group ${groupName} has an empty member.`);
+    }
     const optionIndex = fields.findIndex((field) => NATIVE_OPTION_PREFIX.test(field));
-    const members = optionIndex < 0 ? fields : fields.slice(0, optionIndex);
-    const options = optionIndex < 0 ? [] : fields.slice(optionIndex);
+    const members = (optionIndex < 0 ? fields : fields.slice(0, optionIndex))
+      .filter((member) => !unavailableNames.has(member));
+    const options = (optionIndex < 0 ? [] : fields.slice(optionIndex))
+      .filter((option) => !/^policy-select-name=/i.test(option));
     if (!members.length) {
-      throw new Error(`Shadowrocket policy group ${match[1].trim()} has no members.`);
+      throw new Error(`Shadowrocket policy group ${groupName} has no members.`);
     }
     for (const name of extraNames) {
       if (!members.includes(name)) members.push(name);
     }
-    if (!options.some((option) => /^policy-select-name=/i.test(option))) {
-      options.push(`policy-select-name=${members[0]}`);
-    }
-    lines[index] = `${match[1].trim()} = select,${[...members, ...options].join(",")}`;
+    options.push(`policy-select-name=${members[0]}`);
+    lines[index] = `${groupName} = select,${[...members, ...options].join(",")}`;
   }
+}
+
+function skippedNodeComment(node: FlowMap, error: unknown): string {
+  const name = nodeName(node);
+  const type = (scalar(node, "type") || "unknown").replace(/[\r\n]/g, " ");
+  const reason = (error instanceof Error ? error.message : "unsupported node")
+    .replace(/[\r\n]/g, " ");
+  return `# WARNING: skipped proxy "${name}" (${type}): ${reason}`;
 }
 
 /**
@@ -359,25 +401,42 @@ export function buildShadowrocketConfig(
   }
 
   const nodes = parseMihomoFlowProxies(mihomoNodes);
-  const overrideNames = new Set(
-    nodes.filter(needsShadowrocketDialect).map(nodeName),
-  );
-  const [, beforeOverrideEnd] = sectionRange(lines, "[Proxy]");
-  for (let index = beforeOverrideEnd - 1; index > proxyStart; index -= 1) {
-    const name = lines[index].match(/^\s*([^#=]+?)\s*=/)?.[1].trim();
-    if (name && overrideNames.has(name)) lines.splice(index, 1);
-  }
-
   const existing = proxyNames(lines);
-  const missing = nodes.filter(
+  const candidates = nodes.filter(
     (node) => needsShadowrocketDialect(node) || !existing.has(nodeName(node)),
   );
-  const rendered = missing.map(renderMissingNode);
-  const names = missing.map(nodeName);
+  const rendered: Array<{ name: string; line: string }> = [];
+  const skipped = new Set<string>();
+  const warnings: string[] = [];
+  for (const node of candidates) {
+    const name = nodeName(node);
+    try {
+      rendered.push({ name, line: renderMissingNode(node) });
+    } catch (error) {
+      skipped.add(name);
+      warnings.push(skippedNodeComment(node, error));
+    }
+  }
+
+  const replaced = new Set([
+    ...rendered.map((item) => item.name),
+    ...nodes.filter(needsShadowrocketDialect).map(nodeName),
+  ]);
+  const [, beforeOverrideEnd] = sectionRange(lines, "[Proxy]");
+  for (let index = beforeOverrideEnd - 1; index > proxyStart; index -= 1) {
+    const name = nativeAssignmentName(lines[index]);
+    if (name && replaced.has(name)) lines.splice(index, 1);
+  }
 
   const [, refreshedProxyEnd] = sectionRange(lines, "[Proxy]");
-  lines.splice(refreshedProxyEnd, 0, ...rendered);
-  addStableDefaultsAndNodes(lines, names);
+  let insertAt = refreshedProxyEnd;
+  while (insertAt > proxyStart + 1 && !lines[insertAt - 1].trim()) insertAt -= 1;
+  lines.splice(insertAt, 0, ...warnings, ...rendered.map((item) => item.line));
+  addStableDefaultsAndNodes(
+    lines,
+    rendered.map((item) => item.name),
+    skipped,
+  );
 
   return lines.join("\n");
 }

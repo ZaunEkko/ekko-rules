@@ -396,6 +396,16 @@ export function Workbench({
   const usingThirdPartyRemoteConfig = !remoteConfigOptions.some(
     (option) => option.id === remoteConfigId && option.builtin,
   );
+  const selectableRemoteConfigOptions = target === "shadowrocket"
+    ? remoteConfigOptions.filter((option) => option.builtin)
+    : remoteConfigOptions;
+  const allowCustomRemoteConfigForTarget =
+    allowCustomRemoteConfig && target !== "shadowrocket";
+  useEffect(() => {
+    if (target === "shadowrocket" && usingThirdPartyRemoteConfig) {
+      setRemoteConfigId("ekko");
+    }
+  }, [target, usingThirdPartyRemoteConfig]);
   const siteLinks = capabilities?.site_links ?? [];
   const statelessQuery = useMemo(() => {
     if (storesProfiles || !subscriptionUrl.trim()) return "";
@@ -1776,13 +1786,13 @@ export function Workbench({
                     value={remoteConfigId}
                     onChange={setRemoteConfigId}
                     options={[
-                      ...remoteConfigOptions.map((option) => ({
+                      ...selectableRemoteConfigOptions.map((option) => ({
                         value: option.id,
                         label: option.label,
                         hint: option.description,
                         section: option.builtin ? "本项目" : "第三方规则",
                       })),
-                      ...(allowCustomRemoteConfig
+                      ...(allowCustomRemoteConfigForTarget
                         ? [
                             {
                               value: "__custom__",
@@ -1808,6 +1818,11 @@ export function Workbench({
                 {usingThirdPartyRemoteConfig ? (
                   <small className="remote-config-note">
                     选择非 Ekko Rules 时，这次转换的分组、规则与基础配置全部来自对方项目。
+                  </small>
+                ) : null}
+                {target === "shadowrocket" ? (
+                  <small className="remote-config-note">
+                    Shadowrocket 原生配置当前支持 Ekko Rules 完整版与精简版；第三方配置后续单独适配。
                   </small>
                 ) : null}
               </div>

@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 使用原生分段 `.conf`，不再把 Clash / Mihomo YAML 直接交给它。转换时先生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`。因此一次导入会同时保留节点、规则、`DIRECT`、`REJECT`、其他策略组引用和预设选择。这里仍不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉；二维码继续使用配置入口 `shadowrocket://config/add/`。现代协议已做结构保留测试，但尚未逐个完成真机连通验证，所以页面不把它们标成「现代协议已验证」。
+Shadowrocket 使用原生分段 `.conf`，不再把 Clash / Mihomo YAML 直接交给它。转换时先生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`。因此一次导入会同时保留节点、规则、`DIRECT`、`REJECT`、其他策略组引用和预设选择。这里仍不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉；二维码继续使用配置入口 `shadowrocket://config/add/`。现代协议已做结构保留测试，但尚未逐个完成真机连通验证，所以页面不把它们标成「现代协议已验证」。当前这条原生输出只开放给内置的 Ekko Rules 完整版与精简版；第三方和自定义远程配置后续单独适配。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 

@@ -27,7 +27,7 @@ const NODES = `proxies:
   - {name: AnyTLS 01, server: 203.0.113.11, port: 443, password: any-secret, skip-cert-verify: true, sni: any.example, type: anytls, udp: true}
   - {name: TUIC 01, server: 203.0.113.12, port: 443, congestion-controller: bbr, password: tuic-secret, sni: tuic.example, skip-cert-verify: true, type: tuic, udp: true, udp-relay-mode: native, uuid: 00000000-0000-4000-8000-000000000003}
   - {name: Reality gRPC 01, server: 203.0.113.13, port: 443, client-fingerprint: chrome, flow: xtls-rprx-vision, grpc-opts: {grpc-service-name: tunnel}, network: grpc, reality-opts: {public-key: abcDEF0123, short-id: 0123456789abcdef}, servername: reality.example, tls: true, type: vless, uuid: 00000000-0000-4000-8000-000000000002}
-  - {name: Hysteria2 01, server: 203.0.113.14, port: 443, password: hy-secret, sni: hy.example, skip-cert-verify: true, type: hysteria2, udp: true}
+  - {name: Hysteria2 01, server: 203.0.113.14, port: 443, password: hy-secret, sni: hy.example, skip-cert-verify: true, type: hysteria2, udp: true, obfs: salamander, obfs-password: obfs-secret, up: 100, down: 200}
 `;
 
 test("builds native Shadowrocket groups with stable special-policy defaults", () => {
@@ -77,19 +77,22 @@ test("restores modern nodes omitted by the Surge renderer", () => {
   );
   assert.match(
     output,
-    /^Hysteria2 01 = hysteria2, 203\.0\.113\.14, 443, auth=hy-secret, udp=1, peer=hy\.example, allowInsecure=1$/m,
+    /^Hysteria2 01 = hysteria2, 203\.0\.113\.14, 443, auth=hy-secret, udp=1, peer=hy\.example, allowInsecure=1, obfsParam=obfs-secret, upmbps=100, downmbps=200$/m,
   );
   assert.equal((output.match(/^Hysteria2 01 =/gm) ?? []).length, 1);
 });
 
-test("fails instead of silently dropping an omitted unsupported node", () => {
+test("reports and removes an omitted unsupported node without failing the config", () => {
   const unknown = `proxies:
   - {name: Future 01, server: 203.0.113.50, port: 443, type: future-protocol}
 `;
-  assert.throws(
-    () => buildShadowrocketConfig(SKELETON, unknown),
-    /omitted unsupported proxy type future-protocol/,
+  const output = buildShadowrocketConfig(SKELETON, unknown);
+  assert.match(
+    output,
+    /^# WARNING: skipped proxy "Future 01" \(future-protocol\): .*unsupported proxy type future-protocol\.$/m,
   );
+  assert.match(output, /^香港 01 = ss,/m);
+  assert.doesNotMatch(output, /^Future 01 =/m);
 });
 
 test("rejects delimiters that would corrupt native policy membership", () => {
@@ -100,4 +103,33 @@ test("rejects delimiters that would corrupt native policy membership", () => {
     () => buildShadowrocketConfig(SKELETON, unsafe),
     /node name contains an unsupported delimiter/,
   );
+});
+
+test("recognizes a hash inside an existing native proxy name", () => {
+  const skeleton = SKELETON.replaceAll("香港 01", "HK#01");
+  const nodes = NODES.replaceAll("香港 01", "HK#01");
+  const output = buildShadowrocketConfig(skeleton, nodes);
+
+  assert.match(output, /^HK#01 = ss,/m);
+  assert.match(output, /^♻️ 手动切换 = select,DIRECT,HK#01,/m);
+  assert.doesNotMatch(output, /skipped proxy "HK#01"/);
+});
+
+test("skips an incomplete TUIC v4 node and removes its group references", () => {
+  const skeleton = SKELETON.replace(
+    /^(.*= select,.*)$/gm,
+    "$1,TUIC v4",
+  );
+  const nodes = `proxies:
+  - {name: TUIC v4, server: 203.0.113.60, port: 443, token: old-token, type: tuic}
+`;
+  const output = buildShadowrocketConfig(skeleton, nodes);
+
+  assert.match(
+    output,
+    /^# WARNING: skipped proxy "TUIC v4" \(tuic\): .*missing password\.$/m,
+  );
+  assert.doesNotMatch(output, /^TUIC v4 =/m);
+  assert.doesNotMatch(output, /^.*= select,.*TUIC v4.*$/m);
+  assert.match(output, /^🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT,/m);
 });

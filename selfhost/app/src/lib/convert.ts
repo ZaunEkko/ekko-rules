@@ -1235,6 +1235,9 @@ export async function convertSubscription(
       body = inlineMihomoProviderNodes(body, nodeBody);
     }
     if (request.target === "shadowrocket" && outputMode === "complete") {
+      // This second engine pass reads the same gateway-staged input file; it
+      // does not pull the provider subscription a second time. Only the output
+      // dialect changes so the native skeleton can recover rich node fields.
       const nodeEndpoint = new URL(endpoint);
       nodeEndpoint.searchParams.set("target", "clash");
       nodeEndpoint.searchParams.delete("ver");
@@ -1348,9 +1351,23 @@ function assertConvertedBody(
 
   if (target === "shadowrocket") {
     const required = ["[Proxy]", "[Proxy Group]", "[Rule]"];
+    const lines = body.replace(/\r\n/g, "\n").split("\n");
+    const groupStart = lines.indexOf("[Proxy Group]");
+    const ruleStart = lines.indexOf("[Rule]");
+    const selectGroups = groupStart < 0 || ruleStart <= groupStart
+      ? []
+      : lines.slice(groupStart + 1, ruleStart).filter((line) => {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith(";")) {
+            return false;
+          }
+          const separator = line.indexOf("=");
+          return separator > 0 && /^\s*select\s*,/i.test(line.slice(separator + 1));
+        });
     if (
       !required.every((marker) => body.includes(marker)) ||
-      !/^\s*[^#=]+\s*=\s*select,.*policy-select-name=/m.test(body)
+      !selectGroups.length ||
+      selectGroups.some((line) => !/policy-select-name=/i.test(line))
     ) {
       throw new Error(
         "Conversion result is not a complete native Shadowrocket config.",
