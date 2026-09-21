@@ -1,4 +1,4 @@
-import type { TargetFormat } from "./capabilities";
+import { usesMihomoOutput, type TargetFormat } from "./capabilities";
 import type { ConvertOptions } from "./options";
 
 type JsonObject = Record<string, unknown>;
@@ -162,7 +162,7 @@ export function applyTargetOutputOptions(
   target: TargetFormat,
   options: ConvertOptions,
 ): string {
-  if (target === "clash") {
+  if (usesMihomoOutput(target)) {
     return options.xudp ? forceMihomoXudp(body) : body;
   }
   if (target !== "singbox") return body;

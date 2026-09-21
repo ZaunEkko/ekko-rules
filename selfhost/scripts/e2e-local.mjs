@@ -48,6 +48,9 @@ const modernLinks = [
 
 const targetMarkers = {
   clash: ["proxies:", "proxy-groups:", "rules:"],
+  // Shadowrocket is handed the same Mihomo file through its configuration
+  // entry, so it has to pass the same completeness check.
+  shadowrocket: ["proxies:", "proxy-groups:", "rules:"],
   singbox: ['"outbounds"', '"route"'],
   surge: ["[Proxy]", "[Proxy Group]", "[Rule]"],
   quanx: ["[server_local]", "[policy]", "[filter_local]"],
