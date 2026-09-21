@@ -10,6 +10,7 @@ import {
 } from "@/lib/options";
 import {
   clientInstallLabel,
+  qrCodeValue,
   qrImportValue,
   qrPasteHint,
   qrScanHint,
@@ -476,15 +477,19 @@ export function Workbench({
    * One code, whoever is pointing at it.
    *
    * It carries the `/i` address, named as a `.conf` where the target needs that
-   * signal. A client receives the file; a camera opens the bridge page. Nobody
-   * has to choose a second QR code or remember which scanner is in use.
+   * signal. Most clients receive the handoff URL directly; Shadowrocket's home
+   * scanner receives config/add so it cannot mistake a complete configuration
+   * for a node subscription. A camera still opens the bridge page.
    */
-  const qrValue = qrProfile
+  const qrAddressValue = qrProfile
     ? clientHandoffUrl(
         qrProfile.subscriptionPath,
         qrProfile.target,
         qrProfile.name,
       )
+    : "";
+  const qrValue = qrProfile
+    ? qrCodeValue(qrProfile.target, qrAddressValue, qrProfile.name)
     : "";
 
   // The link is the product, so it reads the way a config file does: one
@@ -2223,17 +2228,18 @@ export function Workbench({
                 marginSize={4}
                 title={`${qrProfile.name} 本地订阅二维码`}
               />
-              {/* The code holds an address, so show the address: someone at a
-                  desktop can paste it into the client's own URL import
-                  instead of pointing a phone at the screen. */}
+              {/* The Shadowrocket QR wraps this address in config/add so its
+                  home scanner cannot misfile it as a node subscription. Keep
+                  the raw HTTPS value visible for configuration-page imports
+                  and later refreshes. */}
               <div className="qr-value">
                 <span>远程订阅地址</span>
-                <code>{qrValue}</code>
+                <code>{qrAddressValue}</code>
                 <button
                   type="button"
                   className="qr-copy"
                   onClick={() => {
-                    void copyText(qrValue);
+                    void copyText(qrAddressValue);
                     setQrCopied(true);
                     window.setTimeout(() => setQrCopied(false), 1600);
                   }}

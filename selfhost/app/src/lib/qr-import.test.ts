@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   clientInstallLabel,
+  qrCodeValue,
   qrImportValue,
   qrScanHint,
   supportsClientInstallQr,
@@ -49,11 +50,19 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("says the named Shadowrocket config works in both scan entries", () => {
-  // There is only one code now: it carries the /i address, which answers a
-  // client with the configuration and a browser with a page that opens the
-  // client. Shadowrocket gets a named .conf path, so its home and configuration
-  // scanners can both identify the address as a complete configuration.
+test("encodes the Shadowrocket home QR as an explicit configuration import", () => {
+  const namedConfig =
+    "https://sub.example.test/i/laomao-ssr.conf?p=dXJs";
+  assert.equal(
+    qrCodeValue("shadowrocket", namedConfig, "laomao-ssr"),
+    `shadowrocket://config/add/${namedConfig}`,
+  );
+  assert.equal(qrCodeValue("clash", namedConfig, "laomao-ssr"), namedConfig);
+});
+
+test("describes the separate Shadowrocket home-scan and config-page paths", () => {
+  // The home scanner receives an explicit config/add deep link. The raw named
+  // `.conf` address stays available for the configuration page and refreshes.
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
   assert.match(qrScanHint("shadowrocket"), /首页/);

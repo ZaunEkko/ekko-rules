@@ -7,6 +7,7 @@ interface FlowMap {
 // by tests, while live connectivity for every modern protocol remains a device
 // acceptance item rather than a capability claim in the UI.
 const NATIVE_OPTION_PREFIX = /^(?:url|interval|timeout|tolerance|evaluate-before-use|policy-select-name|policy-path|policy-regex-filter|no-alert|hidden|include-other-group|include-all-proxies|filter|update-interval)=/i;
+const MANUAL_SELECTOR = "♻️ 手动切换";
 
 function splitTopLevel(value: string, delimiter = ","): string[] {
   const parts: string[] = [];
@@ -336,6 +337,45 @@ function proxyNames(lines: string[]): Set<string> {
   );
 }
 
+/**
+ * Surge collapses a select group with only DIRECT left into a same-named
+ * direct proxy. That happens when every provider node uses a protocol the
+ * Surge rendering pass cannot see yet (for example an AnyTLS-only provider).
+ * Remember and remove the alias before the lossless node pass restores nodes.
+ */
+function removeCollapsedManualSelector(lines: string[]): boolean {
+  const [start, end] = sectionRange(lines, "[Proxy]");
+  for (let index = start + 1; index < end; index += 1) {
+    const separator = lines[index].indexOf("=");
+    if (separator < 1) continue;
+    const name = lines[index].slice(0, separator).trim();
+    const value = lines[index].slice(separator + 1).trim();
+    if (name === MANUAL_SELECTOR && /^direct(?:\s*,.*)?$/i.test(value)) {
+      lines.splice(index, 1);
+      return true;
+    }
+  }
+  return false;
+}
+
+function restoreCollapsedManualSelector(lines: string[]): void {
+  const [start, end] = sectionRange(lines, "[Proxy Group]");
+  if (
+    lines
+      .slice(start + 1, end)
+      .some((line) => nativeAssignmentName(line) === MANUAL_SELECTOR)
+  ) {
+    return;
+  }
+
+  const members = ["DIRECT", ...proxyNames(lines)];
+  lines.splice(
+    start + 1,
+    0,
+    `${MANUAL_SELECTOR} = select,${members.join(",")},policy-select-name=DIRECT`,
+  );
+}
+
 function addStableDefaultsAndNodes(
   lines: string[],
   extraNames: string[],
@@ -358,6 +398,9 @@ function addStableDefaultsAndNodes(
       .filter((member) => !unavailableNames.has(member));
     const options = (optionIndex < 0 ? [] : fields.slice(optionIndex))
       .filter((option) => !/^policy-select-name=/i.test(option))
+      // On affected Shadowrocket builds, merely emitting `hidden` for the
+      // manual selector removes it from the proxy-group list even as
+      // `hidden=0`. Absence is the portable visible form.
       .filter(
         (option) =>
           groupName !== "♻️ 手动切换" || !/^hidden=/i.test(option),
@@ -368,7 +411,6 @@ function addStableDefaultsAndNodes(
     for (const name of extraNames) {
       if (!members.includes(name)) members.push(name);
     }
-    if (groupName === "♻️ 手动切换") options.push("hidden=0");
     options.push(`policy-select-name=${members[0]}`);
     lines[index] = `${groupName} = select,${[...members, ...options].join(",")}`;
   }
@@ -400,6 +442,7 @@ export function buildShadowrocketConfig(
   const lines = nativeSkeleton.replace(/\r\n/g, "\n").split("\n");
   sectionRange(lines, "[Proxy Group]");
   sectionRange(lines, "[Rule]");
+  const manualSelectorWasCollapsed = removeCollapsedManualSelector(lines);
 
   for (let index = 0; index < lines.length; index += 1) {
     lines[index] = lines[index].replace(/^bypass-tun\s*=/, "tun-excluded-routes =");
@@ -442,6 +485,7 @@ export function buildShadowrocketConfig(
   let insertAt = refreshedProxyEnd;
   while (insertAt > proxyStart + 1 && !lines[insertAt - 1].trim()) insertAt -= 1;
   lines.splice(insertAt, 0, ...warnings, ...rendered.map((item) => item.line));
+  if (manualSelectorWasCollapsed) restoreCollapsedManualSelector(lines);
   addStableDefaultsAndNodes(
     lines,
     rendered.map((item) => item.name),

@@ -296,7 +296,6 @@ async function assertShadowrocketNativeOutput() {
     "fixture-vless-reality = vless",
     "pbk=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg",
     "♻️ 手动切换 = select,DIRECT",
-    "hidden=0,policy-select-name=DIRECT",
     "policy-select-name=DIRECT",
     "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
     "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
@@ -313,12 +312,53 @@ async function assertShadowrocketNativeOutput() {
   if (/^DIRECT\s*=\s*direct\s*$/m.test(output) || /^proxies:\s*$/m.test(output)) {
     throw new Error("Shadowrocket output still contains the lossy Clash shape.");
   }
+  if (/^♻️ 手动切换 = .*\bhidden=/m.test(output)) {
+    throw new Error("Shadowrocket manual selector is still marked hidden.");
+  }
+  const groupSection = output.match(
+    /^\[Proxy Group\]\s*$([\s\S]*?)^\[[^\]]+\]\s*$/m,
+  )?.[1];
+  const groupCount = groupSection
+    ? groupSection
+        .split(/\r?\n/)
+        .filter((line) => /^[^#;\s].*?\s*=/.test(line)).length
+    : 0;
+  if (groupCount !== 43) {
+    throw new Error(
+      `Shadowrocket complete config expected 43 policy groups, got ${groupCount}.`,
+    );
+  }
   console.log(JSON.stringify({
     phase: "shadowrocket-native",
     special_policies: true,
     nested_groups: true,
+    policy_groups: groupCount,
     modern_nodes: modernLinks.map((item) => item.protocol),
   }));
+}
+
+async function assertShadowrocketAllModernManualSelector() {
+  const response = await fetch(`${baseUrl}/api/convert`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      subscriptionUrl:
+        "http://fixture:8080/shadowrocket-modern-subscription.txt",
+      target: "shadowrocket",
+    }),
+  });
+  const output = await response.text();
+  if (!response.ok) {
+    throw new Error(
+      `Shadowrocket all-modern conversion failed: HTTP ${response.status} ${output}`,
+    );
+  }
+  if (/^♻️ 手动切换\s*=\s*direct$/m.test(output)) {
+    throw new Error("Shadowrocket manual selector collapsed into a direct proxy.");
+  }
+  if (!/^♻️ 手动切换 = select,DIRECT,.*policy-select-name=DIRECT$/m.test(output)) {
+    throw new Error("Shadowrocket manual selector was not restored as a group.");
+  }
 }
 
 async function assertNamedShadowrocketImportRoute() {
@@ -337,7 +377,8 @@ async function assertNamedShadowrocketImportRoute() {
   if (
     !clientResponse.ok ||
     !config.includes("[Proxy Group]") ||
-    !config.includes("♻️ 手动切换 = select,DIRECT")
+    !config.includes("♻️ 手动切换 = select,DIRECT") ||
+    /^♻️ 手动切换 = .*\bhidden=/m.test(config)
   ) {
     throw new Error(
       `Named Shadowrocket import route did not return a complete config: HTTP ${clientResponse.status}`,
@@ -636,6 +677,7 @@ async function main() {
 
   await assertModernProtocolLinks();
   await assertShadowrocketNativeOutput();
+  await assertShadowrocketAllModernManualSelector();
   await assertNamedShadowrocketImportRoute();
   await assertGatewayModernProtocolSubscriptions();
   await assertUserAgentFallback();
