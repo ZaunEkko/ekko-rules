@@ -16,6 +16,7 @@ import {
 } from "@/lib/qr-import";
 import {
   buildStatelessConvertQuery,
+  packStatelessQuery,
   type StatelessConvertRequest,
 } from "@/lib/stateless-request";
 import { Picker } from "./picker";
@@ -450,8 +451,30 @@ export function Workbench({
     current.hostname = "localhost";
     return current.origin;
   }, [runtimeOrigin]);
+  /**
+   * The address handed to another program rather than to a person.
+   *
+   * Inside a client's own import scheme the subscription rides as a value in
+   * someone else's query, and clients disagree about how far to decode it —
+   * one of them keeps only what precedes the provider's `?`, which drops the
+   * token and imports a profile that fetches nothing. Packed into a single
+   * base64url parameter there is nothing left to disagree about. The link on
+   * the page, the one a person reads and copies, is untouched.
+   */
+  function clientHandoffUrl(subscriptionPath: string): string {
+    const separator = subscriptionPath.indexOf("?");
+    if (separator < 0) {
+      return absoluteLocalUrl(subscriptionPath, subscriptionBaseUrl);
+    }
+    const packed = packStatelessQuery(subscriptionPath.slice(separator + 1));
+    return absoluteLocalUrl(
+      `${subscriptionPath.slice(0, separator)}?${packed}`,
+      subscriptionBaseUrl,
+    );
+  }
+
   const qrSubscriptionUrl = qrProfile
-    ? absoluteLocalUrl(qrProfile.subscriptionPath, subscriptionBaseUrl)
+    ? clientHandoffUrl(qrProfile.subscriptionPath)
     : "";
   const clientInstallQrAvailable = Boolean(
     qrProfile && supportsClientInstallQr(qrProfile.target),
@@ -1211,7 +1234,7 @@ export function Workbench({
                     className="open-action is-primary"
                     href={qrImportValue(
                       target,
-                      absoluteLocalUrl(`/sub?${statelessQuery}`, subscriptionBaseUrl),
+                      clientHandoffUrl(`/sub?${statelessQuery}`),
                       "install",
                     )}
                     onClick={() => recordCurrentLink()}
@@ -1806,7 +1829,7 @@ export function Workbench({
                       className="open-action is-primary"
                       href={qrImportValue(
                         target,
-                        absoluteLocalUrl(`/sub?${statelessQuery}`, subscriptionBaseUrl),
+                        clientHandoffUrl(`/sub?${statelessQuery}`),
                         "install",
                       )}
                       onClick={() => recordCurrentLink()}
@@ -2184,6 +2207,8 @@ export function Workbench({
                 {/* Not "订阅": Shadowrocket files this under configurations,
                     which it refreshes from the same address. */}
                 客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。
+                这里的参数打包成了一段，免得客户端把嵌套的订阅地址截断；内容与
+                页面上那条链接完全一样，一样带着你的订阅凭据。
               </small>
               <button type="button" className="secondary-button" onClick={() => setQrProfile(null)}>关闭</button>
             </div>

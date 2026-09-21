@@ -327,6 +327,40 @@ async function assertGatewayModernProtocolSubscriptions() {
   }
 }
 
+/**
+ * A provider that answers by who is asking: an error page for a client it does
+ * not serve, a node list for Mihomo. The gateway has to ask a second time as
+ * the client its own output is written for — and the list it then gets carries
+ * the account's traffic counter as its first line, which the Mihomo bridge
+ * refuses unless the gateway drops it.
+ */
+async function assertUserAgentFallback() {
+  const response = await fetch(`${baseUrl}/api/convert`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      // The agent of a client this provider refuses.
+      "user-agent": "Stash/3.1.0 Clash/1.10.0",
+    },
+    body: JSON.stringify({
+      subscriptionUrl: "http://fixture:8080/ua-gated-subscription.txt",
+      target: "clash",
+    }),
+  });
+  const output = await response.text();
+  if (!response.ok) {
+    throw new Error(
+      `user-agent fallback conversion failed: HTTP ${response.status} ${output}`,
+    );
+  }
+  for (const marker of ["type: anytls", "fixture-anytls-link", "proxy-groups:"]) {
+    if (!output.includes(marker)) {
+      throw new Error(`user-agent fallback output missing: ${marker}`);
+    }
+  }
+  console.log(JSON.stringify({ phase: "user-agent-fallback", recovered: true }));
+}
+
 async function createProfile(autoUpdate, updateIntervalHours, name) {
   const response = await fetch(`${baseUrl}/api/profiles`, {
     method: "POST",
@@ -525,6 +559,7 @@ async function main() {
 
   await assertModernProtocolLinks();
   await assertGatewayModernProtocolSubscriptions();
+  await assertUserAgentFallback();
   await assertDefaultNodeOrderAndEmoji();
   await assertOutputOptionTransforms();
 
@@ -576,6 +611,7 @@ async function main() {
     scheduled_update_verified: true,
     display_prefix_isolated: true,
     modern_protocols: modernLinks.map((item) => item.protocol),
+    user_agent_fallback_verified: true,
     complete_targets: Object.keys(targetMarkers),
   }, null, 2));
 }

@@ -17,6 +17,7 @@ import {
   sanitizeSourceUserAgent,
   sanitizeSubscriptionUserinfo,
   selectUpstreamUserAgent,
+  upstreamUserAgentAttempts,
   isLoopbackBindHost,
   normalizeSubscriptionBaseUrl,
   requestTextWithLimits,
@@ -475,6 +476,31 @@ test("asks the provider the way the output reads when the caller is another fami
   assert.equal(
     selectUpstreamUserAgent("shadowrocket", "MyAgent/1", "Shadowrocket/2.2.70"),
     "MyAgent/1",
+  );
+});
+
+test("asks a second time as the target's own client when the first answer is unusable", () => {
+  // One provider answers Stash with an error page and Mihomo with a node
+  // list; another answers Shadowrocket with a legacy list where the requested
+  // output needs a Clash document. Both reached the visitor as a bare 502, so
+  // a refused or unusable first answer is followed by one more question.
+  assert.deepEqual(
+    upstreamUserAgentAttempts("clash", "", "Stash/3.1.0 Clash/1.10.0"),
+    ["Stash/3.1.0 Clash/1.10.0", "clash.meta"],
+  );
+  // Where the agent already follows the output, there is nothing to retry.
+  assert.deepEqual(
+    upstreamUserAgentAttempts("shadowrocket", "", "Shadowrocket/2.2.70"),
+    ["clash.meta"],
+  );
+  assert.deepEqual(upstreamUserAgentAttempts("clash", "", "clash.meta"), [
+    "clash.meta",
+  ]);
+  // An agent the person typed is used alone: overriding this is the point of
+  // the field, and a silent second question would undo it.
+  assert.deepEqual(
+    upstreamUserAgentAttempts("clash", "MyAgent/1", "Stash/3.1.0"),
+    ["MyAgent/1"],
   );
 });
 

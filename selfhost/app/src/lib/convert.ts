@@ -143,6 +143,38 @@ const CLIENT_FAMILY_PATTERNS: Record<TargetFormat, RegExp> = {
   mellow: /mellow/i,
 };
 
+/** The agent a target's own output is written for. */
+export function defaultUpstreamUserAgent(target: TargetFormat): string {
+  return DEFAULT_UPSTREAM_USER_AGENTS[target];
+}
+
+/**
+ * The agents to try upstream, in order.
+ *
+ * Providers decide what to answer by who is asking, and they get it wrong in
+ * both directions: one hands Stash an error page ("遇到了些问题，我们正在进行
+ * 处理"), another hands Shadowrocket a legacy node list where the requested
+ * output needs a Clash document. Both reached the visitor as a 502 that named
+ * nothing, and neither is something a visitor could be expected to diagnose.
+ *
+ * So the agent is not a single guess: the first attempt suits the caller, and
+ * the second is the client this target's own output is written for. An agent
+ * the person typed is used alone — overriding this is exactly what they asked
+ * for by typing it.
+ */
+export function upstreamUserAgentAttempts(
+  target: TargetFormat,
+  customValue: string | null | undefined,
+  sourceValue: string | null | undefined,
+): string[] {
+  const chosen = selectUpstreamUserAgent(target, customValue, sourceValue);
+  const fallback = defaultUpstreamUserAgent(target);
+  if (sanitizeSourceUserAgent(customValue) || chosen === fallback) {
+    return [chosen];
+  }
+  return [chosen, fallback];
+}
+
 export function selectUpstreamUserAgent(
   target: TargetFormat,
   customValue: string | null | undefined,
@@ -927,24 +959,51 @@ export async function convertSubscription(
     remainingMs(),
   );
 
-  const preflight = await requestTextWithLimits(safeUrl.href, {
-    method: "GET",
-    timeoutMs: remainingMs(),
-    maxBytes: runtime.maxSubscriptionBytes,
-    userAgent: upstreamUserAgent,
-    requestLabel: "Subscription fetch",
-    resolvedAddresses,
-  });
-  if (!preflight.ok) {
-    throw new Error(`Subscription fetch failed with HTTP ${preflight.status}.`);
+  // Ordered by `upstreamUserAgentAttempts`: the caller's agent first, then the
+  // one this target's output is written for. A provider that refuses the first
+  // or answers it with something no subscription can be built from gets a
+  // second question rather than handing the visitor an unexplained 502.
+  const userAgentAttempts = upstreamUserAgentAttempts(
+    request.target,
+    convertOptions.customUserAgent,
+    options.sourceUserAgent,
+  );
+
+  let preflight: Awaited<ReturnType<typeof requestTextWithLimits>> | undefined;
+  let effectiveUserAgent = upstreamUserAgent;
+  let refusal = "Subscription content is empty or unsupported.";
+  for (const agent of userAgentAttempts) {
+    const attempt = await requestTextWithLimits(safeUrl.href, {
+      method: "GET",
+      timeoutMs: remainingMs(),
+      maxBytes: runtime.maxSubscriptionBytes,
+      userAgent: agent,
+      requestLabel: "Subscription fetch",
+      resolvedAddresses,
+    });
+    if (!attempt.ok) {
+      refusal = `Subscription fetch failed with HTTP ${attempt.status}.`;
+      continue;
+    }
+    if (!looksLikeSubscription(attempt.body)) {
+      refusal = "Subscription content is empty or unsupported.";
+      continue;
+    }
+    preflight = attempt;
+    effectiveUserAgent = agent;
+    break;
+  }
+  if (!preflight) {
+    throw new Error(refusal);
+  }
+  if (effectiveUserAgent !== upstreamUserAgent) {
+    // The agent itself is never logged: it is the calling client's, not ours.
+    safeLog("subscription.user_agent_fallback", { target: request.target });
   }
   const subscriptionUserinfo = sanitizeSubscriptionUserinfo(
     preflight.headers.get("subscription-userinfo"),
   );
   const subscriptionBody = preflight.body;
-  if (!looksLikeSubscription(subscriptionBody)) {
-    throw new Error("Subscription content is empty or unsupported.");
-  }
 
   // A subscription that keeps its nodes in `proxy-providers:` hands over a
   // config, not nodes. Follow those URLs here, under the same checks the
@@ -975,7 +1034,7 @@ export async function convertSubscription(
         method: "GET",
         timeoutMs: providerRemainingMs(),
         maxBytes: runtime.maxSubscriptionBytes,
-        userAgent: upstreamUserAgent,
+        userAgent: effectiveUserAgent,
         requestLabel: "Proxy provider fetch",
         resolvedAddresses: providerAddresses,
       });
