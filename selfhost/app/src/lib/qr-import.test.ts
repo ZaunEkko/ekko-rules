@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   clientInstallLabel,
   clientInstallQrHint,
+  defaultQrImportMode,
   qrImportValue,
   supportsClientInstallQr,
 } from "./qr-import";
@@ -38,9 +39,6 @@ test("installs Shadowrocket through its configuration entry", () => {
   );
   assert.equal(clientInstallLabel("shadowrocket"), "一键导入 Shadowrocket");
   assert.match(clientInstallQrHint("shadowrocket"), /Shadowrocket/);
-  // The dead end that made the first release look broken: the client's own
-  // scanner takes node subscriptions only, so the hint has to say so.
-  assert.match(clientInstallQrHint("shadowrocket"), /自带的扫码入口/);
 });
 
 test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
@@ -52,4 +50,22 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   );
   assert.equal(clientInstallLabel("singbox"), "");
   assert.match(clientInstallQrHint("singbox"), /QR/);
+});
+
+test("shows the code the client's own import entry can actually read", () => {
+  // Each scanner refuses what the other one needs. ClashMetaForAndroid's scan
+  // entry answers "Unsupported url clash://install-config?…" and writes plain
+  // addresses straight into its address field, so Mihomo clients open on the
+  // address. Shadowrocket's scan entry takes node subscriptions only, which
+  // would drop every rule, so that one opens on the scheme.
+  assert.equal(defaultQrImportMode("clash"), "raw");
+  assert.equal(defaultQrImportMode("shadowrocket"), "install");
+  assert.equal(defaultQrImportMode("singbox"), "raw");
+
+  // Both codes stay available, and each hint names the entry that reads it.
+  assert.match(clientInstallQrHint("clash", "raw"), /客户端/);
+  assert.match(clientInstallQrHint("clash", "install"), /系统相机/);
+  assert.match(clientInstallQrHint("clash", "install"), /Unsupported url/);
+  assert.match(clientInstallQrHint("shadowrocket", "install"), /系统相机/);
+  assert.match(clientInstallQrHint("shadowrocket", "raw"), /节点订阅/);
 });
