@@ -3,6 +3,16 @@ name: Publish selfhost images
 # Builds the self-hosted converter images and publishes them to GHCR so a
 # server deploys a known digest instead of building from source.
 #
+# Two release lines, because two things change at different times. The rules
+# are the product; the site is how they are delivered. A tag names one of
+# them and only its image is rebuilt, so a copy fix on the page no longer
+# republishes the engine and restarts it on every server that follows
+# `latest`, and a rules release no longer implies the site changed.
+#
+#   rules-v1.2.3     the ruleset, the config and the bases  -> engine image
+#   site-v1.2.3      the gateway and the page               -> web image
+#   selfhost-v1.2.3  what both were released under before   -> both images
+#
 # No server credential lives in this repository: the VPS pulls, nothing here
 # pushes to it. See selfhost/docs/vps.md for the update timer that consumes
 # these images.
@@ -10,6 +20,8 @@ name: Publish selfhost images
 on:
   push:
     tags:
+      - "rules-v*"
+      - "site-v*"
       - "selfhost-v*"
   workflow_dispatch:
     inputs:
@@ -50,12 +62,36 @@ jobs:
           echo "WEB_IMAGE=${REGISTRY}/${owner}/ekko-rules-selfhost-web" >> "$GITHUB_ENV"
           echo "ENGINE_IMAGE=${REGISTRY}/${owner}/ekko-rules-selfhost-subconverter" >> "$GITHUB_ENV"
           short_sha="$(git rev-parse --short HEAD)"
-          version="${GITHUB_REF_NAME}"
-          if [ "${GITHUB_REF_TYPE}" != "tag" ]; then version="sha-${short_sha}"; fi
-          # selfhost-v0.1.0 must publish as 0.1.0, which is what the deploy
-          # docs tell operators to pin in EKKO_IMAGE_TAG.
-          version="${version#selfhost-}"
+          # The date the release points at, shown next to the rules version so
+          # "which rules am I running" has an answer a person can read.
+          built="$(git log -1 --format=%cs)"
+
+          # Which line this tag belongs to decides what gets rebuilt. A ref
+          # that names neither line — a manual dispatch — builds both, because
+          # it cannot know which half the operator wanted.
+          ref="${GITHUB_REF_NAME}"
+          build_engine=true
+          build_web=true
+          case "${GITHUB_REF_TYPE}:${ref}" in
+            tag:rules-v*)
+              build_web=false
+              version="${ref#rules-}"
+              ;;
+            tag:site-v*)
+              build_engine=false
+              version="${ref#site-}"
+              ;;
+            tag:selfhost-v*)
+              version="${ref#selfhost-}"
+              ;;
+            *)
+              version="sha-${short_sha}"
+              ;;
+          esac
+          # rules-v0.1.0 must publish as 0.1.0, which is what the deploy docs
+          # tell operators to pin in EKKO_ENGINE_TAG / EKKO_WEB_TAG.
           version="${version#v}"
+
           # A server that follows `latest` must only ever receive releases.
           # A manual dispatch still publishes sha-<commit> (and any extra tag
           # asked for), but it does not move the pointer those servers track.
@@ -66,8 +102,8 @@ jobs:
             is_release=true
           fi
           # `latest` is not a name anything else may claim. The optional input
-          # is one way in; a ref named `latest`, `vlatest` or `selfhost-vlatest`
-          # is the other, since the stripping above turns all three into the
+          # is one way in; a ref named `latest`, `vlatest` or `site-vlatest` is
+          # the other, since the stripping above turns all of them into the
           # same string and every build tags $IMAGE:$VERSION unconditionally.
           for candidate in "${version}" "${EXTRA_TAG:-}"; do
             if [ "$(echo "$candidate" | tr "[:upper:]" "[:lower:]")" = "latest" ]; then
@@ -77,7 +113,18 @@ jobs:
           done
           echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "built=${built}" >> "$GITHUB_OUTPUT"
           echo "is_release=${is_release}" >> "$GITHUB_OUTPUT"
+          echo "build_engine=${build_engine}" >> "$GITHUB_OUTPUT"
+          echo "build_web=${build_web}" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Publishing"
+            echo ""
+            echo "- ref: \`${ref}\`"
+            echo "- version: \`${version}\`"
+            echo "- engine image: ${build_engine}"
+            echo "- web image: ${build_web}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Confirm the rule snapshot matches the repository
         shell: bash
@@ -94,31 +141,42 @@ jobs:
           set -euo pipefail
           printf "%s" "$GHCR_TOKEN" | docker login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
 
-      # Both images are built before anything is pushed, and `latest` moves
-      # only after both are in the registry under immutable tags. Promoting it
-      # from inside a per-image step would let a failed web build leave a new
-      # engine `latest` paired with the previous web one, and a server whose
-      # timer follows `latest` would deploy that mismatched pair.
-      - name: Build both images
+      # Everything this release covers is built before anything is pushed, and
+      # `latest` moves only after the immutable tags are in the registry.
+      # Promoting it from inside a per-image step would let a failed second
+      # build leave a new `latest` behind for the first.
+      - name: Build the images this release covers
         shell: bash
         env:
           VERSION: ${{ steps.tags.outputs.version }}
           SHORT_SHA: ${{ steps.tags.outputs.short_sha }}
+          BUILT: ${{ steps.tags.outputs.built }}
+          BUILD_ENGINE: ${{ steps.tags.outputs.build_engine }}
+          BUILD_WEB: ${{ steps.tags.outputs.build_web }}
           EXTRA_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          engine=(--tag "$ENGINE_IMAGE:$VERSION" --tag "$ENGINE_IMAGE:sha-$SHORT_SHA")
-          web=(
-            --build-arg "EKKO_RULES_VERSION=$VERSION"
-            --tag "$WEB_IMAGE:$VERSION"
-            --tag "$WEB_IMAGE:sha-$SHORT_SHA"
-          )
-          if [ -n "$EXTRA_TAG" ]; then
-            engine+=(--tag "$ENGINE_IMAGE:$EXTRA_TAG")
-            web+=(--tag "$WEB_IMAGE:$EXTRA_TAG")
+          if [ "$BUILD_ENGINE" = "true" ]; then
+            engine=(
+              # The engine answers for its own rules at runtime, so the version
+              # has to be inside the image rather than beside it.
+              --build-arg "EKKO_RULES_VERSION=$VERSION"
+              --build-arg "EKKO_RULES_BUILT=$BUILT"
+              --tag "$ENGINE_IMAGE:$VERSION"
+              --tag "$ENGINE_IMAGE:sha-$SHORT_SHA"
+            )
+            if [ -n "$EXTRA_TAG" ]; then engine+=(--tag "$ENGINE_IMAGE:$EXTRA_TAG"); fi
+            docker build "${engine[@]}" selfhost/subconverter
           fi
-          docker build "${engine[@]}" selfhost/subconverter
-          docker build "${web[@]}" selfhost/app
+          if [ "$BUILD_WEB" = "true" ]; then
+            web=(
+              --build-arg "EKKO_SITE_VERSION=$VERSION"
+              --tag "$WEB_IMAGE:$VERSION"
+              --tag "$WEB_IMAGE:sha-$SHORT_SHA"
+            )
+            if [ -n "$EXTRA_TAG" ]; then web+=(--tag "$WEB_IMAGE:$EXTRA_TAG"); fi
+            docker build "${web[@]}" selfhost/app
+          fi
 
       # Named tags rather than --all-tags: the latter pushes whatever happens
       # to be tagged locally, which is how `latest` escapes by accident.
@@ -127,10 +185,15 @@ jobs:
         env:
           VERSION: ${{ steps.tags.outputs.version }}
           SHORT_SHA: ${{ steps.tags.outputs.short_sha }}
+          BUILD_ENGINE: ${{ steps.tags.outputs.build_engine }}
+          BUILD_WEB: ${{ steps.tags.outputs.build_web }}
           EXTRA_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          for image in "$ENGINE_IMAGE" "$WEB_IMAGE"; do
+          images=()
+          if [ "$BUILD_ENGINE" = "true" ]; then images+=("$ENGINE_IMAGE"); fi
+          if [ "$BUILD_WEB" = "true" ]; then images+=("$WEB_IMAGE"); fi
+          for image in "${images[@]}"; do
             docker push "$image:$VERSION"
             docker push "$image:sha-$SHORT_SHA"
             if [ -n "$EXTRA_TAG" ]; then docker push "$image:$EXTRA_TAG"; fi
@@ -141,12 +204,17 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ steps.tags.outputs.version }}
+          BUILD_ENGINE: ${{ steps.tags.outputs.build_engine }}
+          BUILD_WEB: ${{ steps.tags.outputs.build_web }}
         run: |
           set -euo pipefail
-          for image in "$ENGINE_IMAGE" "$WEB_IMAGE"; do
+          images=()
+          if [ "$BUILD_ENGINE" = "true" ]; then images+=("$ENGINE_IMAGE"); fi
+          if [ "$BUILD_WEB" = "true" ]; then images+=("$WEB_IMAGE"); fi
+          for image in "${images[@]}"; do
             docker tag "$image:$VERSION" "$image:latest"
           done
-          for image in "$ENGINE_IMAGE" "$WEB_IMAGE"; do
+          for image in "${images[@]}"; do
             docker push "$image:latest"
           done
 
@@ -154,11 +222,16 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ steps.tags.outputs.version }}
+          BUILD_ENGINE: ${{ steps.tags.outputs.build_engine }}
+          BUILD_WEB: ${{ steps.tags.outputs.build_web }}
         run: |
           set -euo pipefail
+          images=()
+          if [ "$BUILD_ENGINE" = "true" ]; then images+=("$ENGINE_IMAGE"); fi
+          if [ "$BUILD_WEB" = "true" ]; then images+=("$WEB_IMAGE"); fi
           echo "### Published images" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          for image in "$ENGINE_IMAGE" "$WEB_IMAGE"; do
+          for image in "${images[@]}"; do
             digest="$(docker image inspect --format "{{index .RepoDigests 0}}" "$image:$VERSION" || echo unknown)"
             echo "- $image:$VERSION" >> "$GITHUB_STEP_SUMMARY"
             echo "  - $digest" >> "$GITHUB_STEP_SUMMARY"
