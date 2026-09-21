@@ -40,7 +40,6 @@ export function generateMetadata(): Metadata {
       "Mihomo 配置",
       "sing-box 配置",
       "Shadowrocket 配置",
-      "小火箭 订阅转换",
       "subconverter",
       "分流规则",
       "Ekko Rules",

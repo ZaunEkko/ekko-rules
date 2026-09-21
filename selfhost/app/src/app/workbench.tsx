@@ -376,12 +376,12 @@ export function Workbench({
   const shadowrocketNote =
     target === "shadowrocket" ? (
       <p className="open-client-note">
-        <b>小火箭要从「配置」进，不是「订阅」。</b>
+        <b>Shadowrocket 要从「配置」进，不是「订阅」。</b>
         一键按钮和二维码给的是 <code>shadowrocket://config/add/</code>，落在「配置」
         页里，点一下使用即可；把同一条链接贴进首页的「添加订阅」只会拿到节点，规则不会
-        跟过去。手机上直接点按钮最稳，二维码要用系统相机扫——小火箭自带的扫码入口只收
+        跟过去。手机上直接点按钮最稳，二维码要用系统相机扫——Shadowrocket 自带的扫码入口只收
         节点订阅，扫这个码不会有反应；跨设备也可以复制链接，在「配置」页右上角 ➕ 粘贴。
-        它还不读 Clash 的 <code>dns:</code> 段，DNS 走小火箭自己的设置，节点、策略组与
+        它还不读 Clash 的 <code>dns:</code> 段，DNS 走 Shadowrocket 自己的设置，节点、策略组与
         分流规则照常带入。
       </p>
     ) : null;
@@ -789,6 +789,30 @@ export function Workbench({
     };
   }
 
+  /**
+   * Every way of taking a link away counts as having made it.
+   *
+   * The record used to be written only by the copy button, so someone who
+   * imported in one tap, or scanned the code with a phone, came back to an
+   * empty list and had to rebuild the link to see it again. Copy, scan and
+   * one-tap import now leave the same record.
+   */
+  function recordCurrentLink(profile: Profile = buildStatelessProfile()): Profile {
+    rememberLink(
+      absoluteLocalUrl(profile.subscriptionPath, subscriptionBaseUrl),
+      target,
+      convertOptions,
+      profileName || selectedTarget.short_label,
+      {
+        url: subscriptionUrl,
+        remoteConfigId,
+        customRemoteConfig,
+        convertOptions,
+      },
+    );
+    return profile;
+  }
+
   async function createProfile(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -800,7 +824,7 @@ export function Workbench({
         setError("请填写远程配置地址，或改回内置选项。");
         return;
       }
-      const profile = buildStatelessProfile();
+      const profile = recordCurrentLink();
       setCreatedProfile(profile);
       openQr(profile);
       return;
@@ -1190,6 +1214,7 @@ export function Workbench({
                       absoluteLocalUrl(`/sub?${statelessQuery}`, subscriptionBaseUrl),
                       "install",
                     )}
+                    onClick={() => recordCurrentLink()}
                   >
                     {clientInstallLabel(target)}
                   </a>
@@ -1200,22 +1225,7 @@ export function Workbench({
                     sourceReady && supportsClientInstallQr(target) ? "" : "is-primary"
                   }`}
                   disabled={!sourceReady}
-                  onClick={() => {
-                    const built = buildStatelessProfile();
-                    void copyUrl(built);
-                    rememberLink(
-                      absoluteLocalUrl(built.subscriptionPath, subscriptionBaseUrl),
-                      target,
-                      convertOptions,
-                      profileName || selectedTarget.short_label,
-                      {
-                        url: subscriptionUrl,
-                        remoteConfigId,
-                        customRemoteConfig,
-                        convertOptions,
-                      },
-                    );
-                  }}
+                  onClick={() => void copyUrl(recordCurrentLink())}
                 >
                   {copying === "stateless" ? "已复制" : "复制链接"}
                 </button>
@@ -1223,7 +1233,7 @@ export function Workbench({
                   type="button"
                   className="open-action"
                   disabled={!sourceReady}
-                  onClick={() => openQr(buildStatelessProfile())}
+                  onClick={() => openQr(recordCurrentLink())}
                 >
                   扫码导入
                 </button>
@@ -1796,6 +1806,7 @@ export function Workbench({
                         absoluteLocalUrl(`/sub?${statelessQuery}`, subscriptionBaseUrl),
                         "install",
                       )}
+                      onClick={() => recordCurrentLink()}
                     >
                       {clientInstallLabel(target)}
                     </a>
@@ -1806,22 +1817,7 @@ export function Workbench({
                       sourceReady && supportsClientInstallQr(target) ? "" : "is-primary"
                     }`}
                     disabled={!sourceReady}
-                    onClick={() => {
-                    const built = buildStatelessProfile();
-                    void copyUrl(built);
-                    rememberLink(
-                      absoluteLocalUrl(built.subscriptionPath, subscriptionBaseUrl),
-                      target,
-                      convertOptions,
-                      profileName || selectedTarget.short_label,
-                      {
-                        url: subscriptionUrl,
-                        remoteConfigId,
-                        customRemoteConfig,
-                        convertOptions,
-                      },
-                    );
-                  }}
+                    onClick={() => void copyUrl(recordCurrentLink())}
                   >
                     {copying === "stateless" ? "已复制" : "复制链接"}
                   </button>
@@ -1829,7 +1825,7 @@ export function Workbench({
                     type="button"
                     className="open-action"
                     disabled={!sourceReady}
-                    onClick={() => openQr(buildStatelessProfile())}
+                    onClick={() => openQr(recordCurrentLink())}
                   >
                     扫码导入
                   </button>

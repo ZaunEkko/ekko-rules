@@ -36,7 +36,7 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
     // nothing with this code and looks broken. Say where the code does work
     // before someone scans it in the wrong place.
     qrHint:
-      "用系统相机扫，弹出的提示选择 Shadowrocket 打开，会按「配置文件」装进去。小火箭自带的扫码入口只收节点订阅，扫这个码不会有反应。",
+      "用系统相机扫，弹出的提示选择 Shadowrocket 打开，会按「配置文件」装进去。Shadowrocket 自带的扫码入口只收节点订阅，扫这个码不会有反应。",
   },
 };
 
