@@ -29,26 +29,21 @@ export const TARGET_DEFINITIONS = {
   shadowrocket: {
     label: "Shadowrocket",
     shortLabel: "Shadowrocket",
-    // Shadowrocket reads Clash YAML as a configuration file, and a Clash link
-    // that carries nodes imports the configuration and the nodes together
-    // (Shadowrocket 使用手册 · 配置文件). So this target is the Mihomo output,
-    // handed over through the client's own configuration entry rather than
-    // through the node-subscription entry, which would carry no rules at all.
-    engineTarget: "clash",
-    engineParams: {},
-    extension: "yaml",
-    contentType: "text/yaml; charset=utf-8",
-    clientFamily: "Shadowrocket（配置文件读 Clash YAML）",
+    // The engine's Surge 4 renderer gives us Shadowrocket's native sectioned
+    // configuration shape. The gateway then restores modern nodes from a
+    // lossless Mihomo node pass and pins each select group's first policy.
+    engineTarget: "surge",
+    engineParams: { ver: "4" },
+    extension: "conf",
+    contentType: "text/plain; charset=utf-8",
+    clientFamily: "Shadowrocket 原生配置",
     clientExamples: ["Shadowrocket"],
     tier: "mainstream",
-    // Confirmed on a device on 2026-09-21: scanning the code with the phone's
-    // camera installed the configuration and its nodes together, through the
-    // client's own configuration entry. What is still unconfirmed is narrower
-    // — which modern protocols its YAML parser accepts — so the list below
-    // stays empty and the page says "依客户端能力输出" rather than claiming a
-    // protocol verification nobody ran.
+    // Structural retention is covered by the conversion suite. A live device
+    // connection check has not yet been run for every modern protocol, so the
+    // verified list remains conservative.
     protocolNote:
-      "与 Clash / Mihomo 同一份配置；真机已确认配置与节点一并导入，具体协议看 Shadowrocket 自己的解析",
+      "原生配置保留 DIRECT、REJECT、策略组嵌套与节点；现代协议连接能力以客户端为准",
     verifiedModernProtocols: [],
   },
   singbox: {
@@ -161,8 +156,7 @@ export function isSupportedTarget(value: string): value is TargetFormat {
 
 /**
  * Targets whose body is a Mihomo configuration file. Derived from the table
- * above rather than listed again, so a new client that reads the same YAML
- * joins this set by declaring its engine target and nothing else.
+ * above rather than listed again.
  */
 export type MihomoTarget = {
   [Key in TargetFormat]: (typeof TARGET_DEFINITIONS)[Key]["engineTarget"] extends "clash"
@@ -171,9 +165,8 @@ export type MihomoTarget = {
 }[TargetFormat];
 
 /**
- * Shadowrocket imports the same YAML through its configuration entry, so every
- * step that exists because the output is Mihomo — the provider inlining, the
- * credential quoting, the completeness check — has to run for it too.
+ * Every step that exists because the output is Mihomo — provider inlining,
+ * credential quoting and completeness checks — keys off this predicate.
  */
 export function usesMihomoOutput(target: TargetFormat): target is MihomoTarget {
   return TARGET_DEFINITIONS[target].engineTarget === "clash";

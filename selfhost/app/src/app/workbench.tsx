@@ -369,10 +369,9 @@ export function Workbench({
   const compatibilityTargets = targets.filter(
     (item) => item.tier === "compatibility",
   );
-  // Mihomo-shaped outputs carry `packet-encoding`, and Shadowrocket is handed
-  // the same file, so the switch stays meaningful there too.
-  const supportsXudp =
-    target === "clash" || target === "shadowrocket" || target === "singbox";
+  // Mihomo and sing-box expose a verified XUDP field. The native Shadowrocket
+  // renderer deliberately does not advertise an unverified equivalent.
+  const supportsXudp = target === "clash" || target === "singbox";
   const enabledOptionCount = countEnabledOptions({
     ...convertOptions,
     xudp: supportsXudp && convertOptions.xudp,

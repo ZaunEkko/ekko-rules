@@ -187,7 +187,7 @@ uninstall-helper.cmd
 | 输出 | 常见客户端 | 文件 |
 |---|---|---|
 | Clash / Mihomo | Clash Verge Rev、Mihomo Party、FlClash | YAML |
-| Shadowrocket | Shadowrocket | YAML |
+| Shadowrocket | Shadowrocket | CONF |
 | sing-box | sing-box、SFI、SFA | JSON |
 | Surge 4+ | Surge for macOS / iOS | CONF |
 | Loon | Loon | CONF |
@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 得到的字节与 Clash / Mihomo 那份完全相同：它的「配置文件」兼容 Clash YAML，含节点的配置一次导入就同时带进节点与规则，所以这里不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉。真机已核对（2026-09-21）：系统相机扫码后经它自己的「配置文件」入口导入，配置与节点一并进入。仍未逐个核对的是哪些现代协议能被它的 YAML 解析接受，页面因此不给它挂「现代协议已验证」。
+Shadowrocket 使用原生分段 `.conf`，不再把 Clash / Mihomo YAML 直接交给它。转换时先生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`。因此一次导入会同时保留节点、规则、`DIRECT`、`REJECT`、其他策略组引用和预设选择。这里仍不走引擎的 `shadowrocket` 分享链接目标——那个目标只有节点，规则会整份丢掉；二维码继续使用配置入口 `shadowrocket://config/add/`。现代协议已做结构保留测试，但尚未逐个完成真机连通验证，所以页面不把它们标成「现代协议已验证」。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 
@@ -206,7 +206,7 @@ Shadowrocket 得到的字节与 Clash / Mihomo 那份完全相同：它的「配
 
 - Emoji 国旗；
 - 强制启用 UDP、TCP Fast Open 或 TLS 1.3；
-- 为 Mihomo / sing-box 的 VLESS、VMess 节点强制使用 XUDP；关闭时保留订阅与转换引擎的自动判断；
+- 为 Mihomo / sing-box 的 VLESS、VMess 节点强制使用 XUDP；关闭时保留订阅与转换引擎的自动判断；Shadowrocket 原生格式暂不展示这个未经真机验证的开关；
 - 跳过证书验证（默认关闭）；
 - 节点名称排序、协议类型前缀和不支持节点过滤；
 - 包含/排除节点正则和节点重命名规则；
@@ -438,9 +438,9 @@ cd selfhost
 node scripts/verify-remote-configs.mjs
 ```
 
-它会遍历 `/api/capabilities` 返回的全部远程配置，断言 Ekko Rules 永远排在首位且为内置项，对每一套跑一次完整 Mihomo 转换，再用其中一套第三方配置验证 9 种客户端格式，最后确认云元数据、回环、私网、明文 HTTP 和不存在的预设都被拒绝。预设列表变动或准备上线开放部署前跑一次。
+它会遍历 `/api/capabilities` 返回的全部远程配置，断言 Ekko Rules 永远排在首位且为内置项，对每一套跑一次完整 Mihomo 转换；内置完整版与精简版会额外验证 Shadowrocket 原生策略组，第三方配置则验证其余 8 种客户端格式。最后确认云元数据、回环、私网、明文 HTTP 和不存在的预设都被拒绝。预设列表变动或准备上线开放部署前跑一次。
 
-端到端脚本会验证 9 种完整输出、Mihomo 与 sing-box 的 AnyTLS 等现代协议、Emoji/UDP/筛选/重命名等高级选项、真实源地址不出现在 Mihomo 完整配置中、Mihomo 配置语法，以及固定 URL 在普通 Compose 重启后的可用性。可通过 `MIHOMO_BIN` 指定本机 Mihomo 可执行文件。
+端到端脚本会验证 9 种完整输出、Mihomo 与 sing-box 的 AnyTLS 等现代协议、Shadowrocket 原生策略组语义与现代节点结构、Emoji/UDP/筛选/重命名等高级选项、真实源地址不出现在 Mihomo 完整配置中、Mihomo 配置语法，以及固定 URL 在普通 Compose 重启后的可用性。可通过 `MIHOMO_BIN` 指定本机 Mihomo 可执行文件。
 
 ## 第三方组件
 

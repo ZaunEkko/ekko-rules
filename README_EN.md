@@ -93,7 +93,7 @@ On Windows, `setup.cmd` additionally installs a login-time helper that tracks th
 | Stable address | The link carries every option | `/sub/<random id>` |
 | What you install | Nothing | Docker + Compose v2 |
 
-Both shapes emit nine client formats: Clash / Mihomo, Shadowrocket, sing-box, Surge 4+, Loon, Quantumult X, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Shadowrocket receives that same Mihomo file: its configuration entry reads Clash YAML, so one import brings the nodes and the rules together, and both the button and the QR code use `shadowrocket://config/add/`. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry are passed through.
+Both shapes emit nine client formats: Clash / Mihomo, Shadowrocket, sing-box, Surge 4+, Loon, Quantumult X, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Shadowrocket receives a native `.conf`, so nodes, rules, `DIRECT` / `REJECT`, nested policy groups, and each group's default choice arrive together; both the button and the QR code still use `shadowrocket://config/add/`. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry are passed through.
 
 
 ## Rules only, no conversion

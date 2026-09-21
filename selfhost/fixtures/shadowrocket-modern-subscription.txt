@@ -1,0 +1,4 @@
+anytls://fixture-password@203.0.113.23:443?peer=fixture.example.test&insecure=1#fixture-anytls-link
+hysteria2://fixture-password@203.0.113.21:443?sni=fixture.example.test&insecure=1#fixture-hysteria2-link
+tuic://00000000-0000-4000-8000-000000000003:fixture-password@203.0.113.22:443?sni=fixture.example.test&congestion_control=bbr&udp_relay_mode=native&allow_insecure=1#fixture-tuic-link
+vless://00000000-0000-4000-8000-000000000002@203.0.113.20:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=fixture.example.test&fp=chrome&pbk=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg&sid=0123456789abcdef&type=tcp#fixture-vless-reality
