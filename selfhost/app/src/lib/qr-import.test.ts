@@ -38,6 +38,9 @@ test("installs Shadowrocket through its configuration entry", () => {
   );
   assert.equal(clientInstallLabel("shadowrocket"), "一键导入 Shadowrocket");
   assert.match(clientInstallQrHint("shadowrocket"), /Shadowrocket/);
+  // The dead end that made the first release look broken: the client's own
+  // scanner takes node subscriptions only, so the hint has to say so.
+  assert.match(clientInstallQrHint("shadowrocket"), /自带的扫码入口/);
 });
 
 test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
