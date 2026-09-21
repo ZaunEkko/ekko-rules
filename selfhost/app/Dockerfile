@@ -7,20 +7,22 @@ FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ARG EKKO_RULES_VERSION=local
+ARG EKKO_SITE_VERSION=local
 ARG SUBCONVERTER_VERSION=v1.3.0
 ENV NEXT_TELEMETRY_DISABLED=1 \
-    EKKO_RULES_VERSION=$EKKO_RULES_VERSION \
+    EKKO_SITE_VERSION=$EKKO_SITE_VERSION \
     SUBCONVERTER_VERSION=$SUBCONVERTER_VERSION
 RUN npm run build
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 # Carried into the runtime image so a published tag reports its own version
-# instead of falling back to "local".
-ARG EKKO_RULES_VERSION=local
+# instead of falling back to "local". This image answers for the site only:
+# the rules are released on their own tag, and the engine image reports their
+# version at runtime.
+ARG EKKO_SITE_VERSION=local
 ARG SUBCONVERTER_VERSION=v1.3.0
-ENV EKKO_RULES_VERSION=$EKKO_RULES_VERSION \
+ENV EKKO_SITE_VERSION=$EKKO_SITE_VERSION \
     SUBCONVERTER_VERSION=$SUBCONVERTER_VERSION \
     NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
