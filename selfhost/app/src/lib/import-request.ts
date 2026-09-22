@@ -35,8 +35,8 @@ export async function handleImportRequest(request: Request) {
   try {
     const url = new URL(request.url);
     const parsed = parseStatelessConvertQuery(url.searchParams);
-    // A system-camera navigation should install the native config, while the
-    // very same QR is fetched as complete YAML by the home-page scanner.
+    // A system-camera navigation of the Home YAML link offers native config
+    // installation; an in-app Home scan still fetches its YAML subscription.
     const shadowrocketYaml =
       (url.searchParams.get("srhome") === "1" ||
         url.searchParams.get("srconfig") === "1") &&

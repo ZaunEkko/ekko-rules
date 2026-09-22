@@ -68,30 +68,30 @@ function shadowrocketNativeImportPath(name: string, query: string): string {
   );
 }
 
-/**
- * Both Shadowrocket scanners accept the native remote configuration address.
- * Keep one identity so the Home scanner can retain subscription metadata while
- * the native policy groups preserve DIRECT and REJECT as selectable members.
- */
+/** The Home scanner expects a node subscription, not a native .conf profile. */
 export function shadowrocketHomeImportPath(name: string, query: string): string {
-  return shadowrocketNativeImportPath(name, query);
+  const params = new URLSearchParams(query);
+  if (params.get("target") !== "shadowrocket") {
+    throw new Error("A Shadowrocket subscription is required.");
+  }
+  params.set("target", "clash");
+  const filename = encodeURIComponent(safeImportFilename(name));
+  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?srhome=1&${packStatelessQuery(params.toString())}&remark=${filename}`;
 }
 
-/**
- * The Config scanner uses the exact same refreshable native address. Separate
- * addresses previously created duplicate entries with different capabilities.
- */
+/** The Config scanner loads the native rules and policy groups. */
 export function shadowrocketConfigImportPath(name: string, query: string): string {
   return shadowrocketNativeImportPath(name, query);
 }
 
 export function shadowrocketHomeProfilePath(id: string, name: string): string {
   const filename = encodeURIComponent(safeImportFilename(name));
-  return `/sub/${encodeURIComponent(id)}/${filename}.conf`;
+  return `/sub/${encodeURIComponent(id)}/${filename}.yaml?srhome=1&remark=${filename}`;
 }
 
 export function shadowrocketConfigProfilePath(id: string, name: string): string {
-  return shadowrocketHomeProfilePath(id, name);
+  const filename = encodeURIComponent(safeImportFilename(name));
+  return `/sub/${encodeURIComponent(id)}/${filename}.conf`;
 }
 
 /**
