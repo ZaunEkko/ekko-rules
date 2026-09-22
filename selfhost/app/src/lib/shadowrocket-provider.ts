@@ -96,13 +96,10 @@ function externalizeGroup(
 }
 
 /**
- * Keep the complete Clash document and add a named provider for Shadowrocket.
- *
- * The two in-app scanners consume the same URL differently: the home scanner
- * refreshes the URL itself as a node subscription and therefore needs inline
- * `proxies`, while the configuration scanner can retain the provider title and
- * Subscription-Userinfo banner. Policy groups use the provider copy so the
- * imported configuration still has one authoritative remote node source.
+ * Keep one authoritative remote node source for Shadowrocket. The complete
+ * document still carries groups and rules, while its former inline node list
+ * becomes a named provider with the title and usage metadata Shadowrocket
+ * retains after configuration imports.
  */
 export function externalizeShadowrocketProvider(
   completeConfig: string,
@@ -120,9 +117,8 @@ export function externalizeShadowrocketProvider(
   const providerName = input.name.trim() || "Shadowrocket";
   const interval = Math.max(3600, Math.min(604800, Math.round(input.intervalHours * 3600)));
   lines.splice(
-    proxiesEnd,
-    0,
-    "",
+    proxiesStart,
+    proxiesEnd - proxiesStart,
     "proxy-providers:",
     `  ${JSON.stringify(providerName)}:`,
     "    type: http",
