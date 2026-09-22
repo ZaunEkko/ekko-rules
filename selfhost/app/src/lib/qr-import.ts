@@ -56,7 +56,8 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   shadowrocket: {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
-    qrHint: "在 Shadowrocket 首页扫码；下方原生 .conf 地址供「配置」页添加。",
+    qrHint:
+      "在 Shadowrocket 首页或「配置」页扫码，都会按填写的名称添加完整订阅，并保留流量与到期信息。",
   },
   singbox: {
     build: (url, name) =>
@@ -84,6 +85,27 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   },
 };
 
+/**
+ * Shadowrocket's named-subscription handoff expects standard Base64 in the
+ * `add/sub` path. URL-safe Base64 is not interchangeable here: replacing `/`
+ * and `+`, or removing `=` padding, makes current clients silently ignore the
+ * scan even though the QR itself is valid.
+ */
+function standardBase64(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}
+
+function shadowrocketNamedSubscription(url: string, name: string): string {
+  const remark = name.trim() || "Shadowrocket";
+  return (
+    `shadowrocket://add/sub/${standardBase64(url)}` +
+    `?remark=${encodeURIComponent(remark)}`
+  );
+}
+
 export function supportsClientInstallQr(target: string): boolean {
   return target in INSTALL_SCHEMES;
 }
@@ -102,7 +124,7 @@ export function clientInstallLabel(target: string): string {
  */
 export function qrPasteHint(target: string): string {
   if (target === "shadowrocket") {
-    return "首页扫码地址和原生配置地址分别在上方。粘贴到「配置」页时选原生 .conf 地址。";
+    return "扫码和一键导入会同时保住名称与订阅信息；下方原生 .conf 地址只作为配置页手动导入的兼容后备。";
   }
   return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }
@@ -130,15 +152,18 @@ export function qrImportValue(
 /**
  * The actual payload rendered into the single QR code.
  *
- * Most clients correctly classify the ordinary handoff URL themselves. The
- * Shadowrocket home scanner ignores config/add and cannot refresh a native
- * .conf as a node subscription. The caller supplies a complete YAML address
- * for that scanner; the native .conf URL is separate.
+ * Most clients correctly classify the ordinary handoff URL themselves.
+ * Shadowrocket gets a named subscription around the complete YAML address.
+ * Both scanners then enter through the same metadata-preserving path; the
+ * YAML itself still carries nodes, policy groups and rules.
  */
 export function qrCodeValue(
   target: string,
   subscriptionUrl: string,
   name = "",
 ): string {
+  if (target === "shadowrocket") {
+    return shadowrocketNamedSubscription(subscriptionUrl, name);
+  }
   return subscriptionUrl;
 }
