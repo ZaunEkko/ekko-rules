@@ -57,7 +57,7 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
     qrHint:
-      "首页或「配置」页扫码都使用完整 HTTPS 订阅；名称与流量横幅的首次显示仍以真机为准。",
+      "首页或「配置」页扫码一次都会导入完整配置；节点由同名远程订阅提供。",
   },
   singbox: {
     build: (url, name) =>
@@ -103,7 +103,7 @@ export function clientInstallLabel(target: string): string {
  */
 export function qrPasteHint(target: string): string {
   if (target === "shadowrocket") {
-    return "两个扫码入口使用同一个完整订阅地址；原生 .conf 地址仅供「配置」页手动导入。首次名称和流量横幅仍需在客户端验收。";
+    return "两个扫码入口使用同一个完整订阅地址；名称、流量和到期信息由其中的同名节点订阅提供。";
   }
   return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }

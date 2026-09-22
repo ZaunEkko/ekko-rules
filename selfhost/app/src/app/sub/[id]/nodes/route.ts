@@ -12,6 +12,7 @@ import {
 } from "@/lib/request-guard";
 import { rateLimitResponseHeaders } from "@/lib/rate-limit";
 import { STATELESS_ONLY_MESSAGE } from "@/lib/stateless-only";
+import { subscriptionMetadataHeaders } from "@/lib/subscription-metadata";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,7 +37,7 @@ export async function GET(
   try {
     const { id } = await context.params;
     const profile = await readStoredProfile(id);
-    if (profile.target !== "clash") {
+    if (profile.target !== "clash" && profile.target !== "shadowrocket") {
       throw new Error("Profile not found.");
     }
 
@@ -61,6 +62,7 @@ export async function GET(
       "Cache-Control": "no-store, no-cache, must-revalidate",
       "X-Request-Id": result.requestId,
       "X-Ekko-Target": "clash-provider-nodes",
+      ...subscriptionMetadataHeaders(profile.name),
     };
     if (profile.options.autoUpdate) {
       headers["Profile-Update-Interval"] = String(

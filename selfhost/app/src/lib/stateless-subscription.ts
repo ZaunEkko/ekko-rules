@@ -16,6 +16,11 @@ import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "./request-guard";
 import { recordMetric } from "./metrics";
 import { parseStatelessConvertQuery } from "./stateless-request";
 import { subscriptionMetadataHeaders } from "./subscription-metadata";
+import {
+  externalizeShadowrocketProvider,
+  shadowrocketProviderAddress,
+  visibleSubscriptionOrigin,
+} from "./shadowrocket-provider";
 
 /**
  * Serve a stateless conversion: everything needed comes from the query string,
@@ -39,7 +44,12 @@ export async function serveStatelessSubscription(
 
   try {
     const runtimeConfig = getRuntimeConfig();
-    const parsed = parseStatelessConvertQuery(new URL(request.url).searchParams);
+    const requestUrl = new URL(request.url);
+    const parsed = parseStatelessConvertQuery(requestUrl.searchParams);
+    const providerNodes = requestUrl.searchParams.get("srnodes") === "1" &&
+      requestUrl.pathname.endsWith(".nodes.yaml") && parsed.target === "clash";
+    const shadowrocketHome = requestUrl.searchParams.get("srhome") === "1" &&
+      requestUrl.pathname.endsWith(".yaml") && parsed.target === "clash";
     const preset = resolveRemoteConfig(
       parsed.remoteConfig,
       runtimeConfig.remoteConfigs,
@@ -57,6 +67,7 @@ export async function serveStatelessSubscription(
       },
       {
         authorize: false,
+        ...(providerNodes ? { outputMode: "clash-provider-nodes" as const } : {}),
         sourceUserAgent: request.headers.get("user-agent"),
         // Curated entries are values the operator vouched for; a pasted URL is
         // fetched by the gateway instead of being passed to the engine.
@@ -66,13 +77,27 @@ export async function serveStatelessSubscription(
       },
     );
 
+    const body = shadowrocketHome
+      ? externalizeShadowrocketProvider(result.body, {
+          name: parsed.name,
+          url: shadowrocketProviderAddress(
+            request.url,
+            visibleSubscriptionOrigin(
+              request,
+              runtimeConfig.subscriptionBaseUrl,
+              runtimeConfig.trustProxyHeaders,
+            ),
+          ),
+          intervalHours: parsed.options.updateIntervalHours,
+        })
+      : result.body;
     const headers: Record<string, string> = {
       "Content-Type": result.contentType,
       "Cache-Control": "no-store, no-cache, must-revalidate",
       // The link itself carries the upstream subscription; never leak it on.
       "Referrer-Policy": "no-referrer",
       "X-Request-Id": result.requestId,
-      "X-Ekko-Target": result.target,
+      "X-Ekko-Target": providerNodes ? "shadowrocket-provider-nodes" : result.target,
       ...subscriptionMetadataHeaders(parsed.name),
     };
     if (parsed.options.autoUpdate) {
@@ -92,9 +117,14 @@ export async function serveStatelessSubscription(
     safeLog(`${logPrefix}.convert_success`, {
       target: result.target,
       remoteConfig: preset.id,
-      bytes: result.bytes,
+      bytes: Buffer.byteLength(body, "utf8"),
+      // These booleans diagnose the first-import discrepancy without logging
+      // the profile name, upstream URL, subscription counters or client UA.
+      shadowrocketHomeRoute: shadowrocketHome,
+      usageMetadataPresent: Boolean(result.subscriptionUserinfo),
+      shadowrocketClient: /shadowrocket/i.test(request.headers.get("user-agent") || ""),
     });
-    return new NextResponse(result.body, { status: 200, headers });
+    return new NextResponse(body, { status: 200, headers });
   } catch (error) {
     const message = publicErrorMessage(error);
     safeLog(`${logPrefix}.convert_failure`, { error: message });
