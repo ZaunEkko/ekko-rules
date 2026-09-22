@@ -478,9 +478,9 @@ export function Workbench({
   /**
    * One code, whoever is pointing at it.
    *
-   * Shadowrocket has two import contexts. Keep the native .conf for manual
-   * configuration-page imports and wrap the complete YAML address in a named
-   * subscription QR so either scanner uses the metadata-preserving path.
+   * Shadowrocket has two import contexts. Keep the native .conf for the
+   * configuration page and give the home scanner a complete YAML address;
+   * its scanner ignores config/add and cannot refresh a native .conf.
    */
   const qrAddressValue = qrProfile
     ? clientHandoffUrl(
