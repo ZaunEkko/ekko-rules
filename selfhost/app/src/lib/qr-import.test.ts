@@ -50,11 +50,23 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("gives the Shadowrocket home scanner a named plain HTTPS YAML URL", () => {
+test("gives either Shadowrocket scanner a named subscription QR", () => {
   const namedConfig = "https://sub.example.test/i/laomao-ssr.yaml?p=dXJs";
-  assert.equal(
-    qrCodeValue("shadowrocket", namedConfig, "laomao-ssr"),
-    namedConfig,
+  const value = qrCodeValue("shadowrocket", namedConfig, "老猫 SSR");
+  assert.match(
+    value,
+    /^shadowrocket:\/\/add\/sub\/[A-Za-z0-9_-]+\?remark=%E8%80%81%E7%8C%AB%20SSR$/,
+  );
+  const encodedUrl = value.match(/^shadowrocket:\/\/add\/sub\/([^?]+)/)?.[1];
+  assert.ok(encodedUrl);
+  const padded = encodedUrl
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .padEnd(encodedUrl.length + ((4 - (encodedUrl.length % 4)) % 4), "=");
+  assert.equal(Buffer.from(padded, "base64").toString("utf8"), namedConfig);
+  assert.match(
+    qrCodeValue("shadowrocket", namedConfig),
+    /\?remark=Shadowrocket$/,
   );
   assert.equal(qrCodeValue("clash", namedConfig, "laomao-ssr"), namedConfig);
 });
@@ -64,6 +76,7 @@ test("describes the separate Shadowrocket home-scan and config-page paths", () =
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
   assert.match(qrScanHint("shadowrocket"), /首页/);
   assert.match(qrScanHint("shadowrocket"), /配置/);
+  assert.match(qrScanHint("shadowrocket"), /名称/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {
