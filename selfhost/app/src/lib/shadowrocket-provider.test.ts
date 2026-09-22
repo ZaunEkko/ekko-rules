@@ -75,7 +75,7 @@ test("turns include-all groups into provider-backed groups", () => {
 });
 
 test("provider URLs terminate at a distinct nodes-only route without losing parameters", () => {
-  const mainUrl = "http://web:3000/i/laomao.yaml?srhome=1&p=abc&remark=laomao#duplicate";
+  const mainUrl = "http://web:3000/i/laomao.yaml?srconfig=1&p=abc&remark=laomao#duplicate";
   const expected = "https://sub.example.test/i/laomao.nodes.yaml?p=abc&remark=laomao&srnodes=1";
   assert.equal(
     shadowrocketProviderAddress(mainUrl, "https://sub.example.test"),

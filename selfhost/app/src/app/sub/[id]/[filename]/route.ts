@@ -50,21 +50,26 @@ export async function GET(
       },
       { authorize: false, sourceUserAgent: request.headers.get("user-agent") },
     );
-    const providerOrigin = visibleSubscriptionOrigin(
-      request,
-      getRuntimeConfig().subscriptionBaseUrl,
-      getRuntimeConfig().trustProxyHeaders,
-    );
-    const body = externalizeShadowrocketProvider(result.body, {
-      name: profile.name,
-      url: new URL(`/sub/${encodeURIComponent(id)}/nodes`, providerOrigin).toString(),
-      intervalHours: profile.options.updateIntervalHours,
-    });
+    const configScan = new URL(request.url).searchParams.get("srconfig") === "1";
+    const body = configScan
+      ? externalizeShadowrocketProvider(result.body, {
+          name: profile.name,
+          url: new URL(
+            `/sub/${encodeURIComponent(id)}/nodes`,
+            visibleSubscriptionOrigin(
+              request,
+              getRuntimeConfig().subscriptionBaseUrl,
+              getRuntimeConfig().trustProxyHeaders,
+            ),
+          ).toString(),
+          intervalHours: profile.options.updateIntervalHours,
+        })
+      : result.body;
     const headers: Record<string, string> = {
       "Content-Type": result.contentType,
       "Cache-Control": "no-store, no-cache, must-revalidate",
       "X-Request-Id": result.requestId,
-      "X-Ekko-Target": "shadowrocket-home",
+      "X-Ekko-Target": configScan ? "shadowrocket-config" : "shadowrocket-home",
       ...subscriptionMetadataHeaders(profile.name),
     };
     if (profile.options.autoUpdate) {
@@ -73,7 +78,10 @@ export async function GET(
     if (result.subscriptionUserinfo) {
       headers["Subscription-Userinfo"] = result.subscriptionUserinfo;
     }
-    safeLog("profile.shadowrocket_home_success", { bytes: Buffer.byteLength(body, "utf8") });
+    safeLog("profile.shadowrocket_yaml_success", {
+      bytes: Buffer.byteLength(body, "utf8"),
+      configScan,
+    });
     return new NextResponse(body, { status: 200, headers });
   } catch (error) {
     const message = publicErrorMessage(error);

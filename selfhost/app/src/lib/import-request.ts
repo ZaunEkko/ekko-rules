@@ -37,9 +37,11 @@ export async function handleImportRequest(request: Request) {
     const parsed = parseStatelessConvertQuery(url.searchParams);
     // A system-camera navigation should install the native config, while the
     // very same QR is fetched as complete YAML by the home-page scanner.
-    const shadowrocketHome = url.searchParams.get("srhome") === "1" &&
+    const shadowrocketYaml =
+      (url.searchParams.get("srhome") === "1" ||
+        url.searchParams.get("srconfig") === "1") &&
       url.pathname.endsWith(".yaml") && parsed.target === "clash";
-    const nativeQuery = shadowrocketHome
+    const nativeQuery = shadowrocketYaml
       ? buildStatelessConvertQuery({
           subscriptionUrl: parsed.subscriptionUrl,
           target: "shadowrocket",
@@ -48,7 +50,7 @@ export async function handleImportRequest(request: Request) {
           remoteConfig: parsed.remoteConfig,
         })
       : "";
-    const nativeUrl = shadowrocketHome
+    const nativeUrl = shadowrocketYaml
       ? new URL(
           clientImportPath("shadowrocket", parsed.name, packStatelessQuery(nativeQuery)),
           url,
@@ -58,7 +60,7 @@ export async function handleImportRequest(request: Request) {
     safeLog("import.page", { target: parsed.target });
     return new NextResponse(
       renderImportPage({
-        target: shadowrocketHome ? "shadowrocket" : parsed.target,
+        target: shadowrocketYaml ? "shadowrocket" : parsed.target,
         subscriptionUrl: address,
         name: parsed.name,
         downloadUrl: `${STATELESS_SUBSCRIPTION_PATH}${nativeUrl.search}`,

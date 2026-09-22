@@ -68,7 +68,7 @@ test("keeps the Shadowrocket QR as HTTPS while its button uses config/add", () =
 test("describes the Shadowrocket scanner action", () => {
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
-  assert.match(qrScanHint("shadowrocket"), /扫码导入配置与节点/);
+  assert.match(qrScanHint("shadowrocket"), /首页或配置页入口/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {
