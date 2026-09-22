@@ -57,7 +57,7 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
     qrHint:
-      "首页及「配置」页的扫码兼容性待真机确认；下方保留 HTTPS 完整订阅和原生配置地址。",
+      "首页或「配置」页扫码都使用完整 HTTPS 订阅；名称与流量横幅的首次显示仍以真机为准。",
   },
   singbox: {
     build: (url, name) =>
@@ -85,26 +85,6 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   },
 };
 
-/**
- * The Shadowrocket subscription deep link encloses a Base64 URL in `sub://`.
- * Its previous `sub/` spelling opened the scanner without importing anything.
- * Preserve the standard Base64 alphabet and padding in the deep link.
- */
-function standardBase64(value: string): string {
-  const bytes = new TextEncoder().encode(value);
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-
-function shadowrocketNamedSubscription(url: string, name: string): string {
-  const remark = name.trim() || "Shadowrocket";
-  return (
-    `shadowrocket://add/sub://${standardBase64(url)}` +
-    `?remark=${encodeURIComponent(remark)}`
-  );
-}
-
 export function supportsClientInstallQr(target: string): boolean {
   return target in INSTALL_SCHEMES;
 }
@@ -123,7 +103,7 @@ export function clientInstallLabel(target: string): string {
  */
 export function qrPasteHint(target: string): string {
   if (target === "shadowrocket") {
-    return "扫码和一键导入会同时保住名称与订阅信息；下方原生 .conf 地址只作为配置页手动导入的兼容后备。";
+    return "两个扫码入口使用同一个完整订阅地址；原生 .conf 地址仅供「配置」页手动导入。首次名称和流量横幅仍需在客户端验收。";
   }
   return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }
@@ -151,18 +131,16 @@ export function qrImportValue(
 /**
  * The actual payload rendered into the single QR code.
  *
- * Most clients correctly classify the ordinary handoff URL themselves.
- * Shadowrocket gets a named subscription around the complete YAML address.
- * The YAML itself carries nodes, policy groups and rules; whether each scanner
- * displays the name and usage banner still requires client-side verification.
+ * Keep the complete HTTPS YAML address intact for both Shadowrocket scanners.
+ * `shadowrocket://add/sub://` forces a node-only subscription import: a real
+ * device accepted its name and traffic banner but did not install the config.
+ * The HTTPS address was observed to install nodes and configuration from
+ * either scanner. Naming and banner presentation remain client-side concerns.
  */
 export function qrCodeValue(
   target: string,
   subscriptionUrl: string,
   name = "",
 ): string {
-  if (target === "shadowrocket") {
-    return shadowrocketNamedSubscription(subscriptionUrl, name);
-  }
   return subscriptionUrl;
 }

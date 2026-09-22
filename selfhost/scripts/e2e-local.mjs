@@ -396,7 +396,7 @@ async function assertNamedShadowrocketImportRoute() {
   const homeQuery = new URLSearchParams(query);
   homeQuery.set("target", "clash");
   const homePacked = Buffer.from(homeQuery.toString(), "utf8").toString("base64url");
-  const homePath = `/i/fixture-shadowrocket.yaml?srhome=1&p=${homePacked}`;
+  const homePath = `/i/fixture-shadowrocket.yaml?srhome=1&p=${homePacked}&remark=fixture-shadowrocket`;
   const homeResponse = await fetch(`${baseUrl}${homePath}`, {
     headers: { "user-agent": "Shadowrocket/2.2.70" },
   });
@@ -404,8 +404,12 @@ async function assertNamedShadowrocketImportRoute() {
   for (const marker of ["proxies:", "proxy-groups:", "rules:", "♻️ 手动切换", "🔞 NSFW"]) {
     if (!yaml.includes(marker)) throw new Error(`Shadowrocket home response lacks ${marker}`);
   }
-  if (!homeResponse.ok || homeResponse.headers.get("subscription-userinfo") !==
-      "upload=512; download=1024; total=10737418240; expire=1798761600") {
+  if (!homeResponse.ok ||
+      homeResponse.headers.get("subscription-userinfo") !==
+        "upload=512; download=1024; total=10737418240; expire=1798761600" ||
+      homeResponse.headers.get("profile-title") !==
+        `base64:${Buffer.from("fixture-shadowrocket").toString("base64")}` ||
+      !homeResponse.headers.get("content-disposition")?.includes('filename="fixture-shadowrocket"')) {
     throw new Error("Shadowrocket home response lost provider usage metadata.");
   }
   // Node's fetch owns Sec-Fetch-Mode and overrides a forged navigation value.

@@ -478,9 +478,9 @@ export function Workbench({
   /**
    * One code, whoever is pointing at it.
    *
-   * Shadowrocket has two scanner locations, but both now receive one named
-   * subscription scheme around the complete YAML address. The separate native
-   * .conf remains visible only as a manual compatibility fallback.
+   * Both scanner locations receive the same complete HTTPS YAML address;
+   * the node-only add/sub deep link lost the configuration on a real device.
+   * The separate native .conf remains available for manual import.
    */
   const qrAddressValue = qrProfile
     ? clientHandoffUrl(
@@ -506,24 +506,12 @@ export function Workbench({
   const currentProfileName =
     profileName.trim() || selectedTarget.short_label;
   const currentInstallValue = sourceReady
-    ? target === "shadowrocket" && statelessQuery
-      ? qrCodeValue(
-          target,
-          absoluteLocalUrl(
-            shadowrocketHomeImportPath(
-              currentProfileName,
-              statelessQuery,
-            ),
-            subscriptionBaseUrl,
-          ),
-          currentProfileName,
-        )
-      : qrImportValue(
-          target,
-          clientHandoffUrl(`/sub?${statelessQuery}`),
-          "install",
-          currentProfileName,
-        )
+    ? qrImportValue(
+        target,
+        clientHandoffUrl(`/sub?${statelessQuery}`),
+        "install",
+        currentProfileName,
+      )
     : "";
 
   // The link is the product, so it reads the way a config file does: one
@@ -2248,7 +2236,7 @@ export function Workbench({
                 title={`${qrProfile.name} 本地订阅二维码`}
               />
               <div className="qr-value">
-                <span>{qrProfile.target === "shadowrocket" ? "完整订阅地址" : "远程订阅地址"}</span>
+                <span>{qrProfile.target === "shadowrocket" ? "完整配置与节点订阅地址" : "远程订阅地址"}</span>
                 <code>{homeAddressValue}</code>
                 <button
                   type="button"
@@ -2264,7 +2252,7 @@ export function Workbench({
               </div>
               {qrProfile.target === "shadowrocket" ? (
                 <div className="qr-value">
-                  <span>原生配置地址（手动兼容后备）</span>
+                  <span>原生配置地址（仅「配置」页手动导入）</span>
                   <code>{qrAddressValue}</code>
                   <button type="button" className="qr-copy" onClick={() => void copyText(qrAddressValue)}>
                     复制配置地址

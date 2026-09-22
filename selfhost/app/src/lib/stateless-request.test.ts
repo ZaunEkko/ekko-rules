@@ -38,15 +38,16 @@ test("keeps the same choices for a named Shadowrocket home-scanner YAML", () => 
     options: { emoji: true, udp: true },
   });
   const path = shadowrocketHomeImportPath("laomao-ssr", query);
-  assert.match(path, /^\/i\/laomao-ssr\.yaml\?srhome=1&p=[A-Za-z0-9_-]+$/);
+  assert.match(path, /^\/i\/laomao-ssr\.yaml\?srhome=1&p=[A-Za-z0-9_-]+&remark=laomao-ssr$/);
   const parsed = parseStatelessConvertQuery(new URL(path, "https://example.test").searchParams);
   assert.equal(parsed.target, "clash");
   assert.equal(parsed.subscriptionUrl, "https://example.test/private?token=abc");
   assert.equal(parsed.remoteConfig, "ekko-lite");
   assert.equal(parsed.options.udp, true);
   assert.equal(parsed.name, "laomao-ssr");
+  assert.equal(new URL(path, "https://example.test").searchParams.get("remark"), "laomao-ssr");
   assert.equal(shadowrocketHomeProfilePath("abc", "手机/节点.conf"),
-    `/sub/abc/${encodeURIComponent("手机-节点")}.yaml`);
+    `/sub/abc/${encodeURIComponent("手机-节点")}.yaml?remark=${encodeURIComponent("手机-节点")}`);
 });
 
 test("reads a stateless conversion request out of its own link", () => {
