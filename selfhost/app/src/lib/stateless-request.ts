@@ -57,10 +57,10 @@ export function clientImportPath(
 }
 
 /**
- * Shadowrocket's home scanner accepts an HTTP node subscription, not a
- * config/add URL or a native .conf file. Give that scanner a complete Clash
- * document, which carries nodes, policy groups and rules in one response.
- * The configuration-page URL remains native and independently refreshable.
+ * Both Shadowrocket scan entries accepted this complete HTTPS Clash document
+ * as nodes plus configuration on a real device. The outer `remark` is a name
+ * hint only; conversion always reads the packed query and never trusts it for
+ * the output profile name. Client adoption of the hint needs device testing.
  */
 export function shadowrocketHomeImportPath(name: string, query: string): string {
   const params = new URLSearchParams(query);
@@ -69,11 +69,12 @@ export function shadowrocketHomeImportPath(name: string, query: string): string 
   }
   params.set("target", "clash");
   const filename = encodeURIComponent(safeImportFilename(name));
-  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?srhome=1&${packStatelessQuery(params.toString())}`;
+  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?srhome=1&${packStatelessQuery(params.toString())}&remark=${filename}`;
 }
 
 export function shadowrocketHomeProfilePath(id: string, name: string): string {
-  return `/sub/${encodeURIComponent(id)}/${encodeURIComponent(safeImportFilename(name))}.yaml`;
+  const filename = encodeURIComponent(safeImportFilename(name));
+  return `/sub/${encodeURIComponent(id)}/${filename}.yaml?remark=${filename}`;
 }
 
 /**

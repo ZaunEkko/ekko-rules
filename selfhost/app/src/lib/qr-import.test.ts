@@ -50,13 +50,13 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("wraps the complete Shadowrocket YAML in a named standard-Base64 subscription", () => {
-  // Lock the entire `sub://` form: `sub/` was accepted as a QR payload but
-  // caused the scanner to close without importing the subscription.
-  const namedConfig = "https://sub.example.test/i/laomao.yaml?p=00";
+test("scans the complete HTTPS YAML without forcing a node-only deep link", () => {
+  // Both real-device scanners installed nodes and the configuration from an
+  // HTTPS YAML; add/sub imported only nodes, even when its title was correct.
+  const namedConfig = "https://sub.example.test/i/laomao.yaml?srhome=1&p=00&remark=laomao";
   assert.equal(
     qrCodeValue("shadowrocket", namedConfig, "laomao"),
-    "shadowrocket://add/sub://aHR0cHM6Ly9zdWIuZXhhbXBsZS50ZXN0L2kvbGFvbWFvLnlhbWw/cD0wMA==?remark=laomao",
+    namedConfig,
   );
   assert.equal(qrCodeValue("clash", namedConfig, "laomao"), namedConfig);
 });
@@ -66,7 +66,7 @@ test("describes the unverified Shadowrocket scanner behavior honestly", () => {
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
   assert.match(qrScanHint("shadowrocket"), /首页/);
   assert.match(qrScanHint("shadowrocket"), /配置/);
-  assert.match(qrScanHint("shadowrocket"), /待真机确认/);
+  assert.match(qrScanHint("shadowrocket"), /首次显示仍以真机为准/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {
