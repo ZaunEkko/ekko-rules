@@ -10,6 +10,10 @@ import { rateLimitResponseHeaders } from "@/lib/rate-limit";
 import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "@/lib/request-guard";
 import { STATELESS_ONLY_MESSAGE } from "@/lib/stateless-only";
 import { subscriptionMetadataHeaders } from "@/lib/subscription-metadata";
+import {
+  externalizeShadowrocketProvider,
+  visibleSubscriptionOrigin,
+} from "@/lib/shadowrocket-provider";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,6 +50,16 @@ export async function GET(
       },
       { authorize: false, sourceUserAgent: request.headers.get("user-agent") },
     );
+    const providerOrigin = visibleSubscriptionOrigin(
+      request,
+      getRuntimeConfig().subscriptionBaseUrl,
+      getRuntimeConfig().trustProxyHeaders,
+    );
+    const body = externalizeShadowrocketProvider(result.body, {
+      name: profile.name,
+      url: new URL(`/sub/${encodeURIComponent(id)}/nodes`, providerOrigin).toString(),
+      intervalHours: profile.options.updateIntervalHours,
+    });
     const headers: Record<string, string> = {
       "Content-Type": result.contentType,
       "Cache-Control": "no-store, no-cache, must-revalidate",
@@ -59,8 +73,8 @@ export async function GET(
     if (result.subscriptionUserinfo) {
       headers["Subscription-Userinfo"] = result.subscriptionUserinfo;
     }
-    safeLog("profile.shadowrocket_home_success", { bytes: result.bytes });
-    return new NextResponse(result.body, { status: 200, headers });
+    safeLog("profile.shadowrocket_home_success", { bytes: Buffer.byteLength(body, "utf8") });
+    return new NextResponse(body, { status: 200, headers });
   } catch (error) {
     const message = publicErrorMessage(error);
     safeLog("profile.shadowrocket_home_failure", { error: message });

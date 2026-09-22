@@ -61,12 +61,12 @@ test("scans the complete HTTPS YAML without forcing a node-only deep link", () =
   assert.equal(qrCodeValue("clash", namedConfig, "laomao"), namedConfig);
 });
 
-test("describes the unverified Shadowrocket scanner behavior honestly", () => {
+test("describes the provider-backed Shadowrocket import", () => {
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
   assert.match(qrScanHint("shadowrocket"), /首页/);
   assert.match(qrScanHint("shadowrocket"), /配置/);
-  assert.match(qrScanHint("shadowrocket"), /首次显示仍以真机为准/);
+  assert.match(qrScanHint("shadowrocket"), /同名远程订阅/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {
