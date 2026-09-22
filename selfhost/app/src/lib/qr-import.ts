@@ -134,7 +134,7 @@ export function qrImportValue(
  * Shadowrocket's scanners visibly accept HTTPS addresses but the home scanner
  * ignores a config/add QR payload. Keep both scanner-specific QR values as
  * HTTPS; the caller chooses whether that address serves inline nodes for Home
- * or a named provider for Config. The one-tap button still uses config/add.
+ * or a native .conf for Config. The one-tap button still uses config/add.
  */
 export function qrCodeValue(
   target: string,

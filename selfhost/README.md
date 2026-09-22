@@ -131,7 +131,7 @@ Web UI 提供：
 
 判定条件是三者同时成立：`Sec-Fetch-Mode: navigate`、`Accept` 含 `text/html`、`User-Agent` 以 `Mozilla/5.0` 开头。代理客户端不会同时具备这三样；判错的代价是给客户端发了 HTML，所以宁可漏判成客户端。
 
-二维码使用的远程地址把转换参数打包为 base64url 参数（通常是 `/i?p=…`），避免嵌套 scheme 时丢失机场 token。Shadowrocket 原生配置使用 `/i/<名称>.conf?p=…`；首页二维码使用 `/i/<名称>.yaml?srhome=1&p=…&remark=<名称>`，配置页二维码使用同路径的 `srconfig=1` 变体。配置页唯一 provider 使用 `/i/<名称>.nodes.yaml?p=…&remark=<名称>&srnodes=1`，只返回节点与订阅响应头。`remark` 不参与服务端配置解析；内部 `p` 参数仍是 base64url。
+二维码使用的远程地址把转换参数打包为 base64url 参数（通常是 `/i?p=…`），避免嵌套 scheme 时丢失机场 token。Shadowrocket 首页二维码使用 `/i/<名称>.yaml?srhome=1&p=…&remark=<名称>` 的内联 YAML；配置页二维码使用 `/i/<名称>.conf?p=…` 的原生配置，保留 `DIRECT`、`REJECT`、策略组、名称和订阅用量横幅。`remark` 不参与服务端配置解析；内部 `p` 参数仍是 base64url。此前发出的 `srconfig=1` YAML 地址会在下一次更新时返回同一份原生配置。
 
 **一键导入按钮**在手机上直接访问站点时最省事，覆盖各家自己公开的 scheme：Clash / Mihomo `clash://install-config?url=`、Shadowrocket `shadowrocket://config/add/<地址>`、sing-box `sing-box://import-remote-profile?url=…#名称`、Surge `surge:///install-config?url=`、Loon `loon://import?sub=`、Surfboard `surfboard:///install-config?url=`。Shadowrocket 的二维码例外地保持 HTTPS，因为首页扫码器实机不处理 `config/add` 二维码。Quantumult X 的 `update-configuration` 只接受远程资源而不是整份配置，Quantumult 与 Mellow 没有公开 scheme，这三个只给复制地址。
 

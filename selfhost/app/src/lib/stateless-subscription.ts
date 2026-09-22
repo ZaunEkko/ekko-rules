@@ -16,11 +16,6 @@ import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "./request-guard";
 import { recordMetric } from "./metrics";
 import { parseStatelessConvertQuery } from "./stateless-request";
 import { subscriptionMetadataHeaders } from "./subscription-metadata";
-import {
-  externalizeShadowrocketProvider,
-  shadowrocketProviderAddress,
-  visibleSubscriptionOrigin,
-} from "./shadowrocket-provider";
 
 /**
  * Serve a stateless conversion: everything needed comes from the query string,
@@ -53,19 +48,23 @@ export async function serveStatelessSubscription(
     const shadowrocketConfig = !providerNodes && !shadowrocketHome &&
       requestUrl.searchParams.get("srconfig") === "1" &&
       requestUrl.pathname.endsWith(".yaml") && parsed.target === "clash";
+    // v0.4.21 issued a provider-backed YAML for this flag. Keep that URL
+    // refreshable, but serve the native config now: Shadowrocket retains
+    // DIRECT and REJECT only when they are native select members here.
+    const conversionTarget = shadowrocketConfig ? "shadowrocket" : parsed.target;
     const preset = resolveRemoteConfig(
       parsed.remoteConfig,
       runtimeConfig.remoteConfigs,
       runtimeConfig.allowCustomRemoteConfig,
     );
-    if (!isRemoteConfigTargetSupported(preset, parsed.target)) {
+    if (!isRemoteConfigTargetSupported(preset, conversionTarget)) {
       throw new Error("remoteConfig is not supported for this target.");
     }
 
     const result = await convertSubscription(
       {
         subscriptionUrl: parsed.subscriptionUrl,
-        target: parsed.target,
+        target: conversionTarget,
         options: parsed.options,
       },
       {
@@ -80,20 +79,6 @@ export async function serveStatelessSubscription(
       },
     );
 
-    const body = shadowrocketConfig
-      ? externalizeShadowrocketProvider(result.body, {
-          name: parsed.name,
-          url: shadowrocketProviderAddress(
-            request.url,
-            visibleSubscriptionOrigin(
-              request,
-              runtimeConfig.subscriptionBaseUrl,
-              runtimeConfig.trustProxyHeaders,
-            ),
-          ),
-          intervalHours: parsed.options.updateIntervalHours,
-        })
-      : result.body;
     const headers: Record<string, string> = {
       "Content-Type": result.contentType,
       "Cache-Control": "no-store, no-cache, must-revalidate",
@@ -120,13 +105,13 @@ export async function serveStatelessSubscription(
     safeLog(`${logPrefix}.convert_success`, {
       target: result.target,
       remoteConfig: preset.id,
-      bytes: Buffer.byteLength(body, "utf8"),
+      bytes: result.bytes,
       shadowrocketConfigRoute: shadowrocketConfig,
       shadowrocketHomeRoute: shadowrocketHome,
       shadowrocketProviderRoute: providerNodes,
       usageMetadataPresent: Boolean(result.subscriptionUserinfo),
     });
-    return new NextResponse(body, { status: 200, headers });
+    return new NextResponse(result.body, { status: 200, headers });
   } catch (error) {
     const message = publicErrorMessage(error);
     safeLog(`${logPrefix}.convert_failure`, { error: message });

@@ -2248,7 +2248,7 @@ export function Workbench({
                   {qrProfile.target === "shadowrocket"
                     ? shadowrocketScanMode === "home"
                       ? "请在 Shadowrocket 首页扫码；订阅名称可能显示为站点域名。"
-                      : "请在 Shadowrocket「配置」页扫码；保留填写的名称和流量横幅。"
+                      : "请在 Shadowrocket「配置」页扫码；保留名称、流量横幅和 DIRECT / REJECT。"
                     : qrScanHint(qrProfile.target)}
                 </span>
               </div>
@@ -2284,7 +2284,7 @@ export function Workbench({
                   {qrProfile.target === "shadowrocket"
                     ? shadowrocketScanMode === "home"
                       ? "首页扫码地址（节点内联）"
-                      : "配置页扫码地址（名称与横幅）"
+                      : "配置页扫码地址（原生 .conf）"
                     : "远程订阅地址"}
                 </span>
                 <code>{selectedScanAddress}</code>
@@ -2300,7 +2300,7 @@ export function Workbench({
                   {qrCopied ? "已复制" : "复制地址"}
                 </button>
               </div>
-              {qrProfile.target === "shadowrocket" ? (
+              {qrProfile.target === "shadowrocket" && shadowrocketScanMode === "home" ? (
                 <div className="qr-value">
                   <span>原生配置地址（仅「配置」页手动导入）</span>
                   <code>{qrAddressValue}</code>
