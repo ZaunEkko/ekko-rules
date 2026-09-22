@@ -122,7 +122,7 @@ Web UI 提供：
 - 自定义前缀：在家里、公司等网络切换后直接输入新的电脑 IP；
 - 曾用地址：在当前浏览器保留最近 8 个前缀，一键切换所有档案的显示、复制与二维码。
 
-**一个二维码，两个扫码入口使用同一条 HTTPS 配置地址。** 多数客户端的扫码入口把 `http(s)` 地址写进自身配置，而手机系统相机会在浏览器中打开同一地址，再由中转页唤起客户端。Shadowrocket 首页扫码器实机上会识别 HTTPS 地址，却会直接忽略二维码里的 `shadowrocket://config/add/` 深链；所以二维码保持 provider-only 完整配置的 HTTPS 地址，一键导入按钮才使用 `config/add`。主配置只声明一个具名远程 provider，provider 地址返回节点以及流量、到期响应头；不再同时内联同一批节点，避免生成两份。弹窗仍列出源 HTTPS 地址和原生 `.conf` 地址，供排查与手动兼容。
+**一个二维码，两个扫码入口使用同一条 HTTPS 配置地址。** 多数客户端的扫码入口把 `http(s)` 地址写进自身配置，而手机系统相机会在浏览器中打开同一地址，再由中转页唤起客户端。Shadowrocket 首页扫码器实机上会识别 HTTPS 地址，却会直接忽略二维码里的 `shadowrocket://config/add/` 深链；所以二维码保持完整配置的 HTTPS 地址，一键导入按钮才使用 `config/add`。完整配置保留首页首次解析所需的顶层节点，并声明一个同名远程 provider；这个 provider 指回扫码地址自身，而不是另建 `.nodes.yaml` 地址，使首页与配置引用同一个订阅身份。弹窗仍列出源 HTTPS 地址和原生 `.conf` 地址，供排查与手动兼容。
 
 二维码放 `/i` 地址，由它按来客作答：
 
@@ -131,9 +131,9 @@ Web UI 提供：
 
 判定条件是三者同时成立：`Sec-Fetch-Mode: navigate`、`Accept` 含 `text/html`、`User-Agent` 以 `Mozilla/5.0` 开头。代理客户端不会同时具备这三样；判错的代价是给客户端发了 HTML，所以宁可漏判成客户端。
 
-二维码使用的远程地址把转换参数打包为 base64url 参数（通常是 `/i?p=…`），避免嵌套 scheme 时丢失机场 token。Shadowrocket 原生配置使用 `/i/<名称>.conf?p=…`，provider-only 完整配置使用 `/i/<名称>.yaml?srhome=1&p=…&remark=<名称>`；二维码直接携带后一条 HTTPS 地址，一键导入按钮再用 `config/add` 包住它。两条源地址使用相同的订阅、选项与远程配置，但响应格式不同。`remark` 是客户端名称提示，不参与服务端配置解析；内部 `p` 参数仍是 base64url。
+二维码使用的远程地址把转换参数打包为 base64url 参数（通常是 `/i?p=…`），避免嵌套 scheme 时丢失机场 token。Shadowrocket 原生配置使用 `/i/<名称>.conf?p=…`，首页兼容的完整配置使用 `/i/<名称>.yaml?srhome=1&p=…&remark=<名称>`；二维码直接携带后一条 HTTPS 地址，一键导入按钮再用 `config/add` 包住它。完整配置中的 provider 也使用这条完全相同的 HTTPS 地址，不再生成第二条节点 URL。两条输出使用相同的订阅、选项与远程配置，但响应格式不同。`remark` 是客户端名称提示，不参与服务端配置解析；内部 `p` 参数仍是 base64url。
 
-**一键导入按钮**在手机上直接访问站点时最省事，覆盖各家自己公开的 scheme：Clash / Mihomo `clash://install-config?url=`、Shadowrocket `shadowrocket://config/add/<地址>`、sing-box `sing-box://import-remote-profile?url=…#名称`、Surge `surge:///install-config?url=`、Loon `loon://import?sub=`、Surfboard `surfboard:///install-config?url=`。Shadowrocket 的二维码例外地保持 HTTPS，因为首页扫码器实机不处理 `config/add` 二维码；provider-only 主配置负责避免重复节点源。Quantumult X 的 `update-configuration` 只接受远程资源而不是整份配置，Quantumult 与 Mellow 没有公开 scheme，这三个只给复制地址。
+**一键导入按钮**在手机上直接访问站点时最省事，覆盖各家自己公开的 scheme：Clash / Mihomo `clash://install-config?url=`、Shadowrocket `shadowrocket://config/add/<地址>`、sing-box `sing-box://import-remote-profile?url=…#名称`、Surge `surge:///install-config?url=`、Loon `loon://import?sub=`、Surfboard `surfboard:///install-config?url=`。Shadowrocket 的二维码例外地保持 HTTPS，因为首页扫码器实机不处理 `config/add` 二维码；主配置的内联节点与具名 provider 共享同一个远程 URL。Quantumult X 的 `update-configuration` 只接受远程资源而不是整份配置，Quantumult 与 Mellow 没有公开 scheme，这三个只给复制地址。
 
 换网络不会改变 `/sub/<随机 ID>`，Web UI 与二维码会在局域网模式下自动显示新 IP；但已经导入手机或路由器的旧 URL 无法跨网络自己修改主机部分。到达新网络后，请用自动更新后的二维码重新导入一次，或只修改客户端中的地址前缀。若希望完全避免修改，可在路由器中为电脑设置固定 DHCP 地址、使用可靠的局域网主机名，或使用 Tailscale 等具有稳定地址的虚拟局域网。
 
@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 的「配置」页使用原生分段 `.conf`。转换时先按所选远程配置生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`，Ekko Rules 的 `♻️ 手动切换`不写 `hidden`，确保它在代理分组列表中可见。扫码二维码直接提供 provider-only 的完整 YAML：规则与策略组保留在主配置中，节点只来自一个同名远程 provider，从而保留填写的名称与用量横幅并避免重复节点源。两种格式使用相同的源和模板。现代协议已做结构保留测试，尚未逐个完成真机连通验证。内置 Ekko Rules 完整版、精简版、第三方预设和允许的自定义远程配置都会走同一套转换；第三方模板保留其自身分组、规则和默认顺序。
+Shadowrocket 的「配置」页使用原生分段 `.conf`。转换时先按所选远程配置生成完整的 `[Proxy]`、`[Proxy Group]`、`[Rule]` 骨架，再从无损的 Mihomo 节点结果补回旧版 Surge 输出会过滤的 AnyTLS、TUIC、VLESS Reality 等节点；每个 `select` 组还会写入 `policy-select-name`，Ekko Rules 的 `♻️ 手动切换`不写 `hidden`，确保它在代理分组列表中可见。扫码二维码直接提供首页兼容的完整 YAML：顶层节点负责首页首次解析，规则与策略组保留在主配置中，同名 provider 指回这条扫码 URL 自身，以同一个订阅身份保留填写的名称与用量横幅。两种格式使用相同的源和模板。现代协议已做结构保留测试，尚未逐个完成真机连通验证。内置 Ekko Rules 完整版、精简版、第三方预设和允许的自定义远程配置都会走同一套转换；第三方模板保留其自身分组、规则和默认顺序。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 
@@ -218,9 +218,9 @@ Mihomo 输出始终使用客户端要求的新字段名，完整配置始终展�
 
 Mihomo 固定地址每次被客户端刷新时，都会在本机即时拉取真实订阅并把节点直接内联到完整配置中。生成结果不会包含真实机场订阅 URL，也不会再引用仅容器内部可达的 provider 地址；客户端拿到一个文件即可获得节点、DNS、策略组与规则。
 
-订阅响应会通过 `Profile-Title` 和 `Content-Disposition` 同时传递用户填写的名称；Shadowrocket 原生配置和完整配置地址分别把名称写进 `.conf`、`.yaml` 路径段，完整配置地址也附上 `remark`。完整 YAML 只创建一个以用户名称命名的远程 provider；二维码保持首页扫码器能够识别的 HTTPS，且主配置不再内联同一批节点。响应头中的名称不带扩展名；页面上的“下载”按钮走 `/api/convert`，那才是真的文件，仍然带扩展名。创建成功后页面不会清空真实订阅、名称或高级选项，用户可以直接微调后再次生成；完全相同的配置再次复制、扫码或一键导入时只复用现有浏览器记录，不会重复新增。
+订阅响应会通过 `Profile-Title` 和 `Content-Disposition` 同时传递用户填写的名称；Shadowrocket 原生配置和完整配置地址分别把名称写进 `.conf`、`.yaml` 路径段，完整配置地址也附上 `remark`。完整 YAML 的顶层节点与同名 provider 使用同一条远程 URL：前者满足首页订阅解析，后者提供正确名称及横幅，不再把 `.yaml` 与 `.nodes.yaml` 注册成两个订阅。响应头中的名称不带扩展名；页面上的“下载”按钮走 `/api/convert`，那才是真的文件，仍然带扩展名。创建成功后页面不会清空真实订阅、名称或高级选项，用户可以直接微调后再次生成；完全相同的配置再次复制、扫码或一键导入时只复用现有浏览器记录，不会重复新增。
 
-固定地址会把上游 `Subscription-Userinfo` 中 `upload`、`download`、`total` 和 `expire` 数字字段安全透传给客户端。若上游没有响应头，但节点订阅正文有格式完整的 `STATUS=↑/↓/TOT/Expires` 行，则会在移除该行供引擎读取之前转换为同样的响应头；单凭“剩余流量”节点名不能反推套餐总量。Shadowrocket 完整配置及其唯一节点 provider 都返回相同的订阅用量；客户端首页横幅由该 provider 维护，原生 `.conf` 手动导入不承诺首页横幅。刷新时会沿用目标格式安全的上游 User-Agent。
+固定地址会把上游 `Subscription-Userinfo` 中 `upload`、`download`、`total` 和 `expire` 数字字段安全透传给客户端。若上游没有响应头，但节点订阅正文有格式完整的 `STATUS=↑/↓/TOT/Expires` 行，则会在移除该行供引擎读取之前转换为同样的响应头；单凭“剩余流量”节点名不能反推套餐总量。Shadowrocket 完整配置与其中的同名 provider 访问同一个响应，因此共享相同的订阅用量；客户端首页横幅由该 provider 维护，原生 `.conf` 手动导入不承诺首页横幅。刷新时会沿用目标格式安全的上游 User-Agent。
 
 自动更新使用独立开关，默认关闭；更新间隔始终是正常的 `1` 到 `168` 小时数值，只有开关启用后才会生效。关闭时服务不会下发 `Profile-Update-Interval` 响应头；固定地址依然长期有效，需要更新时在客户端手动刷新即可。
 
@@ -335,7 +335,7 @@ docker compose logs --tail=100 web subconverter
 
 ### 客户端没有显示流量、容量或到期时间
 
-这些信息优先来自上游 `Subscription-Userinfo`，其次来自格式完整的 `STATUS=↑/↓/TOT/Expires` 行。Shadowrocket 的完整配置只引用一个节点 provider，主配置和 provider 响应都会透传同一份结构化用量；只有“剩余流量”节点名时仍无法可靠推算全部用量。
+这些信息优先来自上游 `Subscription-Userinfo`，其次来自格式完整的 `STATUS=↑/↓/TOT/Expires` 行。Shadowrocket 的完整配置保留一个具名 provider，并让它与主配置共享同一 URL 和结构化用量；只有“剩余流量”节点名时仍无法可靠推算全部用量。
 
 ### 某些节点没有出现在目标配置中
 

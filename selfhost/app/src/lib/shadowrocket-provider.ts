@@ -96,10 +96,11 @@ function externalizeGroup(
 }
 
 /**
- * Keep one authoritative remote node source for Shadowrocket. The complete
- * document still carries groups and rules, while its former inline node list
- * becomes a named provider with the title and usage metadata Shadowrocket
- * retains after configuration imports.
+ * Give both Shadowrocket scanners the representation they need without giving
+ * the client two subscription identities. Home validates the scanned URL from
+ * the inline `proxies`, while Config retains the named provider and its usage
+ * metadata. The caller points that provider back at the exact scanned URL, so
+ * both views refresh one remote subscription rather than a second nodes URL.
  */
 export function externalizeShadowrocketProvider(
   completeConfig: string,
@@ -117,8 +118,9 @@ export function externalizeShadowrocketProvider(
   const providerName = input.name.trim() || "Shadowrocket";
   const interval = Math.max(3600, Math.min(604800, Math.round(input.intervalHours * 3600)));
   lines.splice(
-    proxiesStart,
-    proxiesEnd - proxiesStart,
+    proxiesEnd,
+    0,
+    "",
     "proxy-providers:",
     `  ${JSON.stringify(providerName)}:`,
     "    type: http",
@@ -154,9 +156,6 @@ export function shadowrocketProviderAddress(
   publicBaseUrl: string,
 ): string {
   const current = new URL(requestUrl);
-  current.searchParams.delete("srhome");
-  current.searchParams.set("srnodes", "1");
-  current.pathname = current.pathname.replace(/\.yaml$/i, ".nodes.yaml");
   const base = publicBaseUrl.trim();
   return base
     ? new URL(`${current.pathname}${current.search}`, base).toString()

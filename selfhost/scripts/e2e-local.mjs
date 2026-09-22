@@ -401,15 +401,21 @@ async function assertNamedShadowrocketImportRoute() {
     headers: { "user-agent": "Shadowrocket/2.2.70" },
   });
   const yaml = await homeResponse.text();
-  for (const marker of ["proxy-providers:", "proxy-groups:", "rules:", "♻️ 手动切换", "🔞 NSFW"]) {
+  for (const marker of ["proxies:", "proxy-providers:", "proxy-groups:", "rules:", "♻️ 手动切换", "🔞 NSFW"]) {
     if (!yaml.includes(marker)) throw new Error(`Shadowrocket home response lacks ${marker}`);
   }
-  if (/^proxies:\s*$/m.test(yaml) || (yaml.match(/^proxy-providers:\s*$/gm) || []).length !== 1) {
-    throw new Error("Shadowrocket config must expose exactly one provider node source.");
+  if ((yaml.match(/^proxies:\s*$/gm) || []).length !== 1 ||
+      (yaml.match(/^proxy-providers:\s*$/gm) || []).length !== 1 ||
+      yaml.indexOf("proxies:") > yaml.indexOf("proxy-providers:")) {
+    throw new Error("Shadowrocket config must expose inline nodes before one named provider.");
   }
   const providerUrl = yaml.match(/^    url: (".*")$/m)?.[1];
   if (!providerUrl) throw new Error("Shadowrocket home response lacks its named provider URL.");
   const parsedProviderUrl = JSON.parse(providerUrl);
+  const expectedProviderUrl = new URL(homePath, baseUrl).toString();
+  if (parsedProviderUrl !== expectedProviderUrl) {
+    throw new Error(`Shadowrocket created a second subscription identity (${parsedProviderUrl}).`);
+  }
   let providerResponse;
   try {
     providerResponse = await fetch(parsedProviderUrl, {
@@ -447,7 +453,7 @@ async function assertNamedShadowrocketImportRoute() {
       !page.includes("fixture-shadowrocket.conf") || page.includes("clash://install-config")) {
     throw new Error("System camera did not receive the native Shadowrocket config bridge.");
   }
-  console.log(JSON.stringify({ phase: "shadowrocket-single-source-import", yaml: true, named_provider: true, metadata: true, native_browser_bridge: true }));
+  console.log(JSON.stringify({ phase: "shadowrocket-shared-identity-import", yaml: true, inline_nodes: true, named_provider: true, shared_url: true, metadata: true, native_browser_bridge: true }));
 }
 
 async function assertStoredShadowrocketHomeRoute() {
@@ -463,18 +469,23 @@ async function assertStoredShadowrocketHomeRoute() {
   if (!created.ok) throw new Error(`Stored Shadowrocket profile failed: HTTP ${created.status}`);
   const { profile } = await created.json();
   createdProfiles.set(profile.id, profile);
-  const response = await fetch(`${baseUrl}${profile.subscriptionPath}/stored-shadowrocket.yaml`, {
+  const storedUrl = `${baseUrl}${profile.subscriptionPath}/stored-shadowrocket.yaml`;
+  const response = await fetch(storedUrl, {
     headers: { "user-agent": "Shadowrocket/2.2.70" },
   });
   const body = await response.text();
   const providerUrl = body.match(/^    url: (".*")$/m)?.[1];
-  if (!response.ok || !body.includes("proxy-providers:") || /^proxies:\s*$/m.test(body) || !body.includes("proxy-groups:") || !body.includes("🔞 NSFW") ||
+  if (!response.ok || !body.includes("proxy-providers:") || !/^proxies:\s*$/m.test(body) || !body.includes("proxy-groups:") || !body.includes("🔞 NSFW") ||
       response.headers.get("subscription-userinfo") !==
         "upload=512; download=1024; total=10737418240; expire=1798761600") {
     throw new Error(`Stored Shadowrocket home URL lost rules or traffic info: HTTP ${response.status}`);
   }
   if (!providerUrl) throw new Error("Stored Shadowrocket config lacks its provider URL.");
-  const providerResponse = await fetch(JSON.parse(providerUrl), {
+  const parsedProviderUrl = JSON.parse(providerUrl);
+  if (parsedProviderUrl !== storedUrl) {
+    throw new Error(`Stored Shadowrocket config created a second subscription identity (${parsedProviderUrl}).`);
+  }
+  const providerResponse = await fetch(parsedProviderUrl, {
     headers: { "user-agent": "Shadowrocket/2.2.70" },
   });
   if (!providerResponse.ok || !(await providerResponse.text()).includes("proxies:") ||
@@ -483,7 +494,7 @@ async function assertStoredShadowrocketHomeRoute() {
     throw new Error("Stored Shadowrocket provider lost nodes or its chosen name.");
   }
   await deleteProfile(profile);
-  console.log(JSON.stringify({ phase: "shadowrocket-stored-single-source", rules: true, named_provider: true, metadata: true }));
+  console.log(JSON.stringify({ phase: "shadowrocket-stored-shared-identity", rules: true, inline_nodes: true, named_provider: true, shared_url: true, metadata: true }));
 }
 
 async function assertGatewayModernProtocolSubscriptions() {
