@@ -55,8 +55,8 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   // string stays where the client can still read it.
   shadowrocket: {
     build: (url) => `shadowrocket://config/add/${url}`,
-    label: "一键导入 Shadowrocket",
-    qrHint: "选择首页或「配置」页对应的二维码，再从相应入口扫码。",
+    label: "一键导入 Shadowrocket 配置",
+    qrHint: "请在 Shadowrocket「配置」页右上角扫码，不要从首页扫码。",
   },
   singbox: {
     build: (url, name) =>
@@ -102,7 +102,7 @@ export function clientInstallLabel(target: string): string {
  */
 export function qrPasteHint(target: string): string {
   if (target === "shadowrocket") {
-    return "也可以复制下方完整配置地址，在 Shadowrocket 中导入。";
+    return "也可以复制下方 .conf 地址，在 Shadowrocket「配置」页中导入。";
   }
   return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }
@@ -130,9 +130,10 @@ export function qrImportValue(
 /**
  * The actual payload rendered into the single QR code.
  *
- * Shadowrocket's in-app scanners accept ordinary HTTPS addresses, while the
- * home scanner ignores config/add. The UI selects its YAML or .conf address;
- * the one-tap button remains a separate native configuration action.
+ * Shadowrocket's Configuration-page scanner accepts the ordinary HTTPS .conf
+ * address. Its Home scanner must not be offered by the UI because it stores
+ * the address as a node subscription and does not preserve native policies.
+ * The one-tap button remains a separate config/add action over the same URL.
  */
 export function qrCodeValue(
   target: string,
