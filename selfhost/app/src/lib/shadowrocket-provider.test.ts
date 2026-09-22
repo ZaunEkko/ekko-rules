@@ -6,7 +6,7 @@ import {
   visibleSubscriptionOrigin,
 } from "./shadowrocket-provider";
 
-test("keeps inline nodes and points the named provider at the same subscription", () => {
+test("keeps an explicit empty local list and exactly one remote node source", () => {
   const source = `proxies:
   - name: "香港-01"
     type: ss
@@ -29,14 +29,13 @@ rules:
 `;
   const result = externalizeShadowrocketProvider(source, {
     name: "laomao",
-    url: "https://sub.example/i/laomao.yaml?srhome=1&p=abc",
+    url: "https://sub.example/i/laomao.nodes.yaml?p=abc&srnodes=1",
     intervalHours: 24,
   });
   assert.match(result, /^proxy-providers:\n  "laomao":/m);
-  assert.match(result, /url: "https:\/\/sub\.example\/i\/laomao\.yaml\?srhome=1&p=abc"/);
-  assert.match(result, /^proxies:$/m);
-  assert.match(result, /^  - name: "香港-01"$/m);
-  assert.match(result, /^  - name: 美国-01$/m);
+  assert.match(result, /url: "https:\/\/sub\.example\/i\/laomao\.nodes\.yaml\?p=abc&srnodes=1"/);
+  assert.match(result, /^proxies: \[\]$/m);
+  assert.doesNotMatch(result, /^  - name: (?:"香港-01"|美国-01)$/m);
   assert.ok(result.indexOf("proxies:") < result.indexOf("proxy-providers:"));
   assert.doesNotMatch(result, /^      - (?:香港-01|美国-01)$/m);
   assert.match(result, /- DIRECT\n    use:\n      - "laomao"/);
@@ -75,12 +74,13 @@ test("turns include-all groups into provider-backed groups", () => {
   assert.match(result, /interval: 3600/);
 });
 
-test("uses the scanned address itself as the provider identity", () => {
+test("provider URLs terminate at a distinct nodes-only route without losing parameters", () => {
+  const mainUrl = "http://web:3000/i/laomao.yaml?srhome=1&p=abc&remark=laomao#duplicate";
+  const expected = "https://sub.example.test/i/laomao.nodes.yaml?p=abc&remark=laomao&srnodes=1";
   assert.equal(
-    shadowrocketProviderAddress(
-      "http://web:3000/i/laomao.yaml?srhome=1&p=abc&remark=laomao",
-      "https://sub.example.test",
-    ),
-    "https://sub.example.test/i/laomao.yaml?srhome=1&p=abc&remark=laomao",
+    shadowrocketProviderAddress(mainUrl, "https://sub.example.test"),
+    expected,
   );
+  assert.equal(shadowrocketProviderAddress(expected, ""), expected);
+  assert.equal(new URL(expected).hash, "");
 });
