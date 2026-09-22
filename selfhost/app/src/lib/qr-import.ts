@@ -56,7 +56,7 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
   shadowrocket: {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
-    qrHint: "在 Shadowrocket 首页或「配置」页扫码，都会按填写的名称添加订阅。",
+    qrHint: "在 Shadowrocket 首页扫码；下方原生 .conf 地址供「配置」页添加。",
   },
   singbox: {
     build: (url, name) =>
@@ -83,25 +83,6 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
     qrHint: "手机相机、客户端自带的扫码入口，扫哪个都行。",
   },
 };
-
-function base64UrlEncode(value: string): string {
-  const bytes = new TextEncoder().encode(value);
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
-
-/** Wraps one complete YAML URL as a named Shadowrocket subscription. */
-function shadowrocketNamedSubscription(url: string, name: string): string {
-  const remark = name.trim() || "Shadowrocket";
-  return (
-    `shadowrocket://add/sub/${base64UrlEncode(url)}` +
-    `?remark=${encodeURIComponent(remark)}`
-  );
-}
 
 export function supportsClientInstallQr(target: string): boolean {
   return target in INSTALL_SCHEMES;
@@ -149,18 +130,15 @@ export function qrImportValue(
 /**
  * The actual payload rendered into the single QR code.
  *
- * Most clients correctly classify the ordinary handoff URL themselves.
- * Shadowrocket instead receives its named subscription scheme around the
- * complete YAML URL, so either scanner creates the first subscription with
- * the requested remark and keeps usage metadata on the subscription path.
+ * Most clients correctly classify the ordinary handoff URL themselves. The
+ * Shadowrocket home scanner ignores config/add and cannot refresh a native
+ * .conf as a node subscription. The caller supplies a complete YAML address
+ * for that scanner; the native .conf URL is separate.
  */
 export function qrCodeValue(
   target: string,
   subscriptionUrl: string,
   name = "",
 ): string {
-  if (target === "shadowrocket") {
-    return shadowrocketNamedSubscription(subscriptionUrl, name);
-  }
   return subscriptionUrl;
 }
