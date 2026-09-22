@@ -43,7 +43,7 @@ export const TARGET_DEFINITIONS = {
     // connection check has not yet been run for every modern protocol, so the
     // verified list remains conservative.
     protocolNote:
-      "原生配置保留 DIRECT、REJECT、策略组嵌套与节点；现代协议连接能力以客户端为准",
+      "原生配置导入已真机验证：保留 DIRECT、REJECT、手动切换、策略组嵌套与节点；现代协议连接能力以客户端为准",
     verifiedModernProtocols: [],
   },
   singbox: {

@@ -22,8 +22,6 @@ import {
   packStatelessQuery,
   shadowrocketConfigImportPath,
   shadowrocketConfigProfilePath,
-  shadowrocketHomeImportPath,
-  shadowrocketHomeProfilePath,
   type StatelessConvertRequest,
 } from "@/lib/stateless-request";
 import {
@@ -361,7 +359,6 @@ export function Workbench({
   const [contactHref, setContactHref] = useState("");
   const [qrProfile, setQrProfile] = useState<Profile | null>(null);
   const [qrCopied, setQrCopied] = useState(false);
-  const [shadowrocketScanMode, setShadowrocketScanMode] = useState<"home" | "config">("home");
   const [baseUrlOverride, setBaseUrlOverride] = useState("");
   const [baseUrlDraft, setBaseUrlDraft] = useState("");
   const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
@@ -478,7 +475,7 @@ export function Workbench({
     );
   }
 
-  /** Keep each in-app scanner's address stable across repeat imports. */
+  /** Keep the address installed by every entry point stable across repeats. */
   const qrAddressValue = qrProfile
     ? clientHandoffUrl(
         qrProfile.subscriptionPath,
@@ -486,17 +483,11 @@ export function Workbench({
         qrProfile.name,
       )
     : "";
-  const homeAddressValue = qrProfile?.target === "shadowrocket"
-    ? absoluteLocalUrl(
-        qrProfile.subscriptionPath.includes("?")
-          ? shadowrocketHomeImportPath(
-              qrProfile.name,
-              qrProfile.subscriptionPath.split("?").slice(1).join("?"),
-            )
-          : shadowrocketHomeProfilePath(qrProfile.id, qrProfile.name),
-        subscriptionBaseUrl,
-      )
-    : qrAddressValue;
+  // Shadowrocket must receive its native .conf from the Configuration page.
+  // Its Home scanner files the same URL as a node subscription, which loses
+  // the native DIRECT / REJECT policy behavior even when the file contains
+  // those words. Keep the legacy Home routes alive for old saved links, but
+  // never generate one from the current UI.
   const configAddressValue = qrProfile?.target === "shadowrocket"
     ? absoluteLocalUrl(
         qrProfile.subscriptionPath.includes("?")
@@ -508,9 +499,7 @@ export function Workbench({
         subscriptionBaseUrl,
       )
     : qrAddressValue;
-  const selectedScanAddress = qrProfile?.target === "shadowrocket" && shadowrocketScanMode === "config"
-    ? configAddressValue
-    : homeAddressValue;
+  const selectedScanAddress = configAddressValue;
   const qrValue = qrProfile
     ? qrCodeValue(qrProfile.target, selectedScanAddress, qrProfile.name)
     : "";
@@ -925,7 +914,6 @@ export function Workbench({
   }
 
   function openQr(profile: Profile) {
-    setShadowrocketScanMode("home");
     setQrCopied(false);
     setQrProfile(profile);
   }
@@ -1579,7 +1567,9 @@ export function Workbench({
                   <span>{selectedTarget.client_family}</span>
                 </div>
               </div>
-              {selectedTarget.verified_modern_protocols.length >= 4 ? (
+              {selectedTarget.id === "shadowrocket" ? (
+                <span className="recommend-chip">原生导入已实测</span>
+              ) : selectedTarget.verified_modern_protocols.length >= 4 ? (
                 <span className="recommend-chip">现代协议已验证</span>
               ) : (
                 <span className="compatibility-chip">依客户端能力输出</span>
@@ -2241,16 +2231,14 @@ export function Workbench({
                 <strong>{qrProfile.name}</strong>
                 <span>
                   {qrProfile.target === "shadowrocket"
-                    ? shadowrocketScanMode === "home"
-                      ? "首页扫码：导入节点订阅，展示流量与到期信息。"
-                      : "配置页扫码：导入原生规则与 DIRECT / REJECT 策略。"
+                    ? "原生配置导入：保留规则与 DIRECT / REJECT 策略。"
                     : qrScanHint(qrProfile.target)}
                 </span>
               </div>
               {qrProfile.target === "shadowrocket" ? (
-                <div className="qr-mode" role="group" aria-label="Shadowrocket 扫码入口">
-                  <button type="button" className={shadowrocketScanMode === "home" ? "is-active" : ""} aria-pressed={shadowrocketScanMode === "home"} onClick={() => { setShadowrocketScanMode("home"); setQrCopied(false); }}>首页扫码</button>
-                  <button type="button" className={shadowrocketScanMode === "config" ? "is-active" : ""} aria-pressed={shadowrocketScanMode === "config"} onClick={() => { setShadowrocketScanMode("config"); setQrCopied(false); }}>配置页扫码</button>
+                <div className="qr-instruction" role="alert">
+                  <strong>请从 Shadowrocket「配置」页扫码</strong>
+                  <span>不要从首页扫码，否则会被当成节点订阅，无法正确载入 DIRECT / REJECT。</span>
                 </div>
               ) : null}
               <QRCodeSVG
@@ -2263,9 +2251,7 @@ export function Workbench({
               <div className="qr-value">
                 <span>
                   {qrProfile.target === "shadowrocket"
-                    ? shadowrocketScanMode === "home"
-                      ? "Shadowrocket 首页扫码地址（订阅 YAML）"
-                      : "Shadowrocket 配置页扫码地址（原生 .conf）"
+                    ? "Shadowrocket 原生配置地址（.conf）"
                     : "远程订阅地址"}
                 </span>
                 <code>{selectedScanAddress}</code>
@@ -2283,7 +2269,7 @@ export function Workbench({
               </div>
               <small className="qr-note">
                 {qrProfile.target === "shadowrocket"
-                  ? "请选择与扫码位置对应的地址。首页订阅显示流量横幅，但不保证原生 DIRECT / REJECT 策略；配置页保留原生策略，但不会显示首页的横幅。"
+                  ? "操作路径：打开 Shadowrocket → 配置 → 右上角扫码。也可以复制上面的 .conf 地址，在配置页中导入。"
                   : qrPasteHint(qrProfile.target)}
                 客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。它和页面
                 上那条链接一样，带着你的订阅凭据。

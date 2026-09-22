@@ -37,7 +37,7 @@ test("installs Shadowrocket through its configuration entry", () => {
     ),
     "shadowrocket://config/add/https://sub.example.test/sub?url=https%3A%2F%2Fprovider.test%2Fs&emoji=true",
   );
-  assert.equal(clientInstallLabel("shadowrocket"), "一键导入 Shadowrocket");
+  assert.equal(clientInstallLabel("shadowrocket"), "一键导入 Shadowrocket 配置");
 });
 
 test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
@@ -65,11 +65,11 @@ test("keeps the Shadowrocket QR as HTTPS while its button uses config/add", () =
   assert.equal(qrCodeValue("clash", namedConfig, "laomao"), namedConfig);
 });
 
-test("distinguishes the two Shadowrocket scanner locations", () => {
+test("directs Shadowrocket scans to the Configuration page only", () => {
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
-  assert.match(qrScanHint("shadowrocket"), /对应的二维码/);
-  assert.match(qrScanHint("shadowrocket"), /相应入口/);
+  assert.match(qrScanHint("shadowrocket"), /配置/);
+  assert.match(qrScanHint("shadowrocket"), /不要从首页扫码/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {
