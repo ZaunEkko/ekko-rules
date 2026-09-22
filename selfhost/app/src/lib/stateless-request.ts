@@ -59,6 +59,7 @@ export function clientImportPath(
 function shadowrocketYamlImportPath(
   name: string,
   query: string,
+  mode: "home" | "config",
 ): string {
   const params = new URLSearchParams(query);
   if (params.get("target") !== "shadowrocket") {
@@ -66,7 +67,8 @@ function shadowrocketYamlImportPath(
   }
   params.set("target", "clash");
   const filename = encodeURIComponent(safeImportFilename(name));
-  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?srhome=1&${packStatelessQuery(params.toString())}&remark=${filename}`;
+  const flag = mode === "home" ? "srhome" : "srconfig";
+  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?${flag}=1&${packStatelessQuery(params.toString())}&remark=${filename}`;
 }
 
 /**
@@ -75,20 +77,16 @@ function shadowrocketYamlImportPath(
  * trade-off is that the home subscription title may remain the site hostname.
  */
 export function shadowrocketHomeImportPath(name: string, query: string): string {
-  return shadowrocketYamlImportPath(name, query);
+  return shadowrocketYamlImportPath(name, query, "home");
 }
 
 /**
- * The config-page scanner gets Shadowrocket's native format. Unlike a Clash
- * provider-backed YAML, this preserves DIRECT and REJECT as actual select
- * members while retaining the chosen title and subscription usage headers.
+ * The config-page scanner receives a complete YAML document too. Its distinct
+ * query flag keeps the address stable without adding a provider subscription
+ * that Shadowrocket would import as a duplicate node batch.
  */
 export function shadowrocketConfigImportPath(name: string, query: string): string {
-  const params = new URLSearchParams(query);
-  if (params.get("target") !== "shadowrocket") {
-    throw new Error("A Shadowrocket subscription is required.");
-  }
-  return clientImportPath("shadowrocket", name, packStatelessQuery(params.toString()));
+  return shadowrocketYamlImportPath(name, query, "config");
 }
 
 export function shadowrocketHomeProfilePath(id: string, name: string): string {
@@ -98,7 +96,7 @@ export function shadowrocketHomeProfilePath(id: string, name: string): string {
 
 export function shadowrocketConfigProfilePath(id: string, name: string): string {
   const filename = encodeURIComponent(safeImportFilename(name));
-  return `/sub/${encodeURIComponent(id)}/${filename}.conf`;
+  return `/sub/${encodeURIComponent(id)}/${filename}.yaml?srconfig=1&remark=${filename}`;
 }
 
 /**

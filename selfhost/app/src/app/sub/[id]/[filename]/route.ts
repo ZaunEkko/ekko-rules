@@ -10,6 +10,7 @@ import { rateLimitResponseHeaders } from "@/lib/rate-limit";
 import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "@/lib/request-guard";
 import { STATELESS_ONLY_MESSAGE } from "@/lib/stateless-only";
 import { subscriptionMetadataHeaders } from "@/lib/subscription-metadata";
+import { materializeShadowrocketPolicyChoices } from "@/lib/shadowrocket-yaml";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,16 +42,18 @@ export async function GET(
     if (profile.target !== "shadowrocket" || (!homeYaml && !nativeConfig)) {
       throw new Error("Profile not found.");
     }
+    const yamlScan = homeYaml || configScan;
     const result = await convertSubscription(
       {
         subscriptionUrl: profile.subscriptionUrl,
-        // Keep old provider-backed srconfig URLs working after the output
-        // contract moved back to native select groups.
-        target: nativeConfig || configScan ? "shadowrocket" : "clash",
+        target: nativeConfig ? "shadowrocket" : "clash",
         options: profile.options,
       },
       { authorize: false, sourceUserAgent: request.headers.get("user-agent") },
     );
+    const body = yamlScan
+      ? materializeShadowrocketPolicyChoices(result.body)
+      : result.body;
     const headers: Record<string, string> = {
       "Content-Type": result.contentType,
       "Cache-Control": "no-store, no-cache, must-revalidate",
@@ -67,10 +70,10 @@ export async function GET(
       headers["Subscription-Userinfo"] = result.subscriptionUserinfo;
     }
     safeLog("profile.shadowrocket_yaml_success", {
-      bytes: result.bytes,
+      bytes: Buffer.byteLength(body, "utf8"),
       configScan: nativeConfig || configScan,
     });
-    return new NextResponse(result.body, { status: 200, headers });
+    return new NextResponse(body, { status: 200, headers });
   } catch (error) {
     const message = publicErrorMessage(error);
     safeLog("profile.shadowrocket_home_failure", { error: message });

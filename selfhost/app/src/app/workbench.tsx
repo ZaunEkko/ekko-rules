@@ -481,9 +481,9 @@ export function Workbench({
   /**
    * One code, whoever is pointing at it.
    *
-   * Both scanner locations receive the same complete HTTPS YAML address;
-   * the node-only add/sub deep link lost the configuration on a real device.
-   * The separate native .conf remains available for manual import.
+   * Both scanner locations receive a complete HTTPS YAML address. The two
+   * flags keep the stored refresh address stable for the entry that scanned
+   * it, without adding a second node-only subscription.
    */
   const qrAddressValue = qrProfile
     ? clientHandoffUrl(
@@ -2246,9 +2246,7 @@ export function Workbench({
                 <strong>{qrProfile.name}</strong>
                 <span>
                   {qrProfile.target === "shadowrocket"
-                    ? shadowrocketScanMode === "home"
-                      ? "请在 Shadowrocket 首页扫码；订阅名称可能显示为站点域名。"
-                      : "请在 Shadowrocket「配置」页扫码；保留名称、流量横幅和 DIRECT / REJECT。"
+                    ? "请使用对应的 Shadowrocket 扫码入口导入。"
                     : qrScanHint(qrProfile.target)}
                 </span>
               </div>
@@ -2283,8 +2281,8 @@ export function Workbench({
                 <span>
                   {qrProfile.target === "shadowrocket"
                     ? shadowrocketScanMode === "home"
-                      ? "首页扫码地址（节点内联）"
-                      : "配置页扫码地址（原生 .conf）"
+                      ? "首页扫码地址（完整 YAML）"
+                      : "配置页扫码地址（完整 YAML）"
                     : "远程订阅地址"}
                 </span>
                 <code>{selectedScanAddress}</code>
@@ -2302,9 +2300,9 @@ export function Workbench({
               </div>
               {qrProfile.target === "shadowrocket" && shadowrocketScanMode === "home" ? (
                 <div className="qr-value">
-                  <span>原生配置地址（仅「配置」页手动导入）</span>
-                  <code>{qrAddressValue}</code>
-                  <button type="button" className="qr-copy" onClick={() => void copyText(qrAddressValue)}>
+                  <span>配置页扫码地址（完整 YAML）</span>
+                  <code>{configScanAddressValue}</code>
+                  <button type="button" className="qr-copy" onClick={() => void copyText(configScanAddressValue)}>
                     复制配置地址
                   </button>
                 </div>

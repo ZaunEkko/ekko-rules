@@ -122,7 +122,7 @@ Web UI 提供：
 - 自定义前缀：在家里、公司等网络切换后直接输入新的电脑 IP；
 - 曾用地址：在当前浏览器保留最近 8 个前缀，一键切换所有档案的显示、复制与二维码。
 
-**Shadowrocket 首页与配置页使用两个明确的 HTTPS 二维码模式。** 首页模式返回内联节点、策略组和规则，恢复已通过真机的单次导入形状，接受首页订阅名称可能显示为站点域名。配置页模式保留显式 `proxies: []` 和一个同名远程 provider，用于保留填写名称与流量横幅。provider 指向纯节点接口，不能指回完整配置。两种入口的实机证据与取舍见 [Shadowrocket 导入记录](docs/shadowrocket-import.md)。
+**Shadowrocket 首页与配置页使用两个明确的 HTTPS 二维码模式。** 两个入口都返回同一份完整 YAML：内联节点、策略组、规则及上游订阅用量信息都在一个响应中；配置页只通过独立的 `srconfig=1` 标记保持自己的刷新地址，不再创建 provider 节点订阅。为了让 YAML 导入中的直连和拦截也能在策略组选项中点选，输出会加入 `🚀 DIRECT` 与 `🛑 REJECT` 两个同语义代理别名。两种入口的实机证据与取舍见 [Shadowrocket 导入记录](docs/shadowrocket-import.md)。
 
 二维码放 `/i` 地址，由它按来客作答：
 
@@ -131,7 +131,7 @@ Web UI 提供：
 
 判定条件是三者同时成立：`Sec-Fetch-Mode: navigate`、`Accept` 含 `text/html`、`User-Agent` 以 `Mozilla/5.0` 开头。代理客户端不会同时具备这三样；判错的代价是给客户端发了 HTML，所以宁可漏判成客户端。
 
-二维码使用的远程地址把转换参数打包为 base64url 参数（通常是 `/i?p=…`），避免嵌套 scheme 时丢失机场 token。Shadowrocket 首页二维码使用 `/i/<名称>.yaml?srhome=1&p=…&remark=<名称>` 的内联 YAML；配置页二维码使用 `/i/<名称>.conf?p=…` 的原生配置，保留 `DIRECT`、`REJECT`、策略组、名称和订阅用量横幅。`remark` 不参与服务端配置解析；内部 `p` 参数仍是 base64url。此前发出的 `srconfig=1` YAML 地址会在下一次更新时返回同一份原生配置。
+二维码使用的远程地址把转换参数打包为 base64url 参数（通常是 `/i?p=…`），避免嵌套 scheme 时丢失机场 token。Shadowrocket 首页二维码使用 `/i/<名称>.yaml?srhome=1&p=…&remark=<名称>`；配置页二维码使用 `/i/<名称>.yaml?srconfig=1&p=…&remark=<名称>`。两者都是完整 YAML，并保留名称、策略组和订阅用量响应头；`remark` 不参与服务端配置解析，内部 `p` 参数仍是 base64url。旧 `.conf` 地址继续作为原生配置兼容入口。
 
 **一键导入按钮**在手机上直接访问站点时最省事，覆盖各家自己公开的 scheme：Clash / Mihomo `clash://install-config?url=`、Shadowrocket `shadowrocket://config/add/<地址>`、sing-box `sing-box://import-remote-profile?url=…#名称`、Surge `surge:///install-config?url=`、Loon `loon://import?sub=`、Surfboard `surfboard:///install-config?url=`。Shadowrocket 的二维码例外地保持 HTTPS，因为首页扫码器实机不处理 `config/add` 二维码。Quantumult X 的 `update-configuration` 只接受远程资源而不是整份配置，Quantumult 与 Mellow 没有公开 scheme，这三个只给复制地址。
 
