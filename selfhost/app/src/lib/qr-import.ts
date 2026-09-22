@@ -57,7 +57,7 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
     qrHint:
-      "在 Shadowrocket 首页或「配置」页扫码，都会按填写的名称添加完整订阅，并保留流量与到期信息。",
+      "首页及「配置」页的扫码兼容性待真机确认；下方保留 HTTPS 完整订阅和原生配置地址。",
   },
   singbox: {
     build: (url, name) =>
@@ -86,10 +86,9 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
 };
 
 /**
- * Shadowrocket's named-subscription handoff expects standard Base64 in the
- * `add/sub` path. URL-safe Base64 is not interchangeable here: replacing `/`
- * and `+`, or removing `=` padding, makes current clients silently ignore the
- * scan even though the QR itself is valid.
+ * The Shadowrocket subscription deep link encloses a Base64 URL in `sub://`.
+ * Its previous `sub/` spelling opened the scanner without importing anything.
+ * Preserve the standard Base64 alphabet and padding in the deep link.
  */
 function standardBase64(value: string): string {
   const bytes = new TextEncoder().encode(value);
@@ -101,7 +100,7 @@ function standardBase64(value: string): string {
 function shadowrocketNamedSubscription(url: string, name: string): string {
   const remark = name.trim() || "Shadowrocket";
   return (
-    `shadowrocket://add/sub/${standardBase64(url)}` +
+    `shadowrocket://add/sub://${standardBase64(url)}` +
     `?remark=${encodeURIComponent(remark)}`
   );
 }
@@ -154,8 +153,8 @@ export function qrImportValue(
  *
  * Most clients correctly classify the ordinary handoff URL themselves.
  * Shadowrocket gets a named subscription around the complete YAML address.
- * Both scanners then enter through the same metadata-preserving path; the
- * YAML itself still carries nodes, policy groups and rules.
+ * The YAML itself carries nodes, policy groups and rules; whether each scanner
+ * displays the name and usage banner still requires client-side verification.
  */
 export function qrCodeValue(
   target: string,

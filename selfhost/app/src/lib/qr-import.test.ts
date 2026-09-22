@@ -51,22 +51,22 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
 });
 
 test("wraps the complete Shadowrocket YAML in a named standard-Base64 subscription", () => {
-  // This fixture deliberately encodes with both `/` and `==`. Shadowrocket
-  // silently rejects the URL-safe `-`/`_` alphabet and stripped padding.
+  // Lock the entire `sub://` form: `sub/` was accepted as a QR payload but
+  // caused the scanner to close without importing the subscription.
   const namedConfig = "https://sub.example.test/i/laomao.yaml?p=00";
   assert.equal(
     qrCodeValue("shadowrocket", namedConfig, "laomao"),
-    "shadowrocket://add/sub/aHR0cHM6Ly9zdWIuZXhhbXBsZS50ZXN0L2kvbGFvbWFvLnlhbWw/cD0wMA==?remark=laomao",
+    "shadowrocket://add/sub://aHR0cHM6Ly9zdWIuZXhhbXBsZS50ZXN0L2kvbGFvbWFvLnlhbWw/cD0wMA==?remark=laomao",
   );
   assert.equal(qrCodeValue("clash", namedConfig, "laomao"), namedConfig);
 });
 
-test("describes the shared Shadowrocket scanner path", () => {
+test("describes the unverified Shadowrocket scanner behavior honestly", () => {
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
   assert.match(qrScanHint("shadowrocket"), /首页/);
   assert.match(qrScanHint("shadowrocket"), /配置/);
-  assert.match(qrScanHint("shadowrocket"), /流量/);
+  assert.match(qrScanHint("shadowrocket"), /待真机确认/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {
