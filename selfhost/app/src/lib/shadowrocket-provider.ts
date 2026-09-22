@@ -120,8 +120,9 @@ export function externalizeShadowrocketProvider(
   const providerName = input.name.trim() || "Shadowrocket";
   const interval = Math.max(3600, Math.min(604800, Math.round(input.intervalHours * 3600)));
   lines.splice(
-    proxiesStart,
+    proxiesEnd,
     0,
+    "",
     "proxy-providers:",
     `  ${JSON.stringify(providerName)}:`,
     "    type: http",
@@ -130,7 +131,6 @@ export function externalizeShadowrocketProvider(
     `    interval: ${interval}`,
     "    health-check:",
     "      enable: false",
-    "",
   );
 
   const groupsStart = lines.findIndex((line) => /^proxy-groups:\s*$/.test(line));
