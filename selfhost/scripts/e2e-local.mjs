@@ -401,8 +401,11 @@ async function assertNamedShadowrocketImportRoute() {
     headers: { "user-agent": "Shadowrocket/2.2.70" },
   });
   const yaml = await homeResponse.text();
-  for (const marker of ["proxy-providers:", "proxy-groups:", "rules:", "♻️ 手动切换", "🔞 NSFW"]) {
+  for (const marker of ["proxy-providers:", "proxies:", "proxy-groups:", "rules:", "♻️ 手动切换", "🔞 NSFW"]) {
     if (!yaml.includes(marker)) throw new Error(`Shadowrocket home response lacks ${marker}`);
+  }
+  if (!/^  - \{name: .*type:/m.test(yaml)) {
+    throw new Error("Shadowrocket home response lost the inline nodes required by subscription refresh.");
   }
   const providerUrl = yaml.match(/^    url: (".*")$/m)?.[1];
   if (!providerUrl) throw new Error("Shadowrocket home response lacks its named provider URL.");
@@ -465,7 +468,7 @@ async function assertStoredShadowrocketHomeRoute() {
   });
   const body = await response.text();
   const providerUrl = body.match(/^    url: (".*")$/m)?.[1];
-  if (!response.ok || !body.includes("proxy-providers:") || !body.includes("proxy-groups:") || !body.includes("🔞 NSFW") ||
+  if (!response.ok || !body.includes("proxy-providers:") || !body.includes("proxies:") || !body.includes("proxy-groups:") || !body.includes("🔞 NSFW") ||
       response.headers.get("subscription-userinfo") !==
         "upload=512; download=1024; total=10737418240; expire=1798761600") {
     throw new Error(`Stored Shadowrocket home URL lost rules or traffic info: HTTP ${response.status}`);

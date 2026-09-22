@@ -6,7 +6,7 @@ import {
   visibleSubscriptionOrigin,
 } from "./shadowrocket-provider";
 
-test("moves inline nodes behind one named provider without losing group fallbacks", () => {
+test("keeps inline nodes beside one named provider without losing group fallbacks", () => {
   const source = `proxies:
   - name: "香港-01"
     type: ss
@@ -34,7 +34,9 @@ rules:
   });
   assert.match(result, /^proxy-providers:\n  "laomao":/m);
   assert.match(result, /url: "https:\/\/sub\.example\/i\/laomao\.nodes\.yaml\?p=abc&srnodes=1"/);
-  assert.doesNotMatch(result, /^proxies:$/m);
+  assert.match(result, /^proxies:$/m);
+  assert.match(result, /^  - name: "香港-01"$/m);
+  assert.match(result, /^  - name: 美国-01$/m);
   assert.doesNotMatch(result, /^      - (?:香港-01|美国-01)$/m);
   assert.match(result, /- DIRECT\n    use:\n      - "laomao"/);
   assert.match(result, /- REJECT\n      - 手动切换/);
