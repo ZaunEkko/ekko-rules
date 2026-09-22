@@ -1,15 +1,13 @@
-"""Validate both Shadowrocket scanner payload contracts as parsed YAML.
+"""Validate Shadowrocket's home-scanner YAML payload.
 
-Home scanning receives one self-contained document with inline nodes. Config
-scanning receives a provider-backed document plus its terminating node list.
-This checks HTTP payloads, not Shadowrocket's private importer UI.
+The configuration-page scanner receives native .conf, whose policy members
+are checked directly by e2e-local.mjs. This script only parses the YAML shape
+that the home scanner needs.
 """
 
 import json
 import sys
 from pathlib import Path
-from urllib.parse import urldefrag
-
 import yaml
 
 
@@ -54,35 +52,11 @@ def check_home(config):
     return {"groups": len(groups), "rules": len(config["rules"]), "nodes": len(node_names)}
 
 
-def check_provider_config(config, nodes, config_url, provider_url, name):
-    assert isinstance(config, dict), "Config must be a YAML mapping"
-    providers = config.get("proxy-providers", {})
-    assert list(providers) == [name], "Config must have exactly one named node source"
-    provider = providers[name]
-    assert provider["type"] == "http", "Node source must be remotely refreshable"
-    assert provider["url"] == provider_url, "Fetched provider must match its declaration"
-    assert urldefrag(config_url)[0] != urldefrag(provider_url)[0], "Provider refers back to the config"
-    assert not urldefrag(provider_url)[1], "Fragments must not create duplicate subscription identities"
-    assert config.get("proxies") == [], "Config must have an explicit empty local node list"
-    assert isinstance(nodes, dict) and set(nodes) == {"proxies"}, "Provider must terminate at nodes, with no config or child providers"
-    node_names = check_nodes(nodes["proxies"])
-    groups, provider_users = check_policies(config, (), providers)
-    assert provider_users, "No group uses the named node source"
-    manual = next(group for group in groups if group["name"] == "♻️ 手动切换")
-    assert manual.get("use") == [name]
-    return {"groups": len(groups), "rules": len(config["rules"]), "nodes": len(node_names)}
-
-
 if __name__ == "__main__":
     mode = sys.argv[1]
     if mode == "home":
         config = yaml.safe_load(Path(sys.argv[2]).read_text(encoding="utf-8"))
         result = check_home(config)
-    elif mode == "config":
-        config_path, nodes_path, config_url, provider_url, name = sys.argv[2:]
-        config = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
-        nodes = yaml.safe_load(Path(nodes_path).read_text(encoding="utf-8"))
-        result = check_provider_config(config, nodes, config_url, provider_url, name)
     else:
         raise AssertionError(f"Unknown Shadowrocket check mode: {mode}")
     print(json.dumps(result))

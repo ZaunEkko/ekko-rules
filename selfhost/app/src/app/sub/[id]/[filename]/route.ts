@@ -10,15 +10,11 @@ import { rateLimitResponseHeaders } from "@/lib/rate-limit";
 import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "@/lib/request-guard";
 import { STATELESS_ONLY_MESSAGE } from "@/lib/stateless-only";
 import { subscriptionMetadataHeaders } from "@/lib/subscription-metadata";
-import {
-  externalizeShadowrocketProvider,
-  visibleSubscriptionOrigin,
-} from "@/lib/shadowrocket-provider";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** Complete YAML representation for Shadowrocket's homepage scanner. */
+/** Scanner-specific Shadowrocket profile representation. */
 export async function GET(
   request: Request,
   context: { params: Promise<{ id: string; filename: string }> },
@@ -39,37 +35,29 @@ export async function GET(
   try {
     const { id, filename } = await context.params;
     const profile = await readStoredProfile(id);
-    if (profile.target !== "shadowrocket" || !filename.endsWith(".yaml")) {
+    const configScan = new URL(request.url).searchParams.get("srconfig") === "1";
+    const homeYaml = filename.endsWith(".yaml");
+    const nativeConfig = filename.endsWith(".conf");
+    if (profile.target !== "shadowrocket" || (!homeYaml && !nativeConfig)) {
       throw new Error("Profile not found.");
     }
     const result = await convertSubscription(
       {
         subscriptionUrl: profile.subscriptionUrl,
-        target: "clash",
+        // Keep old provider-backed srconfig URLs working after the output
+        // contract moved back to native select groups.
+        target: nativeConfig || configScan ? "shadowrocket" : "clash",
         options: profile.options,
       },
       { authorize: false, sourceUserAgent: request.headers.get("user-agent") },
     );
-    const configScan = new URL(request.url).searchParams.get("srconfig") === "1";
-    const body = configScan
-      ? externalizeShadowrocketProvider(result.body, {
-          name: profile.name,
-          url: new URL(
-            `/sub/${encodeURIComponent(id)}/nodes`,
-            visibleSubscriptionOrigin(
-              request,
-              getRuntimeConfig().subscriptionBaseUrl,
-              getRuntimeConfig().trustProxyHeaders,
-            ),
-          ).toString(),
-          intervalHours: profile.options.updateIntervalHours,
-        })
-      : result.body;
     const headers: Record<string, string> = {
       "Content-Type": result.contentType,
       "Cache-Control": "no-store, no-cache, must-revalidate",
       "X-Request-Id": result.requestId,
-      "X-Ekko-Target": configScan ? "shadowrocket-config" : "shadowrocket-home",
+      "X-Ekko-Target": nativeConfig || configScan
+        ? "shadowrocket-config"
+        : "shadowrocket-home",
       ...subscriptionMetadataHeaders(profile.name),
     };
     if (profile.options.autoUpdate) {
@@ -79,10 +67,10 @@ export async function GET(
       headers["Subscription-Userinfo"] = result.subscriptionUserinfo;
     }
     safeLog("profile.shadowrocket_yaml_success", {
-      bytes: Buffer.byteLength(body, "utf8"),
-      configScan,
+      bytes: result.bytes,
+      configScan: nativeConfig || configScan,
     });
-    return new NextResponse(body, { status: 200, headers });
+    return new NextResponse(result.body, { status: 200, headers });
   } catch (error) {
     const message = publicErrorMessage(error);
     safeLog("profile.shadowrocket_home_failure", { error: message });

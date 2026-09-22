@@ -17,12 +17,12 @@
 两个扫码入口使用不同 HTTPS 地址与不同响应，页面必须先选择入口：
 
 - 首页地址带 `srhome=1`，完整 YAML 内联非空 `proxies`、策略组与规则，不包含 `proxy-providers`。这是恢复已经通过真机的形状，已知取舍是首页订阅名称可能显示为 `sub.boxnook.cc`。
-- 配置页地址带 `srconfig=1`，完整 YAML 保留规则、策略组和显式 `proxies: []`，节点由一个按用户名称命名的 HTTP provider 提供，以保留正确名称和流量横幅。
+- 配置页地址为具名 `.conf`，返回 Shadowrocket 原生 `[Proxy]`、`[Proxy Group]` 与 `[Rule]`。这条路径让 `DIRECT`、`REJECT` 和手动切换作为原生 `select` 成员保留，同时保留用户填写的名称和订阅用量横幅。
 
-无状态配置页 provider 地址为 `/i/<名称>.nodes.yaml?...&srnodes=1`；存档模式为 `/sub/<id>/nodes`。二者只返回非空 `proxies` 列表，不含规则、策略组或下级 provider；都携带相同名称和订阅用量响应头。配置页 URL 和节点 URL 必须不同，依赖只走一层。首页地址不请求这条 provider。
+为兼容已导入的旧链接，带 `srconfig=1` 的 YAML 地址在下次更新时也返回原生配置。旧 provider 的节点地址仍可完成已有配置的一次更新，但新二维码不会再生成 provider 结构。
 
 ## 验证边界
 
-`e2e-local.mjs` 会分别请求首页内联配置、配置页 provider 配置及其节点地址，再调用 `check-shadowrocket-import.py` 解析 YAML：首页必须有非空内联节点且无 provider；配置页必须有空本地列表、唯一具名来源及无环终止的节点响应。两条路径都检查现代协议、策略组引用、广告/NSFW 默认值和完整规则。
+`e2e-local.mjs` 会分别请求首页内联 YAML、配置页原生 `.conf` 及旧 `srconfig=1` 兼容地址：首页必须有非空内联节点且无 provider；两个配置页响应都必须包含完整原生策略组，其中手动切换含 `DIRECT`，广告与 NSFW 以 `REJECT` 为默认项。两条路径都检查现代协议、订阅用量、名称和完整规则。
 
 这些检查验证服务器交付的数据与依赖关系，不等于运行了 Shadowrocket。两个扫码入口的最终 UI 结果需要真机确认；若不符，应按扫码时间核对无查询串的访问日志，区分主配置请求与节点请求。不要保存订阅查询串、凭据或设备标识作为诊断材料。
