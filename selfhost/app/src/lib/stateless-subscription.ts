@@ -16,7 +16,6 @@ import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "./request-guard";
 import { recordMetric } from "./metrics";
 import { parseStatelessConvertQuery } from "./stateless-request";
 import { subscriptionMetadataHeaders } from "./subscription-metadata";
-import { materializeShadowrocketPolicyChoices } from "./shadowrocket-yaml";
 
 /**
  * Serve a stateless conversion: everything needed comes from the query string,
@@ -76,9 +75,10 @@ export async function serveStatelessSubscription(
       },
     );
 
-    const body = shadowrocketHome || shadowrocketConfig
-      ? materializeShadowrocketPolicyChoices(result.body)
-      : result.body;
+    // Keep DIRECT and REJECT as native Clash policy literals. Turning them
+    // into synthetic proxy objects passes Mihomo validation but Shadowrocket
+    // does not expose those objects as built-in selectable policies.
+    const body = result.body;
     const headers: Record<string, string> = {
       "Content-Type": result.contentType,
       "Cache-Control": "no-store, no-cache, must-revalidate",
