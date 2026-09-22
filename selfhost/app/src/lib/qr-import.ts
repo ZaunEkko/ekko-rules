@@ -57,7 +57,7 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
     qrHint:
-      "首页或「配置」页扫码使用同一条 HTTPS 配置地址；节点只来自其中的同名远程订阅，因此只添加一份节点订阅。",
+      "使用 Shadowrocket 扫码导入配置与节点。",
   },
   singbox: {
     build: (url, name) =>
@@ -103,7 +103,7 @@ export function clientInstallLabel(target: string): string {
  */
 export function qrPasteHint(target: string): string {
   if (target === "shadowrocket") {
-    return "二维码使用下方 HTTPS 完整配置地址；一键导入按钮才使用 config/add。";
+    return "也可以复制下方完整配置地址，在 Shadowrocket 中导入。";
   }
   return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }
@@ -132,8 +132,8 @@ export function qrImportValue(
  * The actual payload rendered into the single QR code.
  *
  * Shadowrocket's home scanner visibly accepts the HTTPS address but ignores a
- * config/add QR payload. Keep the QR as HTTPS; the complete document gives
- * Home inline nodes and points Config's named provider back at this same URL.
+ * config/add QR payload. Keep the QR as HTTPS; the complete document refers
+ * to one named provider whose response contains only nodes, with no recursion.
  * The separate one-tap button can still use the documented config/add action.
  */
 export function qrCodeValue(

@@ -48,7 +48,7 @@ export async function serveStatelessSubscription(
     const parsed = parseStatelessConvertQuery(requestUrl.searchParams);
     const providerNodes = requestUrl.searchParams.get("srnodes") === "1" &&
       requestUrl.pathname.endsWith(".nodes.yaml") && parsed.target === "clash";
-    const shadowrocketConfig = requestUrl.searchParams.get("srhome") === "1" &&
+    const shadowrocketConfig = !providerNodes && requestUrl.searchParams.get("srhome") === "1" &&
       requestUrl.pathname.endsWith(".yaml") && parsed.target === "clash";
     const preset = resolveRemoteConfig(
       parsed.remoteConfig,
@@ -119,6 +119,7 @@ export async function serveStatelessSubscription(
       remoteConfig: preset.id,
       bytes: Buffer.byteLength(body, "utf8"),
       shadowrocketConfigRoute: shadowrocketConfig,
+      shadowrocketProviderRoute: providerNodes,
       usageMetadataPresent: Boolean(result.subscriptionUserinfo),
     });
     return new NextResponse(body, { status: 200, headers });

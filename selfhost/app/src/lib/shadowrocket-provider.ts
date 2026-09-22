@@ -96,11 +96,11 @@ function externalizeGroup(
 }
 
 /**
- * Give both Shadowrocket scanners the representation they need without giving
- * the client two subscription identities. Home validates the scanned URL from
- * the inline `proxies`, while Config retains the named provider and its usage
- * metadata. The caller points that provider back at the exact scanned URL, so
- * both views refresh one remote subscription rather than a second nodes URL.
+ * Keep the complete configuration schema, with one remote source of nodes.
+ * The explicit empty list distinguishes a valid config without local nodes
+ * from a missing node field. Inlining the same nodes here imports a second
+ * batch; pointing the provider at this config makes imports recurse forever.
+ * The provider must therefore resolve to a separate, nodes-only document.
  */
 export function externalizeShadowrocketProvider(
   completeConfig: string,
@@ -118,8 +118,9 @@ export function externalizeShadowrocketProvider(
   const providerName = input.name.trim() || "Shadowrocket";
   const interval = Math.max(3600, Math.min(604800, Math.round(input.intervalHours * 3600)));
   lines.splice(
-    proxiesEnd,
-    0,
+    proxiesStart,
+    proxiesEnd - proxiesStart,
+    "proxies: []",
     "",
     "proxy-providers:",
     `  ${JSON.stringify(providerName)}:`,
@@ -156,6 +157,10 @@ export function shadowrocketProviderAddress(
   publicBaseUrl: string,
 ): string {
   const current = new URL(requestUrl);
+  current.hash = "";
+  current.searchParams.delete("srhome");
+  current.searchParams.set("srnodes", "1");
+  current.pathname = current.pathname.replace(/(?:\.nodes)?\.yaml$/i, ".nodes.yaml");
   const base = publicBaseUrl.trim();
   return base
     ? new URL(`${current.pathname}${current.search}`, base).toString()
