@@ -131,7 +131,7 @@ export function qrImportValue(
  * The actual payload rendered into the single QR code.
  *
  * Shadowrocket's scanners visibly accept an ordinary HTTPS address while the
- * home scanner ignores a config/add QR payload. Keep one complete YAML URL for
+ * home scanner ignores a config/add QR payload. Keep one native .conf URL for
  * both in-app scanners; the one-tap button still uses config/add.
  */
 export function qrCodeValue(

@@ -53,7 +53,7 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
 test("keeps the Shadowrocket QR as HTTPS while its button uses config/add", () => {
   // Real-device home scanning ignores a config/add QR without an error. The
   // HTTPS payload must not be replaced with that unsupported scanner action.
-  const namedConfig = "https://sub.example.test/i/laomao.yaml?srconfig=1&p=00&remark=laomao";
+  const namedConfig = "https://sub.example.test/i/laomao.conf?p=00";
   assert.equal(
     qrCodeValue("shadowrocket", namedConfig, "laomao"),
     namedConfig,

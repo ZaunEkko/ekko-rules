@@ -48,19 +48,23 @@ export async function serveStatelessSubscription(
     const shadowrocketConfig = !providerNodes && !shadowrocketHome &&
       requestUrl.searchParams.get("srconfig") === "1" &&
       requestUrl.pathname.endsWith(".yaml") && parsed.target === "clash";
+    // v0.4.24 issued complete-YAML srconfig links. Keep those saved URLs
+    // refreshable, but upgrade their response to the native Shadowrocket
+    // format where DIRECT and REJECT remain real policy members.
+    const conversionTarget = shadowrocketConfig ? "shadowrocket" : parsed.target;
     const preset = resolveRemoteConfig(
       parsed.remoteConfig,
       runtimeConfig.remoteConfigs,
       runtimeConfig.allowCustomRemoteConfig,
     );
-    if (!isRemoteConfigTargetSupported(preset, parsed.target)) {
+    if (!isRemoteConfigTargetSupported(preset, conversionTarget)) {
       throw new Error("remoteConfig is not supported for this target.");
     }
 
     const result = await convertSubscription(
       {
         subscriptionUrl: parsed.subscriptionUrl,
-        target: parsed.target,
+        target: conversionTarget,
         options: parsed.options,
       },
       {

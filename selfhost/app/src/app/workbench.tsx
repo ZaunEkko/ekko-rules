@@ -478,9 +478,9 @@ export function Workbench({
   /**
    * One code, whoever is pointing at it.
    *
-   * Both Shadowrocket scanner locations receive the same complete HTTPS YAML
-   * address. This prevents a second node source while keeping configuration,
-   * policies and subscription metadata on one refreshable identity.
+   * Both Shadowrocket scanner locations receive the same native HTTPS .conf
+   * address. This prevents a second node source while keeping the chosen name,
+   * native policies and subscription metadata on one refreshable identity.
    */
   const qrAddressValue = qrProfile
     ? clientHandoffUrl(
@@ -2243,7 +2243,7 @@ export function Workbench({
               <div className="qr-value">
                 <span>
                   {qrProfile.target === "shadowrocket"
-                    ? "Shadowrocket 扫码地址（完整 YAML）"
+                    ? "Shadowrocket 扫码地址（原生 .conf）"
                     : "远程订阅地址"}
                 </span>
                 <code>{selectedScanAddress}</code>
