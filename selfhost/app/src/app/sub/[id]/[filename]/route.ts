@@ -12,6 +12,7 @@ import { STATELESS_ONLY_MESSAGE } from "@/lib/stateless-only";
 import { subscriptionMetadataHeaders } from "@/lib/subscription-metadata";
 import {
   externalizeShadowrocketProvider,
+  shadowrocketProviderAddress,
   visibleSubscriptionOrigin,
 } from "@/lib/shadowrocket-provider";
 
@@ -57,7 +58,7 @@ export async function GET(
     );
     const body = externalizeShadowrocketProvider(result.body, {
       name: profile.name,
-      url: new URL(`/sub/${encodeURIComponent(id)}/nodes`, providerOrigin).toString(),
+      url: shadowrocketProviderAddress(request.url, providerOrigin),
       intervalHours: profile.options.updateIntervalHours,
     });
     const headers: Record<string, string> = {
