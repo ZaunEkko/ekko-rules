@@ -159,6 +159,7 @@ export function shadowrocketProviderAddress(
   const current = new URL(requestUrl);
   current.hash = "";
   current.searchParams.delete("srhome");
+  current.searchParams.delete("srconfig");
   current.searchParams.set("srnodes", "1");
   current.pathname = current.pathname.replace(/(?:\.nodes)?\.yaml$/i, ".nodes.yaml");
   const base = publicBaseUrl.trim();

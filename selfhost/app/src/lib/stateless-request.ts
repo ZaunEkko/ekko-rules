@@ -56,25 +56,47 @@ export function clientImportPath(
   return `${CLIENT_IMPORT_PATH}/${encodeURIComponent(filename)}.conf?${packedQuery}`;
 }
 
-/**
- * Both Shadowrocket scan entries accepted this complete HTTPS Clash document
- * as nodes plus configuration on a real device. The outer `remark` is a name
- * hint only; conversion always reads the packed query and never trusts it for
- * the output profile name. Client adoption of the hint needs device testing.
- */
-export function shadowrocketHomeImportPath(name: string, query: string): string {
+function shadowrocketYamlImportPath(
+  name: string,
+  query: string,
+  mode: "home" | "config",
+): string {
   const params = new URLSearchParams(query);
   if (params.get("target") !== "shadowrocket") {
     throw new Error("A Shadowrocket subscription is required.");
   }
   params.set("target", "clash");
   const filename = encodeURIComponent(safeImportFilename(name));
-  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?srhome=1&${packStatelessQuery(params.toString())}&remark=${filename}`;
+  const flag = mode === "home" ? "srhome" : "srconfig";
+  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?${flag}=1&${packStatelessQuery(params.toString())}&remark=${filename}`;
+}
+
+/**
+ * Shadowrocket's home scanner is deliberately given a complete YAML with
+ * inline nodes. A real device imports that shape as both nodes and config; the
+ * trade-off is that the home subscription title may remain the site hostname.
+ */
+export function shadowrocketHomeImportPath(name: string, query: string): string {
+  return shadowrocketYamlImportPath(name, query, "home");
+}
+
+/**
+ * The config-page scanner gets the provider-backed YAML that preserves the
+ * chosen subscription title and traffic banner. It has a distinct address so
+ * its empty inline list can never break the home-scanner path again.
+ */
+export function shadowrocketConfigImportPath(name: string, query: string): string {
+  return shadowrocketYamlImportPath(name, query, "config");
 }
 
 export function shadowrocketHomeProfilePath(id: string, name: string): string {
   const filename = encodeURIComponent(safeImportFilename(name));
-  return `/sub/${encodeURIComponent(id)}/${filename}.yaml?remark=${filename}`;
+  return `/sub/${encodeURIComponent(id)}/${filename}.yaml?srhome=1&remark=${filename}`;
+}
+
+export function shadowrocketConfigProfilePath(id: string, name: string): string {
+  const filename = encodeURIComponent(safeImportFilename(name));
+  return `/sub/${encodeURIComponent(id)}/${filename}.yaml?srconfig=1&remark=${filename}`;
 }
 
 /**

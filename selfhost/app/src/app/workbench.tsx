@@ -20,6 +20,8 @@ import {
   buildStatelessConvertQuery,
   clientImportPath,
   packStatelessQuery,
+  shadowrocketConfigImportPath,
+  shadowrocketConfigProfilePath,
   shadowrocketHomeImportPath,
   shadowrocketHomeProfilePath,
   type StatelessConvertRequest,
@@ -359,6 +361,7 @@ export function Workbench({
   const [contactHref, setContactHref] = useState("");
   const [qrProfile, setQrProfile] = useState<Profile | null>(null);
   const [qrCopied, setQrCopied] = useState(false);
+  const [shadowrocketScanMode, setShadowrocketScanMode] = useState<"home" | "config">("home");
   const [baseUrlOverride, setBaseUrlOverride] = useState("");
   const [baseUrlDraft, setBaseUrlDraft] = useState("");
   const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
@@ -500,8 +503,22 @@ export function Workbench({
         subscriptionBaseUrl,
       )
     : qrAddressValue;
+  const configScanAddressValue = qrProfile?.target === "shadowrocket"
+    ? absoluteLocalUrl(
+        qrProfile.subscriptionPath.includes("?")
+          ? shadowrocketConfigImportPath(
+              qrProfile.name,
+              qrProfile.subscriptionPath.split("?").slice(1).join("?"),
+            )
+          : shadowrocketConfigProfilePath(qrProfile.id, qrProfile.name),
+        subscriptionBaseUrl,
+      )
+    : qrAddressValue;
+  const selectedScanAddress = qrProfile?.target === "shadowrocket" && shadowrocketScanMode === "config"
+    ? configScanAddressValue
+    : homeAddressValue;
   const qrValue = qrProfile
-    ? qrCodeValue(qrProfile.target, homeAddressValue, qrProfile.name)
+    ? qrCodeValue(qrProfile.target, selectedScanAddress, qrProfile.name)
     : "";
   const currentProfileName =
     profileName.trim() || selectedTarget.short_label;
@@ -914,6 +931,7 @@ export function Workbench({
   }
 
   function openQr(profile: Profile) {
+    setShadowrocketScanMode("home");
     setQrProfile(profile);
   }
 
@@ -2226,8 +2244,34 @@ export function Workbench({
             <div className="qr-card">
               <div>
                 <strong>{qrProfile.name}</strong>
-                <span>{qrScanHint(qrProfile.target)}</span>
+                <span>
+                  {qrProfile.target === "shadowrocket"
+                    ? shadowrocketScanMode === "home"
+                      ? "请在 Shadowrocket 首页扫码；订阅名称可能显示为站点域名。"
+                      : "请在 Shadowrocket「配置」页扫码；保留填写的名称和流量横幅。"
+                    : qrScanHint(qrProfile.target)}
+                </span>
               </div>
+              {qrProfile.target === "shadowrocket" ? (
+                <div className="qr-mode" role="group" aria-label="Shadowrocket 扫码入口">
+                  <button
+                    type="button"
+                    className={shadowrocketScanMode === "home" ? "is-active" : ""}
+                    aria-pressed={shadowrocketScanMode === "home"}
+                    onClick={() => setShadowrocketScanMode("home")}
+                  >
+                    首页扫码
+                  </button>
+                  <button
+                    type="button"
+                    className={shadowrocketScanMode === "config" ? "is-active" : ""}
+                    aria-pressed={shadowrocketScanMode === "config"}
+                    onClick={() => setShadowrocketScanMode("config")}
+                  >
+                    配置页扫码
+                  </button>
+                </div>
+              ) : null}
               <QRCodeSVG
                 value={qrValue}
                 size={220}
@@ -2236,13 +2280,19 @@ export function Workbench({
                 title={`${qrProfile.name} 本地订阅二维码`}
               />
               <div className="qr-value">
-                <span>{qrProfile.target === "shadowrocket" ? "完整配置与节点订阅地址" : "远程订阅地址"}</span>
-                <code>{homeAddressValue}</code>
+                <span>
+                  {qrProfile.target === "shadowrocket"
+                    ? shadowrocketScanMode === "home"
+                      ? "首页扫码地址（节点内联）"
+                      : "配置页扫码地址（名称与横幅）"
+                    : "远程订阅地址"}
+                </span>
+                <code>{selectedScanAddress}</code>
                 <button
                   type="button"
                   className="qr-copy"
                   onClick={() => {
-                    void copyText(homeAddressValue);
+                    void copyText(selectedScanAddress);
                     setQrCopied(true);
                     window.setTimeout(() => setQrCopied(false), 1600);
                   }}

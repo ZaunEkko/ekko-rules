@@ -85,7 +85,7 @@ Windows 首次部署可以改用 `setup.cmd`，它顺带安装一个随登录运
 | 固定地址 | 链接自带全部参数 | `/sub/<随机 ID>` |
 | 需要装什么 | 什么都不用 | Docker + Compose v2 |
 
-两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 使用原生 `.conf`：节点、规则、`DIRECT` / `REJECT`、策略组嵌套和每组默认选择会一起导入，一键按钮和二维码仍走 `shadowrocket://config/add/`；当前原生输出只支持内置的 Ekko Rules 完整版与精简版。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会透传流量、容量与到期时间。
+两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 使用原生 `.conf`：节点、规则、`DIRECT` / `REJECT`、策略组嵌套和每组默认选择会一起导入；页面另为首页和配置页提供各自的 HTTPS 二维码模式。当前原生输出只支持内置的 Ekko Rules 完整版与精简版。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会透传流量、容量与到期时间。
 
 
 ## 只要规则，不要转换
