@@ -50,13 +50,16 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("routes both Shadowrocket scanners through one configuration install", () => {
-  // The provider-only YAML keeps the working configuration-page behavior;
-  // config/add prevents the home scanner from registering the YAML itself as
-  // a second, host-named node subscription.
+test("keeps the Shadowrocket QR as HTTPS while its button uses config/add", () => {
+  // Real-device home scanning ignores a config/add QR without an error. The
+  // provider-only HTTPS document is the payload both in-app scanners accept.
   const namedConfig = "https://sub.example.test/i/laomao.yaml?srhome=1&p=00&remark=laomao";
   assert.equal(
     qrCodeValue("shadowrocket", namedConfig, "laomao"),
+    namedConfig,
+  );
+  assert.equal(
+    qrImportValue("shadowrocket", namedConfig, "install", "laomao"),
     `shadowrocket://config/add/${namedConfig}`,
   );
   assert.equal(qrCodeValue("clash", namedConfig, "laomao"), namedConfig);
