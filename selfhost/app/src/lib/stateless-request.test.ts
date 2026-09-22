@@ -31,7 +31,7 @@ test("gives Shadowrocket a named native configuration path", () => {
   );
 });
 
-test("uses one named native Shadowrocket address in both scanner locations", () => {
+test("uses a named YAML subscription for Home and a native configuration for Config", () => {
   const query = buildStatelessConvertQuery({
     subscriptionUrl: "https://example.test/private?token=abc",
     target: "shadowrocket",
@@ -39,20 +39,24 @@ test("uses one named native Shadowrocket address in both scanner locations", () 
     remoteConfig: "ekko-lite",
     options: { emoji: true, udp: true },
   });
-  const path = shadowrocketHomeImportPath("laomao-ssr", query);
-  assert.match(path, /^\/i\/laomao-ssr\.conf\?p=[A-Za-z0-9_-]+$/);
-  const parsed = parseStatelessConvertQuery(new URL(path, "https://example.test").searchParams);
-  assert.equal(parsed.target, "shadowrocket");
+  const homePath = shadowrocketHomeImportPath("laomao-ssr", query);
+  const configPath = shadowrocketConfigImportPath("laomao-ssr", query);
+  assert.match(homePath, /^\/i\/laomao-ssr\.yaml\?srhome=1&p=[A-Za-z0-9_-]+&remark=laomao-ssr$/);
+  assert.match(configPath, /^\/i\/laomao-ssr\.conf\?p=[A-Za-z0-9_-]+$/);
+  assert.notEqual(homePath, configPath);
+  const parsed = parseStatelessConvertQuery(new URL(homePath, "https://example.test").searchParams);
+  assert.equal(parsed.target, "clash");
   assert.equal(parsed.subscriptionUrl, "https://example.test/private?token=abc");
   assert.equal(parsed.remoteConfig, "ekko-lite");
   assert.equal(parsed.options.udp, true);
   assert.equal(parsed.name, "laomao-ssr");
+  const nativeParsed = parseStatelessConvertQuery(new URL(configPath, "https://example.test").searchParams);
+  assert.equal(nativeParsed.target, "shadowrocket");
+  assert.equal(nativeParsed.subscriptionUrl, parsed.subscriptionUrl);
   assert.equal(shadowrocketHomeProfilePath("abc", "手机/节点.conf"),
-    `/sub/abc/${encodeURIComponent("手机-节点")}.conf`);
-  assert.equal(path, shadowrocketHomeImportPath("laomao-ssr", query));
-  assert.equal(path, shadowrocketConfigImportPath("laomao-ssr", query));
+    `/sub/abc/${encodeURIComponent("手机-节点")}.yaml?srhome=1&remark=${encodeURIComponent("手机-节点")}`);
   assert.equal(shadowrocketConfigProfilePath("abc", "手机/节点.conf"),
-    shadowrocketHomeProfilePath("abc", "手机/节点.conf"));
+    `/sub/abc/${encodeURIComponent("手机-节点")}.conf`);
 });
 
 test("reads a stateless conversion request out of its own link", () => {
