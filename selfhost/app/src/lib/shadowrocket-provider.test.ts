@@ -37,6 +37,7 @@ rules:
   assert.match(result, /^proxies:$/m);
   assert.match(result, /^  - name: "香港-01"$/m);
   assert.match(result, /^  - name: 美国-01$/m);
+  assert.ok(result.indexOf("proxies:") < result.indexOf("proxy-providers:"));
   assert.doesNotMatch(result, /^      - (?:香港-01|美国-01)$/m);
   assert.match(result, /- DIRECT\n    use:\n      - "laomao"/);
   assert.match(result, /- REJECT\n      - 手动切换/);

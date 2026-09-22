@@ -407,6 +407,9 @@ async function assertNamedShadowrocketImportRoute() {
   if (!/^  - \{name: .*type:/m.test(yaml)) {
     throw new Error("Shadowrocket home response lost the inline nodes required by subscription refresh.");
   }
+  if (yaml.indexOf("proxies:") > yaml.indexOf("proxy-providers:")) {
+    throw new Error("Shadowrocket home response must expose inline nodes before provider metadata.");
+  }
   const providerUrl = yaml.match(/^    url: (".*")$/m)?.[1];
   if (!providerUrl) throw new Error("Shadowrocket home response lacks its named provider URL.");
   const parsedProviderUrl = JSON.parse(providerUrl);
