@@ -48,7 +48,7 @@ export async function serveStatelessSubscription(
     const parsed = parseStatelessConvertQuery(requestUrl.searchParams);
     const providerNodes = requestUrl.searchParams.get("srnodes") === "1" &&
       requestUrl.pathname.endsWith(".nodes.yaml") && parsed.target === "clash";
-    const shadowrocketHome = requestUrl.searchParams.get("srhome") === "1" &&
+    const shadowrocketConfig = requestUrl.searchParams.get("srhome") === "1" &&
       requestUrl.pathname.endsWith(".yaml") && parsed.target === "clash";
     const preset = resolveRemoteConfig(
       parsed.remoteConfig,
@@ -77,7 +77,7 @@ export async function serveStatelessSubscription(
       },
     );
 
-    const body = shadowrocketHome
+    const body = shadowrocketConfig
       ? externalizeShadowrocketProvider(result.body, {
           name: parsed.name,
           url: shadowrocketProviderAddress(
@@ -118,11 +118,8 @@ export async function serveStatelessSubscription(
       target: result.target,
       remoteConfig: preset.id,
       bytes: Buffer.byteLength(body, "utf8"),
-      // These booleans diagnose the first-import discrepancy without logging
-      // the profile name, upstream URL, subscription counters or client UA.
-      shadowrocketHomeRoute: shadowrocketHome,
+      shadowrocketConfigRoute: shadowrocketConfig,
       usageMetadataPresent: Boolean(result.subscriptionUserinfo),
-      shadowrocketClient: /shadowrocket/i.test(request.headers.get("user-agent") || ""),
     });
     return new NextResponse(body, { status: 200, headers });
   } catch (error) {

@@ -401,14 +401,11 @@ async function assertNamedShadowrocketImportRoute() {
     headers: { "user-agent": "Shadowrocket/2.2.70" },
   });
   const yaml = await homeResponse.text();
-  for (const marker of ["proxy-providers:", "proxies:", "proxy-groups:", "rules:", "♻️ 手动切换", "🔞 NSFW"]) {
+  for (const marker of ["proxy-providers:", "proxy-groups:", "rules:", "♻️ 手动切换", "🔞 NSFW"]) {
     if (!yaml.includes(marker)) throw new Error(`Shadowrocket home response lacks ${marker}`);
   }
-  if (!/^  - \{name: .*type:/m.test(yaml)) {
-    throw new Error("Shadowrocket home response lost the inline nodes required by subscription refresh.");
-  }
-  if (yaml.indexOf("proxies:") > yaml.indexOf("proxy-providers:")) {
-    throw new Error("Shadowrocket home response must expose inline nodes before provider metadata.");
+  if (/^proxies:\s*$/m.test(yaml) || (yaml.match(/^proxy-providers:\s*$/gm) || []).length !== 1) {
+    throw new Error("Shadowrocket config must expose exactly one provider node source.");
   }
   const providerUrl = yaml.match(/^    url: (".*")$/m)?.[1];
   if (!providerUrl) throw new Error("Shadowrocket home response lacks its named provider URL.");
@@ -435,7 +432,7 @@ async function assertNamedShadowrocketImportRoute() {
       homeResponse.headers.get("profile-title") !==
         `base64:${Buffer.from("fixture-shadowrocket").toString("base64")}` ||
       !homeResponse.headers.get("content-disposition")?.includes('filename="fixture-shadowrocket"')) {
-    throw new Error("Shadowrocket home response lost provider usage metadata.");
+    throw new Error("Shadowrocket config response lost provider usage metadata.");
   }
   // Node's fetch owns Sec-Fetch-Mode and overrides a forged navigation value.
   const { stdout: page } = await run("curl.exe", [
@@ -450,7 +447,7 @@ async function assertNamedShadowrocketImportRoute() {
       !page.includes("fixture-shadowrocket.conf") || page.includes("clash://install-config")) {
     throw new Error("System camera did not receive the native Shadowrocket config bridge.");
   }
-  console.log(JSON.stringify({ phase: "shadowrocket-home-import", yaml: true, named_provider: true, metadata: true, native_browser_bridge: true }));
+  console.log(JSON.stringify({ phase: "shadowrocket-single-source-import", yaml: true, named_provider: true, metadata: true, native_browser_bridge: true }));
 }
 
 async function assertStoredShadowrocketHomeRoute() {
@@ -471,7 +468,7 @@ async function assertStoredShadowrocketHomeRoute() {
   });
   const body = await response.text();
   const providerUrl = body.match(/^    url: (".*")$/m)?.[1];
-  if (!response.ok || !body.includes("proxy-providers:") || !body.includes("proxies:") || !body.includes("proxy-groups:") || !body.includes("🔞 NSFW") ||
+  if (!response.ok || !body.includes("proxy-providers:") || /^proxies:\s*$/m.test(body) || !body.includes("proxy-groups:") || !body.includes("🔞 NSFW") ||
       response.headers.get("subscription-userinfo") !==
         "upload=512; download=1024; total=10737418240; expire=1798761600") {
     throw new Error(`Stored Shadowrocket home URL lost rules or traffic info: HTTP ${response.status}`);
@@ -486,7 +483,7 @@ async function assertStoredShadowrocketHomeRoute() {
     throw new Error("Stored Shadowrocket provider lost nodes or its chosen name.");
   }
   await deleteProfile(profile);
-  console.log(JSON.stringify({ phase: "shadowrocket-stored-home", rules: true, named_provider: true, metadata: true }));
+  console.log(JSON.stringify({ phase: "shadowrocket-stored-single-source", rules: true, named_provider: true, metadata: true }));
 }
 
 async function assertGatewayModernProtocolSubscriptions() {

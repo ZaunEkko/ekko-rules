@@ -6,7 +6,7 @@ import {
   visibleSubscriptionOrigin,
 } from "./shadowrocket-provider";
 
-test("keeps inline nodes beside one named provider without losing group fallbacks", () => {
+test("moves inline nodes behind exactly one named provider", () => {
   const source = `proxies:
   - name: "香港-01"
     type: ss
@@ -34,17 +34,14 @@ rules:
   });
   assert.match(result, /^proxy-providers:\n  "laomao":/m);
   assert.match(result, /url: "https:\/\/sub\.example\/i\/laomao\.nodes\.yaml\?p=abc&srnodes=1"/);
-  assert.match(result, /^proxies:$/m);
-  assert.match(result, /^  - name: "香港-01"$/m);
-  assert.match(result, /^  - name: 美国-01$/m);
-  assert.ok(result.indexOf("proxies:") < result.indexOf("proxy-providers:"));
+  assert.doesNotMatch(result, /^proxies:$/m);
   assert.doesNotMatch(result, /^      - (?:香港-01|美国-01)$/m);
   assert.match(result, /- DIRECT\n    use:\n      - "laomao"/);
   assert.match(result, /- REJECT\n      - 手动切换/);
   assert.match(result, /^rules:$/m);
 });
 
-test("uses the configured origin or the device-visible host instead of the container bind", () => {
+test("uses the configured origin or the device-visible host", () => {
   const request = new Request("http://0.0.0.0:3000/i/name.yaml", {
     headers: { host: "192.168.6.224:8787" },
   });

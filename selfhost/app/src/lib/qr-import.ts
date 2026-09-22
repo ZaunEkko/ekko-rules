@@ -57,7 +57,7 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
     build: (url) => `shadowrocket://config/add/${url}`,
     label: "一键导入 Shadowrocket",
     qrHint:
-      "首页或「配置」页扫码一次都会导入完整配置；节点由同名远程订阅提供。",
+      "首页或「配置」页扫码都将安装同一份完整配置，并只添加一份节点订阅。",
   },
   singbox: {
     build: (url, name) =>
@@ -103,7 +103,7 @@ export function clientInstallLabel(target: string): string {
  */
 export function qrPasteHint(target: string): string {
   if (target === "shadowrocket") {
-    return "两个扫码入口使用同一个完整订阅地址；名称、流量和到期信息由其中的同名节点订阅提供。";
+    return "二维码统一走配置安装；下方 HTTPS 地址是配置源，不要再单独重复添加。";
   }
   return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }
@@ -131,16 +131,18 @@ export function qrImportValue(
 /**
  * The actual payload rendered into the single QR code.
  *
- * Keep the complete HTTPS YAML address intact for both Shadowrocket scanners.
- * `shadowrocket://add/sub://` forces a node-only subscription import: a real
- * device accepted its name and traffic banner but did not install the config.
- * The HTTPS address was observed to install nodes and configuration from
- * either scanner. Naming and banner presentation remain client-side concerns.
+ * Force both Shadowrocket scanner surfaces through the documented config/add
+ * action. A bare HTTPS address is classified differently by the home and
+ * configuration scanners, which is what previously produced either a broken
+ * home subscription or two copies of the same nodes.
  */
 export function qrCodeValue(
   target: string,
   subscriptionUrl: string,
   name = "",
 ): string {
+  if (target === "shadowrocket") {
+    return qrImportValue(target, subscriptionUrl, "install", name);
+  }
   return subscriptionUrl;
 }

@@ -50,23 +50,24 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("scans the complete HTTPS YAML without forcing a node-only deep link", () => {
-  // Both real-device scanners installed nodes and the configuration from an
-  // HTTPS YAML; add/sub imported only nodes, even when its title was correct.
+test("routes both Shadowrocket scanners through one configuration install", () => {
+  // The provider-only YAML keeps the working configuration-page behavior;
+  // config/add prevents the home scanner from registering the YAML itself as
+  // a second, host-named node subscription.
   const namedConfig = "https://sub.example.test/i/laomao.yaml?srhome=1&p=00&remark=laomao";
   assert.equal(
     qrCodeValue("shadowrocket", namedConfig, "laomao"),
-    namedConfig,
+    `shadowrocket://config/add/${namedConfig}`,
   );
   assert.equal(qrCodeValue("clash", namedConfig, "laomao"), namedConfig);
 });
 
-test("describes the provider-backed Shadowrocket import", () => {
+test("describes the single-subscription Shadowrocket import", () => {
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
   assert.match(qrScanHint("shadowrocket"), /首页/);
   assert.match(qrScanHint("shadowrocket"), /配置/);
-  assert.match(qrScanHint("shadowrocket"), /同名远程订阅/);
+  assert.match(qrScanHint("shadowrocket"), /只添加一份节点订阅/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {
