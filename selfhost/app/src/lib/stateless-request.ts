@@ -56,40 +56,38 @@ export function clientImportPath(
   return `${CLIENT_IMPORT_PATH}/${encodeURIComponent(filename)}.conf?${packedQuery}`;
 }
 
-function shadowrocketYamlImportPath(
-  name: string,
-  query: string,
-): string {
+function shadowrocketNativeImportPath(name: string, query: string): string {
   const params = new URLSearchParams(query);
   if (params.get("target") !== "shadowrocket") {
     throw new Error("A Shadowrocket subscription is required.");
   }
-  params.set("target", "clash");
-  const filename = encodeURIComponent(safeImportFilename(name));
-  return `${CLIENT_IMPORT_PATH}/${filename}.yaml?srconfig=1&${packStatelessQuery(params.toString())}&remark=${filename}`;
+  return clientImportPath(
+    "shadowrocket",
+    name,
+    packStatelessQuery(params.toString()),
+  );
 }
 
 /**
- * The complete config-page YAML is also accepted by Shadowrocket's home
- * scanner. Use that known-good identity in both places instead of maintaining
- * a second home-only subscription path with different client behaviour.
+ * Both Shadowrocket scanners accept the native remote configuration address.
+ * Keep one identity so the Home scanner can retain subscription metadata while
+ * the native policy groups preserve DIRECT and REJECT as selectable members.
  */
 export function shadowrocketHomeImportPath(name: string, query: string): string {
-  return shadowrocketYamlImportPath(name, query);
+  return shadowrocketNativeImportPath(name, query);
 }
 
 /**
- * Shadowrocket accepts the same complete YAML in both scanner locations.
- * Keeping one address is important: separate payloads made one entry lose
- * native policies while the other lost subscription metadata.
+ * The Config scanner uses the exact same refreshable native address. Separate
+ * addresses previously created duplicate entries with different capabilities.
  */
 export function shadowrocketConfigImportPath(name: string, query: string): string {
-  return shadowrocketYamlImportPath(name, query);
+  return shadowrocketNativeImportPath(name, query);
 }
 
 export function shadowrocketHomeProfilePath(id: string, name: string): string {
   const filename = encodeURIComponent(safeImportFilename(name));
-  return `/sub/${encodeURIComponent(id)}/${filename}.yaml?srconfig=1&remark=${filename}`;
+  return `/sub/${encodeURIComponent(id)}/${filename}.conf`;
 }
 
 export function shadowrocketConfigProfilePath(id: string, name: string): string {
