@@ -478,9 +478,9 @@ export function Workbench({
   /**
    * One code, whoever is pointing at it.
    *
-   * Shadowrocket has two import contexts. Keep the native .conf for the
-   * configuration page and give the home scanner a complete YAML address;
-   * its scanner ignores config/add and cannot refresh a native .conf.
+   * Shadowrocket has two scanner locations, but both now receive one named
+   * subscription scheme around the complete YAML address. The separate native
+   * .conf remains visible only as a manual compatibility fallback.
    */
   const qrAddressValue = qrProfile
     ? clientHandoffUrl(
@@ -502,6 +502,28 @@ export function Workbench({
     : qrAddressValue;
   const qrValue = qrProfile
     ? qrCodeValue(qrProfile.target, homeAddressValue, qrProfile.name)
+    : "";
+  const currentProfileName =
+    profileName.trim() || selectedTarget.short_label;
+  const currentInstallValue = sourceReady
+    ? target === "shadowrocket" && statelessQuery
+      ? qrCodeValue(
+          target,
+          absoluteLocalUrl(
+            shadowrocketHomeImportPath(
+              currentProfileName,
+              statelessQuery,
+            ),
+            subscriptionBaseUrl,
+          ),
+          currentProfileName,
+        )
+      : qrImportValue(
+          target,
+          clientHandoffUrl(`/sub?${statelessQuery}`),
+          "install",
+          currentProfileName,
+        )
     : "";
 
   // The link is the product, so it reads the way a config file does: one
@@ -1278,12 +1300,7 @@ export function Workbench({
                 {sourceReady && supportsClientInstallQr(target) ? (
                   <a
                     className="open-action is-primary"
-                    href={qrImportValue(
-                      target,
-                      clientHandoffUrl(`/sub?${statelessQuery}`),
-                      "install",
-                      profileName,
-                    )}
+                    href={currentInstallValue}
                     onClick={() => recordCurrentLink()}
                   >
                     {clientInstallLabel(target)}
@@ -1873,12 +1890,7 @@ export function Workbench({
                   {sourceReady && supportsClientInstallQr(target) ? (
                     <a
                       className="open-action is-primary"
-                      href={qrImportValue(
-                        target,
-                        clientHandoffUrl(`/sub?${statelessQuery}`),
-                        "install",
-                        profileName,
-                      )}
+                      href={currentInstallValue}
                       onClick={() => recordCurrentLink()}
                     >
                       {clientInstallLabel(target)}
@@ -2236,7 +2248,7 @@ export function Workbench({
                 title={`${qrProfile.name} 本地订阅二维码`}
               />
               <div className="qr-value">
-                <span>{qrProfile.target === "shadowrocket" ? "首页扫码地址" : "远程订阅地址"}</span>
+                <span>{qrProfile.target === "shadowrocket" ? "完整订阅地址" : "远程订阅地址"}</span>
                 <code>{homeAddressValue}</code>
                 <button
                   type="button"
@@ -2252,7 +2264,7 @@ export function Workbench({
               </div>
               {qrProfile.target === "shadowrocket" ? (
                 <div className="qr-value">
-                  <span>原生配置地址（配置页导入）</span>
+                  <span>原生配置地址（手动兼容后备）</span>
                   <code>{qrAddressValue}</code>
                   <button type="button" className="qr-copy" onClick={() => void copyText(qrAddressValue)}>
                     复制配置地址
