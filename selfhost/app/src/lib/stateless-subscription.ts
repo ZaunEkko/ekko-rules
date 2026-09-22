@@ -16,6 +16,7 @@ import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "./request-guard";
 import { recordMetric } from "./metrics";
 import { parseStatelessConvertQuery } from "./stateless-request";
 import { subscriptionMetadataHeaders } from "./subscription-metadata";
+import { materializeShadowrocketPolicyChoices } from "./shadowrocket-yaml";
 
 /**
  * Serve a stateless conversion: everything needed comes from the query string,
@@ -48,23 +49,19 @@ export async function serveStatelessSubscription(
     const shadowrocketConfig = !providerNodes && !shadowrocketHome &&
       requestUrl.searchParams.get("srconfig") === "1" &&
       requestUrl.pathname.endsWith(".yaml") && parsed.target === "clash";
-    // v0.4.21 issued a provider-backed YAML for this flag. Keep that URL
-    // refreshable, but serve the native config now: Shadowrocket retains
-    // DIRECT and REJECT only when they are native select members here.
-    const conversionTarget = shadowrocketConfig ? "shadowrocket" : parsed.target;
     const preset = resolveRemoteConfig(
       parsed.remoteConfig,
       runtimeConfig.remoteConfigs,
       runtimeConfig.allowCustomRemoteConfig,
     );
-    if (!isRemoteConfigTargetSupported(preset, conversionTarget)) {
+    if (!isRemoteConfigTargetSupported(preset, parsed.target)) {
       throw new Error("remoteConfig is not supported for this target.");
     }
 
     const result = await convertSubscription(
       {
         subscriptionUrl: parsed.subscriptionUrl,
-        target: conversionTarget,
+        target: parsed.target,
         options: parsed.options,
       },
       {
@@ -79,13 +76,22 @@ export async function serveStatelessSubscription(
       },
     );
 
+    const body = shadowrocketHome || shadowrocketConfig
+      ? materializeShadowrocketPolicyChoices(result.body)
+      : result.body;
     const headers: Record<string, string> = {
       "Content-Type": result.contentType,
       "Cache-Control": "no-store, no-cache, must-revalidate",
       // The link itself carries the upstream subscription; never leak it on.
       "Referrer-Policy": "no-referrer",
       "X-Request-Id": result.requestId,
-      "X-Ekko-Target": providerNodes ? "shadowrocket-provider-nodes" : result.target,
+      "X-Ekko-Target": providerNodes
+        ? "shadowrocket-provider-nodes"
+        : shadowrocketConfig
+          ? "shadowrocket-config"
+          : shadowrocketHome
+            ? "shadowrocket-home"
+            : result.target,
       ...subscriptionMetadataHeaders(parsed.name),
     };
     if (parsed.options.autoUpdate) {
@@ -105,13 +111,13 @@ export async function serveStatelessSubscription(
     safeLog(`${logPrefix}.convert_success`, {
       target: result.target,
       remoteConfig: preset.id,
-      bytes: result.bytes,
+      bytes: Buffer.byteLength(body, "utf8"),
       shadowrocketConfigRoute: shadowrocketConfig,
       shadowrocketHomeRoute: shadowrocketHome,
       shadowrocketProviderRoute: providerNodes,
       usageMetadataPresent: Boolean(result.subscriptionUserinfo),
     });
-    return new NextResponse(result.body, { status: 200, headers });
+    return new NextResponse(body, { status: 200, headers });
   } catch (error) {
     const message = publicErrorMessage(error);
     safeLog(`${logPrefix}.convert_failure`, { error: message });

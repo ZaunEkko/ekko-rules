@@ -52,7 +52,7 @@ test("keeps the same choices for a named Shadowrocket home-scanner YAML", () => 
     `/sub/abc/${encodeURIComponent("手机-节点")}.yaml?srhome=1&remark=${encodeURIComponent("手机-节点")}`);
 });
 
-test("keeps config-page Shadowrocket scanning on the native configuration address", () => {
+test("keeps config-page Shadowrocket scanning on its named YAML address", () => {
   const query = buildStatelessConvertQuery({
     subscriptionUrl: "https://example.test/private?token=abc",
     target: "shadowrocket",
@@ -61,13 +61,13 @@ test("keeps config-page Shadowrocket scanning on the native configuration addres
     options: { emoji: true },
   });
   const path = shadowrocketConfigImportPath("laomao-ssr", query);
-  assert.match(path, /^\/i\/laomao-ssr\.conf\?p=[A-Za-z0-9_-]+$/);
+  assert.match(path, /^\/i\/laomao-ssr\.yaml\?srconfig=1&p=[A-Za-z0-9_-]+&remark=laomao-ssr$/);
   assert.notEqual(path, shadowrocketHomeImportPath("laomao-ssr", query));
   const parsed = parseStatelessConvertQuery(new URL(path, "https://example.test").searchParams);
-  assert.equal(parsed.target, "shadowrocket");
+  assert.equal(parsed.target, "clash");
   assert.equal(parsed.subscriptionUrl, "https://example.test/private?token=abc");
   assert.equal(shadowrocketConfigProfilePath("abc", "手机/节点.conf"),
-    `/sub/abc/${encodeURIComponent("手机-节点")}.conf`);
+    `/sub/abc/${encodeURIComponent("手机-节点")}.yaml?srconfig=1&remark=${encodeURIComponent("手机-节点")}`);
 });
 
 test("reads a stateless conversion request out of its own link", () => {

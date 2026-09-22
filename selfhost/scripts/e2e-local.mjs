@@ -361,14 +361,27 @@ async function assertShadowrocketAllModernManualSelector() {
   }
 }
 
-async function checkShadowrocketHomeDocument(config, name) {
-  const configFile = path.join(outDir, `${name}-home.yaml`);
+async function checkShadowrocketYamlDocument(config, name, mode) {
+  const configFile = path.join(outDir, `${name}-${mode}.yaml`);
   writeFileSync(configFile, config);
   const { stdout } = await run(process.env.PYTHON_BIN || "python", [
     path.join(__dirname, "check-shadowrocket-import.py"),
-    "home", configFile,
+    mode, configFile,
   ]);
+  await run(mihomo, ["-t", "-f", configFile]);
   return JSON.parse(stdout);
+}
+
+function assertShadowrocketYamlPolicyChoices(config, label) {
+  const required = [
+    /- \{ name: "🚀 DIRECT", type: direct \}/,
+    /- \{ name: "🛑 REJECT", type: reject \}/,
+    /- "🚀 DIRECT"/,
+    /- "🛑 REJECT"/,
+  ];
+  if (required.some((pattern) => !pattern.test(config))) {
+    throw new Error(`${label} lost selectable DIRECT or REJECT aliases.`);
+  }
 }
 
 function assertNativeShadowrocketPolicyChoices(config, label) {
@@ -410,7 +423,7 @@ async function assertNamedShadowrocketImportRoute() {
   assertNativeShadowrocketPolicyChoices(config, "Named Shadowrocket config route");
 
   console.log(JSON.stringify({
-    phase: "shadowrocket-named-import",
+    phase: "shadowrocket-native-compat",
     path,
     client_config: true,
   }));
@@ -429,8 +442,9 @@ async function assertNamedShadowrocketImportRoute() {
   if (homeYaml.includes("proxy-providers:") || /^proxies: \[\]$/m.test(homeYaml)) {
     throw new Error("Shadowrocket home response must carry inline nodes without a provider dependency.");
   }
-  const homeStructure = await checkShadowrocketHomeDocument(
-    homeYaml, "fixture-shadowrocket",
+  assertShadowrocketYamlPolicyChoices(homeYaml, "Shadowrocket home route");
+  const homeStructure = await checkShadowrocketYamlDocument(
+    homeYaml, "fixture-shadowrocket", "home",
   );
   if (!homeResponse.ok ||
       homeResponse.headers.get("subscription-userinfo") !==
@@ -438,25 +452,25 @@ async function assertNamedShadowrocketImportRoute() {
     throw new Error("Shadowrocket home response lost inline nodes or usage metadata.");
   }
 
-  // Profiles created by v0.4.21 still point to this old YAML address. It must
-  // refresh into native policy groups instead of preserving the broken
-  // provider-backed shape.
-  const legacyConfigPath = `/i/fixture-shadowrocket.yaml?srconfig=1&p=${homePacked}&remark=fixture-shadowrocket`;
-  const legacyConfigResponse = await fetch(`${baseUrl}${legacyConfigPath}`, {
+  const configPath = `/i/fixture-shadowrocket.yaml?srconfig=1&p=${homePacked}&remark=fixture-shadowrocket`;
+  const configResponse = await fetch(`${baseUrl}${configPath}`, {
     headers: { "user-agent": "Shadowrocket/2.2.70" },
   });
-  const legacyConfig = await legacyConfigResponse.text();
-  if (!legacyConfigResponse.ok || !legacyConfig.includes("[Proxy Group]") ||
-      legacyConfig.includes("proxy-providers:")) {
-    throw new Error("Legacy Shadowrocket config address did not migrate to native policy groups.");
+  const configYaml = await configResponse.text();
+  if (!configResponse.ok || configYaml.includes("proxy-providers:") ||
+      /^proxies: \[\]$/m.test(configYaml)) {
+    throw new Error("Shadowrocket config response must carry one complete YAML document.");
   }
-  assertNativeShadowrocketPolicyChoices(legacyConfig, "Legacy Shadowrocket config route");
-  if (legacyConfigResponse.headers.get("subscription-userinfo") !==
+  assertShadowrocketYamlPolicyChoices(configYaml, "Shadowrocket config route");
+  const configStructure = await checkShadowrocketYamlDocument(
+    configYaml, "fixture-shadowrocket", "config",
+  );
+  if (configResponse.headers.get("subscription-userinfo") !==
         "upload=512; download=1024; total=10737418240; expire=1798761600" ||
-      legacyConfigResponse.headers.get("profile-title") !==
+      configResponse.headers.get("profile-title") !==
         `base64:${Buffer.from("fixture-shadowrocket").toString("base64")}` ||
-      !legacyConfigResponse.headers.get("content-disposition")?.includes('filename="fixture-shadowrocket"')) {
-    throw new Error("Legacy Shadowrocket config address lost usage metadata.");
+      !configResponse.headers.get("content-disposition")?.includes('filename="fixture-shadowrocket"')) {
+    throw new Error("Shadowrocket config address lost its chosen name or usage metadata.");
   }
   // Node's fetch owns Sec-Fetch-Mode and overrides a forged navigation value.
   const { stdout: page } = await run("curl.exe", [
@@ -471,8 +485,8 @@ async function assertNamedShadowrocketImportRoute() {
       !page.includes("fixture-shadowrocket.conf") || page.includes("clash://install-config")) {
     throw new Error("System camera did not receive the native Shadowrocket config bridge.");
   }
-  console.log(JSON.stringify({ phase: "shadowrocket-home-inline-import", ...homeStructure, local_nodes: homeStructure.nodes, named_provider: false, dependency_depth: 0, metadata: true, native_browser_bridge: true }));
-  console.log(JSON.stringify({ phase: "shadowrocket-config-native-import", direct_reject: true, metadata: true, legacy_url_migrated: true }));
+  console.log(JSON.stringify({ phase: "shadowrocket-home-inline-import", ...homeStructure, local_nodes: homeStructure.nodes, named_provider: false, dependency_depth: 0, selectable_direct_reject: true, metadata: true, native_browser_bridge: true }));
+  console.log(JSON.stringify({ phase: "shadowrocket-config-inline-import", ...configStructure, local_nodes: configStructure.nodes, named_provider: false, dependency_depth: 0, selectable_direct_reject: true, metadata: true }));
 }
 
 async function assertStoredShadowrocketHomeRoute() {
@@ -498,29 +512,33 @@ async function assertStoredShadowrocketHomeRoute() {
         "upload=512; download=1024; total=10737418240; expire=1798761600") {
     throw new Error(`Stored Shadowrocket home URL lost inline nodes, rules or traffic info: HTTP ${homeResponse.status}`);
   }
-  const homeStructure = await checkShadowrocketHomeDocument(
-    homeBody, "stored-shadowrocket",
+  assertShadowrocketYamlPolicyChoices(homeBody, "Stored Shadowrocket home route");
+  const homeStructure = await checkShadowrocketYamlDocument(
+    homeBody, "stored-shadowrocket", "home",
   );
 
-  const storedConfigUrl = `${baseUrl}${profile.subscriptionPath}/stored-shadowrocket.conf`;
+  const storedConfigUrl = `${baseUrl}${profile.subscriptionPath}/stored-shadowrocket.yaml?srconfig=1`;
   const configResponse = await fetch(storedConfigUrl, {
     headers: { "user-agent": "Shadowrocket/2.2.70" },
   });
   const configBody = await configResponse.text();
-  if (!configResponse.ok || !configBody.includes("[Proxy Group]") ||
-      configBody.includes("proxy-providers:")) {
-    throw new Error(`Stored Shadowrocket config-page URL did not return native groups: HTTP ${configResponse.status}`);
+  if (!configResponse.ok || configBody.includes("proxy-providers:") ||
+      /^proxies: \[\]$/m.test(configBody)) {
+    throw new Error(`Stored Shadowrocket config-page URL did not return a complete YAML config: HTTP ${configResponse.status}`);
   }
-  assertNativeShadowrocketPolicyChoices(configBody, "Stored Shadowrocket config route");
+  assertShadowrocketYamlPolicyChoices(configBody, "Stored Shadowrocket config route");
+  const configStructure = await checkShadowrocketYamlDocument(
+    configBody, "stored-shadowrocket", "config",
+  );
   if (configResponse.headers.get("profile-title") !==
         `base64:${Buffer.from("stored-shadowrocket").toString("base64")}` ||
       configResponse.headers.get("subscription-userinfo") !==
         "upload=512; download=1024; total=10737418240; expire=1798761600") {
-    throw new Error("Stored Shadowrocket native config lost its chosen name or usage metadata.");
+    throw new Error("Stored Shadowrocket config lost its chosen name or usage metadata.");
   }
   await deleteProfile(profile);
-  console.log(JSON.stringify({ phase: "shadowrocket-stored-home-inline", ...homeStructure, local_nodes: homeStructure.nodes, named_provider: false, dependency_depth: 0, metadata: true }));
-  console.log(JSON.stringify({ phase: "shadowrocket-stored-config-native", direct_reject: true, metadata: true }));
+  console.log(JSON.stringify({ phase: "shadowrocket-stored-home-inline", ...homeStructure, local_nodes: homeStructure.nodes, named_provider: false, dependency_depth: 0, selectable_direct_reject: true, metadata: true }));
+  console.log(JSON.stringify({ phase: "shadowrocket-stored-config-inline", ...configStructure, local_nodes: configStructure.nodes, named_provider: false, dependency_depth: 0, selectable_direct_reject: true, metadata: true }));
 }
 
 async function assertGatewayModernProtocolSubscriptions() {
