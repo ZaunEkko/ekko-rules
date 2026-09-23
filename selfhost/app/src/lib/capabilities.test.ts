@@ -33,6 +33,7 @@ test("Shadowrocket is served a native sectioned config", () => {
   assert.match(targetDefinition("shadowrocket").protocolNote, /两步导入/);
   assert.match(targetDefinition("shadowrocket").protocolNote, /流量横幅/);
   assert.match(targetDefinition("shadowrocket").protocolNote, /原生 PROXY/);
+  assert.match(targetDefinition("shadowrocket").protocolNote, /全部节点/);
   assert.match(targetDefinition("shadowrocket").protocolNote, /DIRECT/);
   assert.match(targetDefinition("shadowrocket").protocolNote, /REJECT/);
   assert.equal(usesMihomoOutput("shadowrocket"), false);

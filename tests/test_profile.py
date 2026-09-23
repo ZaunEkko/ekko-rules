@@ -2142,6 +2142,8 @@ class FirstMatchBaselineTests(unittest.TestCase):
             ),
             "another-tenant.v.smtcdns.com": "DOMAIN-SUFFIX,v.smtcdns.com",
             "www.douyin.com": "DOMAIN-SUFFIX,douyin.com",
+            "bytefcdnrd.com": "DOMAIN-SUFFIX,bytefcdnrd.com",
+            "resource.bytefcdnrd.com": "DOMAIN-SUFFIX,bytefcdnrd.com",
             "api.amemv.com": "DOMAIN-SUFFIX,amemv.com",
             "aweme.snssdk.com": "DOMAIN,aweme.snssdk.com",
             "www.huya.com": "DOMAIN-SUFFIX,huya.com",
@@ -3108,6 +3110,15 @@ class LiteProductTests(unittest.TestCase):
             != self.effective_action(segment.target_for("lite"))
         ]
         self.assertEqual(changed, [], "lite redirects that change direct/proxy/reject")
+
+    def test_douyin_live_cdn_keeps_domestic_media_action_in_both_products(self) -> None:
+        for product in PRODUCTS:
+            for domain in ("bytefcdnrd.com", "resource.bytefcdnrd.com"):
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(verdict["slug"], "china-media")
+                    self.assertEqual(verdict["rule"], "DOMAIN-SUFFIX,bytefcdnrd.com")
+                    self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
 
     def test_lite_publishes_fewer_groups_and_every_target_exists(self) -> None:
         core_groups = self.sources.proxy_groups_for("core")

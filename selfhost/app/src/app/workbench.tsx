@@ -1024,7 +1024,7 @@ export function Workbench({
     return (
       <p className="shadowrocket-import-notice" role="note">
         <strong>Shadowrocket 必须导入两次，顺序不要反：</strong>
-        先用 ① 建立节点订阅并在首页选好可用节点，再用 ② 加载分流规则。配置模式通过原生 PROXY 使用首页当前节点，DIRECT / REJECT 按规则生效。
+        先用 ① 建立节点订阅，再用 ② 加载分流规则。配置模式默认通过原生 PROXY 使用首页当前节点，也会把首页全部节点加入各策略组供单独选择；DIRECT / REJECT 按规则生效。
       </p>
     );
   }
@@ -2066,7 +2066,7 @@ export function Workbench({
                 {createdShadowrocketAddresses ? (
                   <p className="shadowrocket-import-notice" role="note">
                     <strong>两个都要导入：</strong>
-                    第 1 步保留名称、流量横幅并在首页选好节点；第 2 步补上规则与 DIRECT / REJECT，并通过 PROXY 使用首页当前节点。
+                    第 1 步保留名称、流量横幅和全部节点；第 2 步补上规则与 DIRECT / REJECT，各策略组既可使用 PROXY，也可单独选择首页节点。
                   </p>
                 ) : null}
                 {storesProfiles ? null : (
@@ -2380,8 +2380,8 @@ export function Workbench({
                     </strong>
                     <span>
                       {shadowrocketQrStep === "home"
-                        ? "这一步建立可刷新的节点订阅，保留名称和流量横幅。导入后先在首页选好一个可用节点，再切到第 2 步。"
-                        : "这一步导入规则、策略组与 DIRECT / REJECT；配置里的 PROXY 会使用第 1 步在首页选中的节点。"}
+                        ? "这一步建立可刷新的节点订阅，保留名称、流量横幅和全部节点。导入后再切到第 2 步。"
+                        : "这一步导入规则、策略组与 DIRECT / REJECT；默认 PROXY 使用首页当前节点，也可在每个组里单独选择首页节点。"}
                     </span>
                   </div>
                 </>
@@ -2424,8 +2424,8 @@ export function Workbench({
               <small className="qr-note">
                 {qrProfile.target === "shadowrocket"
                   ? shadowrocketQrStep === "home"
-                    ? "当前只完成节点、名称和流量横幅；请先选中可用节点，再切到第 2 步导入分流配置。"
-                    : "完成后请使用配置模式。节点由第 1 步更新，配置中的 PROXY 跟随首页当前节点，DIRECT / REJECT 由规则决定。"
+                    ? "当前只完成节点、名称和流量横幅；请继续第 2 步导入分流配置。"
+                    : "完成后请使用配置模式。PROXY 跟随首页当前节点，各策略组也会列出首页全部节点供单独选择；DIRECT / REJECT 由规则决定。"
                   : qrPasteHint(qrProfile.target)}
                 {qrProfile.target === "shadowrocket"
                   ? " 两条地址都带着你的订阅凭据，不要分享。"

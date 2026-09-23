@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-069 use **2026-09-23**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-071 use **2026-09-23**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1646,3 +1646,40 @@ Tests reject embedded node copies, require the bridge in full and lite outputs, 
 all default-policy assertions, and keep third-party templates on the same conversion path.
 Server-side validation cannot prove the client's tunnel result, so this correction remains
 subject to the next clean-state device test rather than being described as device-verified.
+
+## ER-070 — Shadowrocket groups dynamically include Home subscription nodes
+
+**Type:** site runtime correction; retain the `PROXY` bridge and restore per-group node selection
+
+The `site-v0.4.29` device test confirmed that the native `PROXY` bridge fixed
+Configuration-mode connectivity. It also exposed the remaining limitation: each group
+could choose only `PROXY`, `DIRECT`, or `REJECT`, so every proxy policy was forced to
+share the one node selected on Home. Reintroducing static `[Proxy]` definitions would
+also reintroduce the disconnected duplicate-node path that ER-069 removed.
+
+Every native policy group now emits `include-all-proxies=1` and, unless a third-party
+filter already exists, `policy-regex-filter=.*`. This requests dynamic subscription
+node membership without copying definitions into `[Proxy]`. `PROXY` remains the stable
+default that follows the current Home selection; the intended behavior is to allow a
+different concrete node in manual, OpenAI, streaming, and other groups. Automatic
+third-party groups such as `url-test` and `fallback` receive the same request.
+
+Existing defaults are unchanged. Advertising and NSFW still start with `REJECT`, direct
+groups still start with `DIRECT`, and ordinary overseas groups still lead through the
+manual selector. Tests override an incoming `include-all-proxies=0`, require both dynamic
+membership options on generated groups, preserve a third-party regex filter, and reject
+embedded node copies. Full, lite, third-party, and custom-config conversion remain in
+coverage. Dynamic enumeration remains a device acceptance item until the published build
+is tested in Shadowrocket.
+
+## ER-071 — Route observed Douyin live CDN with mainland media
+
+**Type:** one anchored service-rule addition; no new policy group or segment
+
+The user identified `bytefcdnrd.com` in domestic Douyin livestream traffic.
+The anchored suffix enters `china-media`, beside the existing Douyin playback
+roots, rather than `china-web`: the reason for the rule is its observed media
+role, not a personal exception requesting all traffic direct. This group's
+default is `DIRECT`, and the lite product preserves that effective action.
+Only this root and its subdomains are matched; ownership, server geography,
+and any wider ByteDance or CDN family are not inferred from the observation.
