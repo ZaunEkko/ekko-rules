@@ -1,5 +1,5 @@
 schema_version: 1
-reviewed_on: 2026-08-04
+reviewed_on: 2026-09-23
 purpose: Non-generating review queue for historical, uncertain, legacy, brand-defense, personal/community, or relocation evidence. Entries never change generated routing by themselves; phase_2_candidate records are historical labels, not current products.
 allowed_statuses:
 - observe
@@ -10,6 +10,22 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
+- id: adobe-and-lanzou-routing
+  status: accepted
+  scope: routing-policy
+  summary: Adobe needed a stable non-Hong-Kong exit while LanZou downloads were incorrectly reaching the fallback.
+  evidence:
+  - sources/rules/adobe.list
+  - sources/rules/china-web.list
+  - sources/proxy-groups.yaml
+  - docs/evidence/lanzou-runtime-observation-2026-09-23.json
+  - tests/test_profile.py
+  first_observed: 2026-09-23
+  last_verified: '2026-09-23'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: Thirty-five anchored Adobe service roots now enter an independent manual-first Adobe policy so the user can pin a compatible non-Hong-Kong node without moving unrelated developer or fallback traffic; the lite product folds the same segment into its existing overseas-services group. Thirty-two anchored LanZou and Woozooo roots enter the default-DIRECT mainland policy before FINAL. Shared third-party infrastructure and unclear lookalike roots remain excluded, and adobedtm.com stays with the earlier DisneyPlus segment. Every adjacent chain that already shared the same full and lite policy is physically consolidated without reordering, reducing the product from 64 to 57 segments and leaving seven free positions under Subconverter's ceiling. Retired Raw ruleset and provider names remain available as generated-only compatibility slices behind frozen hashes.
 - id: apple-brand-defense
   status: brand-defense
   scope: apple

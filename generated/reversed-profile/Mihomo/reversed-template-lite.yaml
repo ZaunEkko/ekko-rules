@@ -133,27 +133,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/google-ai.yaml
     path: ./ruleset/google-ai.yaml
     interval: 86400
-  microsoft-ai:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/microsoft-ai.yaml
-    path: ./ruleset/microsoft-ai.yaml
-    interval: 86400
-  ai-developer:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/ai-developer.yaml
-    path: ./ruleset/ai-developer.yaml
-    interval: 86400
-  ai-platforms:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/ai-platforms.yaml
-    path: ./ruleset/ai-platforms.yaml
-    interval: 86400
   discord:
     type: http
     behavior: classical
@@ -196,13 +175,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/whatsapp.yaml
     path: ./ruleset/whatsapp.yaml
     interval: 86400
-  telegram:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/telegram.yaml
-    path: ./ruleset/telegram.yaml
-    interval: 86400
   social-platforms:
     type: http
     behavior: classical
@@ -216,6 +188,13 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/developer-platforms.yaml
     path: ./ruleset/developer-platforms.yaml
+    interval: 86400
+  adobe:
+    type: http
+    behavior: classical
+    format: yaml
+    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/adobe.yaml
+    path: ./ruleset/adobe.yaml
     interval: 86400
   game-download:
     type: http
@@ -265,20 +244,6 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/viutv.yaml
     path: ./ruleset/viutv.yaml
-    interval: 86400
-  kktv:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/kktv.yaml
-    path: ./ruleset/kktv.yaml
-    interval: 86400
-  bahamut:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/bahamut.yaml
-    path: ./ruleset/bahamut.yaml
     interval: 86400
   media-japan:
     type: http
@@ -356,20 +321,6 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/spotify.yaml
     path: ./ruleset/spotify.yaml
-    interval: 86400
-  qobuz:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/qobuz.yaml
-    path: ./ruleset/qobuz.yaml
-    interval: 86400
-  apple-music:
-    type: http
-    behavior: classical
-    format: yaml
-    url: https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/Providers/Ruleset/apple-music.yaml
-    path: ./ruleset/apple-music.yaml
     interval: 86400
   china-media:
     type: http
@@ -527,18 +478,15 @@ rules:
 - RULE-SET,openai,🧲 海外 AI
 - RULE-SET,claude,🧲 海外 AI
 - RULE-SET,google-ai,🧲 海外 AI
-- RULE-SET,microsoft-ai,🧲 海外 AI
-- RULE-SET,ai-developer,🧲 海外 AI
-- RULE-SET,ai-platforms,🧲 海外 AI
 - RULE-SET,discord,🚀 国外服务
 - RULE-SET,instagram,🚀 国外服务
 - RULE-SET,mail,🌏 国内网站
 - RULE-SET,line,🚀 国外服务
 - RULE-SET,finance,🚀 国外服务
 - RULE-SET,whatsapp,🚀 国外服务
-- RULE-SET,telegram,🚀 国外服务
 - RULE-SET,social-platforms,🚀 国外服务
 - RULE-SET,developer-platforms,🚀 国外服务
+- RULE-SET,adobe,🚀 国外服务
 - RULE-SET,game-download,🎮 游戏下载
 - RULE-SET,game-platform,🎮 游戏平台
 - RULE-SET,nsfw,🔞 NSFW
@@ -546,8 +494,6 @@ rules:
 - RULE-SET,media-taiwan,🎬 流媒体
 - RULE-SET,prime-video,🎬 流媒体
 - RULE-SET,viutv,🎬 流媒体
-- RULE-SET,kktv,🎬 流媒体
-- RULE-SET,bahamut,🎬 流媒体
 - RULE-SET,media-japan,🎬 流媒体
 - RULE-SET,youtube,🎬 流媒体
 - RULE-SET,tidal,🎬 流媒体
@@ -559,8 +505,6 @@ rules:
 - RULE-SET,bilibili-hmt,🌏 国内网站
 - RULE-SET,iqiyi,🌏 国内网站
 - RULE-SET,spotify,🎬 流媒体
-- RULE-SET,qobuz,🎬 流媒体
-- RULE-SET,apple-music,🎬 流媒体
 - RULE-SET,china-media,🌏 国内网站
 - RULE-SET,tiktok,🎬 流媒体
 - RULE-SET,netflix,🎬 流媒体

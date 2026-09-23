@@ -2,7 +2,7 @@
 
 [English](README_EN.md)
 
-面向 Subconverter 与 Mihomo 的标准分流规则产品，同一套规则发布为两个构建：完整版 43 个策略组，精简版 10 个。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
+面向 Subconverter 与 Mihomo 的标准分流规则产品，同一套规则发布为两个构建：完整版 44 个策略组，精简版 10 个。本目录由仓库规范源确定性生成，不包含代理服务器、密码、UUID、密钥或真实订阅地址。
 
 ## 入口
 
@@ -10,7 +10,7 @@
 - `config/ekko-rules-lite.ini`：同上，精简版。
 - `Mihomo/reversed-template.yaml`：Mihomo 模板（完整版），使用前替换订阅地址占位符。
 - `Mihomo/reversed-template-lite.yaml`：同上，精简版。
-- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留合并前原始内容的旧 Raw URL 兼容副本，不进入活动模板或规则计数。
+- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；已合并分段的旧名称仅保留合并前原始内容的 Raw URL 兼容副本，不进入活动模板或规则计数。
 - `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
 ## 在线订阅转换
@@ -37,6 +37,7 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 - `🖥️ 远程串流流量` 默认 `DIRECT`，承载数据面——Tailscale 的 DERP 中继与控制面、ZeroTier 根服务器、Parsec 与 RustDesk 会话端点、NetBird 信令与中继、Moonlight、Sunshine、TeamViewer、AnyDesk、Chrome 远程桌面、Steam Link 和 Microsoft RDP，防止远程访问大流量绕行代理；
 - `🖥️ 远程串流后台` 默认 `♻️ 手动切换`，只收各家管理后台与官网。分开是因为同一个厂商后缀盖着两件事：控制台在大陆直连打不开，而同后缀下的中继却承载串流负载；
 - `🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖主流开发官网、API、包仓库和下载链路；用户可临时改为 `DIRECT`；
+- `🎨 Adobe` 第一项为 `♻️ 手动切换`，可为 Creative Cloud、Acrobat、Behance 等单独固定兼容节点；精简版归入 `🚀 国外服务`；
 - `☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud 及国内厂商海外区域端点；广告和具体业务规则仍优先；
 - `🛒 海外购物` 默认 `♻️ 手动切换`，覆盖各区域亚马逊、eBay、Etsy、日本店铺与转运代购及地区电商——这类站点的店面内容与人机验证取决于出口 IP，独立成组便于单独挑节点；
 - `💳 金融服务` 默认 `♻️ 手动切换`，覆盖支付汇款、虚拟卡、接码与虚拟号码，以及海外银行与券商——金融账号按“在哪里用”被核对，需要一个能单独钉死的出口；国内银行仍在默认直连的 `🌏 国内网站`；
@@ -64,4 +65,4 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 
 末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
-两个构建共用 63 个 ruleset 与 64 个区段，只有策略组数量不同：完整版 43 个，精简版 10 个。精简版不删除任何规则，只是把分段改指到合并后的策略组，每一段的最终动作与完整版一致；代价是不能按服务分别挑节点。不提供自动测速、Full、local 或 Extended 变体。
+两个构建共用 56 个 ruleset 与 57 个区段，只有策略组数量不同：完整版 44 个，精简版 10 个。精简版不删除任何规则，只是把分段改指到合并后的策略组，每一段的最终动作与完整版一致；代价是不能按服务分别挑节点。不提供自动测速、Full、local 或 Extended 变体。

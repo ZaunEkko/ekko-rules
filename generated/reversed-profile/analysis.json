@@ -3,10 +3,10 @@
   "products": {
     "core": {
       "summary": {
-        "proxy_group_count": 43,
-        "ruleset_count": 63,
-        "segment_count": 64,
-        "rule_count": 10089,
+        "proxy_group_count": 44,
+        "ruleset_count": 56,
+        "segment_count": 57,
+        "rule_count": 10156,
         "destination_ip_rule_count": 207
       },
       "quality": {
@@ -135,60 +135,20 @@
           "index": 8,
           "manifest_order": 8,
           "start": 745,
-          "end": 756,
-          "count": 12,
+          "end": 800,
+          "count": 56,
           "target": "🧲 海外 AI",
           "slug": "google-ai",
           "scope": "both",
           "rule_types": {
-            "DOMAIN": 5,
-            "DOMAIN-SUFFIX": 6,
+            "DOMAIN": 11,
+            "DOMAIN-SUFFIX": 44,
             "DOMAIN-KEYWORD": 1
           }
         },
         {
           "index": 9,
           "manifest_order": 9,
-          "start": 757,
-          "end": 764,
-          "count": 8,
-          "target": "🧲 海外 AI",
-          "slug": "microsoft-ai",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN": 6,
-            "DOMAIN-SUFFIX": 2
-          }
-        },
-        {
-          "index": 10,
-          "manifest_order": 10,
-          "start": 765,
-          "end": 775,
-          "count": 11,
-          "target": "🧲 海外 AI",
-          "slug": "ai-developer",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 11
-          }
-        },
-        {
-          "index": 11,
-          "manifest_order": 11,
-          "start": 776,
-          "end": 800,
-          "count": 25,
-          "target": "🧲 海外 AI",
-          "slug": "ai-platforms",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 25
-          }
-        },
-        {
-          "index": 12,
-          "manifest_order": 12,
           "start": 801,
           "end": 828,
           "count": 28,
@@ -200,8 +160,8 @@
           }
         },
         {
-          "index": 13,
-          "manifest_order": 13,
+          "index": 10,
+          "manifest_order": 10,
           "start": 829,
           "end": 902,
           "count": 74,
@@ -213,8 +173,8 @@
           }
         },
         {
-          "index": 14,
-          "manifest_order": 14,
+          "index": 11,
+          "manifest_order": 11,
           "start": 903,
           "end": 922,
           "count": 20,
@@ -227,8 +187,8 @@
           }
         },
         {
-          "index": 15,
-          "manifest_order": 15,
+          "index": 12,
+          "manifest_order": 12,
           "start": 923,
           "end": 973,
           "count": 51,
@@ -242,8 +202,8 @@
           }
         },
         {
-          "index": 16,
-          "manifest_order": 16,
+          "index": 13,
+          "manifest_order": 13,
           "start": 974,
           "end": 1017,
           "count": 44,
@@ -255,41 +215,26 @@
           }
         },
         {
-          "index": 17,
-          "manifest_order": 17,
+          "index": 14,
+          "manifest_order": 14,
           "start": 1018,
-          "end": 1043,
-          "count": 26,
+          "end": 1077,
+          "count": 60,
           "target": "📲 聊天软件",
           "slug": "whatsapp",
           "scope": "both",
           "rule_types": {
             "DOMAIN": 1,
-            "DOMAIN-SUFFIX": 13,
-            "DOMAIN-KEYWORD": 1,
-            "IP-CIDR": 11
-          }
-        },
-        {
-          "index": 18,
-          "manifest_order": 18,
-          "start": 1044,
-          "end": 1077,
-          "count": 34,
-          "target": "📲 聊天软件",
-          "slug": "telegram",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 20,
-            "DOMAIN-KEYWORD": 1,
-            "IP-CIDR": 5,
+            "DOMAIN-SUFFIX": 33,
+            "DOMAIN-KEYWORD": 2,
+            "IP-CIDR": 16,
             "IP-CIDR6": 4,
             "PROCESS-NAME": 4
           }
         },
         {
-          "index": 19,
-          "manifest_order": 19,
+          "index": 15,
+          "manifest_order": 15,
           "start": 1078,
           "end": 1131,
           "count": 54,
@@ -302,8 +247,8 @@
           }
         },
         {
-          "index": 20,
-          "manifest_order": 20,
+          "index": 16,
+          "manifest_order": 16,
           "start": 1132,
           "end": 1332,
           "count": 201,
@@ -316,10 +261,24 @@
           }
         },
         {
-          "index": 21,
-          "manifest_order": 21,
+          "index": 17,
+          "manifest_order": 17,
           "start": 1333,
-          "end": 1410,
+          "end": 1367,
+          "count": 35,
+          "target": "🎨 Adobe",
+          "slug": "adobe",
+          "scope": "both",
+          "rule_types": {
+            "DOMAIN": 1,
+            "DOMAIN-SUFFIX": 34
+          }
+        },
+        {
+          "index": 18,
+          "manifest_order": 18,
+          "start": 1368,
+          "end": 1445,
           "count": 78,
           "target": "🎮 游戏下载",
           "slug": "game-download",
@@ -330,10 +289,10 @@
           }
         },
         {
-          "index": 22,
-          "manifest_order": 22,
-          "start": 1411,
-          "end": 1483,
+          "index": 19,
+          "manifest_order": 19,
+          "start": 1446,
+          "end": 1518,
           "count": 73,
           "target": "🎮 游戏平台",
           "slug": "game-platform",
@@ -345,10 +304,10 @@
           }
         },
         {
-          "index": 23,
-          "manifest_order": 23,
-          "start": 1484,
-          "end": 1530,
+          "index": 20,
+          "manifest_order": 20,
+          "start": 1519,
+          "end": 1565,
           "count": 47,
           "target": "🔞 NSFW",
           "slug": "nsfw",
@@ -358,10 +317,10 @@
           }
         },
         {
-          "index": 24,
-          "manifest_order": 24,
-          "start": 1531,
-          "end": 1557,
+          "index": 21,
+          "manifest_order": 21,
+          "start": 1566,
+          "end": 1592,
           "count": 27,
           "target": "🎬 韩国媒体",
           "slug": "media-korea",
@@ -372,10 +331,10 @@
           }
         },
         {
-          "index": 25,
-          "manifest_order": 25,
-          "start": 1558,
-          "end": 1569,
+          "index": 22,
+          "manifest_order": 22,
+          "start": 1593,
+          "end": 1604,
           "count": 12,
           "target": "🎬 港澳台媒体",
           "slug": "media-taiwan",
@@ -386,10 +345,10 @@
           }
         },
         {
-          "index": 26,
-          "manifest_order": 26,
-          "start": 1570,
-          "end": 1594,
+          "index": 23,
+          "manifest_order": 23,
+          "start": 1605,
+          "end": 1629,
           "count": 25,
           "target": "🎬 PrimeVideo",
           "slug": "prime-video",
@@ -402,54 +361,26 @@
           }
         },
         {
-          "index": 27,
-          "manifest_order": 27,
-          "start": 1595,
-          "end": 1605,
-          "count": 11,
+          "index": 24,
+          "manifest_order": 24,
+          "start": 1630,
+          "end": 1661,
+          "count": 32,
           "target": "🎬 港澳台媒体",
           "slug": "viutv",
           "scope": "both",
           "rule_types": {
-            "DOMAIN-SUFFIX": 8,
-            "PROCESS-NAME": 3
-          }
-        },
-        {
-          "index": 28,
-          "manifest_order": 28,
-          "start": 1606,
-          "end": 1617,
-          "count": 12,
-          "target": "🎬 港澳台媒体",
-          "slug": "kktv",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN": 4,
-            "DOMAIN-SUFFIX": 7,
-            "PROCESS-NAME": 1
-          }
-        },
-        {
-          "index": 29,
-          "manifest_order": 29,
-          "start": 1618,
-          "end": 1626,
-          "count": 9,
-          "target": "🎬 港澳台媒体",
-          "slug": "bahamut",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 7,
-            "DOMAIN": 1,
+            "DOMAIN-SUFFIX": 22,
+            "PROCESS-NAME": 4,
+            "DOMAIN": 5,
             "DOMAIN-KEYWORD": 1
           }
         },
         {
-          "index": 30,
-          "manifest_order": 30,
-          "start": 1627,
-          "end": 1652,
+          "index": 25,
+          "manifest_order": 25,
+          "start": 1662,
+          "end": 1687,
           "count": 26,
           "target": "🎬 日本媒体",
           "slug": "media-japan",
@@ -460,10 +391,10 @@
           }
         },
         {
-          "index": 31,
-          "manifest_order": 31,
-          "start": 1653,
-          "end": 1669,
+          "index": 26,
+          "manifest_order": 26,
+          "start": 1688,
+          "end": 1704,
           "count": 17,
           "target": "🎬 YouTube",
           "slug": "youtube",
@@ -473,10 +404,10 @@
           }
         },
         {
-          "index": 32,
-          "manifest_order": 32,
-          "start": 1670,
-          "end": 1673,
+          "index": 27,
+          "manifest_order": 27,
+          "start": 1705,
+          "end": 1708,
           "count": 4,
           "target": "🎵 音乐平台",
           "slug": "tidal",
@@ -486,10 +417,10 @@
           }
         },
         {
-          "index": 33,
-          "manifest_order": 33,
-          "start": 1674,
-          "end": 1835,
+          "index": 28,
+          "manifest_order": 28,
+          "start": 1709,
+          "end": 1870,
           "count": 162,
           "target": "🎬 DisneyPlus",
           "slug": "disney-plus",
@@ -500,10 +431,10 @@
           }
         },
         {
-          "index": 34,
-          "manifest_order": 34,
-          "start": 1836,
-          "end": 1877,
+          "index": 29,
+          "manifest_order": 29,
+          "start": 1871,
+          "end": 1912,
           "count": 42,
           "target": "🎬 HBO GO/MAX",
           "slug": "hbo-go",
@@ -516,10 +447,10 @@
           }
         },
         {
-          "index": 35,
-          "manifest_order": 35,
-          "start": 1878,
-          "end": 1892,
+          "index": 30,
+          "manifest_order": 30,
+          "start": 1913,
+          "end": 1927,
           "count": 15,
           "target": "🎬 Dazn",
           "slug": "dazn",
@@ -530,10 +461,10 @@
           }
         },
         {
-          "index": 36,
-          "manifest_order": 36,
-          "start": 1893,
-          "end": 1900,
+          "index": 31,
+          "manifest_order": 31,
+          "start": 1928,
+          "end": 1935,
           "count": 8,
           "target": "🎬 AppleTV+",
           "slug": "apple-tv-plus",
@@ -545,10 +476,10 @@
           }
         },
         {
-          "index": 37,
-          "manifest_order": 37,
-          "start": 1901,
-          "end": 1907,
+          "index": 32,
+          "manifest_order": 32,
+          "start": 1936,
+          "end": 1942,
           "count": 7,
           "target": "🎬 东南亚媒体",
           "slug": "bilibili-sea",
@@ -560,10 +491,10 @@
           }
         },
         {
-          "index": 38,
-          "manifest_order": 38,
-          "start": 1908,
-          "end": 1922,
+          "index": 33,
+          "manifest_order": 33,
+          "start": 1943,
+          "end": 1957,
           "count": 15,
           "target": "🎬 B站港澳台",
           "slug": "bilibili-hmt",
@@ -574,10 +505,10 @@
           }
         },
         {
-          "index": 39,
-          "manifest_order": 39,
-          "start": 1923,
-          "end": 1942,
+          "index": 34,
+          "manifest_order": 34,
+          "start": 1958,
+          "end": 1977,
           "count": 20,
           "target": "🎬 爱奇艺国际",
           "slug": "iqiyi",
@@ -588,52 +519,25 @@
           }
         },
         {
-          "index": 40,
-          "manifest_order": 40,
-          "start": 1943,
-          "end": 1963,
-          "count": 21,
+          "index": 35,
+          "manifest_order": 35,
+          "start": 1978,
+          "end": 2032,
+          "count": 55,
           "target": "🎵 音乐平台",
           "slug": "spotify",
           "scope": "both",
           "rule_types": {
-            "DOMAIN": 4,
-            "DOMAIN-SUFFIX": 17
-          }
-        },
-        {
-          "index": 41,
-          "manifest_order": 41,
-          "start": 1964,
-          "end": 1987,
-          "count": 24,
-          "target": "🎵 音乐平台",
-          "slug": "qobuz",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 24
-          }
-        },
-        {
-          "index": 42,
-          "manifest_order": 42,
-          "start": 1988,
-          "end": 1997,
-          "count": 10,
-          "target": "🎵 音乐平台",
-          "slug": "apple-music",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN": 6,
-            "DOMAIN-SUFFIX": 3,
+            "DOMAIN": 10,
+            "DOMAIN-SUFFIX": 44,
             "PROCESS-NAME": 1
           }
         },
         {
-          "index": 43,
-          "manifest_order": 43,
-          "start": 1998,
-          "end": 2199,
+          "index": 36,
+          "manifest_order": 36,
+          "start": 2033,
+          "end": 2234,
           "count": 202,
           "target": "🌏 国内流媒体",
           "slug": "china-media",
@@ -644,10 +548,10 @@
           }
         },
         {
-          "index": 44,
-          "manifest_order": 44,
-          "start": 2200,
-          "end": 2222,
+          "index": 37,
+          "manifest_order": 37,
+          "start": 2235,
+          "end": 2257,
           "count": 23,
           "target": "🎶 TikTok",
           "slug": "tiktok",
@@ -660,10 +564,10 @@
           }
         },
         {
-          "index": 45,
-          "manifest_order": 45,
-          "start": 2223,
-          "end": 2275,
+          "index": 38,
+          "manifest_order": 38,
+          "start": 2258,
+          "end": 2310,
           "count": 53,
           "target": "🎬 Netflix",
           "slug": "netflix",
@@ -678,10 +582,10 @@
           }
         },
         {
-          "index": 46,
-          "manifest_order": 46,
-          "start": 2276,
-          "end": 2356,
+          "index": 39,
+          "manifest_order": 39,
+          "start": 2311,
+          "end": 2391,
           "count": 81,
           "target": "☁️ 云盘服务",
           "slug": "cloud-storage",
@@ -693,10 +597,10 @@
           }
         },
         {
-          "index": 47,
-          "manifest_order": 47,
-          "start": 2357,
-          "end": 2396,
+          "index": 40,
+          "manifest_order": 40,
+          "start": 2392,
+          "end": 2431,
           "count": 40,
           "target": "🍎 苹果服务",
           "slug": "apple",
@@ -709,10 +613,10 @@
           }
         },
         {
-          "index": 48,
-          "manifest_order": 48,
-          "start": 2397,
-          "end": 2451,
+          "index": 41,
+          "manifest_order": 41,
+          "start": 2432,
+          "end": 2486,
           "count": 55,
           "target": "🎬 美国流媒体",
           "slug": "us-media",
@@ -722,10 +626,10 @@
           }
         },
         {
-          "index": 49,
-          "manifest_order": 49,
-          "start": 2452,
-          "end": 2481,
+          "index": 42,
+          "manifest_order": 42,
+          "start": 2487,
+          "end": 2516,
           "count": 30,
           "target": "🌏 国外流媒体",
           "slug": "global-media",
@@ -735,25 +639,25 @@
           }
         },
         {
-          "index": 50,
-          "manifest_order": 50,
-          "start": 2482,
-          "end": 6715,
-          "count": 4234,
+          "index": 43,
+          "manifest_order": 43,
+          "start": 2517,
+          "end": 6782,
+          "count": 4266,
           "target": "🌏 国内网站",
           "slug": "china-web",
           "scope": "both",
           "rule_types": {
             "DOMAIN": 16,
-            "DOMAIN-SUFFIX": 4205,
+            "DOMAIN-SUFFIX": 4237,
             "PROCESS-NAME": 13
           }
         },
         {
-          "index": 51,
-          "manifest_order": 51,
-          "start": 6716,
-          "end": 7265,
+          "index": 44,
+          "manifest_order": 44,
+          "start": 6783,
+          "end": 7332,
           "count": 550,
           "target": "🎮 游戏平台",
           "slug": "game-platform-late-recovery",
@@ -765,10 +669,10 @@
           }
         },
         {
-          "index": 52,
-          "manifest_order": 52,
-          "start": 7266,
-          "end": 7373,
+          "index": 45,
+          "manifest_order": 45,
+          "start": 7333,
+          "end": 7440,
           "count": 108,
           "target": "🎬 B站港澳台",
           "slug": "bilibili-hmt-late-recovery",
@@ -780,10 +684,10 @@
           }
         },
         {
-          "index": 53,
-          "manifest_order": 53,
-          "start": 7374,
-          "end": 7409,
+          "index": 46,
+          "manifest_order": 46,
+          "start": 7441,
+          "end": 7476,
           "count": 36,
           "target": "🎬 爱奇艺国际",
           "slug": "iqiyi-late-recovery",
@@ -794,10 +698,10 @@
           }
         },
         {
-          "index": 54,
-          "manifest_order": 54,
-          "start": 7410,
-          "end": 8873,
+          "index": 47,
+          "manifest_order": 47,
+          "start": 7477,
+          "end": 8940,
           "count": 1464,
           "target": "DIRECT",
           "slug": "apple-late-recovery",
@@ -808,10 +712,10 @@
           }
         },
         {
-          "index": 55,
-          "manifest_order": 55,
-          "start": 8874,
-          "end": 8966,
+          "index": 48,
+          "manifest_order": 48,
+          "start": 8941,
+          "end": 9033,
           "count": 93,
           "target": "🌏 国内流媒体",
           "slug": "china-media-late-recovery",
@@ -823,10 +727,10 @@
           }
         },
         {
-          "index": 56,
-          "manifest_order": 56,
-          "start": 8967,
-          "end": 9321,
+          "index": 49,
+          "manifest_order": 49,
+          "start": 9034,
+          "end": 9388,
           "count": 355,
           "target": "☁️ 海外云服务",
           "slug": "overseas-cloud",
@@ -837,10 +741,10 @@
           }
         },
         {
-          "index": 57,
-          "manifest_order": 57,
-          "start": 9322,
-          "end": 9484,
+          "index": 50,
+          "manifest_order": 50,
+          "start": 9389,
+          "end": 9551,
           "count": 163,
           "target": "☁️ 国内云服务",
           "slug": "china-cloud",
@@ -851,10 +755,10 @@
           }
         },
         {
-          "index": 58,
-          "manifest_order": 58,
-          "start": 9485,
-          "end": 9532,
+          "index": 51,
+          "manifest_order": 51,
+          "start": 9552,
+          "end": 9599,
           "count": 48,
           "target": "🧩 微软服务",
           "slug": "microsoft",
@@ -864,10 +768,10 @@
           }
         },
         {
-          "index": 59,
-          "manifest_order": 59,
-          "start": 9533,
-          "end": 9965,
+          "index": 52,
+          "manifest_order": 52,
+          "start": 9600,
+          "end": 10032,
           "count": 433,
           "target": "DIRECT",
           "slug": "microsoft-late-recovery",
@@ -878,10 +782,10 @@
           }
         },
         {
-          "index": 60,
-          "manifest_order": 60,
-          "start": 9966,
-          "end": 10002,
+          "index": 53,
+          "manifest_order": 53,
+          "start": 10033,
+          "end": 10069,
           "count": 37,
           "target": "🔎 Google",
           "slug": "google",
@@ -894,10 +798,10 @@
           }
         },
         {
-          "index": 61,
-          "manifest_order": 61,
-          "start": 10003,
-          "end": 10078,
+          "index": 54,
+          "manifest_order": 54,
+          "start": 10070,
+          "end": 10145,
           "count": 76,
           "target": "🛒 海外购物",
           "slug": "overseas-shopping",
@@ -907,10 +811,10 @@
           }
         },
         {
-          "index": 62,
-          "manifest_order": 62,
-          "start": 10079,
-          "end": 10087,
+          "index": 55,
+          "manifest_order": 55,
+          "start": 10146,
+          "end": 10154,
           "count": 9,
           "target": "🌏 国内网站",
           "slug": "china-direct-curated",
@@ -920,10 +824,10 @@
           }
         },
         {
-          "index": 63,
-          "manifest_order": 63,
-          "start": 10088,
-          "end": 10088,
+          "index": 56,
+          "manifest_order": 56,
+          "start": 10155,
+          "end": 10155,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -933,10 +837,10 @@
           }
         },
         {
-          "index": 64,
-          "manifest_order": 64,
-          "start": 10089,
-          "end": 10089,
+          "index": 57,
+          "manifest_order": 57,
+          "start": 10156,
+          "end": 10156,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",
@@ -950,9 +854,9 @@
     "lite": {
       "summary": {
         "proxy_group_count": 10,
-        "ruleset_count": 63,
-        "segment_count": 64,
-        "rule_count": 10089,
+        "ruleset_count": 56,
+        "segment_count": 57,
+        "rule_count": 10156,
         "destination_ip_rule_count": 207
       },
       "quality": {
@@ -1081,60 +985,20 @@
           "index": 8,
           "manifest_order": 8,
           "start": 745,
-          "end": 756,
-          "count": 12,
+          "end": 800,
+          "count": 56,
           "target": "🧲 海外 AI",
           "slug": "google-ai",
           "scope": "both",
           "rule_types": {
-            "DOMAIN": 5,
-            "DOMAIN-SUFFIX": 6,
+            "DOMAIN": 11,
+            "DOMAIN-SUFFIX": 44,
             "DOMAIN-KEYWORD": 1
           }
         },
         {
           "index": 9,
           "manifest_order": 9,
-          "start": 757,
-          "end": 764,
-          "count": 8,
-          "target": "🧲 海外 AI",
-          "slug": "microsoft-ai",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN": 6,
-            "DOMAIN-SUFFIX": 2
-          }
-        },
-        {
-          "index": 10,
-          "manifest_order": 10,
-          "start": 765,
-          "end": 775,
-          "count": 11,
-          "target": "🧲 海外 AI",
-          "slug": "ai-developer",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 11
-          }
-        },
-        {
-          "index": 11,
-          "manifest_order": 11,
-          "start": 776,
-          "end": 800,
-          "count": 25,
-          "target": "🧲 海外 AI",
-          "slug": "ai-platforms",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 25
-          }
-        },
-        {
-          "index": 12,
-          "manifest_order": 12,
           "start": 801,
           "end": 828,
           "count": 28,
@@ -1146,8 +1010,8 @@
           }
         },
         {
-          "index": 13,
-          "manifest_order": 13,
+          "index": 10,
+          "manifest_order": 10,
           "start": 829,
           "end": 902,
           "count": 74,
@@ -1159,8 +1023,8 @@
           }
         },
         {
-          "index": 14,
-          "manifest_order": 14,
+          "index": 11,
+          "manifest_order": 11,
           "start": 903,
           "end": 922,
           "count": 20,
@@ -1173,8 +1037,8 @@
           }
         },
         {
-          "index": 15,
-          "manifest_order": 15,
+          "index": 12,
+          "manifest_order": 12,
           "start": 923,
           "end": 973,
           "count": 51,
@@ -1188,8 +1052,8 @@
           }
         },
         {
-          "index": 16,
-          "manifest_order": 16,
+          "index": 13,
+          "manifest_order": 13,
           "start": 974,
           "end": 1017,
           "count": 44,
@@ -1201,41 +1065,26 @@
           }
         },
         {
-          "index": 17,
-          "manifest_order": 17,
+          "index": 14,
+          "manifest_order": 14,
           "start": 1018,
-          "end": 1043,
-          "count": 26,
+          "end": 1077,
+          "count": 60,
           "target": "🚀 国外服务",
           "slug": "whatsapp",
           "scope": "both",
           "rule_types": {
             "DOMAIN": 1,
-            "DOMAIN-SUFFIX": 13,
-            "DOMAIN-KEYWORD": 1,
-            "IP-CIDR": 11
-          }
-        },
-        {
-          "index": 18,
-          "manifest_order": 18,
-          "start": 1044,
-          "end": 1077,
-          "count": 34,
-          "target": "🚀 国外服务",
-          "slug": "telegram",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 20,
-            "DOMAIN-KEYWORD": 1,
-            "IP-CIDR": 5,
+            "DOMAIN-SUFFIX": 33,
+            "DOMAIN-KEYWORD": 2,
+            "IP-CIDR": 16,
             "IP-CIDR6": 4,
             "PROCESS-NAME": 4
           }
         },
         {
-          "index": 19,
-          "manifest_order": 19,
+          "index": 15,
+          "manifest_order": 15,
           "start": 1078,
           "end": 1131,
           "count": 54,
@@ -1248,8 +1097,8 @@
           }
         },
         {
-          "index": 20,
-          "manifest_order": 20,
+          "index": 16,
+          "manifest_order": 16,
           "start": 1132,
           "end": 1332,
           "count": 201,
@@ -1262,10 +1111,24 @@
           }
         },
         {
-          "index": 21,
-          "manifest_order": 21,
+          "index": 17,
+          "manifest_order": 17,
           "start": 1333,
-          "end": 1410,
+          "end": 1367,
+          "count": 35,
+          "target": "🚀 国外服务",
+          "slug": "adobe",
+          "scope": "both",
+          "rule_types": {
+            "DOMAIN": 1,
+            "DOMAIN-SUFFIX": 34
+          }
+        },
+        {
+          "index": 18,
+          "manifest_order": 18,
+          "start": 1368,
+          "end": 1445,
           "count": 78,
           "target": "🎮 游戏下载",
           "slug": "game-download",
@@ -1276,10 +1139,10 @@
           }
         },
         {
-          "index": 22,
-          "manifest_order": 22,
-          "start": 1411,
-          "end": 1483,
+          "index": 19,
+          "manifest_order": 19,
+          "start": 1446,
+          "end": 1518,
           "count": 73,
           "target": "🎮 游戏平台",
           "slug": "game-platform",
@@ -1291,10 +1154,10 @@
           }
         },
         {
-          "index": 23,
-          "manifest_order": 23,
-          "start": 1484,
-          "end": 1530,
+          "index": 20,
+          "manifest_order": 20,
+          "start": 1519,
+          "end": 1565,
           "count": 47,
           "target": "🔞 NSFW",
           "slug": "nsfw",
@@ -1304,10 +1167,10 @@
           }
         },
         {
-          "index": 24,
-          "manifest_order": 24,
-          "start": 1531,
-          "end": 1557,
+          "index": 21,
+          "manifest_order": 21,
+          "start": 1566,
+          "end": 1592,
           "count": 27,
           "target": "🎬 流媒体",
           "slug": "media-korea",
@@ -1318,10 +1181,10 @@
           }
         },
         {
-          "index": 25,
-          "manifest_order": 25,
-          "start": 1558,
-          "end": 1569,
+          "index": 22,
+          "manifest_order": 22,
+          "start": 1593,
+          "end": 1604,
           "count": 12,
           "target": "🎬 流媒体",
           "slug": "media-taiwan",
@@ -1332,10 +1195,10 @@
           }
         },
         {
-          "index": 26,
-          "manifest_order": 26,
-          "start": 1570,
-          "end": 1594,
+          "index": 23,
+          "manifest_order": 23,
+          "start": 1605,
+          "end": 1629,
           "count": 25,
           "target": "🎬 流媒体",
           "slug": "prime-video",
@@ -1348,54 +1211,26 @@
           }
         },
         {
-          "index": 27,
-          "manifest_order": 27,
-          "start": 1595,
-          "end": 1605,
-          "count": 11,
+          "index": 24,
+          "manifest_order": 24,
+          "start": 1630,
+          "end": 1661,
+          "count": 32,
           "target": "🎬 流媒体",
           "slug": "viutv",
           "scope": "both",
           "rule_types": {
-            "DOMAIN-SUFFIX": 8,
-            "PROCESS-NAME": 3
-          }
-        },
-        {
-          "index": 28,
-          "manifest_order": 28,
-          "start": 1606,
-          "end": 1617,
-          "count": 12,
-          "target": "🎬 流媒体",
-          "slug": "kktv",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN": 4,
-            "DOMAIN-SUFFIX": 7,
-            "PROCESS-NAME": 1
-          }
-        },
-        {
-          "index": 29,
-          "manifest_order": 29,
-          "start": 1618,
-          "end": 1626,
-          "count": 9,
-          "target": "🎬 流媒体",
-          "slug": "bahamut",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 7,
-            "DOMAIN": 1,
+            "DOMAIN-SUFFIX": 22,
+            "PROCESS-NAME": 4,
+            "DOMAIN": 5,
             "DOMAIN-KEYWORD": 1
           }
         },
         {
-          "index": 30,
-          "manifest_order": 30,
-          "start": 1627,
-          "end": 1652,
+          "index": 25,
+          "manifest_order": 25,
+          "start": 1662,
+          "end": 1687,
           "count": 26,
           "target": "🎬 流媒体",
           "slug": "media-japan",
@@ -1406,10 +1241,10 @@
           }
         },
         {
-          "index": 31,
-          "manifest_order": 31,
-          "start": 1653,
-          "end": 1669,
+          "index": 26,
+          "manifest_order": 26,
+          "start": 1688,
+          "end": 1704,
           "count": 17,
           "target": "🎬 流媒体",
           "slug": "youtube",
@@ -1419,10 +1254,10 @@
           }
         },
         {
-          "index": 32,
-          "manifest_order": 32,
-          "start": 1670,
-          "end": 1673,
+          "index": 27,
+          "manifest_order": 27,
+          "start": 1705,
+          "end": 1708,
           "count": 4,
           "target": "🎬 流媒体",
           "slug": "tidal",
@@ -1432,10 +1267,10 @@
           }
         },
         {
-          "index": 33,
-          "manifest_order": 33,
-          "start": 1674,
-          "end": 1835,
+          "index": 28,
+          "manifest_order": 28,
+          "start": 1709,
+          "end": 1870,
           "count": 162,
           "target": "🎬 流媒体",
           "slug": "disney-plus",
@@ -1446,10 +1281,10 @@
           }
         },
         {
-          "index": 34,
-          "manifest_order": 34,
-          "start": 1836,
-          "end": 1877,
+          "index": 29,
+          "manifest_order": 29,
+          "start": 1871,
+          "end": 1912,
           "count": 42,
           "target": "🎬 流媒体",
           "slug": "hbo-go",
@@ -1462,10 +1297,10 @@
           }
         },
         {
-          "index": 35,
-          "manifest_order": 35,
-          "start": 1878,
-          "end": 1892,
+          "index": 30,
+          "manifest_order": 30,
+          "start": 1913,
+          "end": 1927,
           "count": 15,
           "target": "🎬 流媒体",
           "slug": "dazn",
@@ -1476,10 +1311,10 @@
           }
         },
         {
-          "index": 36,
-          "manifest_order": 36,
-          "start": 1893,
-          "end": 1900,
+          "index": 31,
+          "manifest_order": 31,
+          "start": 1928,
+          "end": 1935,
           "count": 8,
           "target": "🎬 流媒体",
           "slug": "apple-tv-plus",
@@ -1491,10 +1326,10 @@
           }
         },
         {
-          "index": 37,
-          "manifest_order": 37,
-          "start": 1901,
-          "end": 1907,
+          "index": 32,
+          "manifest_order": 32,
+          "start": 1936,
+          "end": 1942,
           "count": 7,
           "target": "🎬 流媒体",
           "slug": "bilibili-sea",
@@ -1506,10 +1341,10 @@
           }
         },
         {
-          "index": 38,
-          "manifest_order": 38,
-          "start": 1908,
-          "end": 1922,
+          "index": 33,
+          "manifest_order": 33,
+          "start": 1943,
+          "end": 1957,
           "count": 15,
           "target": "🌏 国内网站",
           "slug": "bilibili-hmt",
@@ -1520,10 +1355,10 @@
           }
         },
         {
-          "index": 39,
-          "manifest_order": 39,
-          "start": 1923,
-          "end": 1942,
+          "index": 34,
+          "manifest_order": 34,
+          "start": 1958,
+          "end": 1977,
           "count": 20,
           "target": "🌏 国内网站",
           "slug": "iqiyi",
@@ -1534,52 +1369,25 @@
           }
         },
         {
-          "index": 40,
-          "manifest_order": 40,
-          "start": 1943,
-          "end": 1963,
-          "count": 21,
+          "index": 35,
+          "manifest_order": 35,
+          "start": 1978,
+          "end": 2032,
+          "count": 55,
           "target": "🎬 流媒体",
           "slug": "spotify",
           "scope": "both",
           "rule_types": {
-            "DOMAIN": 4,
-            "DOMAIN-SUFFIX": 17
-          }
-        },
-        {
-          "index": 41,
-          "manifest_order": 41,
-          "start": 1964,
-          "end": 1987,
-          "count": 24,
-          "target": "🎬 流媒体",
-          "slug": "qobuz",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN-SUFFIX": 24
-          }
-        },
-        {
-          "index": 42,
-          "manifest_order": 42,
-          "start": 1988,
-          "end": 1997,
-          "count": 10,
-          "target": "🎬 流媒体",
-          "slug": "apple-music",
-          "scope": "both",
-          "rule_types": {
-            "DOMAIN": 6,
-            "DOMAIN-SUFFIX": 3,
+            "DOMAIN": 10,
+            "DOMAIN-SUFFIX": 44,
             "PROCESS-NAME": 1
           }
         },
         {
-          "index": 43,
-          "manifest_order": 43,
-          "start": 1998,
-          "end": 2199,
+          "index": 36,
+          "manifest_order": 36,
+          "start": 2033,
+          "end": 2234,
           "count": 202,
           "target": "🌏 国内网站",
           "slug": "china-media",
@@ -1590,10 +1398,10 @@
           }
         },
         {
-          "index": 44,
-          "manifest_order": 44,
-          "start": 2200,
-          "end": 2222,
+          "index": 37,
+          "manifest_order": 37,
+          "start": 2235,
+          "end": 2257,
           "count": 23,
           "target": "🎬 流媒体",
           "slug": "tiktok",
@@ -1606,10 +1414,10 @@
           }
         },
         {
-          "index": 45,
-          "manifest_order": 45,
-          "start": 2223,
-          "end": 2275,
+          "index": 38,
+          "manifest_order": 38,
+          "start": 2258,
+          "end": 2310,
           "count": 53,
           "target": "🎬 流媒体",
           "slug": "netflix",
@@ -1624,10 +1432,10 @@
           }
         },
         {
-          "index": 46,
-          "manifest_order": 46,
-          "start": 2276,
-          "end": 2356,
+          "index": 39,
+          "manifest_order": 39,
+          "start": 2311,
+          "end": 2391,
           "count": 81,
           "target": "🚀 国外服务",
           "slug": "cloud-storage",
@@ -1639,10 +1447,10 @@
           }
         },
         {
-          "index": 47,
-          "manifest_order": 47,
-          "start": 2357,
-          "end": 2396,
+          "index": 40,
+          "manifest_order": 40,
+          "start": 2392,
+          "end": 2431,
           "count": 40,
           "target": "🚀 国外服务",
           "slug": "apple",
@@ -1655,10 +1463,10 @@
           }
         },
         {
-          "index": 48,
-          "manifest_order": 48,
-          "start": 2397,
-          "end": 2451,
+          "index": 41,
+          "manifest_order": 41,
+          "start": 2432,
+          "end": 2486,
           "count": 55,
           "target": "🎬 流媒体",
           "slug": "us-media",
@@ -1668,10 +1476,10 @@
           }
         },
         {
-          "index": 49,
-          "manifest_order": 49,
-          "start": 2452,
-          "end": 2481,
+          "index": 42,
+          "manifest_order": 42,
+          "start": 2487,
+          "end": 2516,
           "count": 30,
           "target": "🚀 国外服务",
           "slug": "global-media",
@@ -1681,25 +1489,25 @@
           }
         },
         {
-          "index": 50,
-          "manifest_order": 50,
-          "start": 2482,
-          "end": 6715,
-          "count": 4234,
+          "index": 43,
+          "manifest_order": 43,
+          "start": 2517,
+          "end": 6782,
+          "count": 4266,
           "target": "🌏 国内网站",
           "slug": "china-web",
           "scope": "both",
           "rule_types": {
             "DOMAIN": 16,
-            "DOMAIN-SUFFIX": 4205,
+            "DOMAIN-SUFFIX": 4237,
             "PROCESS-NAME": 13
           }
         },
         {
-          "index": 51,
-          "manifest_order": 51,
-          "start": 6716,
-          "end": 7265,
+          "index": 44,
+          "manifest_order": 44,
+          "start": 6783,
+          "end": 7332,
           "count": 550,
           "target": "🎮 游戏平台",
           "slug": "game-platform-late-recovery",
@@ -1711,10 +1519,10 @@
           }
         },
         {
-          "index": 52,
-          "manifest_order": 52,
-          "start": 7266,
-          "end": 7373,
+          "index": 45,
+          "manifest_order": 45,
+          "start": 7333,
+          "end": 7440,
           "count": 108,
           "target": "🌏 国内网站",
           "slug": "bilibili-hmt-late-recovery",
@@ -1726,10 +1534,10 @@
           }
         },
         {
-          "index": 53,
-          "manifest_order": 53,
-          "start": 7374,
-          "end": 7409,
+          "index": 46,
+          "manifest_order": 46,
+          "start": 7441,
+          "end": 7476,
           "count": 36,
           "target": "🌏 国内网站",
           "slug": "iqiyi-late-recovery",
@@ -1740,10 +1548,10 @@
           }
         },
         {
-          "index": 54,
-          "manifest_order": 54,
-          "start": 7410,
-          "end": 8873,
+          "index": 47,
+          "manifest_order": 47,
+          "start": 7477,
+          "end": 8940,
           "count": 1464,
           "target": "DIRECT",
           "slug": "apple-late-recovery",
@@ -1754,10 +1562,10 @@
           }
         },
         {
-          "index": 55,
-          "manifest_order": 55,
-          "start": 8874,
-          "end": 8966,
+          "index": 48,
+          "manifest_order": 48,
+          "start": 8941,
+          "end": 9033,
           "count": 93,
           "target": "🌏 国内网站",
           "slug": "china-media-late-recovery",
@@ -1769,10 +1577,10 @@
           }
         },
         {
-          "index": 56,
-          "manifest_order": 56,
-          "start": 8967,
-          "end": 9321,
+          "index": 49,
+          "manifest_order": 49,
+          "start": 9034,
+          "end": 9388,
           "count": 355,
           "target": "🚀 国外服务",
           "slug": "overseas-cloud",
@@ -1783,10 +1591,10 @@
           }
         },
         {
-          "index": 57,
-          "manifest_order": 57,
-          "start": 9322,
-          "end": 9484,
+          "index": 50,
+          "manifest_order": 50,
+          "start": 9389,
+          "end": 9551,
           "count": 163,
           "target": "🌏 国内网站",
           "slug": "china-cloud",
@@ -1797,10 +1605,10 @@
           }
         },
         {
-          "index": 58,
-          "manifest_order": 58,
-          "start": 9485,
-          "end": 9532,
+          "index": 51,
+          "manifest_order": 51,
+          "start": 9552,
+          "end": 9599,
           "count": 48,
           "target": "🚀 国外服务",
           "slug": "microsoft",
@@ -1810,10 +1618,10 @@
           }
         },
         {
-          "index": 59,
-          "manifest_order": 59,
-          "start": 9533,
-          "end": 9965,
+          "index": 52,
+          "manifest_order": 52,
+          "start": 9600,
+          "end": 10032,
           "count": 433,
           "target": "DIRECT",
           "slug": "microsoft-late-recovery",
@@ -1824,10 +1632,10 @@
           }
         },
         {
-          "index": 60,
-          "manifest_order": 60,
-          "start": 9966,
-          "end": 10002,
+          "index": 53,
+          "manifest_order": 53,
+          "start": 10033,
+          "end": 10069,
           "count": 37,
           "target": "🚀 国外服务",
           "slug": "google",
@@ -1840,10 +1648,10 @@
           }
         },
         {
-          "index": 61,
-          "manifest_order": 61,
-          "start": 10003,
-          "end": 10078,
+          "index": 54,
+          "manifest_order": 54,
+          "start": 10070,
+          "end": 10145,
           "count": 76,
           "target": "🚀 国外服务",
           "slug": "overseas-shopping",
@@ -1853,10 +1661,10 @@
           }
         },
         {
-          "index": 62,
-          "manifest_order": 62,
-          "start": 10079,
-          "end": 10087,
+          "index": 55,
+          "manifest_order": 55,
+          "start": 10146,
+          "end": 10154,
           "count": 9,
           "target": "🌏 国内网站",
           "slug": "china-direct-curated",
@@ -1866,10 +1674,10 @@
           }
         },
         {
-          "index": 63,
-          "manifest_order": 63,
-          "start": 10088,
-          "end": 10088,
+          "index": 56,
+          "manifest_order": 56,
+          "start": 10155,
+          "end": 10155,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -1879,10 +1687,10 @@
           }
         },
         {
-          "index": 64,
-          "manifest_order": 64,
-          "start": 10089,
-          "end": 10089,
+          "index": 57,
+          "manifest_order": 57,
+          "start": 10156,
+          "end": 10156,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",
