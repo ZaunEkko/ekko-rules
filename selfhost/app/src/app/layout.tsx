@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 const OPEN_TITLE = "Ekko Rules 订阅转换";
 const OPEN_DESCRIPTION =
-  "把机场订阅转换成 Clash、sing-box、Shadowrocket、Surge 等客户端的完整配置。Shadowrocket 提供节点订阅 + 原生 PROXY 分流配置两步导入；服务器不保存订阅、节点或任何转换记录。";
+  "把机场订阅转换成 Clash、sing-box、Shadowrocket、Surge 等客户端的完整配置。Shadowrocket 提供节点订阅 + 可逐节点选择的原生分流配置两步导入；服务器不保存订阅、节点或任何转换记录。";
 const LOCAL_TITLE = "Ekko Rules 本地转换";
 const LOCAL_DESCRIPTION =
   "在本机将订阅转换为已套用 Ekko Rules 的完整 Clash / Mihomo 配置。";
