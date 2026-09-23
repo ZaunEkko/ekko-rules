@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-068 use **2026-09-23**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-069 use **2026-09-23**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1621,3 +1621,28 @@ imports. The first route forwards subscription usage metadata; the second route 
 the verified native rules, full/lite and third-party group topology, and special-policy
 defaults. Documentation and capability copy now describe the two-step requirement so
 “Shadowrocket supported” means the tested combined result, not one half of it.
+
+## ER-069 — Shadowrocket configuration mode uses the Home-selected node
+
+**Type:** site runtime correction; native `PROXY` replaces duplicated node definitions
+
+Device testing after ER-068 showed a sharper boundary than the import UI alone exposed:
+the same airport node worked in Shadowrocket global mode, while Configuration mode could
+display every rule and policy group yet pass no traffic. Selecting a copied node inside
+`♻️ 手动切换` did not help. This isolates the failure to the configuration object's node
+definitions rather than the upstream subscription or the node itself.
+
+The native `.conf` no longer copies airport nodes into `[Proxy]`. Those nodes remain in
+the Home subscription, where Shadowrocket already parses, refreshes, names, measures,
+and connects them correctly. The configuration instead uses Shadowrocket's built-in
+`PROXY` policy as the bridge to the node currently selected on Home. `♻️ 手动切换`
+starts with `PROXY`; other select groups gain `PROXY` without changing their established
+first choice, so advertising and NSFW still default to `REJECT`, mainland groups still
+default to `DIRECT`, and ordinary overseas groups still lead through the manual selector.
+
+The two-step UI now tells the user to select a working Home node before importing the
+configuration and explains that Configuration mode follows that node through `PROXY`.
+Tests reject embedded node copies, require the bridge in full and lite outputs, preserve
+all default-policy assertions, and keep third-party templates on the same conversion path.
+Server-side validation cannot prove the client's tunnel result, so this correction remains
+subject to the next clean-state device test rather than being described as device-verified.
