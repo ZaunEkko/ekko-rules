@@ -86,7 +86,7 @@ Windows 首次部署可以改用 `setup.cmd`，它顺带安装一个随登录运
 | 固定地址 | 链接自带全部参数 | `/sub/<随机 ID>` |
 | 需要装什么 | 什么都不用 | Docker + Compose v2 |
 
-两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 把“节点订阅”和“原生配置”作为两个独立对象，页面因此提供严格有序的两步导入。首页 `.yaml` 负责名称、节点刷新及流量/到期横幅；配置页 `.conf` 不再复制节点，而以原生 `PROXY` 保持配置模式联网，并通过 `include-all-proxies=1` 和 `policy-regex-filter=.*` 请求在每个策略组列出订阅节点，继续负责规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。实际逐节点选择仍待真机确认。两步缺一不可。内置完整版、精简版、ACL4SSR 等第三方预设及允许的自定义远程配置共用这条转换链路。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会安全透传流量、容量与到期字段。
+两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 把“节点订阅”和“原生配置”作为两个独立对象，页面因此提供严格有序的两步导入。首页 `.yaml` 负责名称、节点刷新及流量/到期横幅；配置页 `.conf` 不再复制节点，而以原生 `PROXY` 保持配置模式联网，在每个策略组明确引用首页节点的名称，并保留规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。节点增删或改名后需刷新配置；实际逐节点选择仍待真机确认。两步缺一不可。内置完整版、精简版、ACL4SSR 等第三方预设及允许的自定义远程配置共用这条转换链路。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会安全透传流量、容量与到期字段。
 
 
 ## 只要规则，不要转换
