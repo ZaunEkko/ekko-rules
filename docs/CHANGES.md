@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-072 use **2026-09-23**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-073 use **2026-09-23**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1696,3 +1696,25 @@ removes the dynamic option and preserves existing `REJECT`, `DIRECT`, nested gro
 members and their defaults. A configuration refresh is required if the Home node names
 change. Full/lite, third-party and modern-node fixtures check the output structure,
 but the client interpretation and actual connectivity require another device test.
+
+Device acceptance (2026-09-23): the user confirmed `site-v0.4.31` works after
+the ordered Home-plus-Configuration import. Configuration mode connects, the
+Home nodes are selectable in native groups, `DIRECT` is available, and other
+groups can select the nested `♻️ 手动切换`. This is a device result for that
+workflow, not exhaustive protocol or third-party-preset certification.
+
+## ER-073 — Classify reviewed overseas AI generation platforms
+
+**Type:** 19 anchored service-rule additions; no new policy group or segment
+
+The user requested Suno and other overseas generation services in `🧲 海外 AI`.
+Official product roots for music/voice (Suno, Udio, AIVA, Stable Audio,
+SOUNDRAW, Beatoven, ElevenLabs), video/avatars (Runway's current and legacy
+roots, Pika, Luma, HeyGen, Synthesia), image/design (Midjourney, Ideogram,
+Leonardo, Recraft, Krea), and 3D (Meshy) join `google-ai`. Both full and lite
+already map this earlier segment to the same manually selectable overseas AI
+group, so Subconverter stays at 57 ordered segments including FINAL. No broad
+`.ai` matcher, shared CDN, generic audio/video root, or mainland generator is
+added. The first-match regressions check both products, each apex and a
+subdomain, plus unrelated domestic generation, Spotify, and YouTube. The
+source review entry records the first-party sites used for admission.

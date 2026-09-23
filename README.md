@@ -30,7 +30,7 @@
 **2.** 粘贴机场订阅地址（输入框默认打码）
 **3.** 点「一键导入 Clash / Mihomo」（选哪个客户端，按钮就变成哪个）
 
-完了。需要的话在「高级选项」里勾 UDP、XUDP 这类开关，链接会当场跟着变；也可以复制链接或扫码。Shadowrocket 例外：页面会明确给出 **① 节点订阅、② 分流配置** 两个按钮和两张二维码，必须按顺序都导入。第 1 步在首页建立可刷新的节点订阅、名称和流量/到期横幅；第 2 步在「配置」页导入规则、策略组与 `DIRECT` / `REJECT`。原生 `PROXY` 默认调用首页当前节点，配置文件还会请求在各策略组列出订阅节点供单独选择；逐节点选择仍待真机验收。
+完了。需要的话在「高级选项」里勾 UDP、XUDP 这类开关，链接会当场跟着变；也可以复制链接或扫码。Shadowrocket 例外：页面会明确给出 **① 节点订阅、② 分流配置** 两个按钮和两张二维码，必须按顺序都导入。第 1 步在首页建立可刷新的节点订阅、名称和流量/到期横幅；第 2 步在「配置」页导入规则、策略组与 `DIRECT` / `REJECT`。`site-v0.4.31` 已通过用户真机验收：配置模式可用，原生 `PROXY` 可调用首页当前节点，策略组也可选择首页节点、`DIRECT` 和嵌套的 `♻️ 手动切换`。
 
 **这个站不保存你的订阅。** 没有账号也没有档案列表，转换用的订阅正文只写进内存、转换完即删，日志里不记录订阅地址。代价是**链接里带着你的订阅凭据**——只导入自己的客户端，不要转发。
 
@@ -86,7 +86,7 @@ Windows 首次部署可以改用 `setup.cmd`，它顺带安装一个随登录运
 | 固定地址 | 链接自带全部参数 | `/sub/<随机 ID>` |
 | 需要装什么 | 什么都不用 | Docker + Compose v2 |
 
-两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 把“节点订阅”和“原生配置”作为两个独立对象，页面因此提供严格有序的两步导入。首页 `.yaml` 负责名称、节点刷新及流量/到期横幅；配置页 `.conf` 不再复制节点，而以原生 `PROXY` 保持配置模式联网，在每个策略组明确引用首页节点的名称，并保留规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。节点增删或改名后需刷新配置；实际逐节点选择仍待真机确认。两步缺一不可。内置完整版、精简版、ACL4SSR 等第三方预设及允许的自定义远程配置共用这条转换链路。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会安全透传流量、容量与到期字段。
+两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 把“节点订阅”和“原生配置”作为两个独立对象，页面因此提供严格有序的两步导入。首页 `.yaml` 负责名称、节点刷新及流量/到期横幅；配置页 `.conf` 不再复制节点，而以原生 `PROXY` 保持配置模式联网，在每个策略组明确引用首页节点的名称，并保留规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。`site-v0.4.31` 的两步组合已由用户真机确认可在配置模式联网、选择节点、`DIRECT` 和组间手动切换；节点增删或改名后仍需刷新配置。两步缺一不可。内置完整版、精简版、ACL4SSR 等第三方预设及允许的自定义远程配置共用这条转换链路，但本次真机验收不等于每种第三方预设或节点协议均已逐一验证。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会安全透传流量、容量与到期字段。
 
 
 ## 只要规则，不要转换
@@ -135,7 +135,7 @@ https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-pr
 Ekko Rules 主要面向需要单独选择节点或地区的场景：
 
 - **广告拦截**：`🛑 广告拦截` 使用固定版本、锚定域名规则并默认 `REJECT`；仍可手动改为节点或 `DIRECT`；
-- **AI 与设计工具分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq、Figma，以及 Kimi、Z.ai、Qwen、MiniMax 等国际站统一归入 `🧲 海外 AI`；DeepSeek、小红书，以及 Seko、可灵、Vidu、即梦、海螺、LiblibAI、RunningHub、吐司、MOKI、蝉镜等国产 AI 大陆站进入默认直连的 `🌏 国内网站`；
+- **AI 与设计工具分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq、Figma，以及 Kimi、Z.ai、Qwen、MiniMax 等国际站统一归入 `🧲 海外 AI`；官方海外生成平台也归入这一组，包括 Suno、Udio、AIVA、Stable Audio 等音乐/语音工具，Runway、Pika、Luma 等视频工具，Midjourney、Ideogram、Leonardo、Recraft 等图像设计工具与 Meshy 3D；只收录已核实的产品域名，不兜底共用 CDN 或所有 `.ai` 域名。DeepSeek、小红书，以及 Seko、可灵、Vidu、即梦、海螺、LiblibAI、RunningHub、吐司、MOKI、蝉镜等国产 AI 大陆站进入默认直连的 `🌏 国内网站`；
 - **主流流媒体**：YouTube、Netflix、Disney+、Apple TV+、`🎬 HBO GO/MAX`、Prime Video、DAZN、TikTok 等重点服务单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
 - **区域媒体**：美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；已核验的量子、非凡、暴风、索尼、百度、闪电、火狐、速博、红牛、最大、iKun 等第三方视频接口及其专用播放域名进入默认直连的 `🌏 国内流媒体`，避免播放流量落入代理兜底；
 - **游戏分流**：中国大陆游戏平台、登录、社区和语音进入默认直连的 `🌏 国内网站`，专用下载端点进入默认直连的 `🎮 游戏下载`；`🎮 游戏平台` 仅承载海外平台并默认使用 `♻️ 手动切换`；
