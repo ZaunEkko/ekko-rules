@@ -30,7 +30,7 @@ Nodes · DNS · policy groups · routing rules, all in a single file
 **2.** Paste your subscription URL (the field is masked by default)
 **3.** Press "one-tap import" — the button follows whichever client you picked
 
-Done. Flip UDP, XUDP and the rest under advanced options if you need them — the link rewrites itself as you go. Copying the link or scanning it with a phone works too. Shadowrocket is the exception: use the one-tap configuration import, or open Shadowrocket's Configuration page and scan from its top-right corner. Do **not** use the Home scanner.
+Done. Flip UDP, XUDP and the rest under advanced options if you need them — the link rewrites itself as you go. Copying the link or scanning it with a phone works too. Shadowrocket is the exception: the page presents two ordered actions and two QR codes, **1. node subscription** and **2. routing config**. Import both in that order. The first is added from Home and owns refreshes, the profile name, and traffic/expiry banner; the second is added from Configuration and owns rules, groups, the manual selector, and `DIRECT` / `REJECT`.
 
 **The site stores nothing.** No accounts and no profile list; the subscription body is held in memory for the conversion and deleted straight after, and no log records the address. The trade-off is that **the link carries your subscription credential** — import it into your own client, do not forward it.
 
@@ -94,7 +94,7 @@ On Windows, `setup.cmd` additionally installs a login-time helper that tracks th
 | Stable address | The link carries every option | `/sub/<random id>` |
 | What you install | Nothing | Docker + Compose v2 |
 
-Both shapes emit nine client formats: Clash / Mihomo, Shadowrocket, sing-box, Surge 4+, Loon, Quantumult X, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Shadowrocket's native `.conf` flow has been verified on a real device: the profile name, nodes, rules, manual selector, `DIRECT` / `REJECT`, nested groups, and every group's default choice arrive together. The one-tap button and QR code use the same native configuration URL, and the QR code must be scanned from the Configuration page. Built-in full and lite rules, ACL4SSR and other third-party presets, and allowed custom remote configs share this conversion path. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry fields are passed through safely.
+Both shapes emit nine client formats: Clash / Mihomo, Shadowrocket, sing-box, Surge 4+, Loon, Quantumult X, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Shadowrocket has been verified on a real device, but treats its node subscription and native configuration as two independent objects, so the page deliberately provides an ordered two-step import. The Home `.yaml` owns the correct name, node refreshes, and traffic/expiry banner; the Configuration `.conf` owns rules, the manual selector, `DIRECT` / `REJECT`, nested groups, and default choices. Both are required. Built-in full and lite rules, ACL4SSR and other third-party presets, and allowed custom remote configs share this conversion path. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry fields are passed through safely.
 
 
 ## Rules only, no conversion
@@ -117,7 +117,7 @@ Download it, replace `PUT_YOUR_SUBSCRIPTION_URL_HERE` with your own subscription
 
 The rules are public, so they also work in any Subconverter frontend that accepts a custom remote configuration: set the output to `Clash` and the remote configuration to one of these two.
 
-Full build, 43 policy groups:
+Full build, 44 policy groups:
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
@@ -144,6 +144,7 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Remote streaming and real-time communication**: split into two groups. `🖥️ 远程串流流量` defaults to `DIRECT` and carries the data plane — Tailscale's DERP relays and control plane, ZeroTier root servers, Parsec and RustDesk session endpoints, NetBird signalling and relay, Chrome Remote Desktop, plus mainland ToDesk, Sunlogin, RayLink and mainstream RTC/IM foundations — so remote desktop, voice and real-time traffic never traverses a proxy unnecessarily. `🖥️ 远程串流后台` defaults to `♻️ 手动切换` and holds only the vendors' admin consoles and websites (Tailscale, ZeroTier, NetBird, Parsec, RustDesk, AnyDesk, TeamViewer, Moonlight). They are separate because one vendor suffix covers two jobs at once: the console cannot be reached from the mainland on a direct path, while the relays beneath that same suffix carry the streaming payload — either policy applied alone is wrong for half the traffic;
 - **Mainland foundations**: CAPTCHA, push delivery, domestic code and model communities, collaborative documents, electronic certification, mainstream learning platforms, and clearly mainland smart-device or connected-car entry points reuse the default-direct `🌏 国内网站`; only official roots are included, without broadly directing globally shared device clouds;
 - **Developer services**: `🧑‍💻 开发服务` lists `♻️ 手动切换` first and now covers Linear, Notion, Slack, Atlassian, Postman, Sentry, Vercel, Supabase, mainstream CI/CD and observability platforms, developer databases, and online IDEs in addition to source hosting and language-package ecosystems; switch it temporarily to `DIRECT` when proxy traffic matters; generic CDNs, object storage, and user-hosted sites remain excluded;
+- **Adobe**: `🎨 Adobe` lists `♻️ 手动切换` first and covers official Creative Cloud, Acrobat, Behance, Adobe Stock, and Typekit services, allowing a compatible non-Hong-Kong exit to be pinned independently; the lite build folds it into `🚀 国外服务`;
 - **Cloud infrastructure**: `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - **Overseas shopping**: `🛒 海外购物` defaults to `♻️ 手动切换` and covers the regional Amazon storefronts, eBay and Etsy, Japanese shops such as DLsite, Rakuten, ZOZO, Suruga-ya, Mandarake and AmiAmi, forwarding services such as Buyee, ZenMarket and tenso, and regional retailers such as Gmarket, SSG and Takealot. What these sites show, what they will sell you and whether they challenge you at all depends on which exit reaches them, so a separate group lets you pick a node for shopping alone. Anything already classified elsewhere stays there: Alibaba's Lazada and Shopee mainland entries remain direct, Coupang remains under `🎬 韩国媒体`, and `aws.amazon.com` and the Prime Video image CDN keep their cloud and streaming policies;
 - **Finance and account registration**: `💳 金融服务` defaults to `♻️ 手动切换` and covers payments and remittance (Wise, PayPal, Payoneer, Revolut, Remitly, Western Union), virtual cards (WildCard, Dupay, Privacy.com), SMS receipt and virtual numbers (SMS-Activate, 5SIM, SMSPVA, OnlineSIM, TextNow), and overseas banks and brokers (HSBC, Citi, Chase, Bank of America, Wells Fargo, DBS, OCBC, UOB, Standard Chartered, Barclays, Schwab, Fidelity, Interactive Brokers, Futu, moomoo, Tiger). A financial account is checked against where it is used, and an exit that does not match its history triggers verification or a freeze; virtual cards and SMS receipt sit in the same group because the address that registers a card or a number is the address the account is thereafter expected to arrive from. Mainland banks are not here — they stay on the default-direct `🌏 国内网站`;
@@ -154,16 +155,16 @@ All groups remain manually switchable and automatic latency testing is disabled;
 
 ## Lite build: same routing, 10 policy groups
 
-Forty-three groups exist so that each kind of traffic can be pointed at its own node. If you do not need that, what you get instead is a screen of dropdowns to work through. The lite build folds them together:
+Forty-four groups exist so that each kind of traffic can be pointed at its own node. If you do not need that, what you get instead is a screen of dropdowns to work through. The lite build folds them together:
 
 | | Full | Lite |
 |---|---|---|
-| Policy groups | 43 | 10 |
-| Routing segments | 64 | 64, unchanged |
+| Policy groups | 44 | 10 |
+| Routing segments | 57 | 57, unchanged |
 
 The ten that remain are `♻️ 手动切换`, `🌏 国内网站`, `🎬 流媒体`, `🧲 海外 AI`, `🎮 游戏平台`, `🎮 游戏下载`, `🚀 国外服务`, `🛑 广告拦截`, `🔞 NSFW`, and `🐟 漏网之鱼`.
 
-**Behaviour does not change.** Folding removes no rules; it retargets 47 segments onto the merged groups. The ones that each had a group of their own and all defaulted to a proxy — OpenAI, Claude, the individual streaming services, social, developer services, overseas cloud, overseas shopping — go to `🚀 国外服务` or `🎬 流媒体`; the mainland groups that defaulted to direct go to `🌏 国内网站`. Every segment still does what it did, and match order is untouched. A test holds this: comparing the effective action of every segment across both products gives 17 `DIRECT`, 45 `PROXY`, and 2 `REJECT` either way.
+**Behaviour does not change.** Folding removes no rules; it retargets the full build's fine-grained policies onto merged groups. The ones that each had a group of their own and all defaulted to a proxy — OpenAI, Claude, Adobe, the individual streaming services, social, developer services, overseas cloud, overseas shopping — go to `🚀 国外服务` or `🎬 流媒体`; the mainland groups that defaulted to direct go to `🌏 国内网站`. Every rule still has the same effective action and match order; tests compare the two products segment by segment.
 
 **What it costs is granularity.** In the full build you can move Netflix to another node without touching YouTube; in the lite build they share `🎬 流媒体`, so they move together. If you need to pick routes per service, use the full build.
 
@@ -184,7 +185,7 @@ all concrete business rules
 → MATCH,🐟 漏网之鱼
 ```
 
-The second-to-last layer is nine broad mainland roots — the apexes of Baidu, Tencent, NetEase and Xiaomi, plus the `gtimg.com` and `127.net` CDN roots. They sit here rather than earlier because ordering is semantics: specific cloud, media and AI hosts live beneath those same roots, and matching the root first would take them. Like the rest of the mainland layer they come from this repository's own evidence (see [`docs/PROVENANCE.md`](docs/PROVENANCE.md)), use only anchored `DOMAIN` / `DOMAIN-SUFFIX` entries, and use no deprecated `GEOSITE`, `DOMAIN-KEYWORD`, regular expression, or single-label/public-suffix catchall. Matches go to `🌏 国内网站`, whose default action is `DIRECT`, without an extra DNS lookup. The much larger mainland domain layer of 4,234 rules sits earlier, among the specific service rules.
+The second-to-last layer is nine broad mainland roots — the apexes of Baidu, Tencent, NetEase and Xiaomi, plus the `gtimg.com` and `127.net` CDN roots. They sit here rather than earlier because ordering is semantics: specific cloud, media and AI hosts live beneath those same roots, and matching the root first would take them. Like the rest of the mainland layer they come from this repository's own evidence (see [`docs/PROVENANCE.md`](docs/PROVENANCE.md)), use only anchored `DOMAIN` / `DOMAIN-SUFFIX` entries, and use no deprecated `GEOSITE`, `DOMAIN-KEYWORD`, regular expression, or single-label/public-suffix catchall. Matches go to `🌏 国内网站`, whose default action is `DIRECT`, without an extra DNS lookup. The much larger mainland domain layer of 4,266 rules sits earlier, among the specific service rules.
 
 The terminal `GEOIP,CN,DIRECT,no-resolve` rule supplements this with mainland destination-IP classification. `no-resolve` prevents that matcher from initiating a DNS lookup for a domain; if the client already knows the destination IP, GEOIP can still evaluate it. A domain not covered by the classic layer, with no destination IP available at matching time, continues to `🐟 漏网之鱼`. Ekko Rules keeps `no-resolve` on every destination-IP rule and publishes no actively resolving variant.
 

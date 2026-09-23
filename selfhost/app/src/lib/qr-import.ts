@@ -30,7 +30,7 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
    * Each entry is a scheme its own vendor documents:
    *
    *   Clash / Mihomo  clash://install-config?url=            (client convention)
-   *   Shadowrocket    shadowrocket://config/add/<address>    (使用手册 · URL-Schemes)
+   *   Shadowrocket    shadowrocket://add/<address>           (使用手册 · URL-Schemes)
    *   sing-box        sing-box://import-remote-profile?url=…#name
    *                                                         (sing-box.sagernet.org/clients/general)
    *   Surge           surge:///install-config?url=           (manual.nssurge.com/tools/url-scheme)
@@ -48,15 +48,16 @@ const INSTALL_SCHEMES: Record<string, InstallScheme> = {
     label: "一键导入 Clash / Mihomo",
     qrHint: "手机相机、客户端自带的扫码入口，扫哪个都行。",
   },
-  // Shadowrocket keeps nodes and configuration apart: `shadowrocket://add/`
-  // adds a node subscription and carries no rules, while `config/add` installs
-  // a configuration file — which is the whole file this site generates. The
-  // documented form takes the address as the path, unencoded, so the query
-  // string stays where the client can still read it.
+  // Shadowrocket keeps nodes and configuration apart. The ordinary install
+  // action is the first half of its required two-step flow: `add` creates the
+  // refreshable node subscription that owns the traffic/expiry banner. The
+  // native policy file is installed separately through `config/add` below.
+  // Both documented forms take the address as the path, unencoded, so the
+  // query string stays where the client can still read it.
   shadowrocket: {
-    build: (url) => `shadowrocket://config/add/${url}`,
-    label: "一键导入 Shadowrocket 配置",
-    qrHint: "请在 Shadowrocket「配置」页右上角扫码，不要从首页扫码。",
+    build: (url) => `shadowrocket://add/${url}`,
+    label: "① 导入节点订阅",
+    qrHint: "先在 Shadowrocket 首页导入节点订阅，再导入配置页分流规则。",
   },
   singbox: {
     build: (url, name) =>
@@ -92,6 +93,11 @@ export function clientInstallLabel(target: string): string {
   return INSTALL_SCHEMES[target]?.label ?? "";
 }
 
+/** The second half of Shadowrocket's two-step import flow. */
+export function shadowrocketConfigImportValue(configUrl: string): string {
+  return `shadowrocket://config/add/${configUrl}`;
+}
+
 /**
  * What to do with the address instead of scanning it.
  *
@@ -102,7 +108,7 @@ export function clientInstallLabel(target: string): string {
  */
 export function qrPasteHint(target: string): string {
   if (target === "shadowrocket") {
-    return "也可以复制下方 .conf 地址，在 Shadowrocket「配置」页中导入。";
+    return "Shadowrocket 必须完成两步：先导入首页节点订阅，再导入配置页 .conf 分流规则。";
   }
   return "扫码、或把这条地址粘进客户端的「从 URL 导入」，结果是同一份配置。";
 }
@@ -128,12 +134,9 @@ export function qrImportValue(
 }
 
 /**
- * The actual payload rendered into the single QR code.
- *
- * Shadowrocket's Configuration-page scanner accepts the ordinary HTTPS .conf
- * address. Its Home scanner must not be offered by the UI because it stores
- * the address as a node subscription and does not preserve native policies.
- * The one-tap button remains a separate config/add action over the same URL.
+ * The actual payload rendered into a QR code. QR codes always carry the plain
+ * HTTPS address because the selected in-app scanner decides whether it is a
+ * node subscription or a configuration file.
  */
 export function qrCodeValue(
   target: string,
