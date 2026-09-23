@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 的原生 `.conf` 转换保留 `[Proxy]`、`[Proxy Group]`、`[Rule]`，但不再复制 AnyTLS、TUIC、VLESS Reality 等节点定义；节点只由首页订阅持有。每个策略组保留 Shadowrocket 内置 `PROXY` 作为稳定出口，按名称明确引用首页节点，不再写入使原生策略失效的 `include-all-proxies=1`；已有第三方筛选条件仍保留。`select` 组写入 `policy-select-name`，`♻️ 手动切换`不写 `hidden`，广告和 NSFW 仍以 `REJECT` 开始，国内规则组仍保留 `DIRECT` 默认。内置完整版、精简版、第三方预设和允许的自定义远程配置共用转换流程；组内实际节点可见性仍待真机验收。节点增删或改名后需刷新 `.conf`。
+Shadowrocket 的原生 `.conf` 转换保留 `[Proxy]`、`[Proxy Group]`、`[Rule]`，但不再复制 AnyTLS、TUIC、VLESS Reality 等节点定义；节点只由首页订阅持有。每个策略组保留 Shadowrocket 内置 `PROXY` 作为稳定出口，按名称明确引用首页节点，不再写入使原生策略失效的 `include-all-proxies=1`；已有第三方筛选条件仍保留。`select` 组写入 `policy-select-name`，`♻️ 手动切换`不写 `hidden`，广告和 NSFW 仍以 `REJECT` 开始，国内规则组仍保留 `DIRECT` 默认。`site-v0.4.31` 已由用户真机确认：两步导入后，配置模式联网、首页节点选择、`DIRECT` 和其他组引用 `♻️ 手动切换` 均可用。内置完整版、精简版、第三方预设和允许的自定义远程配置共用转换流程，但并非每种预设和协议均经真机逐项验证。节点增删或改名后需刷新 `.conf`。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 
@@ -218,7 +218,7 @@ Mihomo 输出始终使用客户端要求的新字段名，完整配置始终展�
 
 Mihomo 固定地址每次被客户端刷新时，都会在本机即时拉取真实订阅并把节点直接内联到完整配置中。生成结果不会包含真实机场订阅 URL，也不会再引用仅容器内部可达的 provider 地址；客户端拿到一个文件即可获得节点、DNS、策略组与规则。
 
-订阅响应会通过具名 `.yaml` / `.conf` 路径、`Profile-Title` 和 `Content-Disposition` 传递用户填写的名称。Shadowrocket 首页与配置页分别使用自己的稳定地址；真机已经确认 `PROXY` 桥接可让配置模式联网，本轮动态节点枚举仍待上线后实机验收。完全相同的配置再次复制、扫码或一键导入时只复用现有浏览器记录，不会重复新增。
+订阅响应会通过具名 `.yaml` / `.conf` 路径、`Profile-Title` 和 `Content-Disposition` 传递用户填写的名称。Shadowrocket 首页与配置页分别使用自己的稳定地址；`site-v0.4.31` 用户真机确认 `PROXY` 桥接可让配置模式联网，显式节点引用不会挤掉原生 `DIRECT` 或组间手动切换。完全相同的配置再次复制、扫码或一键导入时只复用现有浏览器记录，不会重复新增。
 
 固定地址会把上游 `Subscription-Userinfo` 中 `upload`、`download`、`total` 和 `expire` 数字字段安全透传给客户端。若上游没有响应头，但正文有格式完整的 `STATUS=↑/↓/TOT/Expires` 行，则会转换为同样的响应头；单凭“剩余流量”节点名不能反推套餐总量。Shadowrocket 第 1 步的首页节点订阅负责显示这些流量与到期信息，第 2 步的原生 `.conf` 负责完整规则和策略联动。刷新时沿用目标格式安全的上游 User-Agent。
 

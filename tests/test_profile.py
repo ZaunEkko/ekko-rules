@@ -1091,6 +1091,47 @@ class FirstMatchBaselineTests(unittest.TestCase):
             (result["slug"], result["target"], result["rule"]), expected
         )
 
+    def test_official_overseas_generators_share_existing_ai_policy(self) -> None:
+        services = {
+            "music-and-voice": (
+                "suno.com", "udio.com", "aiva.ai", "stableaudio.com",
+                "soundraw.io", "beatoven.ai", "elevenlabs.io",
+            ),
+            "video-and-avatars": (
+                "runway.com", "runwayml.com", "pika.art", "lumalabs.ai",
+                "heygen.com", "synthesia.io",
+            ),
+            "image-and-design": (
+                "midjourney.com", "ideogram.ai", "leonardo.ai",
+                "recraft.ai", "krea.ai",
+            ),
+            "three-dimensional": ("meshy.ai",),
+        }
+        for category, roots in services.items():
+            for root in roots:
+                expected_rule = f"DOMAIN-SUFFIX,{root}"
+                self.assertIn(expected_rule, self.sources.rules["google-ai"])
+                for product in PRODUCTS:
+                    for domain in (root, f"app.{root}"):
+                        with self.subTest(category=category, product=product, domain=domain):
+                            self.assertEqual(
+                                first_match(self.sources, product=product, domain=domain),
+                                {
+                                    "slug": "google-ai",
+                                    "target": "🧲 海外 AI",
+                                    "rule": expected_rule,
+                                },
+                            )
+
+        for domain, expected_slug in (
+            ("suno.com.example", "final"),
+            ("app.klingai.com", "china-web"),
+            ("www.spotify.com", "spotify"),
+            ("www.youtube.com", "youtube"),
+        ):
+            with self.subTest(unrelated_domain=domain):
+                self.assertEqual(first_match(self.sources, domain=domain)["slug"], expected_slug)
+
     def test_generic_domains_fall_back_to_final(self) -> None:
         cases = [
             (("final", "🐟 漏网之鱼", "MATCH"), "example.jp"),

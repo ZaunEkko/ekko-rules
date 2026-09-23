@@ -10,6 +10,38 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
+- id: overseas-ai-generators
+  status: accepted
+  scope: routing-policy
+  summary: Reviewed first-party roots for overseas music, voice, video, avatar, image, design, and 3D generation use the existing overseas AI group.
+  evidence:
+  - https://suno.com/
+  - https://www.udio.com/
+  - https://www.aiva.ai/
+  - https://stableaudio.com/
+  - https://soundraw.io/
+  - https://www.beatoven.ai/
+  - https://elevenlabs.io/music
+  - https://runway.com/
+  - https://runwayml.com/
+  - https://pika.art/
+  - https://lumalabs.ai/dream-machine
+  - https://www.heygen.com/
+  - https://www.synthesia.io/
+  - https://www.midjourney.com/
+  - https://ideogram.ai/
+  - https://leonardo.ai/
+  - https://www.recraft.ai/
+  - https://www.krea.ai/
+  - https://www.meshy.ai/
+  - sources/rules/google-ai.list
+  - tests/test_profile.py
+  first_observed: 2026-09-23
+  last_verified: '2026-09-23'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The user requested Suno and other categories of overseas AI generation in the existing overseas AI policy. Nineteen anchored official product roots join google-ai, which precedes general media, cloud and domestic fallbacks and targets the same manually selectable overseas AI group in core and lite. No new segment or policy group is needed. Exclude shared infrastructure, generic .ai matching, lookalikes and mainland-hosted generation platforms; first-match tests cover the new roots and unrelated media/domestic examples.
 - id: douyin-live-bytefcdnrd
   status: accepted
   scope: routing-policy
