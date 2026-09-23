@@ -98,6 +98,8 @@ function assertComplete(body, target, label) {
     if (
       !body.includes("policy-select-name=") ||
       !body.includes("PROXY uses its selected node") ||
+      !body.includes("include-all-proxies=1") ||
+      !body.includes("policy-regex-filter=") ||
       !/^.*=\s*[a-z][a-z-]*,.*(?:^|,)PROXY(?:,|$)/m.test(body) ||
       /^proxies:\s*$/m.test(body) ||
       /^DIRECT\s*=\s*direct\s*$/m.test(body)
@@ -126,6 +128,8 @@ function shadowrocketGroupLines(body) {
 function assertEkkoShadowrocketPolicies(body, configId) {
   const shared = [
     "♻️ 手动切换 = select,PROXY,DIRECT",
+    "include-all-proxies=1",
+    "policy-regex-filter=.*",
     "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
     "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
     "🌏 国内网站 = select,DIRECT,♻️ 手动切换",

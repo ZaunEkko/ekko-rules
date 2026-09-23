@@ -10,6 +10,20 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
+- id: douyin-live-bytefcdnrd
+  status: accepted
+  scope: routing-policy
+  summary: A user-observed domestic Douyin livestream domain belongs to mainland media routing.
+  evidence:
+  - sources/rules/china-media.list
+  - sources/manifest.yaml
+  - tests/test_profile.py
+  first_observed: 2026-09-23
+  last_verified: '2026-09-23'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The user identified bytefcdnrd.com as used for domestic Douyin livestreaming, not as an individual DIRECT preference. Only its anchored suffix joins china-media alongside Douyin playback domains; that policy defaults to DIRECT and the lite policy retains the same action. The observation does not establish domain ownership, server geography, or a wider ByteDance CDN family, so no broader rule is added.
 - id: adobe-and-lanzou-routing
   status: accepted
   scope: routing-policy

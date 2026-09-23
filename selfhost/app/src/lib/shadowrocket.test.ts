@@ -43,24 +43,24 @@ test("builds native Shadowrocket groups bridged to the Home-selected node", () =
 
   assert.match(
     output,
-    /^♻️ 手动切换 = select,PROXY,DIRECT,policy-select-name=PROXY$/m,
+    /^♻️ 手动切换 = select,PROXY,DIRECT,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=PROXY$/m,
   );
   assert.doesNotMatch(output, /^♻️ 手动切换 = .*\bhidden=/m);
   assert.match(
     output,
-    /^🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT,PROXY,policy-select-name=REJECT$/m,
+    /^🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT,PROXY,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=REJECT$/m,
   );
   assert.match(
     output,
-    /^🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT,PROXY,policy-select-name=REJECT$/m,
+    /^🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT,PROXY,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=REJECT$/m,
   );
   assert.match(
     output,
-    /^🧲 OpenAI = select,♻️ 手动切换,DIRECT,PROXY,policy-select-name=♻️ 手动切换$/m,
+    /^🧲 OpenAI = select,♻️ 手动切换,DIRECT,PROXY,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=♻️ 手动切换$/m,
   );
   assert.match(
     output,
-    /^🌏 国内网站 = select,DIRECT,♻️ 手动切换,PROXY,policy-select-name=DIRECT$/m,
+    /^🌏 国内网站 = select,DIRECT,♻️ 手动切换,PROXY,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=DIRECT$/m,
   );
   assert.match(output, /^DOMAIN-SUFFIX,example\.com,🧲 OpenAI$/m);
   assert.match(output, /\[Proxy Group\]\n\n♻️ 手动切换 = select,/);
@@ -91,7 +91,7 @@ test("restores a manual selector that Surge collapsed into a direct proxy", () =
   assert.doesNotMatch(output, /^♻️ 手动切换\s*=\s*direct$/m);
   assert.match(
     output,
-    /^\[Proxy Group\]\n\n♻️ 手动切换 = select,PROXY,DIRECT,policy-select-name=PROXY$/m,
+    /^\[Proxy Group\]\n\n♻️ 手动切换 = select,PROXY,DIRECT,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=PROXY$/m,
   );
   assert.match(
     output,
@@ -155,8 +155,35 @@ test("bridges non-select third-party groups without leaving node references", ()
 
   assert.match(
     output,
-    /^🧲 OpenAI = url-test,PROXY,url=http:\/\/www\.gstatic\.com\/generate_204,interval=300$/m,
+    /^🧲 OpenAI = url-test,PROXY,url=http:\/\/www\.gstatic\.com\/generate_204,interval=300,include-all-proxies=1,policy-regex-filter=\.\*$/m,
   );
   assert.doesNotMatch(output, /^🧲 OpenAI = .*香港 01/m);
   assert.doesNotMatch(output, /^🧲 OpenAI = .*Hysteria2 01/m);
+});
+
+test("overrides disabled dynamic membership so Home nodes remain selectable", () => {
+  const skeleton = SKELETON.replace(
+    "♻️ 手动切换 = select,DIRECT,香港 01",
+    "♻️ 手动切换 = select,DIRECT,香港 01,include-all-proxies=0",
+  );
+  const output = buildShadowrocketConfig(skeleton, NODES);
+
+  assert.match(
+    output,
+    /^♻️ 手动切换 = select,PROXY,DIRECT,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=PROXY$/m,
+  );
+  assert.doesNotMatch(output, /include-all-proxies=0/);
+});
+
+test("preserves a third-party subscription-node filter", () => {
+  const skeleton = SKELETON.replace(
+    "♻️ 手动切换 = select,DIRECT,香港 01",
+    "♻️ 手动切换 = select,DIRECT,香港 01,policy-regex-filter=^(香港|日本)",
+  );
+  const output = buildShadowrocketConfig(skeleton, NODES);
+
+  assert.match(
+    output,
+    /^♻️ 手动切换 = select,PROXY,DIRECT,policy-regex-filter=\^\(香港\|日本\),include-all-proxies=1,policy-select-name=PROXY$/m,
+  );
 });

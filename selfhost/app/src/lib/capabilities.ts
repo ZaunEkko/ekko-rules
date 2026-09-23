@@ -31,7 +31,8 @@ export const TARGET_DEFINITIONS = {
     shortLabel: "Shadowrocket",
     // The engine's Surge 4 renderer gives us Shadowrocket's native sectioned
     // configuration shape. The gateway removes the renderer's node copies and
-    // bridges policy groups to the Home-selected node through native PROXY.
+    // bridges policy groups through native PROXY while dynamically including
+    // every node from the Home subscription for per-group selection.
     engineTarget: "surge",
     engineParams: { ver: "4" },
     extension: "conf",
@@ -43,7 +44,7 @@ export const TARGET_DEFINITIONS = {
     // connection check has not yet been run for every modern protocol, so the
     // verified list remains conservative.
     protocolNote:
-      "两步导入：首页节点订阅保留名称与流量横幅，配置页通过原生 PROXY 调用首页当前节点，并保留 DIRECT、REJECT、手动切换和策略组",
+      "两步导入：首页节点订阅保留名称与流量横幅，配置页通过原生 PROXY 保持联网，并动态提供首页全部节点供各策略组选择，同时保留 DIRECT、REJECT 和手动切换",
     verifiedModernProtocols: [],
   },
   singbox: {

@@ -188,7 +188,7 @@ function restoreCollapsedManualSelector(lines: string[]): void {
   lines.splice(
     start + 1,
     0,
-    `${MANUAL_SELECTOR} = select,PROXY,DIRECT,policy-select-name=PROXY`,
+    `${MANUAL_SELECTOR} = select,PROXY,DIRECT,include-all-proxies=1,policy-select-name=PROXY`,
   );
 }
 
@@ -214,6 +214,7 @@ function bridgeHomeProxyIntoGroups(
       .filter((member) => !embeddedNodeNames.has(member));
     const options = (optionIndex < 0 ? [] : fields.slice(optionIndex))
       .filter((option) => !/^policy-select-name=/i.test(option))
+      .filter((option) => !/^include-all-proxies=/i.test(option))
       // On affected Shadowrocket builds, merely emitting `hidden` for the
       // manual selector removes it from the proxy-group list even as
       // `hidden=0`. Absence is the portable visible form.
@@ -227,6 +228,12 @@ function bridgeHomeProxyIntoGroups(
       members.push("PROXY");
     }
     if (!members.length) throw new Error(`Shadowrocket policy group ${groupName} has no members.`);
+    // Home owns the protocol-aware nodes. Select them by subscription name
+    // without duplicating their definitions into the config's [Proxy] section.
+    options.push("include-all-proxies=1");
+    if (!options.some((option) => /^policy-regex-filter=/i.test(option))) {
+      options.push("policy-regex-filter=.*");
+    }
     if (/^select$/i.test(groupType)) {
       options.push(`policy-select-name=${members[0]}`);
     }

@@ -292,6 +292,8 @@ async function assertShadowrocketNativeOutput() {
   const required = [
     "# Nodes stay in the Home subscription; PROXY uses its selected node.",
     "♻️ 手动切换 = select,PROXY,DIRECT",
+    "include-all-proxies=1",
+    "policy-regex-filter=.*",
     "policy-select-name=PROXY",
     "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
     "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
@@ -357,7 +359,7 @@ async function assertShadowrocketAllModernManualSelector() {
   if (/^♻️ 手动切换\s*=\s*direct$/m.test(output)) {
     throw new Error("Shadowrocket manual selector collapsed into a direct proxy.");
   }
-  if (!/^♻️ 手动切换 = select,PROXY,DIRECT,policy-select-name=PROXY$/m.test(output)) {
+  if (!/^♻️ 手动切换 = select,PROXY,DIRECT,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=PROXY$/m.test(output)) {
     throw new Error("Shadowrocket manual selector was not restored as a group.");
   }
 }
@@ -381,6 +383,13 @@ function assertNativeShadowrocketPolicyChoices(config, label) {
   ];
   if (required.some((pattern) => !pattern.test(config))) {
     throw new Error(`${label} lost DIRECT or REJECT policy choices.`);
+  }
+  const groupLines = config.match(/^.* = (?:select|url-test|fallback|load-balance),.*$/gm) ?? [];
+  if (
+    !groupLines.length ||
+    groupLines.some((line) => !line.includes("include-all-proxies=1") || !line.includes("policy-regex-filter="))
+  ) {
+    throw new Error(`${label} cannot dynamically select Home subscription nodes.`);
   }
 }
 
