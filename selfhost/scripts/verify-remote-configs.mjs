@@ -97,6 +97,8 @@ function assertComplete(body, target, label) {
   if (target === "shadowrocket") {
     if (
       !body.includes("policy-select-name=") ||
+      !body.includes("PROXY uses its selected node") ||
+      !/^.*=\s*[a-z][a-z-]*,.*(?:^|,)PROXY(?:,|$)/m.test(body) ||
       /^proxies:\s*$/m.test(body) ||
       /^DIRECT\s*=\s*direct\s*$/m.test(body)
     ) {
@@ -105,7 +107,7 @@ function assertComplete(body, target, label) {
       );
     }
   }
-  if (!body.includes("fixture")) {
+  if (target !== "shadowrocket" && !body.includes("fixture")) {
     throw new Error(`${label}: output contains none of the fixture nodes`);
   }
 }
@@ -123,7 +125,7 @@ function shadowrocketGroupLines(body) {
 
 function assertEkkoShadowrocketPolicies(body, configId) {
   const shared = [
-    "♻️ 手动切换 = select,DIRECT",
+    "♻️ 手动切换 = select,PROXY,DIRECT",
     "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
     "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
     "🌏 国内网站 = select,DIRECT,♻️ 手动切换",

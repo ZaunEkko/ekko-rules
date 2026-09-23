@@ -11,7 +11,7 @@ Nodes · DNS · policy groups · routing rules, all in a single file
 [![License](https://img.shields.io/github/license/ZaunEkko/ekko-rules?style=flat-square&color=1b1be0)](LICENSE)
 [![Validate](https://img.shields.io/github/actions/workflow/status/ZaunEkko/ekko-rules/validate.yml?branch=main&style=flat-square&label=validate)](https://github.com/ZaunEkko/ekko-rules/actions/workflows/validate.yml)
 [![Clients](https://img.shields.io/badge/clients-9-1b1be0?style=flat-square)](#three-steps)
-[![Shadowrocket](https://img.shields.io/badge/Shadowrocket-device_verified-1b1be0?style=flat-square)](#run-it-yourself)
+[![Shadowrocket](https://img.shields.io/badge/Shadowrocket-two_step_native_import-1b1be0?style=flat-square)](#run-it-yourself)
 [![Stored](https://img.shields.io/badge/stored-nothing-1b1be0?style=flat-square)](#three-steps)
 
 **[Convert online](https://sub.boxnook.cc)** · [Self-host](#run-it-yourself) · [Rules](#key-routing-groups) · [中文](README.md)
@@ -30,7 +30,7 @@ Nodes · DNS · policy groups · routing rules, all in a single file
 **2.** Paste your subscription URL (the field is masked by default)
 **3.** Press "one-tap import" — the button follows whichever client you picked
 
-Done. Flip UDP, XUDP and the rest under advanced options if you need them — the link rewrites itself as you go. Copying the link or scanning it with a phone works too. Shadowrocket is the exception: the page presents two ordered actions and two QR codes, **1. node subscription** and **2. routing config**. Import both in that order. The first is added from Home and owns refreshes, the profile name, and traffic/expiry banner; the second is added from Configuration and owns rules, groups, the manual selector, and `DIRECT` / `REJECT`.
+Done. Flip UDP, XUDP and the rest under advanced options if you need them — the link rewrites itself as you go. Copying the link or scanning it with a phone works too. Shadowrocket is the exception: the page presents two ordered actions and two QR codes, **1. node subscription** and **2. routing config**. Import both in that order. The first is added from Home, owns refreshes, the profile name, and the traffic/expiry banner, and is where you select a working node. The second is added from Configuration; its native `PROXY` policy uses the node currently selected on Home while its rules still provide `DIRECT` / `REJECT` decisions.
 
 **The site stores nothing.** No accounts and no profile list; the subscription body is held in memory for the conversion and deleted straight after, and no log records the address. The trade-off is that **the link carries your subscription credential** — import it into your own client, do not forward it.
 
@@ -94,7 +94,7 @@ On Windows, `setup.cmd` additionally installs a login-time helper that tracks th
 | Stable address | The link carries every option | `/sub/<random id>` |
 | What you install | Nothing | Docker + Compose v2 |
 
-Both shapes emit nine client formats: Clash / Mihomo, Shadowrocket, sing-box, Surge 4+, Loon, Quantumult X, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Shadowrocket has been verified on a real device, but treats its node subscription and native configuration as two independent objects, so the page deliberately provides an ordered two-step import. The Home `.yaml` owns the correct name, node refreshes, and traffic/expiry banner; the Configuration `.conf` owns rules, the manual selector, `DIRECT` / `REJECT`, nested groups, and default choices. Both are required. Built-in full and lite rules, ACL4SSR and other third-party presets, and allowed custom remote configs share this conversion path. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry fields are passed through safely.
+Both shapes emit nine client formats: Clash / Mihomo, Shadowrocket, sing-box, Surge 4+, Loon, Quantumult X, Surfboard, Quantumult, and Mellow. Mihomo and sing-box are verified to retain AnyTLS, VLESS Reality, Hysteria2, and TUIC; the others carry whatever their client actually supports. Shadowrocket treats its node subscription and native configuration as two independent objects, so the page deliberately provides an ordered two-step import. The Home `.yaml` owns the name, node refreshes, and traffic/expiry banner. The Configuration `.conf` no longer duplicates nodes: native `PROXY` follows the node selected on Home, while the config owns rules, the manual selector, `DIRECT` / `REJECT`, nested groups, and default choices. Both are required. Built-in full and lite rules, ACL4SSR and other third-party presets, and allowed custom remote configs share this conversion path. Advanced options cover emoji, UDP, TFO, TLS 1.3, XUDP, sing-box IPv6, node filtering/sorting/renaming, a custom User-Agent, and the update interval. When the upstream returns `Subscription-Userinfo`, traffic, quota, and expiry fields are passed through safely.
 
 
 ## Rules only, no conversion

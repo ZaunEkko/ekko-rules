@@ -290,13 +290,9 @@ async function assertShadowrocketNativeOutput() {
   }
 
   const required = [
-    "fixture-anytls-link = anytls",
-    "fixture-hysteria2-link = hysteria2",
-    "fixture-tuic-link = tuic",
-    "fixture-vless-reality = vless",
-    "pbk=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg",
-    "♻️ 手动切换 = select,DIRECT",
-    "policy-select-name=DIRECT",
+    "# Nodes stay in the Home subscription; PROXY uses its selected node.",
+    "♻️ 手动切换 = select,PROXY,DIRECT",
+    "policy-select-name=PROXY",
     "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
     "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
     "policy-select-name=REJECT",
@@ -311,6 +307,11 @@ async function assertShadowrocketNativeOutput() {
   }
   if (/^DIRECT\s*=\s*direct\s*$/m.test(output) || /^proxies:\s*$/m.test(output)) {
     throw new Error("Shadowrocket output still contains the lossy Clash shape.");
+  }
+  for (const { name } of modernLinks) {
+    if (new RegExp(`^${name} =`, "m").test(output)) {
+      throw new Error(`Shadowrocket config duplicated Home node ${name}.`);
+    }
   }
   if (/^♻️ 手动切换 = .*\bhidden=/m.test(output)) {
     throw new Error("Shadowrocket manual selector is still marked hidden.");
@@ -333,7 +334,7 @@ async function assertShadowrocketNativeOutput() {
     special_policies: true,
     nested_groups: true,
     policy_groups: groupCount,
-    modern_nodes: modernLinks.map((item) => item.protocol),
+    home_proxy_bridge: true,
   }));
 }
 
@@ -356,7 +357,7 @@ async function assertShadowrocketAllModernManualSelector() {
   if (/^♻️ 手动切换\s*=\s*direct$/m.test(output)) {
     throw new Error("Shadowrocket manual selector collapsed into a direct proxy.");
   }
-  if (!/^♻️ 手动切换 = select,DIRECT,.*policy-select-name=DIRECT$/m.test(output)) {
+  if (!/^♻️ 手动切换 = select,PROXY,DIRECT,policy-select-name=PROXY$/m.test(output)) {
     throw new Error("Shadowrocket manual selector was not restored as a group.");
   }
 }
@@ -374,7 +375,7 @@ async function checkShadowrocketYamlDocument(config, name, mode) {
 
 function assertNativeShadowrocketPolicyChoices(config, label) {
   const required = [
-    /^♻️ 手动切换 = select,DIRECT,/m,
+    /^♻️ 手动切换 = select,PROXY,DIRECT,/m,
     /^🛑 广告拦截 = select,REJECT,/m,
     /^🔞 NSFW = select,REJECT,/m,
   ];
@@ -399,7 +400,7 @@ async function assertNamedShadowrocketImportRoute() {
   if (
     !clientResponse.ok ||
     !config.includes("[Proxy Group]") ||
-    !config.includes("♻️ 手动切换 = select,DIRECT") ||
+    !config.includes("♻️ 手动切换 = select,PROXY,DIRECT") ||
     clientResponse.headers.get("subscription-userinfo") !==
       "upload=512; download=1024; total=10737418240; expire=1798761600" ||
     /^♻️ 手动切换 = .*\bhidden=/m.test(config)
