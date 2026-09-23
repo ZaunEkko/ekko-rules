@@ -14,6 +14,7 @@ import {
   qrImportValue,
   qrPasteHint,
   qrScanHint,
+  shadowrocketConfigImportValue,
   supportsClientInstallQr,
 } from "@/lib/qr-import";
 import {
@@ -22,6 +23,8 @@ import {
   packStatelessQuery,
   shadowrocketConfigImportPath,
   shadowrocketConfigProfilePath,
+  shadowrocketHomeImportPath,
+  shadowrocketHomeProfilePath,
   type StatelessConvertRequest,
 } from "@/lib/stateless-request";
 import {
@@ -99,6 +102,42 @@ type Profile = {
   downloadPath: string;
   enabledOptionCount: number;
 };
+
+type ShadowrocketImportAddresses = {
+  home: string;
+  config: string;
+};
+
+/** Resolve the two stable URLs without changing the profile the user saved. */
+function shadowrocketImportAddresses(
+  profile: Profile,
+  baseUrl: string,
+): ShadowrocketImportAddresses {
+  const separator = profile.subscriptionPath.indexOf("?");
+  if (separator >= 0) {
+    const query = profile.subscriptionPath.slice(separator + 1);
+    return {
+      home: absoluteLocalUrl(
+        shadowrocketHomeImportPath(profile.name, query),
+        baseUrl,
+      ),
+      config: absoluteLocalUrl(
+        shadowrocketConfigImportPath(profile.name, query),
+        baseUrl,
+      ),
+    };
+  }
+  return {
+    home: absoluteLocalUrl(
+      shadowrocketHomeProfilePath(profile.id, profile.name),
+      baseUrl,
+    ),
+    config: absoluteLocalUrl(
+      shadowrocketConfigProfilePath(profile.id, profile.name),
+      baseUrl,
+    ),
+  };
+}
 
 const FALLBACK_TARGETS: TargetCapability[] = [
   {
@@ -359,6 +398,7 @@ export function Workbench({
   const [contactHref, setContactHref] = useState("");
   const [qrProfile, setQrProfile] = useState<Profile | null>(null);
   const [qrCopied, setQrCopied] = useState(false);
+  const [shadowrocketQrStep, setShadowrocketQrStep] = useState<"home" | "config">("home");
   const [baseUrlOverride, setBaseUrlOverride] = useState("");
   const [baseUrlDraft, setBaseUrlDraft] = useState("");
   const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
@@ -452,10 +492,10 @@ export function Workbench({
    * The address handed to another program rather than to a person.
    *
    * It points at `/i`, which answers a client with the configuration and a
-   * browser with a page that opens the client — one address, so one QR code.
-   * Shadowrocket receives `/i/<name>.conf`, because its scanner uses the last
-   * path segment for both file recognition and display naming. Parameters
-   * still travel packed into one base64url value so nested URLs survive.
+   * browser with a page that opens the client. Most targets need one address;
+   * Shadowrocket is handled separately as an ordered `.yaml` subscription and
+   * `.conf` policy pair. Parameters still travel packed into one base64url
+   * value so nested URLs survive.
    *
    * The link on the page, the one a person reads and copies, is untouched.
    */
@@ -475,7 +515,7 @@ export function Workbench({
     );
   }
 
-  /** Keep the address installed by every entry point stable across repeats. */
+  /** Keep every installed address stable across repeats. */
   const qrAddressValue = qrProfile
     ? clientHandoffUrl(
         qrProfile.subscriptionPath,
@@ -483,35 +523,62 @@ export function Workbench({
         qrProfile.name,
       )
     : "";
-  // Shadowrocket must receive its native .conf from the Configuration page.
-  // Its Home scanner files the same URL as a node subscription, which loses
-  // the native DIRECT / REJECT policy behavior even when the file contains
-  // those words. Keep the legacy Home routes alive for old saved links, but
-  // never generate one from the current UI.
-  const configAddressValue = qrProfile?.target === "shadowrocket"
-    ? absoluteLocalUrl(
-        qrProfile.subscriptionPath.includes("?")
-          ? shadowrocketConfigImportPath(
-              qrProfile.name,
-              qrProfile.subscriptionPath.split("?").slice(1).join("?"),
-            )
-          : shadowrocketConfigProfilePath(qrProfile.id, qrProfile.name),
-        subscriptionBaseUrl,
-      )
+  const qrShadowrocketAddresses = qrProfile?.target === "shadowrocket"
+    ? shadowrocketImportAddresses(qrProfile, subscriptionBaseUrl)
+    : null;
+  const selectedScanAddress = qrShadowrocketAddresses
+    ? qrShadowrocketAddresses[shadowrocketQrStep]
     : qrAddressValue;
-  const selectedScanAddress = configAddressValue;
   const qrValue = qrProfile
     ? qrCodeValue(qrProfile.target, selectedScanAddress, qrProfile.name)
     : "";
   const currentProfileName =
     profileName.trim() || selectedTarget.short_label;
+  const currentShadowrocketAddresses = sourceReady && target === "shadowrocket"
+    ? shadowrocketImportAddresses(
+        {
+          id: "stateless",
+          name: currentProfileName,
+          target,
+          createdAt: "",
+          subscriptionPath: `/sub?${statelessQuery}`,
+          downloadPath: "",
+          enabledOptionCount,
+        },
+        subscriptionBaseUrl,
+      )
+    : null;
+  const currentInstallAddress = currentShadowrocketAddresses?.home ??
+    (sourceReady ? clientHandoffUrl(`/sub?${statelessQuery}`) : "");
   const currentInstallValue = sourceReady
     ? qrImportValue(
         target,
-        clientHandoffUrl(`/sub?${statelessQuery}`),
+        currentInstallAddress,
         "install",
         currentProfileName,
       )
+    : "";
+  const currentShadowrocketConfigInstallValue = currentShadowrocketAddresses
+    ? shadowrocketConfigImportValue(currentShadowrocketAddresses.config)
+    : "";
+  const selectedShadowrocketInstallValue = qrShadowrocketAddresses
+    ? shadowrocketQrStep === "home"
+      ? qrImportValue("shadowrocket", qrShadowrocketAddresses.home, "install")
+      : shadowrocketConfigImportValue(qrShadowrocketAddresses.config)
+    : "";
+  const createdShadowrocketAddresses = createdProfile?.target === "shadowrocket"
+    ? shadowrocketImportAddresses(createdProfile, subscriptionBaseUrl)
+    : null;
+  const createdShadowrocketHomeInstallValue = createdShadowrocketAddresses
+    ? qrImportValue(
+        "shadowrocket",
+        createdShadowrocketAddresses.home,
+        "install",
+        createdProfile?.name ?? "",
+      )
+    : "";
+  const createdShadowrocketConfigInstallValue = createdShadowrocketAddresses
+    ? shadowrocketConfigImportValue(createdShadowrocketAddresses.config)
     : "";
 
   // The link is the product, so it reads the way a config file does: one
@@ -915,7 +982,51 @@ export function Workbench({
 
   function openQr(profile: Profile) {
     setQrCopied(false);
+    setShadowrocketQrStep("home");
     setQrProfile(profile);
+  }
+
+  function renderCurrentInstallActions() {
+    if (!sourceReady || !supportsClientInstallQr(target)) return null;
+    if (target === "shadowrocket") {
+      return (
+        <>
+          <a
+            className="open-action is-primary"
+            href={currentInstallValue}
+            onClick={() => recordCurrentLink()}
+          >
+            ① 导入节点订阅
+          </a>
+          <a
+            className="open-action"
+            href={currentShadowrocketConfigInstallValue}
+            onClick={() => recordCurrentLink()}
+          >
+            ② 导入分流配置
+          </a>
+        </>
+      );
+    }
+    return (
+      <a
+        className="open-action is-primary"
+        href={currentInstallValue}
+        onClick={() => recordCurrentLink()}
+      >
+        {clientInstallLabel(target)}
+      </a>
+    );
+  }
+
+  function renderShadowrocketImportNotice() {
+    if (target !== "shadowrocket") return null;
+    return (
+      <p className="shadowrocket-import-notice" role="note">
+        <strong>Shadowrocket 必须导入两次，顺序不要反：</strong>
+        先用 ① 建立可刷新的节点订阅和流量横幅，再用 ② 加载分流规则、策略组与 DIRECT / REJECT。
+      </p>
+    );
   }
 
   async function copyText(value: string): Promise<void> {
@@ -1286,15 +1397,7 @@ export function Workbench({
               <div className="open-link-actions">
                 {/* Clients that register a scheme can take the subscription in
                     one tap; the rest fall back to copying. */}
-                {sourceReady && supportsClientInstallQr(target) ? (
-                  <a
-                    className="open-action is-primary"
-                    href={currentInstallValue}
-                    onClick={() => recordCurrentLink()}
-                  >
-                    {clientInstallLabel(target)}
-                  </a>
-                ) : null}
+                {renderCurrentInstallActions()}
                 <button
                   type="button"
                   className={`open-action ${
@@ -1315,6 +1418,7 @@ export function Workbench({
                 </button>
                 <StarInvite stars={health?.repo_stars} />
               </div>
+              {renderShadowrocketImportNotice()}
               {savedLinks.length ? (
                 <div className="saved-links">
                   <p className="saved-links-title">
@@ -1878,15 +1982,7 @@ export function Workbench({
                     : "填入订阅地址，链接就会当场拼出来。"}
                 </p>
                 <div className="open-tail-actions">
-                  {sourceReady && supportsClientInstallQr(target) ? (
-                    <a
-                      className="open-action is-primary"
-                      href={currentInstallValue}
-                      onClick={() => recordCurrentLink()}
-                    >
-                      {clientInstallLabel(target)}
-                    </a>
-                  ) : null}
+                  {renderCurrentInstallActions()}
                   <button
                     type="button"
                     className={`open-action ${
@@ -1907,6 +2003,7 @@ export function Workbench({
                   </button>
                   <StarInvite stars={health?.repo_stars} />
                 </div>
+                {renderShadowrocketImportNotice()}
                 {/* The generated file carries its own DNS section. Clients ship
                     a DNS override that silently replaces it, and a visitor who
                     turns it on loses the mainland/overseas split the rules
@@ -1955,7 +2052,23 @@ export function Workbench({
                 <button className="qr-button" type="button" onClick={() => openQr(createdProfile)}>
                   显示二维码
                 </button>
+                {createdShadowrocketAddresses ? (
+                  <div className="shadowrocket-created-actions">
+                    <a className="open-action is-primary" href={createdShadowrocketHomeInstallValue}>
+                      ① 导入节点订阅
+                    </a>
+                    <a className="open-action" href={createdShadowrocketConfigInstallValue}>
+                      ② 导入分流配置
+                    </a>
+                  </div>
+                ) : null}
                 <a className="download-link" href={createdProfile.downloadPath}>下载当前配置</a>
+                {createdShadowrocketAddresses ? (
+                  <p className="shadowrocket-import-notice" role="note">
+                    <strong>两个都要导入：</strong>
+                    第 1 步保留节点订阅、名称和流量横幅；第 2 步补上规则、策略组与 DIRECT / REJECT。
+                  </p>
+                ) : null}
                 {storesProfiles ? null : (
                   <p className="stateless-warning">
                     这个链接里包含你的真实订阅地址。它不会保存在服务器上，但也因此<strong>不要分享给别人</strong>。
@@ -2231,15 +2344,47 @@ export function Workbench({
                 <strong>{qrProfile.name}</strong>
                 <span>
                   {qrProfile.target === "shadowrocket"
-                    ? "原生配置导入：保留规则与 DIRECT / REJECT 策略。"
+                    ? "Shadowrocket 需要连续完成下面两步。"
                     : qrScanHint(qrProfile.target)}
                 </span>
               </div>
               {qrProfile.target === "shadowrocket" ? (
-                <div className="qr-instruction" role="alert">
-                  <strong>请从 Shadowrocket「配置」页扫码</strong>
-                  <span>不要从首页扫码，否则会被当成节点订阅，无法正确载入 DIRECT / REJECT。</span>
-                </div>
+                <>
+                  <div className="shadowrocket-qr-steps" aria-label="Shadowrocket 导入步骤">
+                    <button
+                      type="button"
+                      aria-pressed={shadowrocketQrStep === "home"}
+                      onClick={() => {
+                        setQrCopied(false);
+                        setShadowrocketQrStep("home");
+                      }}
+                    >
+                      ① 首页节点订阅
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={shadowrocketQrStep === "config"}
+                      onClick={() => {
+                        setQrCopied(false);
+                        setShadowrocketQrStep("config");
+                      }}
+                    >
+                      ② 配置页分流规则
+                    </button>
+                  </div>
+                  <div className="qr-instruction" role="alert">
+                    <strong>
+                      {shadowrocketQrStep === "home"
+                        ? "第 1 步：从 Shadowrocket 首页扫码"
+                        : "第 2 步：从 Shadowrocket「配置」页扫码"}
+                    </strong>
+                    <span>
+                      {shadowrocketQrStep === "home"
+                        ? "这一步建立可刷新的节点订阅，保留正确名称、流量和到期横幅。完成后切到第 2 步。"
+                        : "这一步导入规则、策略组、手动切换以及 DIRECT / REJECT；不能替代第 1 步。"}
+                    </span>
+                  </div>
+                </>
               ) : null}
               <QRCodeSVG
                 value={qrValue}
@@ -2251,7 +2396,9 @@ export function Workbench({
               <div className="qr-value">
                 <span>
                   {qrProfile.target === "shadowrocket"
-                    ? "Shadowrocket 原生配置地址（.conf）"
+                    ? shadowrocketQrStep === "home"
+                      ? "Shadowrocket 节点订阅地址（.yaml）"
+                      : "Shadowrocket 原生分流配置地址（.conf）"
                     : "远程订阅地址"}
                 </span>
                 <code>{selectedScanAddress}</code>
@@ -2267,12 +2414,22 @@ export function Workbench({
                   {qrCopied ? "已复制" : "复制地址"}
                 </button>
               </div>
+              {qrProfile.target === "shadowrocket" ? (
+                <a className="open-action is-primary qr-install" href={selectedShadowrocketInstallValue}>
+                  {shadowrocketQrStep === "home"
+                    ? "① 一键导入节点订阅"
+                    : "② 一键导入分流配置"}
+                </a>
+              ) : null}
               <small className="qr-note">
                 {qrProfile.target === "shadowrocket"
-                  ? "操作路径：打开 Shadowrocket → 配置 → 右上角扫码。也可以复制上面的 .conf 地址，在配置页中导入。"
+                  ? shadowrocketQrStep === "home"
+                    ? "当前只完成节点、名称和流量横幅；还必须切到第 2 步导入分流配置。"
+                    : "完成后，Shadowrocket 同时拥有可刷新的节点订阅与原生分流配置。以后节点从第 1 步的订阅更新，规则由第 2 步的配置更新。"
                   : qrPasteHint(qrProfile.target)}
-                客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。它和页面
-                上那条链接一样，带着你的订阅凭据。
+                {qrProfile.target === "shadowrocket"
+                  ? " 两条地址都带着你的订阅凭据，不要分享。"
+                  : " 客户端会把它存成可刷新的远程地址，之后规则更新不用重新扫。它和页面上那条链接一样，带着你的订阅凭据。"}
               </small>
               <button type="button" className="secondary-button" onClick={() => setQrProfile(null)}>关闭</button>
             </div>

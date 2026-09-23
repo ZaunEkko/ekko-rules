@@ -1,4 +1,8 @@
-import { clientInstallLabel, qrImportValue } from "./qr-import";
+import {
+  clientInstallLabel,
+  qrImportValue,
+  shadowrocketConfigImportValue,
+} from "./qr-import";
 import { targetDefinition, type TargetFormat } from "./capabilities";
 
 /**
@@ -56,6 +60,8 @@ function escapeScriptString(value: string): string {
 
 export function renderImportPage(input: {
   target: TargetFormat;
+  /** Which of Shadowrocket's two independent objects this address installs. */
+  shadowrocketMode?: "home" | "config";
   /** The address the client should end up holding. */
   subscriptionUrl: string;
   /** What the person called this link, if anything. */
@@ -64,15 +70,19 @@ export function renderImportPage(input: {
   downloadUrl: string;
 }): string {
   const definition = targetDefinition(input.target);
-  const scheme = qrImportValue(
-    input.target,
-    input.subscriptionUrl,
-    "install",
-    input.name,
-  );
+  const scheme = input.target === "shadowrocket" && input.shadowrocketMode === "config"
+    ? shadowrocketConfigImportValue(input.subscriptionUrl)
+    : qrImportValue(
+        input.target,
+        input.subscriptionUrl,
+        "install",
+        input.name,
+      );
   const hasScheme = scheme !== input.subscriptionUrl;
   const title = input.name.trim() || `${definition.label} 配置`;
-  const buttonLabel = clientInstallLabel(input.target) || "打开客户端";
+  const buttonLabel = input.target === "shadowrocket" && input.shadowrocketMode === "config"
+    ? "② 导入分流配置"
+    : clientInstallLabel(input.target) || "打开客户端";
 
   return `<!doctype html>
 <html lang="zh-CN">
@@ -106,7 +116,11 @@ export function renderImportPage(input: {
   <h1>${escapeHtml(title)}</h1>
   <p>${
     hasScheme
-      ? `这是一份 ${escapeHtml(definition.label)} 配置。下面的按钮会把它交给客户端。`
+      ? input.target === "shadowrocket"
+        ? input.shadowrocketMode === "config"
+          ? "这是第 2 步：导入分流规则、策略组与 DIRECT / REJECT。请先完成首页节点订阅。"
+          : "这是第 1 步：导入可刷新的节点订阅，保留名称、流量与到期横幅。完成后还要导入分流配置。"
+        : `这是一份 ${escapeHtml(definition.label)} 配置。下面的按钮会把它交给客户端。`
       : `这是一份 ${escapeHtml(definition.label)} 配置。复制下面的地址，粘贴到客户端里。`
   }</p>
   ${hasScheme ? `<a class="go" href="${escapeHtml(scheme)}">${escapeHtml(buttonLabel)}</a>` : ""}

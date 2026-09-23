@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-068 use **2026-09-23**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1564,3 +1564,60 @@ stable boundary visible to Mihomo: it covers the rotating video-edge label while
 still excluding the wider `smtcdns.com` smart-CDN root. Rule count is unchanged.
 Regression tests route both observed hashes and an arbitrary future child through
 `china-media`, forbid the retired exact hash, and keep the broad root absent.
+
+## ER-067 — Adobe gets an independent exit and LanZou downloads stay direct
+
+**Type:** routing correction; one full-build group, 35 Adobe rules, 32 mainland direct roots
+
+LanZou download traffic was reaching `🐟 漏网之鱼` even though the observed download
+was a mainland service that should not leave through the proxy. Thirty-two anchored
+LanZou and Woozooo service roots now enter `china-web`, whose default action is
+`DIRECT`. Candidate roots that were unclear, unrelated, or too broad were excluded;
+the change does not add keyword, regex, or public-suffix catchalls.
+
+Adobe traffic also reached the fallback, which made its exit depend on whichever
+node happened to be selected for unrelated requests. The full build now has a
+dedicated `🎨 Adobe` selector with `♻️ 手动切换`, `DIRECT`, and all subscription
+nodes, so a user can pin a non-Hong-Kong exit without changing the rest of the
+profile. The lite build sends the same 35 anchored Adobe rules to `🚀 国外服务`.
+`adobedtm.com` remains in the earlier Disney+ segment because it is mixed-use and
+already has an established owner in the ordered product.
+
+Rather than pay for Adobe with one more one-off merge and remain at the ceiling, this
+change consolidates every currently adjacent chain whose full and lite targets are
+already identical: Google/Microsoft/platform AI under `google-ai`, WhatsApp/Telegram
+under `whatsapp`, ViuTV/KKTV/Bahamut under `viutv`, and Spotify/Qobuz/Apple Music
+under `spotify`. Concatenation preserves exact matcher order and effective action.
+Every retired Raw list and provider name is emitted as a generated-only slice with
+its pre-merge bytes protected by frozen SHA-256 hashes.
+
+The result is 56 canonical rule files and 57 ordered segments including FINAL,
+leaving seven free positions below Subconverter's 64-segment external-config ceiling.
+The corpus still contains 10,155 file rules and 10,156 effective rules including FINAL,
+with 44 full-build policy groups and 10 lite groups. Frozen first-match coverage is
+re-measured after physical consolidation; global effective coverage remains the same.
+
+## ER-068 — Shadowrocket exposes its real two-object import model
+
+**Type:** site UX and import correction; two ordered addresses replace one overloaded entry
+
+Real-device regression showed that Shadowrocket does not merge a Home node
+subscription and a Configuration-page native profile into one object, even when the
+server puts nodes, metadata, groups, and rules into the same response. The Home entry
+is the only one that owns refreshable nodes, the chosen name, and the traffic/expiry
+banner. The Configuration entry is the only one that preserves native policy-group
+semantics, including the manual selector and selectable `DIRECT` / `REJECT`.
+
+The site now represents that boundary directly instead of asking either scanner to
+pretend it is the other. Shadowrocket gets two ordered one-tap buttons and two ordered
+QR codes: first a named `.yaml` through `shadowrocket://add/`, then a named `.conf`
+through `shadowrocket://config/add/`. The modal defaults to step one, labels the exact
+scanner location for each code, and keeps a prominent warning visible beside both
+action rows. Browser handoff pages preserve the same distinction rather than silently
+rewriting a Home address into a Configuration address.
+
+Both addresses carry the same conversion choices and remain stable across repeated
+imports. The first route forwards subscription usage metadata; the second route keeps
+the verified native rules, full/lite and third-party group topology, and special-policy
+defaults. Documentation and capability copy now describe the two-step requirement so
+“Shadowrocket supported” means the tested combined result, not one half of it.

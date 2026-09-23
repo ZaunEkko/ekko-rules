@@ -30,7 +30,11 @@ test("Shadowrocket is served a native sectioned config", () => {
   assert.equal(targetDefinition("shadowrocket").engineTarget, "surge");
   assert.deepEqual(targetDefinition("shadowrocket").engineParams, { ver: "4" });
   assert.equal(targetDefinition("shadowrocket").extension, "conf");
-  assert.match(targetDefinition("shadowrocket").protocolNote, /真机验证/);
+  assert.match(targetDefinition("shadowrocket").protocolNote, /真机已验证/);
+  assert.match(targetDefinition("shadowrocket").protocolNote, /两步导入/);
+  assert.match(targetDefinition("shadowrocket").protocolNote, /流量横幅/);
+  assert.match(targetDefinition("shadowrocket").protocolNote, /DIRECT/);
+  assert.match(targetDefinition("shadowrocket").protocolNote, /REJECT/);
   assert.equal(usesMihomoOutput("shadowrocket"), false);
   assert.equal(usesMihomoOutput("clash"), true);
   assert.equal(usesMihomoOutput("singbox"), false);

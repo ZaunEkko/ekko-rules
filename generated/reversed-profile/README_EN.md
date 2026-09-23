@@ -2,7 +2,7 @@
 
 [中文](README.md)
 
-A standard routing-rules product for Subconverter and Mihomo, published as two builds of the same rules: 43 policy groups in the full build, 10 in the lite one. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
+A standard routing-rules product for Subconverter and Mihomo, published as two builds of the same rules: 44 policy groups in the full build, 10 in the lite one. This directory is generated deterministically from canonical repository sources and contains no proxy nodes, passwords, UUIDs, keys, or real subscription URLs.
 
 ## Entry points
 
@@ -10,7 +10,7 @@ A standard routing-rules product for Subconverter and Mihomo, published as two b
 - `config/ekko-rules-lite.ini`: The same, lite build.
 - `Mihomo/reversed-template.yaml`: Mihomo template (full build); replace the subscription URL placeholder before use.
 - `Mihomo/reversed-template-lite.yaml`: The same, lite build.
-- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
+- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; retired names of consolidated segments preserve their original pre-merge contents only as Raw-URL compatibility copies and do not enter active templates or rule counts.
 - `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
 ## Online subscription conversion
@@ -37,13 +37,14 @@ Ruleset URL prefix: `https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/
 - `🖥️ 远程串流流量` defaults to `DIRECT` and carries the data plane — Tailscale DERP relays and control plane, ZeroTier root servers, Parsec and RustDesk session endpoints, NetBird signalling and relay, Moonlight, Sunshine, TeamViewer, AnyDesk, Chrome Remote Desktop, Steam Link, and Microsoft RDP — so high-volume remote access does not traverse a proxy unnecessarily;
 - `🖥️ 远程串流后台` defaults to `♻️ 手动切换` and holds only the vendors' admin consoles and websites. They are separate because one vendor suffix covers two jobs: the console cannot be reached on a direct path from the mainland, while the relays beneath it carry the streaming payload;
 - `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers mainstream developer sites, APIs, registries, and downloads; it can be switched temporarily to `DIRECT`;
+- `🎨 Adobe` lists `♻️ 手动切换` first so Creative Cloud, Acrobat, Behance, and related services can be pinned to a compatible exit; the lite build folds it into `🚀 国外服务`;
 - `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - `🛒 海外购物` defaults to `♻️ 手动切换` and covers the regional Amazon storefronts, eBay, Etsy, Japanese shops, cross-border forwarding services, and regional retailers — what these sites show and whether they challenge you depends on which exit reaches them, so a separate group lets you pick a node for shopping alone;
 - `💳 金融服务` defaults to `♻️ 手动切换` and covers payments and remittance, virtual cards, SMS receipt and virtual numbers, and overseas banks and brokers — a financial account is checked against where it is used, so it needs an exit it can keep; mainland banks stay on the default-direct `🌏 国内网站`;
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
-All 43 policy groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects an app feature, temporarily switch the advertising group to `DIRECT` or another policy.
+All 44 policy groups remain manually switchable and automatic latency testing is disabled; `🛑 广告拦截` and `🔞 NSFW` default to `REJECT`. If blocking affects an app feature, temporarily switch the advertising group to `DIRECT` or another policy.
 
 ## Mainland domains, IPs, and DNS
 
@@ -64,4 +65,4 @@ The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 
-Both builds share 63 rulesets and 64 segments and differ only in the number of proxy groups: 43 in the full build, 10 in the lite one. The lite build removes no rules; it retargets segments onto the merged groups, so every segment ends in the same action as it does in the full build. What it costs is the ability to pick a node per service. No automatic-latency, Full, local, or Extended variant is published.
+Both builds share 56 rulesets and 57 segments and differ only in the number of proxy groups: 44 in the full build, 10 in the lite one. The lite build removes no rules; it retargets segments onto the merged groups, so every segment ends in the same action as it does in the full build. What it costs is the ability to pick a node per service. No automatic-latency, Full, local, or Extended variant is published.

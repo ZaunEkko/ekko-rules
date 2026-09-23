@@ -36,14 +36,14 @@ export const TARGET_DEFINITIONS = {
     engineParams: { ver: "4" },
     extension: "conf",
     contentType: "text/plain; charset=utf-8",
-    clientFamily: "Shadowrocket 原生配置",
+    clientFamily: "Shadowrocket 两步原生导入",
     clientExamples: ["Shadowrocket"],
     tier: "mainstream",
     // Structural retention is covered by the conversion suite. A live device
     // connection check has not yet been run for every modern protocol, so the
     // verified list remains conservative.
     protocolNote:
-      "原生配置导入已真机验证：保留 DIRECT、REJECT、手动切换、策略组嵌套与节点；现代协议连接能力以客户端为准",
+      "真机已验证两步导入：首页节点订阅保留名称与流量横幅，配置页保留 DIRECT、REJECT、手动切换和策略组；现代协议连接能力以客户端为准",
     verifiedModernProtocols: [],
   },
   singbox: {

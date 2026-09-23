@@ -30,7 +30,7 @@
 **2.** 粘贴机场订阅地址（输入框默认打码）
 **3.** 点「一键导入 Clash / Mihomo」（选哪个客户端，按钮就变成哪个）
 
-完了。需要的话在「高级选项」里勾 UDP、XUDP 这类开关，链接会当场跟着变；也可以复制链接或扫码。Shadowrocket 例外：请使用「一键导入 Shadowrocket 配置」，或打开 Shadowrocket 的「配置」页从右上角扫码，**不要从首页扫码**。
+完了。需要的话在「高级选项」里勾 UDP、XUDP 这类开关，链接会当场跟着变；也可以复制链接或扫码。Shadowrocket 例外：页面会明确给出 **① 节点订阅、② 分流配置** 两个按钮和两张二维码，必须按顺序都导入。第 1 步在首页建立可刷新的节点订阅、名称和流量/到期横幅；第 2 步在「配置」页导入规则、策略组、手动切换与 `DIRECT` / `REJECT`。
 
 **这个站不保存你的订阅。** 没有账号也没有档案列表，转换用的订阅正文只写进内存、转换完即删，日志里不记录订阅地址。代价是**链接里带着你的订阅凭据**——只导入自己的客户端，不要转发。
 
@@ -86,7 +86,7 @@ Windows 首次部署可以改用 `setup.cmd`，它顺带安装一个随登录运
 | 固定地址 | 链接自带全部参数 | `/sub/<随机 ID>` |
 | 需要装什么 | 什么都不用 | Docker + Compose v2 |
 
-两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 的原生 `.conf` 已完成真机验收：名称、节点、规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和每组默认选择会一起导入；一键导入与二维码使用同一份 `.conf`，二维码只从「配置」页扫码。内置完整版、精简版、ACL4SSR 等第三方预设及允许的自定义远程配置共用这条转换链路。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会安全透传流量、容量与到期字段。
+两种形态都输出 9 种客户端格式：Clash / Mihomo、Shadowrocket、sing-box、Surge 4+、Loon、Quantumult X、Surfboard、Quantumult、Mellow。Mihomo 与 sing-box 已验证保留 AnyTLS、VLESS Reality、Hysteria2 与 TUIC；其余格式按各自客户端实际支持的协议与字段输出。Shadowrocket 已完成真机验收，但客户端把“节点订阅”和“原生配置”作为两个独立对象：页面因此提供严格有序的两步导入。首页 `.yaml` 负责正确名称、节点刷新及流量/到期横幅；配置页 `.conf` 负责规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。两步缺一不可。内置完整版、精简版、ACL4SSR 等第三方预设及允许的自定义远程配置共用这条转换链路。高级选项涵盖 Emoji、UDP、TFO、TLS 1.3、XUDP、sing-box IPv6、节点筛选/排序/重命名、自定义 User-Agent 与自动更新间隔；上游返回 `Subscription-Userinfo` 时会安全透传流量、容量与到期字段。
 
 
 ## 只要规则，不要转换
@@ -109,7 +109,7 @@ https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-pr
 
 规则本身是公开的，也可以在任何支持自定义远程配置的 Subconverter 前端里使用：「生成类型」选 `Clash`，「远程配置」填下面两条之一。
 
-完整版，43 个策略组：
+完整版，44 个策略组：
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
@@ -143,6 +143,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **远程串流与实时通信**：拆成两组。`🖥️ 远程串流流量` 默认 `DIRECT`，承载真正的数据面——Tailscale 的 DERP 中继与控制面、ZeroTier 根服务器、Parsec 与 RustDesk 的会话端点、NetBird 信令与中继、Chrome 远程桌面，以及 ToDesk、向日葵、RayLink 和主流 RTC/IM 基础服务，避免远程桌面、语音或实时数据绕行代理；`🖥️ 远程串流后台` 默认 `♻️ 手动切换`，只收各家的管理后台与官网(Tailscale、ZeroTier、NetBird、Parsec、RustDesk、AnyDesk、TeamViewer、Moonlight)。分开的原因是一个厂商后缀同时盖着两件事：控制台在大陆直连打不开，而同后缀下的中继却承载着串流负载——任何一个策略单独套上去都是错的；
 - **国内基础服务**：验证码、推送、国内代码与模型社区、协作文档、电子认证、主流教学平台以及明确的国区智能设备和车联网入口复用默认直连的 `🌏 国内网站`；只保留官方根域，国际共用设备云不做宽泛直连；
 - **开发服务**：`🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，除代码托管与语言包生态外，还覆盖 Linear、Notion、Slack、Atlassian、Postman、Sentry、Vercel、Supabase、主流 CI/CD、可观测平台、开发数据库和在线 IDE 的官网、控制台、API 与必要资源链路；用户在意代理流量时可临时切到 `DIRECT`；通用 CDN、对象存储及用户托管站点仍不纳入；
+- **Adobe**：`🎨 Adobe` 第一项为 `♻️ 手动切换`，覆盖 Creative Cloud、Acrobat、Behance、Adobe Stock、Typekit 等官方服务，可单独固定到兼容的非香港节点；精简版归入 `🚀 国外服务`；
 - **云基础设施**：`☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud，以及国内厂商的海外区域端点；广告和具体业务规则仍优先；
 - **海外购物**：`🛒 海外购物` 默认 `♻️ 手动切换`，覆盖各区域亚马逊、eBay、Etsy 等欧美零售，DLsite、乐天、ZOZO、骏河屋、Mandarake、AmiAmi 等日本店铺，Buyee、ZenMarket、tenso 等转运代购，以及 Gmarket、SSG、Takealot 等地区电商。这类站点的店面内容、可购范围与人机验证都取决于出口 IP，独立成组便于单独挑节点；已在别处归类的不重复收录——阿里系的 Lazada 与 Shopee 大陆入口保持直连，Coupang 仍在 `🎬 韩国媒体`，`aws.amazon.com` 与 Prime Video 图床各自留在云与流媒体分组；
 - **金融与账号注册**：`💳 金融服务` 默认 `♻️ 手动切换`，覆盖 Wise、PayPal、Payoneer、Revolut、Remitly、西联汇等支付汇款，WildCard、Dupay、Privacy.com 等虚拟卡，SMS-Activate、5SIM、SMSPVA、OnlineSIM、TextNow 等接码与虚拟号码，以及汇丰、花旗、大通、星展、渣打、盈富、盛陆、富途、moomoo、老虎等海外银行与券商。金融账号是按“在哪里用”被核对的，和历史不符的出口会触发验证甚至冻结；虚拟卡与接码在同一组，是因为注册时的地址就是账号日后被期待的地址。国内银行不在此组，仍由默认直连的 `🌏 国内网站` 承载；
@@ -153,16 +154,16 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 
 ## 精简版：同样的分流，10 个策略组
 
-43 个策略组是为了能分别挑节点。用不到这种粒度的人，面对的就是一屏需要逐个确认的下拉框。精简版把这些合并掉：
+44 个策略组是为了能分别挑节点。用不到这种粒度的人，面对的就是一屏需要逐个确认的下拉框。精简版把这些合并掉：
 
 | | 完整版 | 精简版 |
 |---|---|---|
-| 策略组 | 43 | 10 |
-| 分流规则 | 64 段 | 同样 64 段 |
+| 策略组 | 44 | 10 |
+| 分流规则 | 57 段 | 同样 57 段 |
 
 保留下来的 10 个是 `♻️ 手动切换`、`🌏 国内网站`、`🎬 流媒体`、`🧲 海外 AI`、`🎮 游戏平台`、`🎮 游戏下载`、`🚀 国外服务`、`🛑 广告拦截`、`🔞 NSFW` 和 `🐟 漏网之鱼`。
 
-**行为没有变。** 精简不是删规则，是把 47 个分段改指到合并后的策略组：原先各自成组、默认都走代理的那些——OpenAI、Claude、各家流媒体、社交、开发服务、海外云、海外购物等——统一进 `🚀 国外服务` 或 `🎬 流媒体`；原先默认直连的国内分组统一进 `🌏 国内网站`。每一段规则该直连的仍然直连、该代理的仍然代理，命中顺序一条没动。这一点由测试守着：两套产品逐段比对最终动作，17 条 `DIRECT`、45 条 `PROXY`、2 条 `REJECT`，完全一致。
+**行为没有变。** 精简不是删规则，而是把完整版的细分策略改指到合并后的策略组：原先各自成组、默认都走代理的那些——OpenAI、Claude、Adobe、各家流媒体、社交、开发服务、海外云、海外购物等——统一进 `🚀 国外服务` 或 `🎬 流媒体`；原先默认直连的国内分组统一进 `🌏 国内网站`。每一条规则该直连的仍然直连、该代理的仍然代理，命中顺序一条没动；测试会逐段比对两套产品的最终动作。
 
 **代价是细粒度。** 完整版里可以只给 Netflix 换一个节点而不动 YouTube；精简版里它们同属 `🎬 流媒体`，换就是一起换。需要按服务分别挑线路，就用完整版。
 
@@ -183,7 +184,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 → MATCH,🐟 漏网之鱼
 ```
 
-倒数第二层是九条大陆宽域根域——百度、腾讯、网易、小米各自的主域,以及 `gtimg.com`、`127.net` 两条 CDN 根。它们放在这里而不是更早,是因为顺序即语义:这些根域下面还住着云、流媒体和 AI 的具体主机,提前匹配会把那些抢走。它们与大陆域名层的其余部分一样出自本仓库自有证据(见 [`docs/PROVENANCE.md`](docs/PROVENANCE.md)),只使用锚定的 `DOMAIN` / `DOMAIN-SUFFIX`,不使用已弃用的 `GEOSITE`,也不使用 `DOMAIN-KEYWORD`、正则或单标签/公共后缀兜底,在不触发额外 DNS 查询的情况下把命中的域名交给 `🌏 国内网站`(默认 `DIRECT`)。覆盖面更大的那 4,234 条大陆域名规则位于更前面的具体业务规则之中。
+倒数第二层是九条大陆宽域根域——百度、腾讯、网易、小米各自的主域,以及 `gtimg.com`、`127.net` 两条 CDN 根。它们放在这里而不是更早,是因为顺序即语义:这些根域下面还住着云、流媒体和 AI 的具体主机,提前匹配会把那些抢走。它们与大陆域名层的其余部分一样出自本仓库自有证据(见 [`docs/PROVENANCE.md`](docs/PROVENANCE.md)),只使用锚定的 `DOMAIN` / `DOMAIN-SUFFIX`,不使用已弃用的 `GEOSITE`,也不使用 `DOMAIN-KEYWORD`、正则或单标签/公共后缀兜底,在不触发额外 DNS 查询的情况下把命中的域名交给 `🌏 国内网站`(默认 `DIRECT`)。覆盖面更大的那 4,266 条大陆域名规则位于更前面的具体业务规则之中。
 
 末尾的 `GEOIP,CN,DIRECT,no-resolve` 继续补充中国大陆目标 IP：`no-resolve` 阻止该匹配器为了判断域名而主动发起 DNS 查询；若客户端此前已经得到目标 IP，GEOIP 仍可使用该 IP 完成匹配。若域名未被经典域名层覆盖、当时也没有可用目标 IP，则流量继续进入 `🐟 漏网之鱼`。Ekko Rules 保留所有目标 IP 规则的 `no-resolve`，不发布会主动解析的变体。
 
