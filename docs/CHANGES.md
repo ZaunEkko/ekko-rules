@@ -1,6 +1,6 @@
 # Rule Changes
 
-ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-071 use **2026-09-23**.
+ER-001 through ER-010 use the audit date **2026-07-30**; ER-011 and ER-012 use **2026-07-31**; ER-013 uses **2026-08-01**; ER-014 and ER-015 use **2026-08-02**; ER-016 through ER-021 use **2026-08-03**; ER-022 and ER-023 use **2026-08-04**; ER-026 and ER-027 use **2026-08-10**; ER-028 and ER-029 use **2026-08-12**; ER-030 uses **2026-09-12**; ER-031 uses **2026-09-17**; ER-032 through ER-059 use **2026-09-19**; ER-060 through ER-072 use **2026-09-23**.
 Canonical rule edits are made only under `sources/rules/`; generated products are rebuilt and
 independently validated after each batch.
 
@@ -1683,3 +1683,16 @@ role, not a personal exception requesting all traffic direct. This group's
 default is `DIRECT`, and the lite product preserves that effective action.
 Only this root and its subdomains are matched; ownership, server geography,
 and any wider ByteDance or CDN family are not inferred from the observation.
+
+## ER-072 — Restore native Shadowrocket policy choices alongside Home nodes
+
+**Type:** site runtime correction; follows the `site-v0.4.30` device regression
+
+The device test found that `include-all-proxies=1` made concrete nodes visible but
+removed selectable `DIRECT` and other groups' reference to `♻️ 手动切换`. The native
+`PROXY` bridge from ER-069 is retained. The converter now writes node names directly
+into each group while leaving all protocol definitions in the Home subscription; it
+removes the dynamic option and preserves existing `REJECT`, `DIRECT`, nested group
+members and their defaults. A configuration refresh is required if the Home node names
+change. Full/lite, third-party and modern-node fixtures check the output structure,
+but the client interpretation and actual connectivity require another device test.

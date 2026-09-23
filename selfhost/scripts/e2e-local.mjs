@@ -292,8 +292,6 @@ async function assertShadowrocketNativeOutput() {
   const required = [
     "# Nodes stay in the Home subscription; PROXY uses its selected node.",
     "♻️ 手动切换 = select,PROXY,DIRECT",
-    "include-all-proxies=1",
-    "policy-regex-filter=.*",
     "policy-select-name=PROXY",
     "🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT",
     "🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT",
@@ -314,6 +312,12 @@ async function assertShadowrocketNativeOutput() {
     if (new RegExp(`^${name} =`, "m").test(output)) {
       throw new Error(`Shadowrocket config duplicated Home node ${name}.`);
     }
+    if (!output.split("\n").some((line) => line.startsWith("♻️ 手动切换 = select,") && line.includes(`,${name},`))) {
+      throw new Error(`Shadowrocket manual group cannot select Home node ${name}.`);
+    }
+  }
+  if (output.includes("include-all-proxies=")) {
+    throw new Error("Shadowrocket config still uses the policy-breaking dynamic option.");
   }
   if (/^♻️ 手动切换 = .*\bhidden=/m.test(output)) {
     throw new Error("Shadowrocket manual selector is still marked hidden.");
@@ -359,7 +363,7 @@ async function assertShadowrocketAllModernManualSelector() {
   if (/^♻️ 手动切换\s*=\s*direct$/m.test(output)) {
     throw new Error("Shadowrocket manual selector collapsed into a direct proxy.");
   }
-  if (!/^♻️ 手动切换 = select,PROXY,DIRECT,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=PROXY$/m.test(output)) {
+  if (!/^♻️ 手动切换 = select,PROXY,DIRECT,.*?,policy-select-name=PROXY$/m.test(output)) {
     throw new Error("Shadowrocket manual selector was not restored as a group.");
   }
 }
@@ -387,9 +391,10 @@ function assertNativeShadowrocketPolicyChoices(config, label) {
   const groupLines = config.match(/^.* = (?:select|url-test|fallback|load-balance),.*$/gm) ?? [];
   if (
     !groupLines.length ||
-    groupLines.some((line) => !line.includes("include-all-proxies=1") || !line.includes("policy-regex-filter="))
+    groupLines.some((line) => line.includes("include-all-proxies=") ||
+      !line.includes(",PROXY,") || !line.includes(",fixture-anytls-link,"))
   ) {
-    throw new Error(`${label} cannot dynamically select Home subscription nodes.`);
+    throw new Error(`${label} cannot select Home nodes while preserving native policies.`);
   }
 }
 

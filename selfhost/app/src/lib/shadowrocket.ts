@@ -188,15 +188,24 @@ function restoreCollapsedManualSelector(lines: string[]): void {
   lines.splice(
     start + 1,
     0,
-    `${MANUAL_SELECTOR} = select,PROXY,DIRECT,include-all-proxies=1,policy-select-name=PROXY`,
+    `${MANUAL_SELECTOR} = select,PROXY,DIRECT,policy-select-name=PROXY`,
   );
 }
 
 function bridgeHomeProxyIntoGroups(
   lines: string[],
   embeddedNodeNames: ReadonlySet<string>,
+  homeNodeNames: readonly string[],
 ): void {
   const [start, end] = sectionRange(lines, "[Proxy Group]");
+  const groupNames = new Set(
+    lines.slice(start + 1, end).flatMap((line) => nativeAssignmentName(line) ?? []),
+  );
+  const usableHomeNames = homeNodeNames.filter(
+    (name) => !/[,=#\r\n]/.test(name) &&
+      !["DIRECT", "REJECT", "PROXY"].includes(name) &&
+      !groupNames.has(name),
+  );
   for (let index = start + 1; index < end; index += 1) {
     const groupName = nativeAssignmentName(lines[index]);
     if (!groupName) continue;
@@ -211,7 +220,11 @@ function bridgeHomeProxyIntoGroups(
     }
     const optionIndex = fields.findIndex((field) => NATIVE_OPTION_PREFIX.test(field));
     let members = (optionIndex < 0 ? fields : fields.slice(0, optionIndex))
-      .filter((member) => !embeddedNodeNames.has(member));
+      .filter((member) =>
+        !embeddedNodeNames.has(member) ||
+        ["DIRECT", "REJECT", "PROXY"].includes(member) ||
+        groupNames.has(member)
+      );
     const options = (optionIndex < 0 ? [] : fields.slice(optionIndex))
       .filter((option) => !/^policy-select-name=/i.test(option))
       .filter((option) => !/^include-all-proxies=/i.test(option))
@@ -227,13 +240,14 @@ function bridgeHomeProxyIntoGroups(
     } else if (!members.includes("PROXY")) {
       members.push("PROXY");
     }
-    if (!members.length) throw new Error(`Shadowrocket policy group ${groupName} has no members.`);
-    // Home owns the protocol-aware nodes. Select them by subscription name
-    // without duplicating their definitions into the config's [Proxy] section.
-    options.push("include-all-proxies=1");
-    if (!options.some((option) => /^policy-regex-filter=/i.test(option))) {
-      options.push("policy-regex-filter=.*");
+    // Explicitly reference the Home subscription by node name. The nodes are
+    // defined only in Home, so the config does not create a second copy with
+    // potentially incomplete protocol fields. Dynamic Surge group options
+    // were parsed inconsistently by Shadowrocket and hid native policies.
+    for (const name of usableHomeNames) {
+      if (!members.includes(name)) members.push(name);
     }
+    if (!members.length) throw new Error(`Shadowrocket policy group ${groupName} has no members.`);
     if (/^select$/i.test(groupType)) {
       options.push(`policy-select-name=${members[0]}`);
     }
@@ -286,7 +300,7 @@ export function buildShadowrocketConfig(
   const embeddedNodeNames = clearEmbeddedProxyDefinitions(lines);
   for (const node of nodes) embeddedNodeNames.add(nodeName(node));
   if (manualSelectorWasCollapsed) restoreCollapsedManualSelector(lines);
-  bridgeHomeProxyIntoGroups(lines, embeddedNodeNames);
+  bridgeHomeProxyIntoGroups(lines, embeddedNodeNames, nodes.map(nodeName));
   // Keep the native section boundary explicit. On the affected device the
   // only missing policy was the first entry immediately after this heading.
   ensureBlankLineAfterSection(lines, "[Proxy]");

@@ -43,30 +43,31 @@ test("builds native Shadowrocket groups bridged to the Home-selected node", () =
 
   assert.match(
     output,
-    /^♻️ 手动切换 = select,PROXY,DIRECT,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=PROXY$/m,
+    /^♻️ 手动切换 = select,PROXY,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=PROXY$/m,
   );
   assert.doesNotMatch(output, /^♻️ 手动切换 = .*\bhidden=/m);
+  assert.doesNotMatch(output, /include-all-proxies=1|policy-regex-filter=\.\*/);
   assert.match(
     output,
-    /^🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT,PROXY,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=REJECT$/m,
+    /^🛑 广告拦截 = select,REJECT,♻️ 手动切换,DIRECT,PROXY,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=REJECT$/m,
   );
   assert.match(
     output,
-    /^🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT,PROXY,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=REJECT$/m,
+    /^🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT,PROXY,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=REJECT$/m,
   );
   assert.match(
     output,
-    /^🧲 OpenAI = select,♻️ 手动切换,DIRECT,PROXY,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=♻️ 手动切换$/m,
+    /^🧲 OpenAI = select,♻️ 手动切换,DIRECT,PROXY,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=♻️ 手动切换$/m,
   );
   assert.match(
     output,
-    /^🌏 国内网站 = select,DIRECT,♻️ 手动切换,PROXY,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=DIRECT$/m,
+    /^🌏 国内网站 = select,DIRECT,♻️ 手动切换,PROXY,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=DIRECT$/m,
   );
   assert.match(output, /^DOMAIN-SUFFIX,example\.com,🧲 OpenAI$/m);
   assert.match(output, /\[Proxy Group\]\n\n♻️ 手动切换 = select,/);
 });
 
-test("keeps every protocol in Home instead of duplicating nodes into config", () => {
+test("references Home nodes in groups without duplicating their definitions", () => {
   const output = buildShadowrocketConfig(SKELETON, NODES);
 
   for (const name of [
@@ -77,7 +78,7 @@ test("keeps every protocol in Home instead of duplicating nodes into config", ()
     "Hysteria2 01",
   ]) {
     assert.doesNotMatch(output, new RegExp(`^${name} =`, "m"));
-    assert.doesNotMatch(output, new RegExp(`^.*= select,.*${name}.*$`, "m"));
+    assert.match(output, new RegExp(`^♻️ 手动切换 = select,.*${name}.*$`, "m"));
   }
   assert.match(output, /^♻️ 手动切换 = select,PROXY,DIRECT,/m);
 });
@@ -91,7 +92,7 @@ test("restores a manual selector that Surge collapsed into a direct proxy", () =
   assert.doesNotMatch(output, /^♻️ 手动切换\s*=\s*direct$/m);
   assert.match(
     output,
-    /^\[Proxy Group\]\n\n♻️ 手动切换 = select,PROXY,DIRECT,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=PROXY$/m,
+    /^\[Proxy Group\]\n\n♻️ 手动切换 = select,PROXY,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=PROXY$/m,
   );
   assert.match(
     output,
@@ -107,7 +108,7 @@ test("leaves future protocols in Home without interpreting their fields", () => 
   assert.doesNotMatch(output, /^# WARNING:/m);
   assert.doesNotMatch(output, /^香港 01 =/m);
   assert.doesNotMatch(output, /^Future 01 =/m);
-  assert.match(output, /^♻️ 手动切换 = select,PROXY,DIRECT,/m);
+  assert.match(output, /^♻️ 手动切换 = select,PROXY,DIRECT,Future 01,policy-select-name=PROXY$/m);
 });
 
 test("rejects delimiters that would corrupt native policy membership", () => {
@@ -127,7 +128,7 @@ test("removes a hash-bearing node name from native group membership", () => {
 
   assert.doesNotMatch(output, /^HK#01 =/m);
   assert.doesNotMatch(output, /^.*= select,.*HK#01.*$/m);
-  assert.match(output, /^♻️ 手动切换 = select,PROXY,DIRECT,/m);
+  assert.match(output, /^♻️ 手动切换 = select,PROXY,DIRECT,AnyTLS 01,/m);
 });
 
 test("does not parse incomplete protocol details when Home owns the node", () => {
@@ -142,7 +143,7 @@ test("does not parse incomplete protocol details when Home owns the node", () =>
 
   assert.doesNotMatch(output, /^# WARNING:/m);
   assert.doesNotMatch(output, /^TUIC v4 =/m);
-  assert.doesNotMatch(output, /^.*= select,.*TUIC v4.*$/m);
+  assert.match(output, /^♻️ 手动切换 = select,PROXY,DIRECT,TUIC v4,policy-select-name=PROXY$/m);
   assert.match(output, /^🔞 NSFW = select,REJECT,♻️ 手动切换,DIRECT,/m);
 });
 
@@ -155,13 +156,12 @@ test("bridges non-select third-party groups without leaving node references", ()
 
   assert.match(
     output,
-    /^🧲 OpenAI = url-test,PROXY,url=http:\/\/www\.gstatic\.com\/generate_204,interval=300,include-all-proxies=1,policy-regex-filter=\.\*$/m,
+    /^🧲 OpenAI = url-test,PROXY,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,url=http:\/\/www\.gstatic\.com\/generate_204,interval=300$/m,
   );
-  assert.doesNotMatch(output, /^🧲 OpenAI = .*香港 01/m);
-  assert.doesNotMatch(output, /^🧲 OpenAI = .*Hysteria2 01/m);
+  assert.doesNotMatch(output, /^🧲 OpenAI = .*include-all-proxies=/m);
 });
 
-test("overrides disabled dynamic membership so Home nodes remain selectable", () => {
+test("removes unsupported dynamic membership so native policies remain selectable", () => {
   const skeleton = SKELETON.replace(
     "♻️ 手动切换 = select,DIRECT,香港 01",
     "♻️ 手动切换 = select,DIRECT,香港 01,include-all-proxies=0",
@@ -170,7 +170,7 @@ test("overrides disabled dynamic membership so Home nodes remain selectable", ()
 
   assert.match(
     output,
-    /^♻️ 手动切换 = select,PROXY,DIRECT,include-all-proxies=1,policy-regex-filter=\.\*,policy-select-name=PROXY$/m,
+    /^♻️ 手动切换 = select,PROXY,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-select-name=PROXY$/m,
   );
   assert.doesNotMatch(output, /include-all-proxies=0/);
 });
@@ -184,6 +184,17 @@ test("preserves a third-party subscription-node filter", () => {
 
   assert.match(
     output,
-    /^♻️ 手动切换 = select,PROXY,DIRECT,policy-regex-filter=\^\(香港\|日本\),include-all-proxies=1,policy-select-name=PROXY$/m,
+    /^♻️ 手动切换 = select,PROXY,DIRECT,香港 01,AnyTLS 01,TUIC 01,Reality gRPC 01,Hysteria2 01,policy-regex-filter=\^\(香港\|日本\),policy-select-name=PROXY$/m,
   );
+});
+
+test("avoids node names colliding with native policies and groups", () => {
+  const collisions = `proxies:
+  - {name: DIRECT, type: ss}
+  - {name: PROXY, type: ss}
+  - {name: ♻️ 手动切换, type: ss}
+  - {name: 香港 01, type: ss}
+`;
+  const output = buildShadowrocketConfig(SKELETON, collisions);
+  assert.match(output, /^♻️ 手动切换 = select,PROXY,DIRECT,香港 01,policy-select-name=PROXY$/m);
 });

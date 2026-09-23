@@ -122,7 +122,7 @@ Web UI 提供：
 - 自定义前缀：在家里、公司等网络切换后直接输入新的电脑 IP；
 - 曾用地址：在当前浏览器保留最近 8 个前缀，一键切换所有档案的显示、复制与二维码。
 
-**Shadowrocket 使用两步原生导入。** 客户端把首页节点订阅和原生配置保存为两个独立对象，无法由一条地址同时获得两者全部能力。页面因此同时生成具名 `.yaml` 与 `.conf`：先在首页导入节点订阅，获得名称、节点刷新、流量/到期横幅和唯一一份节点定义；再在「配置」页导入原生 `.conf`，由内置 `PROXY` 默认调用首页当前节点，同时动态引入首页全部节点供每个策略组单独选择，并获得规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。页面的一键导入和二维码都按 ①/② 标明顺序，两步缺一不可。实机回归与最终取舍见 [Shadowrocket 导入记录](docs/shadowrocket-import.md)。
+**Shadowrocket 使用两步原生导入。** 客户端把首页节点订阅和原生配置保存为两个独立对象，无法由一条地址同时获得两者全部能力。页面因此同时生成具名 `.yaml` 与 `.conf`：先在首页导入节点订阅，获得名称、节点刷新、流量/到期横幅和唯一一份节点定义；再在「配置」页导入原生 `.conf`，由内置 `PROXY` 默认调用首页当前节点，并在策略组里按名称引用首页节点，保留规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。节点增删或改名后还需刷新配置。页面的一键导入和二维码都按 ①/② 标明顺序，两步缺一不可。实机回归与最终取舍见 [Shadowrocket 导入记录](docs/shadowrocket-import.md)。
 
 二维码放 `/i` 地址，由它按来客作答：
 
@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 的原生 `.conf` 转换保留 `[Proxy]`、`[Proxy Group]`、`[Rule]`，但不再复制 AnyTLS、TUIC、VLESS Reality 等节点定义；节点只由首页订阅持有。每个策略组保留 Shadowrocket 内置 `PROXY` 作为稳定出口，并写入 `include-all-proxies=1` 与 `policy-regex-filter=.*` 请求列出订阅节点；已有第三方筛选条件则保留。`select` 组写入 `policy-select-name`，`♻️ 手动切换`不写 `hidden`，广告和 NSFW 仍以 `REJECT` 开始，国内规则组仍保留 `DIRECT` 默认。内置完整版、精简版、第三方预设和允许的自定义远程配置共用转换流程；组内实际节点可见性仍待真机验收。
+Shadowrocket 的原生 `.conf` 转换保留 `[Proxy]`、`[Proxy Group]`、`[Rule]`，但不再复制 AnyTLS、TUIC、VLESS Reality 等节点定义；节点只由首页订阅持有。每个策略组保留 Shadowrocket 内置 `PROXY` 作为稳定出口，按名称明确引用首页节点，不再写入使原生策略失效的 `include-all-proxies=1`；已有第三方筛选条件仍保留。`select` 组写入 `policy-select-name`，`♻️ 手动切换`不写 `hidden`，广告和 NSFW 仍以 `REJECT` 开始，国内规则组仍保留 `DIRECT` 默认。内置完整版、精简版、第三方预设和允许的自定义远程配置共用转换流程；组内实际节点可见性仍待真机验收。节点增删或改名后需刷新 `.conf`。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 
@@ -441,7 +441,7 @@ node scripts/verify-remote-configs.mjs
 
 它会遍历 `/api/capabilities` 返回的全部远程配置，断言 Ekko Rules 永远排在首位且为内置项，对每一套跑一次完整 Mihomo 转换；内置完整版与精简版会验证 Shadowrocket 的固定策略默认值，第三方预设会覆盖包括 Shadowrocket 在内的 9 种客户端格式，允许自定义地址时还会验证自定义配置的 Mihomo 与 Shadowrocket 输出。最后确认云元数据、回环、私网、明文 HTTP 和不存在的预设都被拒绝。预设列表变动或准备上线开放部署前跑一次。
 
-端到端脚本会验证 9 种完整输出、Mihomo 与 sing-box 的 AnyTLS 等现代协议、Shadowrocket 首页/配置页两条独立地址及其对应 scheme、无重复节点的原生 `PROXY` 桥接、每组动态引入首页节点及策略组语义、Emoji/UDP/筛选/重命名等高级选项、真实源地址不出现在 Mihomo 完整配置中、Mihomo 配置语法，以及固定 URL 在普通 Compose 重启后的可用性。可通过 `MIHOMO_BIN` 指定本机 Mihomo 可执行文件。
+端到端脚本会验证 9 种完整输出、Mihomo 与 sing-box 的 AnyTLS 等现代协议、Shadowrocket 首页/配置页两条独立地址及其对应 scheme、无重复节点的原生 `PROXY` 桥接、每组明确引用首页节点及策略组语义、Emoji/UDP/筛选/重命名等高级选项、真实源地址不出现在 Mihomo 完整配置中、Mihomo 配置语法，以及固定 URL 在普通 Compose 重启后的可用性。可通过 `MIHOMO_BIN` 指定本机 Mihomo 可执行文件。
 
 ## 第三方组件
 
