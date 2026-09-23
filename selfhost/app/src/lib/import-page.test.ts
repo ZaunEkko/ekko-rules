@@ -24,8 +24,20 @@ test("hands the address to the client the code was made for", () => {
     subscriptionUrl: address,
     name: "",
     downloadUrl: "/sub?p=dXJs",
+    shadowrocketMode: "home",
   });
-  assert.match(shadowrocket, /shadowrocket:\/\/config\/add\//);
+  assert.match(shadowrocket, /shadowrocket:\/\/add\//);
+  assert.match(shadowrocket, /第 1 步/);
+
+  const shadowrocketConfig = renderImportPage({
+    target: "shadowrocket",
+    subscriptionUrl: address,
+    name: "",
+    downloadUrl: "/sub?p=dXJs",
+    shadowrocketMode: "config",
+  });
+  assert.match(shadowrocketConfig, /shadowrocket:\/\/config\/add\//);
+  assert.match(shadowrocketConfig, /第 2 步/);
 });
 
 test("offers no button for a client whose vendor documents no scheme", () => {

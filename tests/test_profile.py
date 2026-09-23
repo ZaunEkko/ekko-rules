@@ -31,6 +31,7 @@ AD_SERVING_PROBE = EVIDENCE / "ad-serving-probe-2026-09-19.json"
 CN_APNIC_VERDICTS = EVIDENCE / "cn-apnic-verdicts-2026-09-19.json"
 CN_OBSERVATION = EVIDENCE / "cn-observation-2026-09-19.json"
 CN_LEGACY_DIRECT = EVIDENCE / "cn-legacy-direct-2026-09-19.json"
+LANZOU_RUNTIME_OBSERVATION = EVIDENCE / "lanzou-runtime-observation-2026-09-23.json"
 ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
@@ -150,14 +151,14 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 64)
-        self.assertEqual(len(self.sources.rule_segments), 63)
-        # The raw list carries both products: 42 for the full one plus the two
+        self.assertEqual(len(self.sources.segments), 57)
+        self.assertEqual(len(self.sources.rule_segments), 56)
+        # The raw list carries both products: 44 for the full one plus the two
         # groups only the lite product publishes.
-        self.assertEqual(len(self.sources.proxy_groups), 45)
-        self.assertEqual(len(self.sources.segments_for("core")), 64)
-        self.assertEqual(len(self.sources.rule_segments_for("core")), 63)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 43)
+        self.assertEqual(len(self.sources.proxy_groups), 46)
+        self.assertEqual(len(self.sources.segments_for("core")), 57)
+        self.assertEqual(len(self.sources.rule_segments_for("core")), 56)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 44)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -179,6 +180,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 "🖥️ 远程串流后台",
                 "🖥️ 远程串流流量",
                 "🧑‍💻 开发服务",
+                "🎨 Adobe",
                 "🎬 YouTube",
                 "🎬 Netflix",
                 "🎬 DisneyPlus",
@@ -231,6 +233,11 @@ class CanonicalSourceTests(unittest.TestCase):
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "🧑‍💻 开发服务": [
+                "♻️ 手动切换",
+                "DIRECT",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
+            "🎨 Adobe": [
                 "♻️ 手动切换",
                 "DIRECT",
                 "__ALL_SUBSCRIPTION_NODES__",
@@ -291,8 +298,6 @@ class CanonicalSourceTests(unittest.TestCase):
             [
                 "tidal",
                 "spotify",
-                "qobuz",
-                "apple-music",
             ],
         )
         self.assertEqual(
@@ -921,6 +926,10 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
             ["♻️ 手动切换", "DIRECT"],
         )
         self.assertEqual(
+            mihomo_groups["🎨 Adobe"][:2],
+            ["♻️ 手动切换", "DIRECT"],
+        )
+        self.assertEqual(
             mihomo_groups["🎮 游戏平台"][:2],
             ["♻️ 手动切换", "DIRECT"],
         )
@@ -952,6 +961,15 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
         self.assertIn(
             "custom_proxy_group=🧑‍💻 开发服务`select`[]♻️ 手动切换`"
             "[]DIRECT`",
+            subconverter,
+        )
+        self.assertIn(
+            "custom_proxy_group=🎨 Adobe`select`[]♻️ 手动切换`[]DIRECT`",
+            subconverter,
+        )
+        self.assertIn(
+            "ruleset=🎨 Adobe,https://raw.githubusercontent.com/ZaunEkko/"
+            "ekko-rules/main/generated/reversed-profile/Ruleset/adobe.list",
             subconverter,
         )
         self.assertIn(
@@ -1127,11 +1145,11 @@ class FirstMatchBaselineTests(unittest.TestCase):
                 "gemini.google",
             ),
             (
-                ("ai-platforms", "🧲 海外 AI", "DOMAIN-SUFFIX,x.ai"),
+                ("google-ai", "🧲 海外 AI", "DOMAIN-SUFFIX,x.ai"),
                 "api.x.ai",
             ),
             (
-                ("ai-platforms", "🧲 海外 AI", "DOMAIN-SUFFIX,openrouter.ai"),
+                ("google-ai", "🧲 海外 AI", "DOMAIN-SUFFIX,openrouter.ai"),
                 "openrouter.ai",
             ),
             (
@@ -1572,6 +1590,51 @@ class FirstMatchBaselineTests(unittest.TestCase):
         ]:
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, published_rules)
+
+    def test_adobe_exit_and_lanzou_direct_routing(self) -> None:
+        adobe_cases = {
+            "cc-ext-prod-pkgs.s3.amazonaws.com": (
+                "DOMAIN,cc-ext-prod-pkgs.s3.amazonaws.com"
+            ),
+            "creativecloud.adobe.com": "DOMAIN-SUFFIX,adobe.com",
+            "www.behance.net": "DOMAIN-SUFFIX,behance.net",
+        }
+        for domain, rule in adobe_cases.items():
+            with self.subTest(domain=domain, product="core"):
+                self.assert_match(("adobe", "🎨 Adobe", rule), domain=domain)
+            with self.subTest(domain=domain, product="lite"):
+                result = first_match(self.sources, product="lite", domain=domain)
+                self.assertEqual(
+                    (result["slug"], result["target"], result["rule"]),
+                    ("adobe", "🚀 国外服务", rule),
+                )
+
+        lanzou_cases = {
+            "download.lanzoug.com": "DOMAIN-SUFFIX,lanzoug.com",
+            "pc.woozooo.com": "DOMAIN-SUFFIX,woozooo.com",
+            "files.ilanzou.com": "DOMAIN-SUFFIX,ilanzou.com",
+        }
+        for domain, rule in lanzou_cases.items():
+            with self.subTest(domain=domain, product="core"):
+                self.assert_match(("china-web", "🌏 国内网站", rule), domain=domain)
+            with self.subTest(domain=domain, product="lite"):
+                result = first_match(self.sources, product="lite", domain=domain)
+                self.assertEqual(
+                    (result["slug"], result["target"], result["rule"]),
+                    ("china-web", "🌏 国内网站", rule),
+                )
+
+        # Adobe DTM already belongs to the earlier Disney+ segment. Keeping it
+        # out of the broad Adobe corpus prevents this new group stealing that
+        # established media route.
+        self.assert_match(
+            ("disney-plus", "🎬 DisneyPlus", "DOMAIN-SUFFIX,adobedtm.com"),
+            domain="assets.adobedtm.com",
+        )
+        self.assert_match(
+            ("final", "🐟 漏网之鱼", "MATCH"),
+            domain="download.lanzou-example.com",
+        )
 
     def test_mainland_ai_video_and_third_party_playback_route_direct(self) -> None:
         ai_video_cases = {
@@ -2221,7 +2284,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
             with self.subTest(domain=domain):
                 self.assert_match(
                     (
-                        "ai-platforms",
+                        "google-ai",
                         "🧲 海外 AI",
                         f"DOMAIN-SUFFIX,{suffix}",
                     ),
@@ -2318,6 +2381,27 @@ class GenerationTests(unittest.TestCase):
         self.assertEqual(
             GENERATED_RULESET_ALIASES,
             {
+                "ai-developer": (
+                    "google-ai",
+                    20,
+                    31,
+                    "064c45c6b25dfd29ce123eb9147f4e46466e355462f34dde01fcec98ce5e7934",
+                    "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
+                ),
+                "microsoft-ai": (
+                    "google-ai",
+                    12,
+                    20,
+                    "02eb19c08a0001ae47d2d190cd97127630b78ee7db8053e2ab1be9afc3a785c7",
+                    "c2589ffae36f271e4a3f076b7371da0342474d683a53d2a4911d5e9c4429a182",
+                ),
+                "ai-platforms": (
+                    "google-ai",
+                    31,
+                    56,
+                    "793736cfef9a327432179949b23d3e18215e2b7bd316179a02d49be921c1f487",
+                    "77d50c0bacf75268f35b4603200bf102110dee0b4adfaea7e74f8f2043938a32",
+                ),
                 "kakao-talk": (
                     "line",
                     36,
@@ -2326,11 +2410,32 @@ class GenerationTests(unittest.TestCase):
                     "a585752df3b3752c55a28cdff6e8724152f821f893390870ea9aa87f96f3745d",
                 ),
                 "xai": (
-                    "ai-platforms",
-                    22,
-                    25,
+                    "google-ai",
+                    53,
+                    56,
                     "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
                     "c528ddafca25108e32bca53a4de650b0ba9a96b20667ab02fc5b95a774cf3eb6",
+                ),
+                "telegram": (
+                    "whatsapp",
+                    26,
+                    60,
+                    "554877570fcd1b181d04a9c9be3a5ee3f24e595249106c91ee06c1a5551cc0ac",
+                    "8b82042a532564ab726ad30e9bbc5ca2f13cbbf71cae39111f62027719dd711c",
+                ),
+                "kktv": (
+                    "viutv",
+                    11,
+                    23,
+                    "09f1a9cfa70487669b5bb4b28cc50999917ce2f3d768b2153cbcd5967475107c",
+                    "6afc9b4d3860688f79f3a8af16c2367c3262248c5a2585354946d9a46a127460",
+                ),
+                "bahamut": (
+                    "viutv",
+                    23,
+                    32,
+                    "5f29c59cd853201826dd02d42bb38ad8094d0871b7df57b46fcdf91a602b6596",
+                    "3821a4c2147f4bd5b906e417f477b62d7403c6026daed5c3385bd9e9c257a2f6",
                 ),
                 "onedrive": (
                     "cloud-storage",
@@ -2359,6 +2464,20 @@ class GenerationTests(unittest.TestCase):
                     21,
                     "1197e4bd8607004d93075d893352879fd9e45d252278b5c695dfca4115a28e81",
                     "06da8a204ae8ebd52082fd18c3766ee9929873b9e5b28484077cb5c662a7700d",
+                ),
+                "qobuz": (
+                    "spotify",
+                    21,
+                    45,
+                    "d52e027f2ccf3ce1e4ee0b8a35b1be5f26cd8ae0bcb5df44ca9381f9a53ab37d",
+                    "529926626d0b869314a5e706b14413615d122cc5e203970a06438b8d20860f09",
+                ),
+                "apple-music": (
+                    "spotify",
+                    45,
+                    55,
+                    "8fce260b8ce8b5e63c0d995bf94de155cea12176123f74635db357b099eaecf9",
+                    "3e251d93e64dd313dac4c3cf62c9556bc18c50732f241b3260aba9994117ace1",
                 ),
             },
         )
@@ -2408,8 +2527,8 @@ class GenerationTests(unittest.TestCase):
                     self.assertNotIn(f"/{alias_slug}.list", active_text)
                     self.assertNotIn(f"/{alias_slug}.yaml", active_text)
                     self.assertNotIn(f"RULE-SET,{alias_slug},", active_text)
-        self.assertEqual(len(self.sources.rule_segments), 63)
-        self.assertEqual(len(self.sources.segments), 64)
+        self.assertEqual(len(self.sources.rule_segments), 56)
+        self.assertEqual(len(self.sources.segments), 57)
 
     def test_stale_file_is_detected_by_check_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -2890,7 +3009,7 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
 
 
 class MainlandEvidenceContractTests(unittest.TestCase):
-    """The mainland segments carry 4,224 rules and must be auditable too.
+    """The mainland segments carry 4,275 rules and must be auditable too.
 
     Advertising got this contract first because a wrong rule there blocks
     something. A wrong rule here sends traffic direct that should be proxied,
@@ -2917,7 +3036,13 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             value.lower()
             for value in json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))["values"]
         }
-        evidenced = apnic | observed | legacy
+        runtime = {
+            value.lower()
+            for value in json.loads(
+                LANZOU_RUNTIME_OBSERVATION.read_text(encoding="utf-8")
+            )["roots"]
+        }
+        evidenced = apnic | observed | legacy | runtime
         unmapped = [
             entry
             for slug in ("china-web", "china-direct-curated")
@@ -3003,7 +3128,7 @@ class LiteProductTests(unittest.TestCase):
         Both products come from the same segments, so anything reading
         `segment.target` instead of `segment.target_for(product)` keeps the
         full build's answer while claiming to describe the lite one. That
-        shipped: every one of the 47 retargeted segments appeared in the lite
+        shipped: every retargeted segment appeared in the lite
         analysis pointing at a group the lite configuration does not define,
         and the target-derived quality metrics were the full build's.
         """

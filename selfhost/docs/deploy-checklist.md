@@ -114,6 +114,10 @@ curl -sI https://sub.你的域名/ | grep -i "content-security-policy\|x-frame-o
 浏览器打开一遍，粘贴一个真实订阅，确认链接当场拼出、一键导入能唤起客户端、
 计数在跳。
 
+选择 Shadowrocket 时还要在空状态下完成两步真机回归：① 首页导入具名节点订阅，
+确认节点可刷新且显示流量/到期横幅；② 配置页导入具名 `.conf`，确认手动切换、
+`DIRECT`、广告与 NSFW 默认 `REJECT` 以及策略组默认值都存在。
+
 ## 8. 收尾
 
 - 访问日志确认不含查询串：`sudo tail -5 /var/log/nginx/sub.你的域名.access.log`

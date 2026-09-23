@@ -36,6 +36,30 @@ class GeneratedRulesetAlias(NamedTuple):
 
 
 GENERATED_RULESET_ALIASES = {
+    # ER-067 consolidates every adjacent same-policy chain to create durable
+    # segment headroom. Retired Raw URLs keep serving their original slices
+    # behind frozen hashes; active canonical files preserve matcher order.
+    "microsoft-ai": GeneratedRulesetAlias(
+        canonical="google-ai",
+        start=12,
+        end=20,
+        list_sha256="02eb19c08a0001ae47d2d190cd97127630b78ee7db8053e2ab1be9afc3a785c7",
+        provider_sha256="c2589ffae36f271e4a3f076b7371da0342474d683a53d2a4911d5e9c4429a182",
+    ),
+    "ai-developer": GeneratedRulesetAlias(
+        canonical="google-ai",
+        start=20,
+        end=31,
+        list_sha256="064c45c6b25dfd29ce123eb9147f4e46466e355462f34dde01fcec98ce5e7934",
+        provider_sha256="ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
+    ),
+    "ai-platforms": GeneratedRulesetAlias(
+        canonical="google-ai",
+        start=31,
+        end=56,
+        list_sha256="793736cfef9a327432179949b23d3e18215e2b7bd316179a02d49be921c1f487",
+        provider_sha256="77d50c0bacf75268f35b4603200bf102110dee0b4adfaea7e74f8f2043938a32",
+    ),
     "onedrive": GeneratedRulesetAlias(
         canonical="cloud-storage",
         start=0,
@@ -50,15 +74,6 @@ GENERATED_RULESET_ALIASES = {
         list_sha256="a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
         provider_sha256="b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
     ),
-    # ER-058 funded the remote-streaming split by concatenating xai into
-    # ai-platforms under their shared 🧲 海外 AI policy. Routing is unchanged -
-    # every segment in that family targets the same group - and the retired Raw
-    # URL keeps serving its original three matchers from this slice.
-    # ER-063 funded the finance policy by concatenating kakao-talk into line
-    # under their shared 📲 聊天软件 policy. The two segments were adjacent with
-    # nothing between them, so appending one to the other cannot reorder
-    # anything, and routing is unchanged because both target the same group.
-    # The retired Raw URL keeps serving its original matchers from this slice.
     "kakao-talk": GeneratedRulesetAlias(
         canonical="line",
         start=36,
@@ -67,11 +82,32 @@ GENERATED_RULESET_ALIASES = {
         provider_sha256="a585752df3b3752c55a28cdff6e8724152f821f893390870ea9aa87f96f3745d",
     ),
     "xai": GeneratedRulesetAlias(
-        canonical="ai-platforms",
-        start=22,
-        end=25,
+        canonical="google-ai",
+        start=53,
+        end=56,
         list_sha256="82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
         provider_sha256="c528ddafca25108e32bca53a4de650b0ba9a96b20667ab02fc5b95a774cf3eb6",
+    ),
+    "telegram": GeneratedRulesetAlias(
+        canonical="whatsapp",
+        start=26,
+        end=60,
+        list_sha256="554877570fcd1b181d04a9c9be3a5ee3f24e595249106c91ee06c1a5551cc0ac",
+        provider_sha256="8b82042a532564ab726ad30e9bbc5ca2f13cbbf71cae39111f62027719dd711c",
+    ),
+    "kktv": GeneratedRulesetAlias(
+        canonical="viutv",
+        start=11,
+        end=23,
+        list_sha256="09f1a9cfa70487669b5bb4b28cc50999917ce2f3d768b2153cbcd5967475107c",
+        provider_sha256="6afc9b4d3860688f79f3a8af16c2367c3262248c5a2585354946d9a46a127460",
+    ),
+    "bahamut": GeneratedRulesetAlias(
+        canonical="viutv",
+        start=23,
+        end=32,
+        list_sha256="5f29c59cd853201826dd02d42bb38ad8094d0871b7df57b46fcdf91a602b6596",
+        provider_sha256="3821a4c2147f4bd5b906e417f477b62d7403c6026daed5c3385bd9e9c257a2f6",
     ),
     "hbo-max": GeneratedRulesetAlias(
         canonical="hbo-go",
@@ -86,6 +122,20 @@ GENERATED_RULESET_ALIASES = {
         end=21,
         list_sha256="1197e4bd8607004d93075d893352879fd9e45d252278b5c695dfca4115a28e81",
         provider_sha256="06da8a204ae8ebd52082fd18c3766ee9929873b9e5b28484077cb5c662a7700d",
+    ),
+    "qobuz": GeneratedRulesetAlias(
+        canonical="spotify",
+        start=21,
+        end=45,
+        list_sha256="d52e027f2ccf3ce1e4ee0b8a35b1be5f26cd8ae0bcb5df44ca9381f9a53ab37d",
+        provider_sha256="529926626d0b869314a5e706b14413615d122cc5e203970a06438b8d20860f09",
+    ),
+    "apple-music": GeneratedRulesetAlias(
+        canonical="spotify",
+        start=45,
+        end=55,
+        list_sha256="8fce260b8ce8b5e63c0d995bf94de155cea12176123f74635db357b099eaecf9",
+        provider_sha256="3e251d93e64dd313dac4c3cf62c9556bc18c50732f241b3260aba9994117ace1",
     ),
 }
 DESTINATION_IP_RULE_TYPES = {
@@ -1375,7 +1425,7 @@ def _write_readmes(output: Path, sources: ProfileSources) -> None:
 - `config/ekko-rules-lite.ini`：同上，精简版。
 - `Mihomo/reversed-template.yaml`：Mihomo 模板（完整版），使用前替换订阅地址占位符。
 - `Mihomo/reversed-template-lite.yaml`：同上，精简版。
-- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；`onedrive`、`icloud`、`spotify-2` 仅保留合并前原始内容的旧 Raw URL 兼容副本，不进入活动模板或规则计数。
+- `Ruleset/*.list` 与 `Providers/Ruleset/*.yaml`：两个入口依赖的同一套规则；已合并分段的旧名称仅保留合并前原始内容的 Raw URL 兼容副本，不进入活动模板或规则计数。
 - `analysis.json` 与 `manifest.json`：质量统计及 SHA-256 文件清单，兼容副本同样纳入哈希闭集。
 
 ## 在线订阅转换
@@ -1402,6 +1452,7 @@ Ruleset 地址前缀：`{rules_base}`。
 - `🖥️ 远程串流流量` 默认 `DIRECT`，承载数据面——Tailscale 的 DERP 中继与控制面、ZeroTier 根服务器、Parsec 与 RustDesk 会话端点、NetBird 信令与中继、Moonlight、Sunshine、TeamViewer、AnyDesk、Chrome 远程桌面、Steam Link 和 Microsoft RDP，防止远程访问大流量绕行代理；
 - `🖥️ 远程串流后台` 默认 `♻️ 手动切换`，只收各家管理后台与官网。分开是因为同一个厂商后缀盖着两件事：控制台在大陆直连打不开，而同后缀下的中继却承载串流负载；
 - `🧑‍💻 开发服务` 第一项为 `♻️ 手动切换`，覆盖主流开发官网、API、包仓库和下载链路；用户可临时改为 `DIRECT`；
+- `🎨 Adobe` 第一项为 `♻️ 手动切换`，可为 Creative Cloud、Acrobat、Behance 等单独固定兼容节点；精简版归入 `🚀 国外服务`；
 - `☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud 及国内厂商海外区域端点；广告和具体业务规则仍优先；
 - `🛒 海外购物` 默认 `♻️ 手动切换`，覆盖各区域亚马逊、eBay、Etsy、日本店铺与转运代购及地区电商——这类站点的店面内容与人机验证取决于出口 IP，独立成组便于单独挑节点；
 - `💳 金融服务` 默认 `♻️ 手动切换`，覆盖支付汇款、虚拟卡、接码与虚拟号码，以及海外银行与券商——金融账号按“在哪里用”被核对，需要一个能单独钉死的出口；国内银行仍在默认直连的 `🌏 国内网站`；
@@ -1443,7 +1494,7 @@ A standard routing-rules product for Subconverter and Mihomo, published as two b
 - `config/ekko-rules-lite.ini`: The same, lite build.
 - `Mihomo/reversed-template.yaml`: Mihomo template (full build); replace the subscription URL placeholder before use.
 - `Mihomo/reversed-template-lite.yaml`: The same, lite build.
-- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; `onedrive`, `icloud`, and `spotify-2` preserve their original pre-merge contents only as retired Raw-URL compatibility copies and do not enter active templates or rule counts.
+- `Ruleset/*.list` and `Providers/Ruleset/*.yaml`: The shared rules consumed by both entry points; retired names of consolidated segments preserve their original pre-merge contents only as Raw-URL compatibility copies and do not enter active templates or rule counts.
 - `analysis.json` and `manifest.json`: Quality metrics and the closed SHA-256 inventory, including the compatibility copies.
 
 ## Online subscription conversion
@@ -1470,6 +1521,7 @@ Ruleset URL prefix: `{rules_base}`.
 - `🖥️ 远程串流流量` defaults to `DIRECT` and carries the data plane — Tailscale DERP relays and control plane, ZeroTier root servers, Parsec and RustDesk session endpoints, NetBird signalling and relay, Moonlight, Sunshine, TeamViewer, AnyDesk, Chrome Remote Desktop, Steam Link, and Microsoft RDP — so high-volume remote access does not traverse a proxy unnecessarily;
 - `🖥️ 远程串流后台` defaults to `♻️ 手动切换` and holds only the vendors' admin consoles and websites. They are separate because one vendor suffix covers two jobs: the console cannot be reached on a direct path from the mainland, while the relays beneath it carry the streaming payload;
 - `🧑‍💻 开发服务` lists `♻️ 手动切换` first and covers mainstream developer sites, APIs, registries, and downloads; it can be switched temporarily to `DIRECT`;
+- `🎨 Adobe` lists `♻️ 手动切换` first so Creative Cloud, Acrobat, Behance, and related services can be pinned to a compatible exit; the lite build folds it into `🚀 国外服务`;
 - `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - `🛒 海外购物` defaults to `♻️ 手动切换` and covers the regional Amazon storefronts, eBay, Etsy, Japanese shops, cross-border forwarding services, and regional retailers — what these sites show and whether they challenge you depends on which exit reaches them, so a separate group lets you pick a node for shopping alone;
 - `💳 金融服务` defaults to `♻️ 手动切换` and covers payments and remittance, virtual cards, SMS receipt and virtual numbers, and overseas banks and brokers — a financial account is checked against where it is used, so it needs an exit it can keep; mainland banks stay on the default-direct `🌏 国内网站`;

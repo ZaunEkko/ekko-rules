@@ -5,6 +5,7 @@ import {
   qrCodeValue,
   qrImportValue,
   qrScanHint,
+  shadowrocketConfigImportValue,
   supportsClientInstallQr,
 } from "./qr-import";
 
@@ -19,25 +20,21 @@ test("wraps Mihomo subscriptions in the Clash remote-install scheme", () => {
   );
 });
 
-test("installs Shadowrocket through its configuration entry", () => {
-  // `shadowrocket://add/` would add a node subscription and drop every rule in
-  // the file; `config/add` is the entry that reads the whole configuration.
-  // The documented form carries the address as the path, unencoded, so the
-  // query string of a stateless link has to survive intact.
+test("gives Shadowrocket separate node and configuration imports", () => {
+  // Shadowrocket needs both objects: a refreshable Home subscription for the
+  // banner and nodes, then a native config for rules and policy groups.
   assert.equal(supportsClientInstallQr("shadowrocket"), true);
   assert.equal(
     qrImportValue("shadowrocket", subscriptionUrl, "install"),
-    `shadowrocket://config/add/${subscriptionUrl}`,
+    `shadowrocket://add/${subscriptionUrl}`,
   );
   assert.equal(
-    qrImportValue(
-      "shadowrocket",
+    shadowrocketConfigImportValue(
       "https://sub.example.test/sub?url=https%3A%2F%2Fprovider.test%2Fs&emoji=true",
-      "install",
     ),
     "shadowrocket://config/add/https://sub.example.test/sub?url=https%3A%2F%2Fprovider.test%2Fs&emoji=true",
   );
-  assert.equal(clientInstallLabel("shadowrocket"), "一键导入 Shadowrocket 配置");
+  assert.equal(clientInstallLabel("shadowrocket"), "① 导入节点订阅");
 });
 
 test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
@@ -50,9 +47,7 @@ test("keeps raw URLs for explicit raw mode and unsupported clients", () => {
   assert.equal(clientInstallLabel("quanx"), "");
 });
 
-test("keeps the Shadowrocket QR as HTTPS while its button uses config/add", () => {
-  // Real-device home scanning ignores a config/add QR without an error. The
-  // HTTPS payload must not be replaced with that unsupported scanner action.
+test("keeps both Shadowrocket QR payloads as ordinary HTTPS addresses", () => {
   const namedConfig = "https://sub.example.test/i/laomao.conf?p=00";
   assert.equal(
     qrCodeValue("shadowrocket", namedConfig, "laomao"),
@@ -60,16 +55,20 @@ test("keeps the Shadowrocket QR as HTTPS while its button uses config/add", () =
   );
   assert.equal(
     qrImportValue("shadowrocket", namedConfig, "install", "laomao"),
+    `shadowrocket://add/${namedConfig}`,
+  );
+  assert.equal(
+    shadowrocketConfigImportValue(namedConfig),
     `shadowrocket://config/add/${namedConfig}`,
   );
   assert.equal(qrCodeValue("clash", namedConfig, "laomao"), namedConfig);
 });
 
-test("directs Shadowrocket scans to the Configuration page only", () => {
+test("directs Shadowrocket users through both import steps", () => {
   assert.match(qrScanHint("clash"), /扫哪个都行/);
   assert.match(qrScanHint("singbox"), /扫哪个都行/);
-  assert.match(qrScanHint("shadowrocket"), /配置/);
-  assert.match(qrScanHint("shadowrocket"), /不要从首页扫码/);
+  assert.match(qrScanHint("shadowrocket"), /首页/);
+  assert.match(qrScanHint("shadowrocket"), /配置页/);
 });
 
 test("every client whose vendor documents a scheme gets a one-tap button", () => {

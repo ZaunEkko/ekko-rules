@@ -10,9 +10,6 @@ import { importPageAddress, renderImportPage } from "./import-page";
 import { rateLimitResponseHeaders } from "./rate-limit";
 import { RATE_LIMIT_MESSAGE, checkSubscribeRate } from "./request-guard";
 import {
-  buildStatelessConvertQuery,
-  clientImportPath,
-  packStatelessQuery,
   parseStatelessConvertQuery,
   STATELESS_SUBSCRIPTION_PATH,
 } from "./stateless-request";
@@ -35,35 +32,31 @@ export async function handleImportRequest(request: Request) {
   try {
     const url = new URL(request.url);
     const parsed = parseStatelessConvertQuery(url.searchParams);
-    // A system-camera navigation of the Home YAML link offers native config
-    // installation; an in-app Home scan still fetches its YAML subscription.
-    const shadowrocketYaml =
-      (url.searchParams.get("srhome") === "1" ||
-        url.searchParams.get("srconfig") === "1") &&
+    // Shadowrocket needs two separately imported remote objects. Keep a Home
+    // YAML navigation pointed at the Home subscription instead of silently
+    // upgrading it to the native config: doing that hid the traffic banner
+    // and made the two entry points indistinguishable.
+    const shadowrocketHome =
+      url.searchParams.get("srhome") === "1" &&
       url.pathname.endsWith(".yaml") && parsed.target === "clash";
-    const nativeQuery = shadowrocketYaml
-      ? buildStatelessConvertQuery({
-          subscriptionUrl: parsed.subscriptionUrl,
-          target: "shadowrocket",
-          options: parsed.options,
-          name: parsed.name,
-          remoteConfig: parsed.remoteConfig,
-        })
-      : "";
-    const nativeUrl = shadowrocketYaml
-      ? new URL(
-          clientImportPath("shadowrocket", parsed.name, packStatelessQuery(nativeQuery)),
-          url,
-        )
-      : url;
-    const address = importPageAddress(getRuntimeConfig().subscriptionBaseUrl, nativeUrl);
+    const shadowrocketLegacyConfig =
+      url.searchParams.get("srconfig") === "1" &&
+      url.pathname.endsWith(".yaml") && parsed.target === "clash";
+    const shadowrocketConfig =
+      parsed.target === "shadowrocket" || shadowrocketLegacyConfig;
+    const address = importPageAddress(getRuntimeConfig().subscriptionBaseUrl, url);
     safeLog("import.page", { target: parsed.target });
     return new NextResponse(
       renderImportPage({
-        target: shadowrocketYaml ? "shadowrocket" : parsed.target,
+        target: shadowrocketHome ? "shadowrocket" : parsed.target,
+        shadowrocketMode: shadowrocketHome
+          ? "home"
+          : shadowrocketConfig
+            ? "config"
+            : undefined,
         subscriptionUrl: address,
         name: parsed.name,
-        downloadUrl: `${STATELESS_SUBSCRIPTION_PATH}${nativeUrl.search}`,
+        downloadUrl: `${STATELESS_SUBSCRIPTION_PATH}${url.search}`,
       }),
       {
         status: 200,
