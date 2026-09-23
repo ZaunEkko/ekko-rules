@@ -1024,7 +1024,7 @@ export function Workbench({
     return (
       <p className="shadowrocket-import-notice" role="note">
         <strong>Shadowrocket 必须导入两次，顺序不要反：</strong>
-        先用 ① 建立可刷新的节点订阅和流量横幅，再用 ② 加载分流规则、策略组与 DIRECT / REJECT。
+        先用 ① 建立节点订阅并在首页选好可用节点，再用 ② 加载分流规则。配置模式通过原生 PROXY 使用首页当前节点，DIRECT / REJECT 按规则生效。
       </p>
     );
   }
@@ -2066,7 +2066,7 @@ export function Workbench({
                 {createdShadowrocketAddresses ? (
                   <p className="shadowrocket-import-notice" role="note">
                     <strong>两个都要导入：</strong>
-                    第 1 步保留节点订阅、名称和流量横幅；第 2 步补上规则、策略组与 DIRECT / REJECT。
+                    第 1 步保留名称、流量横幅并在首页选好节点；第 2 步补上规则与 DIRECT / REJECT，并通过 PROXY 使用首页当前节点。
                   </p>
                 ) : null}
                 {storesProfiles ? null : (
@@ -2380,8 +2380,8 @@ export function Workbench({
                     </strong>
                     <span>
                       {shadowrocketQrStep === "home"
-                        ? "这一步建立可刷新的节点订阅，保留正确名称、流量和到期横幅。完成后切到第 2 步。"
-                        : "这一步导入规则、策略组、手动切换以及 DIRECT / REJECT；不能替代第 1 步。"}
+                        ? "这一步建立可刷新的节点订阅，保留名称和流量横幅。导入后先在首页选好一个可用节点，再切到第 2 步。"
+                        : "这一步导入规则、策略组与 DIRECT / REJECT；配置里的 PROXY 会使用第 1 步在首页选中的节点。"}
                     </span>
                   </div>
                 </>
@@ -2424,8 +2424,8 @@ export function Workbench({
               <small className="qr-note">
                 {qrProfile.target === "shadowrocket"
                   ? shadowrocketQrStep === "home"
-                    ? "当前只完成节点、名称和流量横幅；还必须切到第 2 步导入分流配置。"
-                    : "完成后，Shadowrocket 同时拥有可刷新的节点订阅与原生分流配置。以后节点从第 1 步的订阅更新，规则由第 2 步的配置更新。"
+                    ? "当前只完成节点、名称和流量横幅；请先选中可用节点，再切到第 2 步导入分流配置。"
+                    : "完成后请使用配置模式。节点由第 1 步更新，配置中的 PROXY 跟随首页当前节点，DIRECT / REJECT 由规则决定。"
                   : qrPasteHint(qrProfile.target)}
                 {qrProfile.target === "shadowrocket"
                   ? " 两条地址都带着你的订阅凭据，不要分享。"

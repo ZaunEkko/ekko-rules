@@ -30,8 +30,8 @@ export const TARGET_DEFINITIONS = {
     label: "Shadowrocket",
     shortLabel: "Shadowrocket",
     // The engine's Surge 4 renderer gives us Shadowrocket's native sectioned
-    // configuration shape. The gateway then restores modern nodes from a
-    // lossless Mihomo node pass and pins each select group's first policy.
+    // configuration shape. The gateway removes the renderer's node copies and
+    // bridges policy groups to the Home-selected node through native PROXY.
     engineTarget: "surge",
     engineParams: { ver: "4" },
     extension: "conf",
@@ -43,7 +43,7 @@ export const TARGET_DEFINITIONS = {
     // connection check has not yet been run for every modern protocol, so the
     // verified list remains conservative.
     protocolNote:
-      "真机已验证两步导入：首页节点订阅保留名称与流量横幅，配置页保留 DIRECT、REJECT、手动切换和策略组；现代协议连接能力以客户端为准",
+      "两步导入：首页节点订阅保留名称与流量横幅，配置页通过原生 PROXY 调用首页当前节点，并保留 DIRECT、REJECT、手动切换和策略组",
     verifiedModernProtocols: [],
   },
   singbox: {

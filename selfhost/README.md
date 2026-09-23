@@ -122,7 +122,7 @@ Web UI 提供：
 - 自定义前缀：在家里、公司等网络切换后直接输入新的电脑 IP；
 - 曾用地址：在当前浏览器保留最近 8 个前缀，一键切换所有档案的显示、复制与二维码。
 
-**Shadowrocket 使用已经真机验证的两步导入。** 客户端把首页节点订阅和原生配置保存为两个独立对象，无法由一条地址同时获得两者全部能力。页面因此同时生成具名 `.yaml` 与 `.conf`：先在首页导入节点订阅，获得正确名称、节点刷新和流量/到期横幅；再在「配置」页导入原生 `.conf`，获得规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。页面的一键导入和二维码都按 ①/② 标明顺序，两步缺一不可。实机证据与最终取舍见 [Shadowrocket 导入记录](docs/shadowrocket-import.md)。
+**Shadowrocket 使用两步原生导入。** 客户端把首页节点订阅和原生配置保存为两个独立对象，无法由一条地址同时获得两者全部能力。页面因此同时生成具名 `.yaml` 与 `.conf`：先在首页导入节点订阅，获得名称、节点刷新和流量/到期横幅，并选好一个可用节点；再在「配置」页导入原生 `.conf`，由内置 `PROXY` 调用首页当前节点，同时获得规则、`♻️ 手动切换`、`DIRECT` / `REJECT`、策略组嵌套和默认选择。页面的一键导入和二维码都按 ①/② 标明顺序，两步缺一不可。实机回归与最终取舍见 [Shadowrocket 导入记录](docs/shadowrocket-import.md)。
 
 二维码放 `/i` 地址，由它按来客作答：
 
@@ -196,7 +196,7 @@ uninstall-helper.cmd
 | Quantumult | Quantumult | CONF |
 | Mellow | Mellow | CONF |
 
-Shadowrocket 的原生 `.conf` 转换保留 `[Proxy]`、`[Proxy Group]`、`[Rule]`，并补回 AnyTLS、TUIC、VLESS Reality 等现代节点；`select` 组写入 `policy-select-name`，`♻️ 手动切换`不写 `hidden`。配置页扫码已真机确认可以导入节点、规则、手动组、原生 `DIRECT` / `REJECT` 和各组默认选择；首页 `.yaml` 则负责名称、节点刷新与流量横幅。内置完整版、精简版、第三方预设和允许的自定义远程配置共用转换流程，第三方分组与规则采用所选模板。
+Shadowrocket 的原生 `.conf` 转换保留 `[Proxy]`、`[Proxy Group]`、`[Rule]`，但不再复制 AnyTLS、TUIC、VLESS Reality 等节点定义；节点只由首页订阅持有，所有代理策略通过 Shadowrocket 内置 `PROXY` 使用首页当前节点。`select` 组写入 `policy-select-name`，`♻️ 手动切换`不写 `hidden`，广告和 NSFW 仍以 `REJECT` 开始，国内规则组仍保留 `DIRECT` 默认。内置完整版、精简版、第三方预设和允许的自定义远程配置共用转换流程，第三方分组与规则采用所选模板。
 
 输入协议由锁定的转换引擎自动识别，页面不会让用户逐个选择协议。已用合成节点验证 Mihomo 与 sing-box 输出可以保留 AnyTLS、VLESS Reality、Hysteria2 和 TUIC。其他输出仍会先识别这些输入，再按目标客户端本身的协议与字段能力过滤；转换器不能让一个客户端支持它尚未实现的协议。
 
@@ -218,7 +218,7 @@ Mihomo 输出始终使用客户端要求的新字段名，完整配置始终展�
 
 Mihomo 固定地址每次被客户端刷新时，都会在本机即时拉取真实订阅并把节点直接内联到完整配置中。生成结果不会包含真实机场订阅 URL，也不会再引用仅容器内部可达的 provider 地址；客户端拿到一个文件即可获得节点、DNS、策略组与规则。
 
-订阅响应会通过具名 `.yaml` / `.conf` 路径、`Profile-Title` 和 `Content-Disposition` 传递用户填写的名称。Shadowrocket 首页与配置页分别使用自己的稳定地址，两步导入已完成真机验收。完全相同的配置再次复制、扫码或一键导入时只复用现有浏览器记录，不会重复新增。
+订阅响应会通过具名 `.yaml` / `.conf` 路径、`Profile-Title` 和 `Content-Disposition` 传递用户填写的名称。Shadowrocket 首页与配置页分别使用自己的稳定地址；两步导入路径已有真机证据，本轮配置模式的 `PROXY` 桥接仍待上线后实机验收。完全相同的配置再次复制、扫码或一键导入时只复用现有浏览器记录，不会重复新增。
 
 固定地址会把上游 `Subscription-Userinfo` 中 `upload`、`download`、`total` 和 `expire` 数字字段安全透传给客户端。若上游没有响应头，但正文有格式完整的 `STATUS=↑/↓/TOT/Expires` 行，则会转换为同样的响应头；单凭“剩余流量”节点名不能反推套餐总量。Shadowrocket 第 1 步的首页节点订阅负责显示这些流量与到期信息，第 2 步的原生 `.conf` 负责完整规则和策略联动。刷新时沿用目标格式安全的上游 User-Agent。
 
@@ -441,7 +441,7 @@ node scripts/verify-remote-configs.mjs
 
 它会遍历 `/api/capabilities` 返回的全部远程配置，断言 Ekko Rules 永远排在首位且为内置项，对每一套跑一次完整 Mihomo 转换；内置完整版与精简版会验证 Shadowrocket 的固定策略默认值，第三方预设会覆盖包括 Shadowrocket 在内的 9 种客户端格式，允许自定义地址时还会验证自定义配置的 Mihomo 与 Shadowrocket 输出。最后确认云元数据、回环、私网、明文 HTTP 和不存在的预设都被拒绝。预设列表变动或准备上线开放部署前跑一次。
 
-端到端脚本会验证 9 种完整输出、Mihomo 与 sing-box 的 AnyTLS 等现代协议、Shadowrocket 首页/配置页两条独立地址及其对应 scheme、原生策略组语义与现代节点结构、Emoji/UDP/筛选/重命名等高级选项、真实源地址不出现在 Mihomo 完整配置中、Mihomo 配置语法，以及固定 URL 在普通 Compose 重启后的可用性。可通过 `MIHOMO_BIN` 指定本机 Mihomo 可执行文件。
+端到端脚本会验证 9 种完整输出、Mihomo 与 sing-box 的 AnyTLS 等现代协议、Shadowrocket 首页/配置页两条独立地址及其对应 scheme、无重复节点的原生 `PROXY` 桥接与策略组语义、Emoji/UDP/筛选/重命名等高级选项、真实源地址不出现在 Mihomo 完整配置中、Mihomo 配置语法，以及固定 URL 在普通 Compose 重启后的可用性。可通过 `MIHOMO_BIN` 指定本机 Mihomo 可执行文件。
 
 ## 第三方组件
 
