@@ -1002,7 +1002,7 @@ class PublicRuleExclusionTests(unittest.TestCase):
     def test_exclusion_ledger_is_immutable_and_closed(self) -> None:
         self.assertEqual(
             hashlib.sha256(PUBLIC_RULE_EXCLUSIONS.read_bytes()).hexdigest(),
-            "2ff918c099c39c51fcc75cde58b6d770ce963cea81acf819ea081bbe99fbbd1c",
+            "a23322ca53dd81607b7f4264c1f2b63904da49c7f29335e6968187d1d5a31bd5",
         )
         ledger = json.loads(PUBLIC_RULE_EXCLUSIONS.read_text(encoding="utf-8"))
         removed = [
@@ -1531,6 +1531,10 @@ class FirstMatchBaselineTests(unittest.TestCase):
             "gstore.val.manlaxy.com": "DOMAIN,gstore.val.manlaxy.com",
             "xz.sycontroller.com": "DOMAIN,xz.sycontroller.com",
             "dl.steam.clngaa.com": "DOMAIN,dl.steam.clngaa.com",
+            # Steam picks content servers from the address it sees on the CM
+            # connection, so the CM must share the download exit.
+            "cmp2-tyo3.steamserver.net": "DOMAIN-SUFFIX,steamserver.net",
+            "cmp1-hkg1.steamserver.net": "DOMAIN-SUFFIX,steamserver.net",
         }
         for domain, rule in steam_cases.items():
             with self.subTest(domain=domain):

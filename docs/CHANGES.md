@@ -1718,3 +1718,30 @@ group, so Subconverter stays at 57 ordered segments including FINAL. No broad
 added. The first-match regressions check both products, each apex and a
 subdomain, plus unrelated domestic generation, Spotify, and YouTube. The
 source review entry records the first-party sites used for admission.
+
+## ER-074 — Steam connection managers follow the download exit
+
+**Type:** one rule reassigned from `game-platform-late-recovery` to `game-download`; no new group or segment
+
+With `🎮 游戏下载` on `DIRECT`, Steam waited a long time before downloading and
+then crawled; switching that group to a proxy restored full speed. The user's
+own Steam client logs explain why. `steamserver.net` routed through the
+`🎮 游戏平台` proxy, and Steam picks content servers from the public address it
+sees on that connection-manager link. It therefore handed out Tokyo SteamCache
+hosts and overseas CDNs, which the direct download path reached only after
+repeated ~5 s timeouts, at 0.05–39 Mbps. With the CM direct, Steam switched to
+mainland CDNs within half a minute and ran at 148–366 Mbps. CellID stayed 198
+in both cases, and the CM data centre was the same, so the deciding input is
+the CM connection's exit address.
+
+`DOMAIN-SUFFIX,steamserver.net` now sits in `game-download`, which runs
+earlier, so the CM and the downloads always share one exit, whichever exit the
+user selects. The Steam store, community and Web API stay with the platform
+group. The move is a ledgered reassignment, so the frozen late-recovery set
+shrinks by one rule. The chunk-redirect hosts seen once each
+(`gstore.val.smogfly.com`, `yif.gdtstream.com`) remain unaccepted.
+
+Device acceptance (2026-09-26): with `🎮 游戏下载` on `DIRECT` and a temporary
+OpenClash rule sending `steamserver.net` to that group, the user restarted Steam
+and confirmed the download started promptly at normal speed. This is a result
+for that gateway and network, not a certification of every Steam region.
