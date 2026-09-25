@@ -29,16 +29,16 @@ rules apart from what the sources actually held.
 
 | Component | Rules | Provenance treatment |
 |---|---:|---|
-| Current late recovery | 2,684 | Frozen historical recovery emission minus 11 explicit public-product exclusions |
+| Current late recovery | 2,683 | Frozen historical recovery emission minus 11 explicit public-product exclusions and the reassignments recorded in the exclusion ledger |
 | Observation-derived mainland direct curation | 4,275 | Derived from this repository's own markup and script scans of mainland origins, Certificate Transparency vendor attestation, and APNIC delegation records |
 | Observation-derived advertising curation | 590 | Derived from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
 | Overseas shopping curation | 76 | Reviewed per host: overseas retail and cross-border forwarding roots whose storefront, availability or bot challenge depends on which exit reaches them |
 | Finance and account registration curation | 44 | Reviewed per host: payments, virtual cards, SMS receipt and overseas banks and brokers, each resolved before admission and each geo-sensitive enough that the exit is part of the account |
-| Specialized, private/local, and service corpus | 2,506 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
+| Specialized, private/local, and service corpus | 2,507 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
 No component of the current product derives from a third-party rule list. ER-047 retired the two pinned `v2fly/domain-list-community` imports that once carried 2,331 rules, and with them the `Copyright (c) 2018-2019 V2Ray` attribution they required.
 
-The final 2,506-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
+The final 2,507-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
 
 ## Direct canonical inputs
 
@@ -55,6 +55,8 @@ ER-073 adds 19 reviewed product roots for overseas AI generation to the existing
 ### Observation-derived mainland direct curation
 
 `sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 4,275 rules derived entirely from this repository's own measurement. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
+
+ER-074 moves `DOMAIN-SUFFIX,steamserver.net` out of `game-platform-late-recovery` into `game-download`. Steam picks content servers from the public address it sees on the connection-manager (CM) link. The user's own Steam client logs show the proxied CM made Steam hand out Tokyo caches that the DIRECT download policy could not reach quickly; with the CM direct, Steam handed out mainland CDNs at full speed. The committed record is `docs/evidence/steam-cm-runtime-observation-2026-09-25.json`, and the move is recorded as a reassignment in the public-rule exclusion ledger, so the frozen recovery set shrinks rather than grows.
 
 The 32 LanZou/Woozooo download roots added in ER-067 came from a user-observed fallback during an actual download and were admitted as anchored suffixes under the existing mainland-direct policy. The committed runtime-family record is `docs/evidence/lanzou-runtime-observation-2026-09-23.json`. Public lists were used only as review leads: unclear or unrelated candidate roots such as `baidupan.com`, `bakstotre.com`, `webgetstore.com`, and `wwentua.com` were not imported. Normal generation still consumes only the reviewed canonical files committed here.
 

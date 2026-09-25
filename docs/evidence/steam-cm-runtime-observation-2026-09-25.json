@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-09-25",
+  "service": "Steam client connection managers (CM)",
+  "method": "Read from the user's own Steam client logs (content_log.txt, connection_log.txt) during a PUBG update behind a gateway Mihomo in fake-ip mode, with the game-download policy on DIRECT. No subscription, node, account, or endpoint credential is retained.",
+  "expected_action": "DIRECT",
+  "roots": [
+    "steamserver.net"
+  ],
+  "observations": [
+    {
+      "phase": "CM proxied (steamserver.net under the game-platform policy)",
+      "cm_connection": "cmp2-tyo3.steamserver.net over the proxy; Steam reported the external address as a non-mainland IPv6 exit",
+      "content_sources": "14 sources led by Valve SteamCache cache*-tyo3.steamcontent.com, then steampipe.akamaized.net, fastly/google2/alibaba .cdn.steampipe.steamcontent.com",
+      "result": "Each direct attempt to a Tokyo cache failed after about 5 s ('failed to send manifest request'); one update was cancelled with 'Failed downloading 1 manifests (Connection timeout)'; once running, the rate stayed between 0.05 and 39 Mbps"
+    },
+    {
+      "phase": "Gateway Mihomo disabled (everything direct from the mainland address)",
+      "cm_connection": "cmp2-tyo3.steamserver.net connected directly at 45.121.184.101:27018",
+      "content_sources": "3-4 sources: st.dl.eccdnx.com, xz.pphimalayanrt.com, dl.steam.clngaa.com",
+      "result": "Download started immediately and ran at 148-366 Mbps"
+    }
+  ],
+  "finding": "Steam chooses the content-server list from the public address it sees on the CM connection, not from the CM's data centre or the configured CellID (198 in both phases). A proxied CM makes Steam hand out overseas caches, which the DIRECT download policy then cannot reach quickly. Keeping the CM on the same DIRECT exit as the downloads makes Steam hand out mainland CDNs.",
+  "excluded_candidates": [
+    "api.steampowered.com",
+    "gstore.val.smogfly.com",
+    "yif.gdtstream.com"
+  ]
+}

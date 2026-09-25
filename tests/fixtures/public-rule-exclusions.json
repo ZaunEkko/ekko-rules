@@ -137,13 +137,24 @@
         "DOMAIN-SUFFIX,steamchina.com",
         "DOMAIN-SUFFIX,xboxlive.cn"
       ]
+    },
+    {
+      "historical_owner": "game-platform",
+      "recovery_slug": "game-platform-late-recovery",
+      "target": "🎮 游戏平台",
+      "new_slug": "game-download",
+      "new_target": "🎮 游戏下载",
+      "reason": "Steam picks content servers from the address it sees on the connection-manager link, so the CM must leave through the download exit; a proxied CM made Steam hand DIRECT downloads Tokyo caches it could not reach quickly. See docs/evidence/steam-cm-runtime-observation-2026-09-25.json.",
+      "rules": [
+        "DOMAIN-SUFFIX,steamserver.net"
+      ]
     }
   ],
   "counts": {
     "provider_override": 1,
     "late_recovery": 11,
-    "reassigned": 37,
-    "total": 49
+    "reassigned": 38,
+    "total": 50
   },
   "current_recovery_files": {
     "apple-late-recovery": {
@@ -151,8 +162,8 @@
       "sha256": "552d015eac6c29a97f2bea97b9af08bad35da1b856ae31e595fed3d9c5fd7637"
     },
     "game-platform-late-recovery": {
-      "rules": 550,
-      "sha256": "c1a21ca5e17533a568544de8f70b62d036d6b22c8981a43f047c66ff9f581590"
+      "rules": 549,
+      "sha256": "bcf2483b26707bce7668b3a44c0c20d99bf6d120032c2d3c86da6d8eb721e996"
     }
   }
 }
