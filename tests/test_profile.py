@@ -3056,7 +3056,7 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
 
 
 class MainlandEvidenceContractTests(unittest.TestCase):
-    """The mainland segments carry 4,275 rules and must be auditable too.
+    """The mainland segments carry 4,274 rules and must be auditable too.
 
     Advertising got this contract first because a wrong rule there blocks
     something. A wrong rule here sends traffic direct that should be proxied,
@@ -3164,6 +3164,28 @@ class LiteProductTests(unittest.TestCase):
                     self.assertEqual(verdict["slug"], "china-media")
                     self.assertEqual(verdict["rule"], "DOMAIN-SUFFIX,bytefcdnrd.com")
                     self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
+
+    def test_observed_domestic_streaming_cdns_stay_direct_in_both_products(self) -> None:
+        # Hosts from the 2026-09-27 runtime sweep that previously reached MATCH.
+        cases = {
+            "hw3a.douyucdn2.cn": "DOMAIN-SUFFIX,douyucdn2.cn",
+            "abvolcapi.douyucdn.cn": "DOMAIN-SUFFIX,douyucdn.cn",
+            "shark2.douyucdn.cn": "DOMAIN-SUFFIX,douyucdn.cn",
+            "stream-hefei-cu-61-241-139-159.edgesrv.com": "DOMAIN-SUFFIX,edgesrv.com",
+            "danmuproxy.douyu.com": "DOMAIN-SUFFIX,douyu.com",
+            "809aj93l.edge.mountaintoys.cn": "DOMAIN-SUFFIX,mountaintoys.cn",
+            "p66.a.kwimgs.com": "DOMAIN-SUFFIX,kwimgs.com",
+            "sapi.yangshipin.cn": "DOMAIN-SUFFIX,yangshipin.cn",
+            "lf3-cdn-tos.bdxiguastatic.com": "DOMAIN-SUFFIX,bdxiguastatic.com",
+        }
+        for product in PRODUCTS:
+            for domain, rule in cases.items():
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(verdict["slug"], "china-media")
+                    self.assertEqual(verdict["rule"], rule)
+                    self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
+        self.assertNotIn("DOMAIN-SUFFIX,douyu.com", self.sources.rules["china-web"])
 
     def test_lite_publishes_fewer_groups_and_every_target_exists(self) -> None:
         core_groups = self.sources.proxy_groups_for("core")
