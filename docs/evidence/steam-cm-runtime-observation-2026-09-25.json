@@ -26,5 +26,6 @@
     "api.steampowered.com",
     "gstore.val.smogfly.com",
     "yif.gdtstream.com"
-  ]
+  ],
+  "correction_2026_09_26": "The 'CM proxied' phase's direct failures were DNS failures: the gateway's generated DNS sent these overseas names to DoT upstreams unreachable from the mainland (ER-075). The device acceptance recorded for ER-074 rode on a CM socket opened while the gateway was off; a fresh reconnect through the gateway with the CM on DIRECT went offline. The finding that the CM connection's address decides the content-server list is unaffected."
 }

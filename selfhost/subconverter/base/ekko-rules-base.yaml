@@ -44,6 +44,10 @@ dns:
   proxy-server-nameserver:
     - 119.29.29.29
     - 223.5.5.5
+  direct-nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+  direct-nameserver-follow-policy: false
   fallback:
     - 8.8.8.8
     - 1.1.1.1
