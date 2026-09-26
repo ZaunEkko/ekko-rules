@@ -55,6 +55,13 @@ test("keeps the Mihomo base local by default and preserves fallback coverage", a
   assert.match(base, /^  listen: 127\.0\.0\.1:53$/m);
   assert.match(base, /^    "geosite:gfw":$/m);
   assert.match(base, /^  fallback:$/m);
+  // DIRECT exits must not inherit the overseas DoT policy: those upstreams are
+  // often unreachable from the mainland, and a direct connection wants the
+  // mainland answer anyway (see ER-075).
+  assert.match(
+    base,
+    /^  direct-nameserver:\n    - 119\.29\.29\.29\n    - 223\.5\.5\.5\n  direct-nameserver-follow-policy: false$/m,
+  );
 
   const fallbackFilter = base.slice(base.indexOf("  fallback-filter:"));
   assert.doesNotMatch(fallbackFilter, /^    geosite:$/m);
