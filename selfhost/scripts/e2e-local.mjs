@@ -706,6 +706,8 @@ async function fetchProfile(profile, autoUpdate, updateIntervalHours) {
     "listen: 127.0.0.1:53",
     "enhanced-mode: fake-ip",
     "geosite:gfw",
+    "direct-nameserver:",
+    "direct-nameserver-follow-policy: false",
   ];
   const missing = required.filter((item) => !text.includes(item));
   if (missing.length) throw new Error(`profile output missing: ${missing.join(", ")}`);

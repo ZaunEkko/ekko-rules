@@ -1745,3 +1745,37 @@ Device acceptance (2026-09-26): with `🎮 游戏下载` on `DIRECT` and a tempo
 OpenClash rule sending `steamserver.net` to that group, the user restarted Steam
 and confirmed the download started promptly at normal speed. This is a result
 for that gateway and network, not a certification of every Steam region.
+
+Correction (2026-09-26): that acceptance did not exercise the rule. The fast
+download ran on a CM connection Steam had opened directly at 13:37 while the
+gateway was switched off, and that socket stayed up until 06:29 the next day.
+The first real reconnect through the gateway with the CM on `DIRECT` failed:
+the gateway could not resolve `steamserver.net` at all (see ER-075), so Steam
+went offline. The finding that Steam picks content servers from the CM
+connection's address still stands; the Tokyo caches and Akamai hosts in the
+first observation also failed because they could not be resolved, not only
+because the route was slow.
+
+## ER-075 — Direct connections resolve through mainland DNS
+
+**Type:** selfhost converter base DNS; no rule, group, or segment change
+
+With `🎮 游戏下载` on `DIRECT`, Steam showed "无连接". The gateway's Mihomo
+(`/dns/query`, 2026-09-26) resolved mainland names in 7–50 ms but timed out
+after 5 s on `cmp1-hkg1.steamserver.net`, `cache1-tyo3.steamcontent.com`,
+`steampipe.akamaized.net` and `www.microsoft.com`. The generated base sends
+`geosite:geolocation-!cn` to `tls://1.0.0.1:853` and `tls://dns.google:853`,
+which are often unreachable from the mainland. In fake-ip mode a proxied
+connection is resolved by the proxy server, so only `DIRECT` connections need a
+local answer, and those went to the blocked DoT upstreams. Every overseas name
+the rules deliberately send direct (Steam content, Akamai, Microsoft and Apple
+late recovery, and now the Steam CM) was exposed to this.
+
+The base now sets `direct-nameserver` to `119.29.29.29` and `223.5.5.5` with
+`direct-nameserver-follow-policy: false`. Mihomo re-resolves any domain that
+matched `DIRECT` through these servers and ignores `nameserver-policy` for that
+lookup. A direct connection wants the mainland answer anyway, since it gets the
+nearest CDN edge for the user's own network. Proxied traffic, `nameserver`,
+`nameserver-policy` and `fallback` are unchanged. The app unit test and the
+local end-to-end check assert both keys, so a subconverter that dropped them
+would fail the build.
