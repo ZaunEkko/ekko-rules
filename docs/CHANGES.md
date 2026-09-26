@@ -1780,6 +1780,10 @@ nearest CDN edge for the user's own network. Proxied traffic, `nameserver`,
 local end-to-end check assert both keys, so a subconverter that dropped them
 would fail the build.
 
+Device acceptance (2026-09-27): the user tested the release carrying this
+base (`site-v0.4.32`) behind the gateway and reported that it works. This is a
+result for that gateway and network, not a certification of every resolver path.
+
 ## ER-076 — Domestic streaming CDNs stop reaching the fallback
 
 **Type:** 7 anchored service-rule additions and 1 reclassification into `china-media`; no new group or segment
