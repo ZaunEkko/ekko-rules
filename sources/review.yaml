@@ -56,6 +56,34 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The user identified bytefcdnrd.com as used for domestic Douyin livestreaming, not as an individual DIRECT preference. Only its anchored suffix joins china-media alongside Douyin playback domains; that policy defaults to DIRECT and the lite policy retains the same action. The observation does not establish domain ownership, server geography, or a wider ByteDance CDN family, so no broader rule is added.
+- id: uu-game-download-host
+  status: accepted
+  scope: routing-policy
+  summary: The UU accelerator's in-app game download host reached the fallback proxy.
+  evidence:
+  - docs/evidence/uu-game-download-runtime-observation-2026-09-28.json
+  - sources/rules/game-download.list
+  - tests/test_profile.py
+  first_observed: 2026-09-28
+  last_verified: '2026-09-28'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The user's gateway showed uu.gdl.queniukx.cn on MATCH during a UU game download. It resolves through Alibaba Cloud CDN to APNIC CN addresses, the same edge set as the existing lv.queniujq.cn download rule. The exact host joins game-download, which defaults to DIRECT in both products. The queniukx.cn certificate is Alibaba's and spans several tenant namespaces, so no suffix is admitted.
+- id: domestic-media-cdn-sweep
+  status: accepted
+  scope: routing-policy
+  summary: Douyu live CDNs reached the fallback proxy; a sweep of domestic streaming sites found the same gap for Bilibili PCDN, Kuaishou images, Yangshipin and Xigua static.
+  evidence:
+  - docs/evidence/domestic-media-cdn-runtime-observation-2026-09-27.json
+  - sources/rules/china-media.list
+  - tests/test_profile.py
+  first_observed: 2026-09-27
+  last_verified: '2026-09-27'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The user's gateway showed hw3a.douyucdn2.cn and abvolcapi.douyucdn.cn on MATCH. Douyu's own play response names edgesrv.com (self-built SCDN) and douyucdn2.cn (Huawei line) as stream hosts, with douyucdn.cn for assets and P2P. Browser runtime capture across eighteen domestic streaming sites, run through first match, added mountaintoys.cn (Bilibili PCDN video segments), kwimgs.com (Kuaishou live images), yangshipin.cn (no rule at all) and bdxiguastatic.com. Every admitted root resolves to APNIC CN space from a mainland vantage. douyu.com moves from china-web to china-media beside Huya. Telemetry, trackers, a shared NetEase game CDN and a captcha host that also fell through are excluded as not media. Youku, Kuaishou short video, Weibo and Zhihu video were not observed and gain nothing.
 - id: adobe-and-lanzou-routing
   status: accepted
   scope: routing-policy

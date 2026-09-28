@@ -1779,3 +1779,61 @@ nearest CDN edge for the user's own network. Proxied traffic, `nameserver`,
 `nameserver-policy` and `fallback` are unchanged. The app unit test and the
 local end-to-end check assert both keys, so a subconverter that dropped them
 would fail the build.
+
+Device acceptance (2026-09-27): the user tested the release carrying this
+base (`site-v0.4.32`) behind the gateway and reported that it works. This is a
+result for that gateway and network, not a certification of every resolver path.
+
+## ER-076 — Domestic streaming CDNs stop reaching the fallback
+
+**Type:** 7 anchored service-rule additions and 1 reclassification into `china-media`; no new group or segment
+
+The user's gateway showed `hw3a.douyucdn2.cn` and `abvolcapi.douyucdn.cn` on
+`MATCH` during Douyu live playback, so the stream went through the
+`🐟 漏网之鱼` proxy. Only `douyu.com` had a rule. Douyu's own play response
+(`getH5PlayV1`, one request per offered line) names two stream families: its
+default self-built SCDN serves FLV from `stream-<city>-<isp>-<ip>.edgesrv.com:8443`,
+and the Huawei line serves from `hw*.douyucdn2.cn`. `douyucdn.cn` carries static
+assets, room images, A/B config and the P2P API. All three roots resolve to
+APNIC CN space from a mainland vantage and join `china-media`. `douyu.com`
+moves there from `china-web`, beside Huya. Both segments default to `DIRECT`,
+so the move only changes which group the user adjusts.
+
+This is the same failure as Douyin's CDN in ER-064, ER-066 and ER-071, so the
+other domestic streaming sites were checked the same way instead of waiting for
+each report. A browser loaded eighteen of them, and every host they requested
+was run through first match. The streaming hosts that reached `MATCH` were
+`*.edge.mountaintoys.cn` (Bilibili PCDN, carrying video segments next to
+`mcdn.bilivideo.cn`), `kwimgs.com` (Kuaishou live covers and avatars; the
+streams already use `*.pull.yximgs.com`), `yangshipin.cn` (CCTV's Yangshipin
+platform, which had no rule at all) and `bdxiguastatic.com` (Xigua static).
+Each is admitted as an anchored suffix after the same mainland-resolution check.
+
+Seen but excluded: ByteDance telemetry, config and survey hosts
+(`applogcdn.com`, `bytetcc.com`, `feelgood.cn`, `usergrowth.com.cn`),
+third-party trackers (`njmapp.com`, `shuzilm.cn`), NetEase's shared game CDN
+(`166.net`) and Kuaishou's captcha host (`kuaishouzt.cn`). None of them carries
+media. Youku served a bot challenge, Kuaishou's short-video page rendered empty,
+and Weibo and Zhihu video were not sampled, so nothing is added for them.
+
+Root cause, unchanged here: `GEOIP,CN` is `no-resolve`, and in fake-ip mode a
+domain connection carries no real address when rules run. So an unlisted
+mainland CDN never reaches the GEOIP fallback and falls straight to `MATCH`.
+Domain coverage is the only thing that keeps domestic media direct.
+
+## ER-077 — UU accelerator game downloads stay direct
+
+**Type:** 1 exact rule added to `game-download`; no new group or segment
+
+The user's gateway showed `uu.gdl.queniukx.cn:443` on `MATCH` while the UU
+accelerator was downloading a game, so the download went through the
+`🐟 漏网之鱼` proxy. From a mainland resolver the host goes through an Alibaba
+Cloud CDN CNAME to `101.66.163.53`–`60`, all APNIC CN space. That is the same
+edge set as the existing `DOMAIN,lv.queniujq.cn` download rule. The exact host
+joins `game-download`, which defaults to `DIRECT` in both products.
+
+The boundary is exact on purpose. The `queniukx.cn` certificate is issued to
+Alibaba (China) Technology and covers `*.gdl`, `*.gph`, `*.res`, `*.v` and
+`*.gsf.queniukx.cn`. That looks like a shared distribution namespace with a
+label per tenant, so neither the root nor `gdl.queniukx.cn` is admitted. A
+regression test keeps a different tenant under `gdl` on the fallback.
