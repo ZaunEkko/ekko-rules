@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-09-28",
+  "service": "NetEase UU accelerator in-app game downloads",
+  "method": "The user's gateway OpenClash showed uu.gdl.queniukx.cn:443 on MATCH (the fallback proxy) while the UU accelerator downloaded a game. The host was resolved through AliDNS DoH from the user's mainland network, the answers were checked against APNIC CN delegations, and the served TLS certificate and Certificate Transparency entries were read. No account or download token is retained.",
+  "expected_action": "DIRECT",
+  "hosts": [
+    "uu.gdl.queniukx.cn"
+  ],
+  "observations": [
+    {
+      "host": "uu.gdl.queniukx.cn",
+      "resolution": "CNAME uu.gdl.queniukx.cn.w.alikunlun.com, A 101.66.163.53-60, all inside APNIC CN delegations",
+      "sibling": "The existing DOMAIN,lv.queniujq.cn game-download rule resolves through w.kunluncan.com to the same 101.66.163.53-60 edge set"
+    }
+  ],
+  "boundary": "The certificate for queniukx.cn is issued to Alibaba (China) Technology Co., Ltd. and covers *.gdl, *.gph, *.res, *.v and *.gsf.queniukx.cn, which reads as a shared Alibaba Cloud distribution namespace with per-tenant labels. Only the observed UU tenant host is admitted, as an exact DOMAIN rule; neither queniukx.cn nor gdl.queniukx.cn is admitted as a suffix."
+}

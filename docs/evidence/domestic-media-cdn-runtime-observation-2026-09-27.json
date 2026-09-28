@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-09-27",
+  "service": "Domestic streaming CDN roots (Douyu, Bilibili PCDN, Kuaishou, Yangshipin, Xigua)",
+  "method": "The user's gateway OpenClash showed hw3a.douyucdn2.cn and abvolcapi.douyucdn.cn reaching MATCH (the fallback proxy) during Douyu live playback. A browser session then loaded Douyu, Kuaishou live, Douyin, Bilibili, Huya, Tencent Video, iQiyi, Mango TV, AcFun, Yangshipin, Migu, NetEase CC, Xigua, NetEase Cloud Music, QQ Music, Kugou, Kuwo and Ximalaya pages, collected every requested hostname, and ran each through the canonical first-match engine. Douyu's line list came from its own getH5PlayV1 response for each offered CDN line. Hosts that reached MATCH were resolved twice: through dns.google with the 223.5.5.0/24 client subnet, checked against APNIC CN delegations, and through AliDNS DoH from the user's mainland network where the first answer was non-CN. Only roots carrying media, stream or platform-owned asset traffic are admitted. No account, token, stream secret or subscription is retained.",
+  "expected_action": "DIRECT",
+  "roots": [
+    "bdxiguastatic.com",
+    "douyucdn.cn",
+    "douyucdn2.cn",
+    "edgesrv.com",
+    "kwimgs.com",
+    "mountaintoys.cn",
+    "yangshipin.cn"
+  ],
+  "reclassified": [
+    {
+      "rule": "DOMAIN-SUFFIX,douyu.com",
+      "from": "china-web",
+      "to": "china-media",
+      "reason": "Douyu is a live-streaming platform like Huya, which already sits in china-media; its danmaku proxy and play API are under this root. Both segments default to DIRECT."
+    }
+  ],
+  "observations": [
+    {
+      "root": "douyucdn.cn",
+      "hosts": ["shark2.douyucdn.cn", "abvolcapi.douyucdn.cn", "sdkapiv4.douyucdn.cn", "rpic.douyucdn.cn"],
+      "role": "Douyu static assets, room images, A/B config and the P2P/PCDN API named in the play response",
+      "resolution": "abvolcapi, sdkapiv4 and rpic are APNIC CN via ECS; shark2 returned 128.14.249.x via dns.google and 36.248.215.16-23 via AliDNS"
+    },
+    {
+      "root": "douyucdn2.cn",
+      "hosts": ["hw1a.douyucdn2.cn", "hw3a.douyucdn2.cn"],
+      "role": "Douyu live stream on the Huawei line (cdn=hw-h5); hw3a was the user's MATCH observation",
+      "resolution": "119.167.172.155-156, 101.73.66.174-176, 27.221.72.172: all APNIC CN"
+    },
+    {
+      "root": "edgesrv.com",
+      "hosts": ["stream-hefei-cu-61-241-139-159.edgesrv.com", "stream-hefei-cu-61-241-139-134.edgesrv.com"],
+      "role": "Douyu's default self-built SCDN line (cdn=scdncuanhhf); the FLV stream is served from these edges on port 8443",
+      "resolution": "Each label encodes its own address (61.241.139.x, China Unicom Hefei), APNIC CN"
+    },
+    {
+      "root": "mountaintoys.cn",
+      "hosts": ["809aj93l.edge.mountaintoys.cn", "809al93l.edge.mountaintoys.cn"],
+      "role": "Bilibili PCDN edges carrying video segments on a www.bilibili.com video page alongside mcdn.bilivideo.cn",
+      "resolution": "171.43.246.85-86: APNIC CN"
+    },
+    {
+      "root": "kwimgs.com",
+      "hosts": ["tx2.a.kwimgs.com", "p66.a.kwimgs.com"],
+      "role": "Kuaishou live covers, game posters and avatars on live.kuaishou.com; the streams themselves use *.pull.yximgs.com, already DIRECT",
+      "resolution": "All answers APNIC CN"
+    },
+    {
+      "root": "yangshipin.cn",
+      "hosts": ["www.yangshipin.cn", "sapi.yangshipin.cn", "img.yangshipin.cn", "capi.yangshipin.cn"],
+      "role": "CCTV's Yangshipin streaming platform; no rule matched any of its hosts",
+      "resolution": "www and img APNIC CN; sapi returned 163.181.87.x via dns.google and 153.35.101.x, 36.251.253-255.x, 210.22.248.x via AliDNS"
+    },
+    {
+      "root": "bdxiguastatic.com",
+      "hosts": ["lf3-cdn-tos.bdxiguastatic.com"],
+      "role": "Xigua Video static assets on www.ixigua.com",
+      "resolution": "47.246.36.x via dns.google; 221.194.182.x, 122.191.171.x, 61.242.191.51 via AliDNS"
+    }
+  ],
+  "excluded_candidates": [
+    {
+      "hosts": ["lf-static.applogcdn.com", "lf3-config.bytetcc.com", "api.feelgood.cn", "safe.usergrowth.com.cn"],
+      "reason": "ByteDance telemetry, remote config, survey and growth endpoints; not media, and not needed for playback"
+    },
+    {
+      "hosts": ["ql.njmapp.com", "hdaa.shuzilm.cn"],
+      "reason": "Third-party tracking and device fingerprinting, not a platform's own media"
+    },
+    {
+      "hosts": ["g.166.net", "img.166.net"],
+      "reason": "NetEase game CDN seen on the CC/Dashen page; a shared vendor asset root, not streaming"
+    },
+    {
+      "hosts": ["verification.kuaishouzt.cn"],
+      "reason": "Kuaishou captcha endpoint; not media"
+    }
+  ],
+  "not_observed": "Youku returned a bot challenge, so its runtime hosts were not collected. Kuaishou's short-video page rendered empty, so kwaicdn.com-style video hosts were not observed and are not admitted. Weibo and Zhihu video were not sampled."
+}
