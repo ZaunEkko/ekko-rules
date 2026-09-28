@@ -3187,6 +3187,21 @@ class LiteProductTests(unittest.TestCase):
                     self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
         self.assertNotIn("DOMAIN-SUFFIX,douyu.com", self.sources.rules["china-web"])
 
+    def test_uu_accelerator_download_host_stays_direct_in_both_products(self) -> None:
+        for product in PRODUCTS:
+            with self.subTest(product=product):
+                verdict = first_match(
+                    self.sources, product=product, domain="uu.gdl.queniukx.cn"
+                )
+                self.assertEqual(verdict["slug"], "game-download")
+                self.assertEqual(verdict["rule"], "DOMAIN,uu.gdl.queniukx.cn")
+                self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
+                # queniukx.cn is a shared Alibaba namespace; other tenants are not admitted.
+                other = first_match(
+                    self.sources, product=product, domain="other.gdl.queniukx.cn"
+                )
+                self.assertEqual(other["slug"], "final")
+
     def test_lite_publishes_fewer_groups_and_every_target_exists(self) -> None:
         core_groups = self.sources.proxy_groups_for("core")
         lite_groups = self.sources.proxy_groups_for("lite")

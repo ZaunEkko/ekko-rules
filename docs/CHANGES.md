@@ -1820,3 +1820,20 @@ Root cause, unchanged here: `GEOIP,CN` is `no-resolve`, and in fake-ip mode a
 domain connection carries no real address when rules run. So an unlisted
 mainland CDN never reaches the GEOIP fallback and falls straight to `MATCH`.
 Domain coverage is the only thing that keeps domestic media direct.
+
+## ER-077 — UU accelerator game downloads stay direct
+
+**Type:** 1 exact rule added to `game-download`; no new group or segment
+
+The user's gateway showed `uu.gdl.queniukx.cn:443` on `MATCH` while the UU
+accelerator was downloading a game, so the download went through the
+`🐟 漏网之鱼` proxy. From a mainland resolver the host goes through an Alibaba
+Cloud CDN CNAME to `101.66.163.53`–`60`, all APNIC CN space. That is the same
+edge set as the existing `DOMAIN,lv.queniujq.cn` download rule. The exact host
+joins `game-download`, which defaults to `DIRECT` in both products.
+
+The boundary is exact on purpose. The `queniukx.cn` certificate is issued to
+Alibaba (China) Technology and covers `*.gdl`, `*.gph`, `*.res`, `*.v` and
+`*.gsf.queniukx.cn`. That looks like a shared distribution namespace with a
+label per tenant, so neither the root nor `gdl.queniukx.cn` is admitted. A
+regression test keeps a different tenant under `gdl` on the fallback.
