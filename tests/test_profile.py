@@ -1595,7 +1595,7 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for domain in [
             "other.manlaxy.com",
             "other.sycontroller.com",
-            "yif.gdtstream.com",
+            "other.gdtstream.com",
             "dl.steam.cygnaa.com",
             "www.tmall.hk",
             "www.jd.hk",
@@ -1627,7 +1627,6 @@ class FirstMatchBaselineTests(unittest.TestCase):
         for forbidden in [
             "DOMAIN-SUFFIX,manlaxy.com",
             "DOMAIN-SUFFIX,sycontroller.com",
-            "DOMAIN,yif.gdtstream.com",
             "DOMAIN,dl.steam.cygnaa.com",
             "IP-CIDR,103.195.103.66/32,no-resolve",
             "IP-CIDR,103.195.103.0/24,no-resolve",
@@ -3186,6 +3185,26 @@ class LiteProductTests(unittest.TestCase):
                     self.assertEqual(verdict["rule"], rule)
                     self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
         self.assertNotIn("DOMAIN-SUFFIX,douyu.com", self.sources.rules["china-web"])
+
+    def test_steam_chunk_redirect_hosts_stay_direct_in_both_products(self) -> None:
+        hosts = (
+            "gstore.val.smogfly.com",
+            "yif.gdtstream.com",
+            "dl1.steam.clngaa.com",
+            "dl.steam.cyngaa.com",
+        )
+        for product in PRODUCTS:
+            for host in hosts:
+                with self.subTest(product=product, host=host):
+                    verdict = first_match(self.sources, product=product, domain=host)
+                    self.assertEqual(verdict["slug"], "game-download")
+                    self.assertEqual(verdict["rule"], f"DOMAIN,{host}")
+                    self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
+            # The registrable roots serve unrelated origins and are not admitted.
+            for root in ("smogfly.com", "gdtstream.com"):
+                with self.subTest(product=product, root=root):
+                    verdict = first_match(self.sources, product=product, domain=root)
+                    self.assertEqual(verdict["slug"], "final")
 
     def test_uu_accelerator_download_host_stays_direct_in_both_products(self) -> None:
         for product in PRODUCTS:

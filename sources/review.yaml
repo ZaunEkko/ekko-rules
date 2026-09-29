@@ -56,6 +56,20 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The user identified bytefcdnrd.com as used for domestic Douyin livestreaming, not as an individual DIRECT preference. Only its anchored suffix joins china-media alongside Douyin playback domains; that policy defaults to DIRECT and the lite policy retains the same action. The observation does not establish domain ownership, server geography, or a wider ByteDance CDN family, so no broader rule is added.
+- id: steam-chunk-redirect-hosts
+  status: accepted
+  scope: routing-policy
+  summary: Steam China CDN chunk redirects reached the fallback proxy.
+  evidence:
+  - docs/evidence/steam-chunk-redirect-runtime-observation-2026-09-29.json
+  - sources/rules/game-download.list
+  - tests/test_profile.py
+  first_observed: 2026-09-29
+  last_verified: '2026-09-29'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The user's gateway showed eight gstore.val.smogfly.com connections on MATCH carrying a Steam update while st.dl.eccdnx.com ran DIRECT. The user's Steam content logs show the admitted Steam China CDNs st.dl.eccdnx.com and dl.steam.clngaa.com redirecting depot chunk requests to gstore.val.smogfly.com, yif.gdtstream.com, dl1.steam.clngaa.com and dl.steam.cyngaa.com throughout 2026, beside the already admitted gstore.val.manlaxy.com and xz.sycontroller.com. All four resolve to APNIC CN China Mobile and China Telecom edges and join game-download as exact hosts, which defaults to DIRECT in both products. The two wanwang.space redirect targets were last seen in 2025 and are not admitted. The registrable roots serve unrelated origins, so no suffix is admitted.
 - id: uu-game-download-host
   status: accepted
   scope: routing-policy
