@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-09-29",
+  "service": "Steam China depot chunk redirects",
+  "method": "The user's gateway OpenClash showed eight gstore.val.smogfly.com:80 connections on MATCH (the fallback proxy) carrying a Steam game update at 0.2-2.1 MB/s each, while st.dl.eccdnx.com in the same download ran on the game-download DIRECT policy. The user's own Steam client logs (content_log.previous.txt and content_log.txt, 2025-05-31 to 2026-09-29) were then searched for every 'CChunkRequestRedirectHandler - allowing redirects to' line, and each redirect target host was checked against first match, resolved through AliDNS DoH from the user's mainland network, and matched against APNIC CN delegations. Chunk tokens, depot IDs and account data are not retained.",
+  "expected_action": "DIRECT",
+  "hosts": [
+    "gstore.val.smogfly.com",
+    "yif.gdtstream.com",
+    "dl1.steam.clngaa.com",
+    "dl.steam.cyngaa.com"
+  ],
+  "observations": [
+    {
+      "host": "gstore.val.smogfly.com",
+      "redirected_from": "st.dl.eccdnx.com (Steam CDN,29)",
+      "redirects_logged": 29,
+      "first_seen": "2025-11-30",
+      "last_seen": "2026-09-29",
+      "resolution": "CNAME through ctot.baishangeek.cn and sroots.cn to cdn.chinamobile.com / d.cdn.10086.cn, A 39.136.226.60-189 and 39.137.58.86-87, 10/10 inside APNIC CN delegations"
+    },
+    {
+      "host": "yif.gdtstream.com",
+      "redirected_from": "dl.steam.clngaa.com (Steam CDN,30)",
+      "redirects_logged": 31,
+      "first_seen": "2026-02-15",
+      "last_seen": "2026-09-25",
+      "resolution": "CNAME through w1.ngaagslb.net, the same China Mobile edge set as gstore.val.smogfly.com, 10/10 inside APNIC CN delegations"
+    },
+    {
+      "host": "dl1.steam.clngaa.com",
+      "redirected_from": "dl.steam.clngaa.com (Steam CDN,30)",
+      "redirects_logged": 7,
+      "first_seen": "2025-10-09",
+      "last_seen": "2026-07-15",
+      "resolution": "CNAME dl.steam.clngaa.com.dl.i2.ngaagslb.net, A 39.136.x and 39.137.58.x, 10/10 inside APNIC CN delegations"
+    },
+    {
+      "host": "dl.steam.cyngaa.com",
+      "redirected_from": "dl.steam.clngaa.com (Steam CDN,30)",
+      "redirects_logged": 3,
+      "first_seen": "2026-05-12",
+      "last_seen": "2026-09-29",
+      "resolution": "CNAME dl.steam.cyngaa.com.i.ngaagslb.net, A 180.97.205.26, inside APNIC CN delegations"
+    }
+  ],
+  "already_admitted": [
+    "gstore.val.manlaxy.com (19 redirects from st.dl.eccdnx.com)",
+    "xz.sycontroller.com (8 redirects from xz.pphimalayanrt.com)"
+  ],
+  "excluded_candidates": [
+    {
+      "host": "gstore.val.wanwang.space",
+      "reason": "2 redirects, all on 2025-10-08 and none since; st-bak.viv.wanwang.space was already retired as NXDOMAIN in ER-034"
+    },
+    {
+      "host": "f86a8fa9-rh.wanwang.space",
+      "reason": "7 redirects between 2025-05-31 and 2025-08-13 and none since"
+    }
+  ],
+  "boundary": "Each host is admitted as an exact DOMAIN rule. The registrable roots are not: smogfly.com and gdtstream.com resolve to unrelated single origins (8.137.125.196 and 43.240.159.246), and the CDN hostnames the chains pass through (baishangeek.cn, sroots.cn, ngaagslb.net, 10086.cn) are shared carrier and CDN namespaces that the client never connects to by name.",
+  "supersedes": "ER-074 recorded gstore.val.smogfly.com and yif.gdtstream.com as chunk-redirect hosts seen once each and left them unaccepted. The full client logs show 29 and 31 redirects over ten and seven months."
+}
