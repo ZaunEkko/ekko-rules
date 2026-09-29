@@ -21,6 +21,8 @@ DOMAIN,cloudflare.epicgamescdn.com
 DOMAIN,content.cdp.bethesda.net
 DOMAIN,dl.delivery.mp.microsoft.com
 DOMAIN,dl.steam.clngaa.com
+DOMAIN,dl.steam.cyngaa.com
+DOMAIN,dl1.steam.clngaa.com
 DOMAIN,down.anticheatexpert.com
 DOMAIN,down.val.qq.com
 DOMAIN,download.cdp.bethesda.net
@@ -43,6 +45,7 @@ DOMAIN,gog-cdn-fastly-cp77.gog.com
 DOMAIN,gog-cdn-fastly.gog.com
 DOMAIN,gog-cdn.akamaized.net
 DOMAIN,gstore.val.manlaxy.com
+DOMAIN,gstore.val.smogfly.com
 DOMAIN,kr.cdn.blizzard.com
 DOMAIN,level3.blizzard.com
 DOMAIN,level3.ssl.blizzard.com
@@ -66,6 +69,7 @@ DOMAIN,xvcf1.xboxlive.com
 DOMAIN,xvcf2.xboxlive.com
 DOMAIN,xz.pphimalayanrt.com
 DOMAIN,xz.sycontroller.com
+DOMAIN,yif.gdtstream.com
 DOMAIN,zeus.dl.playstation.net
 DOMAIN-SUFFIX,3839apk.com
 DOMAIN-SUFFIX,cdn.ubi.com

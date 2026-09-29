@@ -1837,3 +1837,40 @@ Alibaba (China) Technology and covers `*.gdl`, `*.gph`, `*.res`, `*.v` and
 `*.gsf.queniukx.cn`. That looks like a shared distribution namespace with a
 label per tenant, so neither the root nor `gdl.queniukx.cn` is admitted. A
 regression test keeps a different tenant under `gdl` on the fallback.
+
+## ER-078 — Steam China chunk redirects stay direct
+
+**Type:** 4 exact rules added to `game-download`; no new group or segment
+
+The user's gateway showed eight `gstore.val.smogfly.com:80` connections on
+`MATCH` carrying a Steam update at up to 2.1 MB/s each, so most of the download
+went through the `🐟 漏网之鱼` proxy while `st.dl.eccdnx.com` in the same
+download ran `DIRECT`. Steam China's CDNs hand a chunk request to another host
+with an HTTP redirect, and the client logs every one of them. The user's
+`content_log` files cover 2025-05-31 to 2026-09-29. Each redirect target was
+checked against first match and resolved from the user's mainland network.
+
+| Host | Redirected from | Redirects logged | Last seen |
+|---|---|---:|---|
+| `gstore.val.smogfly.com` | `st.dl.eccdnx.com` | 29 | 2026-09-29 |
+| `yif.gdtstream.com` | `dl.steam.clngaa.com` | 31 | 2026-09-25 |
+| `dl1.steam.clngaa.com` | `dl.steam.clngaa.com` | 7 | 2026-07-15 |
+| `dl.steam.cyngaa.com` | `dl.steam.clngaa.com` | 3 | 2026-09-29 |
+
+All four resolve to China Mobile or China Telecom edges inside APNIC CN
+delegations, and each joins `game-download` as an exact host. The same logs
+show `gstore.val.manlaxy.com` and `xz.sycontroller.com`, which were already
+admitted, so this completes a family that was half covered. The two
+`wanwang.space` redirect targets were last seen in 2025 and stay out. The
+registrable roots are not admitted: `smogfly.com` and `gdtstream.com` each
+serve an unrelated single origin, and the CDN names in the CNAME chains are
+shared carrier namespaces that the client never connects to by name.
+
+This corrects ER-074, which recorded `gstore.val.smogfly.com` and
+`yif.gdtstream.com` as seen once each. That came from one download session.
+The full logs show both hosts in regular use for months.
+
+It also reverses ER-021, which left `yif.gdtstream.com` unaccepted as weakly
+evidenced. The `gdtstream.com` suffix and the unresolving `dl.steam.cygnaa.com`
+stay excluded, and the regression test now checks a sibling host under
+`gdtstream.com` instead.
