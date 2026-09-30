@@ -11,6 +11,14 @@ rather than inferred. A domain whose A records land inside those ranges is
 served from the mainland and belongs on DIRECT; one that does not is a foreign
 service a mainland page happens to reference.
 
+The delegation file records each allocation under the economy of its holder,
+which is coarser than where the space is used. Alibaba's 8.128.0.0/10 is listed
+there as SG, while APNIC's own registration data assigns 8.128.0.0-8.191.255.255
+to ALICLOUD in CN and the rest of the block to GB and SG. So an address outside
+the CN delegations is looked up once more in APNIC RDAP, and counts as mainland
+when its most specific registered network carries country CN. Both answers come
+from the same registry; the second is only finer grained.
+
 Usage::
 
     python scripts/mainland_hosting_probe.py candidates.txt verdicts.json
@@ -29,6 +37,7 @@ import urllib.request
 from pathlib import Path
 
 APNIC_DELEGATIONS = "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest"
+APNIC_RDAP = "https://rdap.apnic.net/ip/"
 DOH_ENDPOINT = "https://dns.google/resolve"
 TIMEOUT = 20
 WORKERS = 24
@@ -78,6 +87,41 @@ def in_cn(address: str, starts: list[int], ranges: list[tuple[int, int]]) -> boo
     return index >= 0 and value <= ranges[index][1]
 
 
+def rdap_network(address: str) -> tuple[str, str, str] | None:
+    """Return (start, end, country) of the most specific APNIC registration."""
+    request = urllib.request.Request(
+        APNIC_RDAP + address,
+        headers={"accept": "application/rdap+json", "user-agent": "ekko-rules-evidence/1"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+            payload = json.load(response)
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError):
+        return None
+    start, end = payload.get("startAddress"), payload.get("endAddress")
+    if not start or not end:
+        return None
+    return start, end, str(payload.get("country") or "").upper()
+
+
+def registered_cn(
+    addresses: list[str],
+    starts: list[int],
+    ranges: list[tuple[int, int]],
+    lookup=rdap_network,
+) -> dict[str, str]:
+    """Map each address outside the CN delegations that APNIC RDAP places in CN
+    to the registered network that says so."""
+    attested: dict[str, str] = {}
+    for address in addresses:
+        if in_cn(address, starts, ranges):
+            continue
+        network = lookup(address)
+        if network and network[2] == "CN":
+            attested[address] = f"{network[0]}-{network[1]}"
+    return attested
+
+
 def resolve(host: str) -> list[str]:
     query = urllib.parse.urlencode(
         {"name": host, "type": "A", "edns_client_subnet": CLIENT_SUBNET}
@@ -113,14 +157,20 @@ def main(argv: list[str]) -> int:
 
     def verdict(root: str) -> dict[str, object]:
         addresses = resolve(root) or resolve(f"www.{root}")
-        mainland = [a for a in addresses if in_cn(a, starts, ranges)]
-        return {
+        attested = registered_cn(addresses, starts, ranges)
+        mainland = [
+            a for a in addresses if in_cn(a, starts, ranges) or a in attested
+        ]
+        record: dict[str, object] = {
             "root": root,
             "addresses": addresses,
             "mainland_addresses": mainland,
             "mainland_hosted": bool(addresses) and len(mainland) == len(addresses),
             "mixed_hosting": bool(mainland) and len(mainland) != len(addresses),
         }
+        if attested:
+            record["rdap_cn"] = attested
+        return record
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
         records = list(pool.map(verdict, candidates))
@@ -133,7 +183,7 @@ def main(argv: list[str]) -> int:
     unresolved = [r for r in records if not r["addresses"]]
     document = {
         "schema_version": 1,
-        "method": f"APNIC delegation records define the CN address space; a candidate is mainland-hosted when every A record falls inside it. Resolution names {CLIENT_SUBNET} as the client subnet so the answer is the one a mainland client receives rather than the one this probe's own location earns",
+        "method": f"APNIC delegation records define the CN address space; a candidate is mainland-hosted when every A record falls inside it, or outside it but inside a network APNIC RDAP registers to CN (listed in rdap_cn). Resolution names {CLIENT_SUBNET} as the client subnet so the answer is the one a mainland client receives rather than the one this probe's own location earns",
         "source": APNIC_DELEGATIONS,
         "cn_ranges": len(ranges),
         "summary": {

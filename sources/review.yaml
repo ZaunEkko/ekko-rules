@@ -56,6 +56,20 @@ items:
   recommended_action: keep
   current_product: standard
   resolution: The user identified bytefcdnrd.com as used for domestic Douyin livestreaming, not as an individual DIRECT preference. Only its anchored suffix joins china-media alongside Douyin playback domains; that policy defaults to DIRECT and the lite policy retains the same action. The observation does not establish domain ownership, server geography, or a wider ByteDance CDN family, so no broader rule is added.
+- id: domestic-voice-chat-roots
+  status: accepted
+  scope: routing-policy
+  summary: KOOK voice relays and other mainland gaming voice apps reached the fallback proxy.
+  evidence:
+  - docs/evidence/cn-apnic-verdicts-2026-09-19.json
+  - sources/rules/china-web.list
+  - tests/test_profile.py
+  first_observed: 2026-10-01
+  last_verified: '2026-10-01'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The user's gateway showed the KOOK voice relay bj-sig07-turn-1697275940.kaihei.co on MATCH through a Hong Kong exit. kaihei.co and kook.top redirect to KOOK's own site, and a sweep of the other mainland gaming voice apps found Oopz, Fanbook and TT Voice unlisted as well. YY and NetEase CC were already direct through china-media and china-direct-curated. The admitted roots are oopz.cn, fanbook.cn, fanbook.mobi, 52tt.com, ttyuyin.com, kaihei.co, kook.top, kookapp.cn and kaiheila.cn, each resolved from mainland client subnets and joining china-web as anchored suffixes. kookapp.cn and kaiheila.cn answer from Alibaba Cloud cn-beijing load balancers that include addresses in 8.128.0.0/10, which the APNIC delegation file lists under SG; APNIC RDAP registers 8.128.0.0-8.191.255.255 to ALICLOUD in CN, so the mainland probe now accepts an address whose most specific RDAP network is in CN and records it under rdap_cn.
 - id: steam-chunk-redirect-hosts
   status: accepted
   scope: routing-policy

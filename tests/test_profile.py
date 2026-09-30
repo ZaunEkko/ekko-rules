@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import json
 import re
 import shutil
@@ -19,6 +20,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(ROOT / "scripts"))
+import mainland_hosting_probe  # noqa: E402
 import rule_evidence  # noqa: E402
 
 SOURCES = ROOT / "sources"
@@ -3055,7 +3057,7 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
 
 
 class MainlandEvidenceContractTests(unittest.TestCase):
-    """The mainland segments carry 4,274 rules and must be auditable too.
+    """The mainland segments carry 4,283 rules and must be auditable too.
 
     Advertising got this contract first because a wrong rule there blocks
     something. A wrong rule here sends traffic direct that should be proxied,
@@ -3096,6 +3098,41 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             if parse_rule(entry, context="mainland evidence")[1].lower() not in evidenced
         ]
         self.assertEqual(unmapped, [], "mainland rules with no committed evidence")
+
+    def test_rdap_attested_addresses_lie_in_the_network_named(self) -> None:
+        records = json.loads(CN_APNIC_VERDICTS.read_text(encoding="utf-8"))["records"]
+        attested = [record for record in records if "rdap_cn" in record]
+        self.assertTrue(attested)
+        for record in attested:
+            for address, network in record["rdap_cn"].items():
+                with self.subTest(root=record["root"], address=address):
+                    self.assertIn(address, record["addresses"])
+                    start, end = (ipaddress.IPv4Address(part) for part in network.split("-"))
+                    self.assertTrue(start <= ipaddress.IPv4Address(address) <= end)
+
+    def test_rdap_fallback_admits_only_networks_registered_to_cn(self) -> None:
+        # One CN delegation, 39.96.0.0/13; Alibaba's 8.128.0.0/10 is absent
+        # from the delegation file because it is listed there under SG.
+        start = int(ipaddress.IPv4Address("39.96.0.0"))
+        ranges = [(start, start + 2**19 - 1)]
+        registrations = {
+            "8.140.223.227": ("8.128.0.0", "8.159.255.255", "CN"),
+            "8.208.0.1": ("8.208.0.0", "8.208.255.255", "GB"),
+        }
+        looked_up: list[str] = []
+
+        def lookup(address: str):
+            looked_up.append(address)
+            return registrations.get(address)
+
+        attested = mainland_hosting_probe.registered_cn(
+            ["39.97.248.56", "8.140.223.227", "8.208.0.1", "203.0.113.9"],
+            [start],
+            ranges,
+            lookup=lookup,
+        )
+        self.assertEqual(attested, {"8.140.223.227": "8.128.0.0-8.159.255.255"})
+        self.assertNotIn("39.97.248.56", looked_up, "delegated CN needs no second lookup")
 
     def test_the_mainland_grandfathered_set_is_closed(self) -> None:
         legacy = json.loads(CN_LEGACY_DIRECT.read_text(encoding="utf-8"))
@@ -3220,6 +3257,27 @@ class LiteProductTests(unittest.TestCase):
                     self.sources, product=product, domain="other.gdl.queniukx.cn"
                 )
                 self.assertEqual(other["slug"], "final")
+
+    def test_domestic_voice_chat_hosts_stay_direct_in_both_products(self) -> None:
+        cases = {
+            "bj-sig07-turn-1697275940.kaihei.co": "DOMAIN-SUFFIX,kaihei.co",
+            "www.kook.top": "DOMAIN-SUFFIX,kook.top",
+            "www.kookapp.cn": "DOMAIN-SUFFIX,kookapp.cn",
+            "img.kookapp.cn": "DOMAIN-SUFFIX,kookapp.cn",
+            "www.kaiheila.cn": "DOMAIN-SUFFIX,kaiheila.cn",
+            "staticcdn.oopz.cn": "DOMAIN-SUFFIX,oopz.cn",
+            "web.fanbook.cn": "DOMAIN-SUFFIX,fanbook.cn",
+            "fb-cdn.fanbook.mobi": "DOMAIN-SUFFIX,fanbook.mobi",
+            "obs-cdn.52tt.com": "DOMAIN-SUFFIX,52tt.com",
+            "www.ttyuyin.com": "DOMAIN-SUFFIX,ttyuyin.com",
+        }
+        for product in PRODUCTS:
+            for domain, rule in cases.items():
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(verdict["slug"], "china-web")
+                    self.assertEqual(verdict["rule"], rule)
+                    self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
 
     def test_lite_publishes_fewer_groups_and_every_target_exists(self) -> None:
         core_groups = self.sources.proxy_groups_for("core")

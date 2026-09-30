@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines two builds of one product over the same corpus: 56 rule files, 57 ordered segments including FINAL, and 10,188 rules including FINAL, with 44 proxy groups in the full build and 10 in the lite build. The lite build changes only the policy a segment targets, never the rules or their order, and `LiteProductTests` holds the two to the same effective action on every segment. Subconverter and Mihomo consume the same ordered corpus through one entry point per build.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines two builds of one product over the same corpus: 56 rule files, 57 ordered segments including FINAL, and 10,197 rules including FINAL, with 44 proxy groups in the full build and 10 in the lite build. The lite build changes only the policy a segment targets, never the rules or their order, and `LiteProductTests` holds the two to the same effective action on every segment. Subconverter and Mihomo consume the same ordered corpus through one entry point per build.
 
 The product contains 207 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,7 +21,7 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 10,187 file rules are partitioned by evidence boundary. Each figure is the
+The 10,196 file rules are partitioned by evidence boundary. Each figure is the
 sum of the segments in that boundary, taken from the canonical tree rather than
 carried forward, because the previous revision of this table had drifted: it
 partitioned 10,027 rules and split the mainland and remainder categories 369
@@ -30,7 +30,7 @@ rules apart from what the sources actually held.
 | Component | Rules | Provenance treatment |
 |---|---:|---|
 | Current late recovery | 2,683 | Frozen historical recovery emission minus 11 explicit public-product exclusions and the reassignments recorded in the exclusion ledger |
-| Observation-derived mainland direct curation | 4,274 | Derived from this repository's own markup and script scans of mainland origins, Certificate Transparency vendor attestation, and APNIC delegation records |
+| Observation-derived mainland direct curation | 4,283 | Derived from this repository's own markup and script scans of mainland origins, Certificate Transparency vendor attestation, and APNIC delegation records |
 | Observation-derived advertising curation | 590 | Derived from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
 | Overseas shopping curation | 76 | Reviewed per host: overseas retail and cross-border forwarding roots whose storefront, availability or bot challenge depends on which exit reaches them |
 | Finance and account registration curation | 44 | Reviewed per host: payments, virtual cards, SMS receipt and overseas banks and brokers, each resolved before admission and each geo-sensitive enough that the exit is part of the account |
@@ -54,13 +54,13 @@ ER-073 adds 19 reviewed product roots for overseas AI generation to the existing
 
 ### Observation-derived mainland direct curation
 
-`sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 4,274 rules derived entirely from this repository's own measurement. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
+`sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 4,283 rules derived entirely from this repository's own measurement. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
 
 ER-074 moves `DOMAIN-SUFFIX,steamserver.net` out of `game-platform-late-recovery` into `game-download`. Steam picks content servers from the public address it sees on the connection-manager (CM) link. The user's own Steam client logs show the proxied CM made Steam hand out Tokyo caches that the DIRECT download policy could not reach quickly; with the CM direct, Steam handed out mainland CDNs at full speed. The committed record is `docs/evidence/steam-cm-runtime-observation-2026-09-25.json`, and the move is recorded as a reassignment in the public-rule exclusion ledger, so the frozen recovery set shrinks rather than grows.
 
 The 32 LanZou/Woozooo download roots added in ER-067 came from a user-observed fallback during an actual download and were admitted as anchored suffixes under the existing mainland-direct policy. The committed runtime-family record is `docs/evidence/lanzou-runtime-observation-2026-09-23.json`. Public lists were used only as review leads: unclear or unrelated candidate roots such as `baidupan.com`, `bakstotre.com`, `webgetstore.com`, and `wwentua.com` were not imported. Normal generation still consumes only the reviewed canonical files committed here.
 
-The decision comes from a primary source wherever it can: APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root when its A records fall inside them. Where that test cannot answer — a mainland service on a global CDN, or a root whose apex carries no address — admission falls back to per-host review recorded against the observation that found it.
+The decision comes from a primary source wherever it can: APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred, and `scripts/mainland_hosting_probe.py` admits a root when its A records fall inside them. The delegation file lists each allocation under its holder's economy, so an address outside it is looked up once more in APNIC's own registration data (RDAP) and counts when its most specific registered network is in CN. That is how Alibaba Cloud's mainland regions in `8.128.0.0/10` are recognised, while the GB and SG parts of the same block are not; each such address is named with its network under `rdap_cn` in the verdict file. Where that test cannot answer — a mainland service on a global CDN, or a root whose apex carries no address — admission falls back to per-host review recorded against the observation that found it.
 
 `china-direct-curated` exists because ordering is semantics. Seven broad vendor roots plus two CDN roots must not run ahead of the cloud, media and AI segments that name specific hosts beneath them, so they sit in their own segment immediately before the GEOIP fallback, where the retired mainland import used to sit.
 
