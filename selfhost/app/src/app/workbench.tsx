@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
   countEnabledOptions,
@@ -169,6 +169,8 @@ const BASE_URL_MODE_KEY = "ekko-rules.subscription-base-url-mode";
 // addresses carry tokens, so each one can be forgotten individually and the
 // list is capped rather than growing without end.
 const SOURCE_HISTORY_KEY = "ekko-rules.saved-links";
+const GUIDE_SEEN_KEY = "ekko-rules.guide-seen";
+const GUIDE_STEPS = 3;
 const SAVED_LINK_LIMIT = 8;
 
 /**
@@ -663,6 +665,111 @@ export function Workbench({
       /* unreadable or absent; start empty */
     }
   }, []);
+
+  /* The guide. The form sits below a tall hero, and on a phone a first-time
+     visitor sees a link that is not there yet and two dead buttons — the
+     field that makes it appear is a long scroll away. So the first visit
+     jumps straight to that field and walks the three steps once; the
+     heading keeps a button to replay it. Nothing is laid over the page: the
+     active step is outlined in place and its note sits right under it. */
+  const [guideStep, setGuideStep] = useState<number | null>(null);
+  // The first-visit jump is instant: it is a landing, not a transition, and
+  // a smooth scroll started while the page is still settling gets cut short.
+  const guideJumpInstant = useRef(false);
+
+  const endGuide = useCallback(() => {
+    setGuideStep(null);
+    try {
+      window.localStorage.setItem(GUIDE_SEEN_KEY, "1");
+    } catch {
+      /* storage unavailable; the guide simply plays again next visit */
+    }
+  }, []);
+
+  // Someone who already has links saved on this device has been here before
+  // the guide existed; they do not need it pushed at them.
+  useEffect(() => {
+    if (storesProfiles) return;
+    try {
+      if (
+        window.localStorage.getItem(GUIDE_SEEN_KEY) ||
+        window.localStorage.getItem(SOURCE_HISTORY_KEY)
+      ) {
+        return;
+      }
+    } catch {
+      return;
+    }
+    guideJumpInstant.current = true;
+    setGuideStep(1);
+  }, [storesProfiles]);
+
+  useEffect(() => {
+    if (guideStep === null) return;
+    const section = document.querySelector(`[data-guide="${guideStep}"]`);
+    if (!section) return;
+    const smooth =
+      !guideJumpInstant.current &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    guideJumpInstant.current = false;
+    // Top, not centre: the note sits under the step, and on a phone the
+    // keyboard takes the lower half once the field is focused.
+    section.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+    if (guideStep === 1) {
+      document
+        .getElementById("subscription-url")
+        ?.focus({ preventScroll: true });
+    }
+  }, [guideStep]);
+
+
+  // The rest of the page is blurred out while the guide runs; Esc is the
+  // keyboard way out, same as "跳过引导".
+  useEffect(() => {
+    if (guideStep === null) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") endGuide();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [guideStep, endGuide]);
+
+  function renderGuideNote(step: number, title: string, text: ReactNode) {
+    if (guideStep !== step) return null;
+    const last = step === GUIDE_STEPS;
+    return (
+      <div className="guide-note" role="status">
+        <div className="guide-note-head">
+          <span className="guide-progress" aria-hidden="true">
+            {Array.from({ length: GUIDE_STEPS }, (_, index) => (
+              <i key={index} data-on={index < step ? "true" : undefined} />
+            ))}
+          </span>
+          <span className="guide-count">
+            {String(step).padStart(2, "0")}
+            <em> / {String(GUIDE_STEPS).padStart(2, "0")}</em>
+          </span>
+          <strong>{title}</strong>
+        </div>
+        <p>{text}</p>
+        <div className="guide-note-actions">
+          {last ? null : (
+            <button type="button" className="guide-skip" onClick={endGuide}>
+              跳过引导
+            </button>
+          )}
+          <button
+            type="button"
+            className="guide-next"
+            onClick={() => (last ? endGuide() : setGuideStep(step + 1))}
+          >
+            {last ? "开始使用" : "下一步"}
+            <span aria-hidden="true">{last ? "✓" : "→"}</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const rememberLink = useCallback(
     (
@@ -1339,6 +1446,21 @@ export function Workbench({
                 节点、DNS、策略组、规则，一个文件全给你。链接在你的浏览器里拼成，
                 服务器不保存订阅，也不知道你生成过什么。
               </p>
+              {/* The whole page reduces to three moves, and a first-time
+                  visitor faced with nine formats and a panel of switches
+                  cannot tell that. Say it once here; the same numbers mark
+                  the fields below, so there is no tour to dismiss. */}
+              <ol className="open-howto" aria-label="使用步骤">
+                <li data-done={sourceReady ? "true" : undefined}>
+                  <span>01</span>粘贴机场订阅
+                </li>
+                <li>
+                  <span>02</span>选客户端<small>默认 Clash</small>
+                </li>
+                <li>
+                  <span>03</span>复制链接或一键导入
+                </li>
+              </ol>
             </div>
 
             <div
@@ -1389,7 +1511,7 @@ export function Workbench({
                 ) : (
                   <span className="open-link-ghost">
                     <i>?url=</i>
-                    <b>粘贴订阅地址后，这里会当场拼出来</b>
+                    <b>在下方 01 粘贴机场订阅，这里会当场拼出来</b>
                   </span>
                 )}
               </code>
@@ -1523,6 +1645,9 @@ export function Workbench({
           </section>
         )}
 
+        {guideStep === null ? null : (
+          <div className="guide-backdrop" aria-hidden="true" />
+        )}
         <div className="content-grid">
           <form className="profile-form" onSubmit={createProfile}>
             <div className="section-heading">
@@ -1530,26 +1655,62 @@ export function Workbench({
                 <p className="section-label">
                   {storesProfiles ? "CREATE LOCAL PROFILE" : "BUILD YOUR LINK"}
                 </p>
-                <h2>{storesProfiles ? "创建本地订阅" : "生成订阅链接"}</h2>
+                <h2>
+                  {storesProfiles ? "创建本地订阅" : "生成订阅链接"}
+                  {storesProfiles ? null : (
+                    <button
+                      type="button"
+                      className="guide-replay"
+                      onClick={() => setGuideStep(1)}
+                    >
+                      <span aria-hidden="true">↻</span>重看引导
+                    </button>
+                  )}
+                </h2>
               </div>
               <span className="format-badge">{targets.length} 种格式</span>
             </div>
 
-            <label className="field" htmlFor="subscription-url">
-              <span className="field-label">
-                <strong>填写你的机场订阅</strong>
+            {/* A div, not a wrapping label, so the guide's note and its
+                buttons can sit inside the same block that is lifted out of
+                the blur; the label below still points at the input. */}
+            <div
+              className="field"
+              data-guide="1"
+              data-guide-active={guideStep === 1 ? "true" : undefined}
+            >
+              <label className="field-label" htmlFor="subscription-url">
+                <strong>
+                  {storesProfiles ? null : (
+                    <span
+                      className="field-step"
+                      data-done={sourceReady ? "true" : undefined}
+                    >
+                      01
+                    </span>
+                  )}
+                  填写你的机场订阅
+                </strong>
                 <small>
                   {storesProfiles
                     ? "不会出现在生成的本地 URL 中"
                     : "会写进生成的链接，请勿把链接分享给他人"}
                 </small>
-              </span>
+              </label>
               <span className="input-shell has-action">
                 <input
                   id="subscription-url"
                   className="control control-mono"
                   value={subscriptionUrl}
-                  onChange={(event) => setSubscriptionUrl(event.target.value)}
+                  onChange={(event) => {
+                    setSubscriptionUrl(event.target.value);
+                    // Pasting the address is the step; do not make them also
+                    // press "next". Only on the edit itself, so a replay with
+                    // the field already filled still stops here.
+                    if (guideStep === 1 && event.target.value.trim()) {
+                      setGuideStep(2);
+                    }
+                  }}
                   type={showUrl ? "url" : "password"}
                   autoComplete="off"
                   spellCheck={false}
@@ -1564,7 +1725,12 @@ export function Workbench({
                   {showUrl ? "隐藏" : "显示"}
                 </button>
               </span>
-            </label>
+              {renderGuideNote(
+                1,
+                "粘贴机场订阅",
+                "把机场给你的订阅地址粘贴到上面。粘贴好会自动进入下一步。",
+              )}
+            </div>
 
             <div className="form-row">
               <label className="field" htmlFor="profile-name">
@@ -1610,10 +1776,14 @@ export function Workbench({
             </div>
 
             {storesProfiles ? null : (
-              <div className="field target-field">
+              <div
+                className="field target-field"
+                data-guide="2"
+                data-guide-active={guideStep === 2 ? "true" : undefined}
+              >
                 <span className="field-label">
-                  <strong>输出客户端</strong>
-                  <small>每种都是完整配置，不是裸节点列表</small>
+                  <strong><span className="field-step">02</span>输出客户端</strong>
+                  <small>默认 Clash，用 Clash 就跳过这步；每种都是完整配置</small>
                 </span>
                 <div className="target-grid" role="radiogroup" aria-label="输出客户端">
                   {targets.map((item) => (
@@ -1631,6 +1801,11 @@ export function Workbench({
                     </button>
                   ))}
                 </div>
+                {renderGuideNote(
+                  2,
+                  "选客户端",
+                  "用 Clash 系客户端不用动，默认就是它；用别的，点一下对应的格式。",
+                )}
               </div>
             )}
 
@@ -1697,7 +1872,7 @@ export function Workbench({
                   <small>
                     {storesProfiles
                       ? "随固定地址保存，每次刷新继续生效"
-                      : "写进链接本身，每次刷新继续生效"}
+                      : "可跳过 · 写进链接本身，每次刷新继续生效"}
                   </small>
                 </span>
                 <span className="advanced-count">{enabledOptionCount} 项启用</span>
@@ -1911,7 +2086,7 @@ export function Workbench({
                 <label className="field" htmlFor="remote-config">
                   <span className="field-label">
                     <strong>远程配置</strong>
-                    <small>决定分组与规则，默认用本项目的 Ekko Rules</small>
+                    <small>可跳过 · 决定分组与规则，默认用本项目的 Ekko Rules</small>
                   </span>
                   <Picker
                     id="remote-config"
@@ -1975,11 +2150,19 @@ export function Workbench({
               /* The link is already live at the top of the page, so there is
                  nothing to submit — but the actions belong here too, where the
                  last option was just changed. */
-              <div className="open-tail" data-ready={sourceReady ? "true" : "false"}>
-                <p className="open-tail-note">
-                  {sourceReady
-                    ? "改任何一项，上面的链接都会立刻跟着变。"
-                    : "填入订阅地址，链接就会当场拼出来。"}
+              <div
+                className="open-tail"
+                data-ready={sourceReady ? "true" : "false"}
+                data-guide="3"
+                data-guide-active={guideStep === 3 ? "true" : undefined}
+              >
+                <p className="field-label">
+                  <strong><span className="field-step">03</span>导入客户端</strong>
+                  <small>
+                    {sourceReady
+                      ? "改任何一项，链接都会立刻跟着变"
+                      : "先在 01 填入订阅地址"}
+                  </small>
                 </p>
                 <div className="open-tail-actions">
                   {renderCurrentInstallActions()}
@@ -2003,6 +2186,11 @@ export function Workbench({
                   </button>
                   <StarInvite stars={health?.repo_stars} />
                 </div>
+                {renderGuideNote(
+                  3,
+                  "导入客户端",
+                  "点「复制链接」粘贴进客户端，或直接一键导入。名称、高级选项、远程配置都有默认值，可以不管。",
+                )}
                 {renderShadowrocketImportNotice()}
                 {/* The generated file carries its own DNS section. Clients ship
                     a DNS override that silently replaces it, and a visitor who
