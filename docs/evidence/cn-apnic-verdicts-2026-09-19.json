@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "source": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
-  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A registrable root or deliberately exact runtime host is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19, bank-2026-09-19 and runtime-2026-09-20 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve. Rounds before bank-2026-09-19 recorded only admissions, so every record carried mainland_hosted true; from that round on a root that was checked and found outside the CN ranges, or that did not resolve, is recorded with mainland_hosted false rather than dropped, so the file shows what was rejected as well as what was admitted.",
+  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A registrable root or deliberately exact runtime host is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19, bank-2026-09-19, runtime-2026-09-20 and runtime-2026-10-01 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve. The delegation file lists each allocation under its holder's economy, so Alibaba's 8.128.0.0/10 appears there as SG although APNIC registers 8.128.0.0-8.191.255.255 to ALICLOUD in CN; from runtime-2026-10-01 an address outside the CN delegations also counts when APNIC RDAP places its most specific registered network in CN, and rdap_cn names that network for each such address. Rounds before bank-2026-09-19 recorded only admissions, so every record carried mainland_hosted true; from that round on a root that was checked and found outside the CN ranges, or that did not resolve, is recorded with mainland_hosted false rather than dropped, so the file shows what was rejected as well as what was admitted.",
   "counts": {
-    "roots": 3802,
-    "mainland_hosted": 3798,
+    "roots": 3811,
+    "mainland_hosted": 3807,
     "not_mainland_hosted": 4
   },
   "records": [
@@ -1303,6 +1303,14 @@
         "1.94.196.165"
       ],
       "probe_round": "cn-verdicts.json"
+    },
+    {
+      "root": "52tt.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "139.159.160.52"
+      ],
+      "probe_round": "runtime-2026-10-01"
     },
     {
       "root": "52wmb.com",
@@ -10305,6 +10313,22 @@
       "probe_round": "cn-verdicts-r3.json"
     },
     {
+      "root": "fanbook.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "81.69.167.194"
+      ],
+      "probe_round": "runtime-2026-10-01"
+    },
+    {
+      "root": "fanbook.mobi",
+      "mainland_hosted": true,
+      "addresses": [
+        "81.69.155.20"
+      ],
+      "probe_round": "runtime-2026-10-01"
+    },
+    {
       "root": "fang.com",
       "mainland_hosted": true,
       "addresses": [
@@ -16447,6 +16471,53 @@
       "probe_round": "cn-verdicts-r2.json"
     },
     {
+      "root": "kaihei.co",
+      "mainland_hosted": true,
+      "addresses": [
+        "39.96.196.102",
+        "39.96.215.40",
+        "39.97.228.28",
+        "39.97.235.165",
+        "39.97.242.127",
+        "39.97.251.93",
+        "39.102.49.222",
+        "39.102.50.242",
+        "39.102.52.208",
+        "39.102.56.51",
+        "39.102.60.24",
+        "39.102.61.195",
+        "39.102.62.32",
+        "39.102.62.180",
+        "39.102.63.20",
+        "39.102.63.92",
+        "39.102.63.95",
+        "39.102.72.61",
+        "59.110.42.157",
+        "60.205.114.88",
+        "101.200.213.84"
+      ],
+      "probe_round": "runtime-2026-10-01"
+    },
+    {
+      "root": "kaiheila.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "8.141.125.116",
+        "8.147.117.36",
+        "8.152.3.14",
+        "39.97.248.56",
+        "39.105.120.149",
+        "59.110.164.41",
+        "182.92.60.67"
+      ],
+      "rdap_cn": {
+        "8.141.125.116": "8.128.0.0-8.159.255.255",
+        "8.147.117.36": "8.128.0.0-8.159.255.255",
+        "8.152.3.14": "8.128.0.0-8.159.255.255"
+      },
+      "probe_round": "runtime-2026-10-01"
+    },
+    {
       "root": "kaikle.com",
       "mainland_hosted": true,
       "addresses": [
@@ -16817,6 +16888,63 @@
         "120.53.97.73"
       ],
       "probe_round": "cn-verdicts-r2.json"
+    },
+    {
+      "root": "kook.top",
+      "mainland_hosted": true,
+      "addresses": [
+        "39.96.196.102",
+        "39.96.215.40",
+        "39.97.228.28",
+        "39.97.235.165",
+        "39.97.242.127",
+        "39.97.251.93",
+        "39.102.49.222",
+        "39.102.50.242",
+        "39.102.52.208",
+        "39.102.56.51",
+        "39.102.60.24",
+        "39.102.61.195",
+        "39.102.62.32",
+        "39.102.62.180",
+        "39.102.63.20",
+        "39.102.63.92",
+        "39.102.63.95",
+        "39.102.72.61",
+        "59.110.42.157",
+        "60.205.114.88",
+        "101.200.213.84"
+      ],
+      "probe_round": "runtime-2026-10-01"
+    },
+    {
+      "root": "kookapp.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "8.140.223.227",
+        "8.140.235.41",
+        "8.141.125.116",
+        "8.147.107.16",
+        "8.147.117.36",
+        "8.152.3.14",
+        "39.97.242.224",
+        "39.97.248.56",
+        "39.105.120.149",
+        "39.107.108.119",
+        "47.93.132.183",
+        "59.110.164.41",
+        "101.201.108.204",
+        "182.92.60.67"
+      ],
+      "rdap_cn": {
+        "8.140.223.227": "8.128.0.0-8.159.255.255",
+        "8.140.235.41": "8.128.0.0-8.159.255.255",
+        "8.141.125.116": "8.128.0.0-8.159.255.255",
+        "8.147.107.16": "8.128.0.0-8.159.255.255",
+        "8.147.117.36": "8.128.0.0-8.159.255.255",
+        "8.152.3.14": "8.128.0.0-8.159.255.255"
+      },
+      "probe_round": "runtime-2026-10-01"
     },
     {
       "root": "koubei.com",
@@ -20493,6 +20621,23 @@
         "118.190.129.163"
       ],
       "probe_round": "cn-verdicts-r2.json"
+    },
+    {
+      "root": "oopz.cn",
+      "mainland_hosted": true,
+      "addresses": [
+        "101.71.71.81",
+        "101.71.71.104",
+        "112.83.36.99",
+        "117.135.148.28",
+        "117.135.148.54",
+        "117.135.148.118",
+        "117.135.149.28",
+        "117.135.149.34",
+        "122.193.250.66",
+        "183.192.189.14"
+      ],
+      "probe_round": "runtime-2026-10-01"
     },
     {
       "root": "open-uc.cn",
@@ -25822,6 +25967,33 @@
         "120.24.253.83"
       ],
       "probe_round": "cn-verdicts-r2.json"
+    },
+    {
+      "root": "ttyuyin.com",
+      "mainland_hosted": true,
+      "addresses": [
+        "58.216.32.185",
+        "58.216.32.197",
+        "58.216.32.201",
+        "58.220.178.135",
+        "58.220.178.137",
+        "58.220.178.138",
+        "58.220.178.139",
+        "115.223.9.117",
+        "115.223.9.118",
+        "115.223.9.119",
+        "115.223.9.120",
+        "180.97.171.94",
+        "180.97.171.115",
+        "223.68.255.151",
+        "223.68.255.152",
+        "223.68.255.153",
+        "223.68.255.154",
+        "223.68.255.157",
+        "223.68.255.158",
+        "223.68.255.162"
+      ],
+      "probe_round": "runtime-2026-10-01"
     },
     {
       "root": "tuan91.com",
