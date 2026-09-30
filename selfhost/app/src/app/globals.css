@@ -569,6 +569,19 @@ html[data-shell] body {
   line-height: 1.9;
   color: var(--ink-soft);
 }
+[data-shell] .open-howto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem 1.6rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--ink);
+}
+[data-shell] .open-howto span { margin-right: .5rem; color: var(--ink-faint); }
+[data-shell] .open-howto small { margin-left: .4rem; color: var(--ink-faint); font-size: .7rem; }
 
 /* the document's last line ------------------------------------------------ */
 
@@ -763,6 +776,15 @@ html[data-shell] body {
   font-weight: 700;
 }
 [data-shell] .field-label strong::after { content: ":"; color: var(--ink-faint); }
+/* Step numbers shared with the how-to line in the hero. Blue once the
+   step is actually done, so the next one is obvious without a tour. */
+[data-shell] .field-step {
+  margin-right: .6rem;
+  color: var(--ink-faint);
+  font-weight: 400;
+}
+[data-shell] .field-step[data-done="true"],
+[data-shell] .open-howto li[data-done="true"] span { color: var(--blue); }
 [data-shell] .field-label small {
   font-family: var(--sans);
   font-size: .7rem;
@@ -1038,14 +1060,149 @@ html[data-shell] body {
 
 /* tail, privacy, colophon ------------------------------------------------- */
 
-[data-shell] .open-tail { border-radius: 0; background: none; }
-[data-shell] .open-tail-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
-[data-shell] .open-tail-note {
-  margin: 0 0 .8rem;
+/* guide ------------------------------------------------------------------- */
+
+[data-shell] .guide-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  margin-left: .9rem;
+  padding: 0 0 .1rem;
+  border: 0;
+  border-bottom: 1px dashed var(--rule);
+  background: none;
+  color: var(--ink-faint);
+  font: 400 .7rem/1.4 var(--mono);
+  letter-spacing: 0;
+  vertical-align: .2em;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+[data-shell] .guide-replay span { font-size: .8rem; }
+[data-shell] .guide-replay:hover { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* Spotlight: the page drops out of focus behind a fixed backdrop and the
+   active step is lifted above it as a sheet of paper — a spread shadow in
+   the paper colour gives it a margin of clear page without moving layout,
+   then a hairline frame and a soft drop. Below the QR dialog (50), so
+   step 03's "扫码导入" still opens on top. */
+[data-shell] .guide-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(20, 22, 26, .16);
+  -webkit-backdrop-filter: blur(5px) saturate(.7);
+  backdrop-filter: blur(5px) saturate(.7);
+  animation: guide-fade .25s ease-out;
+}
+[data-shell] [data-guide][data-guide-active="true"] {
+  position: relative;
+  z-index: 46;
+  border-bottom-color: transparent !important;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1.25rem var(--paper),
+    0 0 0 calc(1.25rem + 1px) rgba(20, 22, 26, .14),
+    0 1.5rem 3.5rem 1.25rem rgba(20, 22, 26, .16);
+  scroll-margin-top: 3rem;
+  animation: guide-lift .3s cubic-bezier(.2, .8, .2, 1);
+}
+/* .workbench clips its overflow, which would shave the sheet's margin off;
+   let it out only while the guide is running. */
+[data-shell] .workbench:has(> .guide-backdrop) { overflow: visible; }
+@keyframes guide-fade { from { opacity: 0; } }
+@keyframes guide-lift { from { opacity: 0; transform: translateY(.4rem); } }
+
+/* The note reads as a footnote to the step, not a box bolted under it. */
+[data-shell] .guide-note {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: .55rem 1.5rem;
+  margin: 1.1rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px dashed var(--rule);
   font-family: var(--sans);
-  font-size: .72rem;
+}
+[data-shell] .guide-note-head {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+}
+[data-shell] .guide-progress { display: inline-flex; gap: .2rem; }
+[data-shell] .guide-progress i {
+  display: block;
+  width: 1.1rem;
+  height: 3px;
+  background: var(--rule);
+  transition: background .25s;
+}
+[data-shell] .guide-progress i[data-on="true"] { background: var(--blue); }
+[data-shell] .guide-count {
+  font: 700 .72rem/1 var(--mono);
+  color: var(--blue);
+}
+[data-shell] .guide-count em { font-style: normal; font-weight: 400; color: var(--ink-faint); }
+[data-shell] .guide-note-head strong {
+  font: 700 .8rem/1 var(--mono);
+  color: var(--ink);
+}
+[data-shell] .guide-note p {
+  margin: 0;
+  font-size: .8rem;
+  line-height: 1.75;
   color: var(--ink-soft);
 }
+[data-shell] .guide-note-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  white-space: nowrap;
+}
+[data-shell] .guide-note-actions button { cursor: pointer; }
+[data-shell] .guide-skip {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-faint);
+  font: 400 .74rem/1.4 var(--sans);
+}
+[data-shell] .guide-skip:hover { color: var(--ink); }
+[data-shell] .guide-next {
+  display: inline-flex;
+  margin-left: auto;
+  align-items: center;
+  gap: .55rem;
+  padding: .5rem .95rem;
+  border: 1px solid var(--blue);
+  background: var(--blue);
+  color: #fff;
+  font: 600 .76rem/1.4 var(--sans);
+  transition: background .15s;
+}
+[data-shell] .guide-next span { font-family: var(--mono); transition: transform .15s; }
+[data-shell] .guide-next:hover { background: #1414b8; }
+[data-shell] .guide-next:hover span { transform: translateX(2px); }
+
+@media (max-width: 640px) {
+  [data-shell] .guide-note { grid-template-columns: 1fr; }
+  [data-shell] .guide-note-actions { justify-content: space-between; }
+  [data-shell] [data-guide][data-guide-active="true"] {
+    box-shadow:
+      0 0 0 .75rem var(--paper),
+      0 0 0 calc(.75rem + 1px) rgba(20, 22, 26, .14),
+      0 1rem 2.5rem .75rem rgba(20, 22, 26, .16);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-shell] .guide-backdrop,
+  [data-shell] [data-guide][data-guide-active="true"] { animation: none; }
+}
+
+[data-shell] .open-tail { border-radius: 0; background: none; }
+[data-shell] .open-tail > .field-label { margin: 0 0 .8rem; }
+[data-shell] .open-tail-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
 
 [data-shell] .privacy-panel {
   margin-top: 3.2rem;
