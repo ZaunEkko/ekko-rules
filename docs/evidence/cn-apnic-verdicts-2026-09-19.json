@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "source": "https://ftp.apnic.net/stats/apnic/delegated-apnic-latest",
-  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A registrable root or deliberately exact runtime host is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19, bank-2026-09-19, runtime-2026-09-20 and runtime-2026-10-01 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve. Rounds before bank-2026-09-19 recorded only admissions, so every record carried mainland_hosted true; from that round on a root that was checked and found outside the CN ranges, or that did not resolve, is recorded with mainland_hosted false rather than dropped, so the file shows what was rejected as well as what was admitted.",
+  "method": "APNIC publishes the registry's own delegation records, so the address ranges allocated to CN are authoritative rather than inferred. A registrable root or deliberately exact runtime host is mainland-hosted when every A record resolved for it falls inside those ranges. These are the verdicts behind the china-web and china-direct-curated rules, produced by scripts/mainland_hosting_probe.py across the rounds named in probe_round. The ecs-2026-09-19, bank-2026-09-19, runtime-2026-09-20 and runtime-2026-10-01 rounds name a mainland client subnet in the query, so the answer is the one a mainland client receives rather than the one this probe's own location earns; resolved_via records the host answered for when a root's own apex does not resolve. The delegation file lists each allocation under its holder's economy, so Alibaba's 8.128.0.0/10 appears there as SG although APNIC registers 8.128.0.0-8.191.255.255 to ALICLOUD in CN; from runtime-2026-10-01 an address outside the CN delegations also counts when APNIC RDAP places its most specific registered network in CN, and rdap_cn names that network for each such address. Rounds before bank-2026-09-19 recorded only admissions, so every record carried mainland_hosted true; from that round on a root that was checked and found outside the CN ranges, or that did not resolve, is recorded with mainland_hosted false rather than dropped, so the file shows what was rejected as well as what was admitted.",
   "counts": {
     "roots": 3811,
-    "mainland_hosted": 3805,
-    "not_mainland_hosted": 6
+    "mainland_hosted": 3807,
+    "not_mainland_hosted": 4
   },
   "records": [
     {
@@ -16500,7 +16500,7 @@
     },
     {
       "root": "kaiheila.cn",
-      "mainland_hosted": false,
+      "mainland_hosted": true,
       "addresses": [
         "8.141.125.116",
         "8.147.117.36",
@@ -16510,6 +16510,11 @@
         "59.110.164.41",
         "182.92.60.67"
       ],
+      "rdap_cn": {
+        "8.141.125.116": "8.128.0.0-8.159.255.255",
+        "8.147.117.36": "8.128.0.0-8.159.255.255",
+        "8.152.3.14": "8.128.0.0-8.159.255.255"
+      },
       "probe_round": "runtime-2026-10-01"
     },
     {
@@ -16914,16 +16919,31 @@
     },
     {
       "root": "kookapp.cn",
-      "mainland_hosted": false,
+      "mainland_hosted": true,
       "addresses": [
+        "8.140.223.227",
+        "8.140.235.41",
         "8.141.125.116",
+        "8.147.107.16",
         "8.147.117.36",
         "8.152.3.14",
+        "39.97.242.224",
         "39.97.248.56",
         "39.105.120.149",
+        "39.107.108.119",
+        "47.93.132.183",
         "59.110.164.41",
+        "101.201.108.204",
         "182.92.60.67"
       ],
+      "rdap_cn": {
+        "8.140.223.227": "8.128.0.0-8.159.255.255",
+        "8.140.235.41": "8.128.0.0-8.159.255.255",
+        "8.141.125.116": "8.128.0.0-8.159.255.255",
+        "8.147.107.16": "8.128.0.0-8.159.255.255",
+        "8.147.117.36": "8.128.0.0-8.159.255.255",
+        "8.152.3.14": "8.128.0.0-8.159.255.255"
+      },
       "probe_round": "runtime-2026-10-01"
     },
     {

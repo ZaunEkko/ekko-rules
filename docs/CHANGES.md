@@ -1877,7 +1877,7 @@ stay excluded, and the regression test now checks a sibling host under
 
 ## ER-079 — Mainland voice chat stays direct
 
-**Type:** 7 anchored suffixes added to `china-web`; no new group or segment
+**Type:** 9 anchored suffixes added to `china-web`; the mainland probe gains an APNIC RDAP fallback; no new group or segment
 
 The user's gateway showed the KOOK voice relay
 `bj-sig07-turn-1697275940.kaihei.co:443` on `MATCH`, so voice went through the
@@ -1895,16 +1895,25 @@ falls inside APNIC CN delegations. The verdicts are recorded in the
 |---|---|---|
 | `kaihei.co` | KOOK voice relays | Wildcard certificate on the relay; the apex redirects to `kook.top` |
 | `kook.top` | KOOK | Redirects to `www.kookapp.cn` |
+| `kookapp.cn` | KOOK site, API and images | Official site of Hangzhou Xiaoyaoyixia Technology, ICP licence 京B2-20200670 |
+| `kaiheila.cn` | KOOK, former name | Redirects to `kookapp.cn` |
 | `oopz.cn` | Oopz | Official site and its static CDN |
 | `fanbook.cn` | Fanbook | Official site, with a mainland ICP licence |
 | `fanbook.mobi` | Fanbook | Redirects to `fanbook.cn`; also serves `fb-cdn` |
 | `52tt.com` | TT Voice | Official site of Guangzhou Quwan Network Technology |
 | `ttyuyin.com` | TT Voice | Serves the same site |
 
-`kookapp.cn` and `kaiheila.cn` are KOOK's main domains but are not admitted.
-They sit behind Alibaba Cloud `cn-beijing` load balancers, and from every
-subnet tried each answer included an address in `8.128.0.0/10`. That block is
-Alibaba's, but it is registered through ARIN, so the APNIC test cannot call
-these roots mainland-hosted. Their verdicts are recorded as
-`mainland_hosted: false` rather than dropped. `oopz.com` and `fanbook.com` are
+`kookapp.cn` and `kaiheila.cn` first failed the probe. They sit behind Alibaba
+Cloud `cn-beijing` load balancers, and from every subnet tried each answer
+included an address in `8.128.0.0/10`, which the APNIC delegation file lists
+under SG. The file records an allocation under its holder's economy, though.
+APNIC's own registration data (RDAP) splits the block: `8.128.0.0`–`8.191.255.255`
+is registered to ALICLOUD in CN, `8.208.0.0/16` to GB and the SG parts to
+Alibaba's Singapore entity. So `scripts/mainland_hosting_probe.py` now looks up
+an address outside the CN delegations once more in RDAP, and counts it when its
+most specific registered network is in CN. With that, every address of both
+roots is mainland, and each RDAP-attested address is recorded under `rdap_cn`
+with the network that places it. Nothing about KOOK is special-cased: any
+Alibaba Cloud mainland region is now recognised the same way, and its overseas
+regions still are not. `oopz.com` and `fanbook.com` are
 unrelated overseas sites and stay out.
