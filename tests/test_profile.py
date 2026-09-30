@@ -3055,7 +3055,7 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
 
 
 class MainlandEvidenceContractTests(unittest.TestCase):
-    """The mainland segments carry 4,274 rules and must be auditable too.
+    """The mainland segments carry 4,281 rules and must be auditable too.
 
     Advertising got this contract first because a wrong rule there blocks
     something. A wrong rule here sends traffic direct that should be proxied,
@@ -3220,6 +3220,24 @@ class LiteProductTests(unittest.TestCase):
                     self.sources, product=product, domain="other.gdl.queniukx.cn"
                 )
                 self.assertEqual(other["slug"], "final")
+
+    def test_domestic_voice_chat_hosts_stay_direct_in_both_products(self) -> None:
+        cases = {
+            "bj-sig07-turn-1697275940.kaihei.co": "DOMAIN-SUFFIX,kaihei.co",
+            "www.kook.top": "DOMAIN-SUFFIX,kook.top",
+            "staticcdn.oopz.cn": "DOMAIN-SUFFIX,oopz.cn",
+            "web.fanbook.cn": "DOMAIN-SUFFIX,fanbook.cn",
+            "fb-cdn.fanbook.mobi": "DOMAIN-SUFFIX,fanbook.mobi",
+            "obs-cdn.52tt.com": "DOMAIN-SUFFIX,52tt.com",
+            "www.ttyuyin.com": "DOMAIN-SUFFIX,ttyuyin.com",
+        }
+        for product in PRODUCTS:
+            for domain, rule in cases.items():
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(verdict["slug"], "china-web")
+                    self.assertEqual(verdict["rule"], rule)
+                    self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
 
     def test_lite_publishes_fewer_groups_and_every_target_exists(self) -> None:
         core_groups = self.sources.proxy_groups_for("core")

@@ -1874,3 +1874,37 @@ It also reverses ER-021, which left `yif.gdtstream.com` unaccepted as weakly
 evidenced. The `gdtstream.com` suffix and the unresolving `dl.steam.cygnaa.com`
 stay excluded, and the regression test now checks a sibling host under
 `gdtstream.com` instead.
+
+## ER-079 — Mainland voice chat stays direct
+
+**Type:** 7 anchored suffixes added to `china-web`; no new group or segment
+
+The user's gateway showed the KOOK voice relay
+`bj-sig07-turn-1697275940.kaihei.co:443` on `MATCH`, so voice went through the
+`🐟 漏网之鱼` proxy and out of a Hong Kong exit. No KOOK domain was listed.
+A sweep of the other mainland gaming voice apps found Oopz, Fanbook and TT
+Voice in the same state. YY was already direct through `yy.com` and
+`yystatic.com` in `china-media`, and NetEase CC through `163.com` in
+`china-direct-curated`.
+
+Each root was resolved from three mainland client subnets, and every answer
+falls inside APNIC CN delegations. The verdicts are recorded in the
+`runtime-2026-10-01` round.
+
+| Root | Service | Why it is the service's own |
+|---|---|---|
+| `kaihei.co` | KOOK voice relays | Wildcard certificate on the relay; the apex redirects to `kook.top` |
+| `kook.top` | KOOK | Redirects to `www.kookapp.cn` |
+| `oopz.cn` | Oopz | Official site and its static CDN |
+| `fanbook.cn` | Fanbook | Official site, with a mainland ICP licence |
+| `fanbook.mobi` | Fanbook | Redirects to `fanbook.cn`; also serves `fb-cdn` |
+| `52tt.com` | TT Voice | Official site of Guangzhou Quwan Network Technology |
+| `ttyuyin.com` | TT Voice | Serves the same site |
+
+`kookapp.cn` and `kaiheila.cn` are KOOK's main domains but are not admitted.
+They sit behind Alibaba Cloud `cn-beijing` load balancers, and from every
+subnet tried each answer included an address in `8.128.0.0/10`. That block is
+Alibaba's, but it is registered through ARIN, so the APNIC test cannot call
+these roots mainland-hosted. Their verdicts are recorded as
+`mainland_hosted: false` rather than dropped. `oopz.com` and `fanbook.com` are
+unrelated overseas sites and stay out.
