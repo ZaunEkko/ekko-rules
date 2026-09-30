@@ -1794,7 +1794,12 @@ export function Workbench({
                       aria-checked={target === item.id}
                       className="target-chip"
                       data-tier={item.tier}
-                      onClick={() => setTarget(item.id)}
+                      onClick={() => {
+                        setTarget(item.id);
+                        // Picking a client is the step, same as pasting in
+                        // step 01 — including re-picking the default.
+                        if (guideStep === 2) setGuideStep(3);
+                      }}
                     >
                       <strong>{item.short_label}</strong>
                       <small>{item.extension.toUpperCase()}</small>
@@ -1804,7 +1809,7 @@ export function Workbench({
                 {renderGuideNote(
                   2,
                   "选客户端",
-                  "用 Clash 系客户端不用动，默认就是它；用别的，点一下对应的格式。",
+                  "默认就是 Clash；用别的客户端，点一下对应的格式。点任意一个都会进入下一步。",
                 )}
               </div>
             )}
@@ -2164,7 +2169,19 @@ export function Workbench({
                       : "先在 01 填入订阅地址"}
                   </small>
                 </p>
-                <div className="open-tail-actions">
+                <div
+                  className="open-tail-actions"
+                  // Using any import action is finishing step 03; asking for
+                  // "开始使用" on top of that is one click too many. Capture,
+                  // so the guide is marked seen before a scheme link leaves
+                  // the page. The Star link shares the row but is not an
+                  // import, so it is left out.
+                  onClickCapture={(event) => {
+                    if (guideStep === null) return;
+                    const action = (event.target as Element).closest(".open-action");
+                    if (action && !action.matches(":disabled")) endGuide();
+                  }}
+                >
                   {renderCurrentInstallActions()}
                   <button
                     type="button"
@@ -2189,7 +2206,7 @@ export function Workbench({
                 {renderGuideNote(
                   3,
                   "导入客户端",
-                  "点「复制链接」粘贴进客户端，或直接一键导入。名称、高级选项、远程配置都有默认值，可以不管。",
+                  "一键导入、复制链接、扫码导入任选其一，点了就算完成。名称、高级选项、远程配置都有默认值，可以不管。",
                 )}
                 {renderShadowrocketImportNotice()}
                 {/* The generated file carries its own DNS section. Clients ship
@@ -2202,6 +2219,47 @@ export function Workbench({
                   导入的这份配置——DNS、策略组、分流规则这边都配好了，保持关闭即可。
                   确实清楚自己在调什么再接管。
                 </p>
+                {/* Most failed imports are the provider's subscription, not
+                    the conversion: expired, reset, locked to the provider's
+                    own apps, or pasted short. The client only shows a status
+                    code, so map the codes this server answers with back to
+                    those causes, in the order worth checking. Folded, so it
+                    costs one line until someone needs it. */}
+                <details className="open-trouble">
+                  <summary>导入或更新失败？按这个顺序查</summary>
+                  <ol>
+                    <li>
+                      <b>机场后台开启订阅了吗？</b>
+                      不少机场默认关着订阅功能，换套餐、重置链接后也会停用；到期、流量用完同样拉不到节点。
+                      去用户中心确认订阅已启用、链接是当前那一条，重置过就用新地址重新生成。
+                    </li>
+                    <li>
+                      <b>地址复制完整了吗？</b>
+                      订阅的 token 一般在 <code>?</code> 后面，少一截就会被当成无效订阅。
+                      点上面输入框的「显示」核对一遍。
+                    </li>
+                    <li>
+                      <b>机场挡了转换站吗？</b>
+                      订阅是本站服务器去拉的，机场看到的是陌生 IP，可能直接拒绝，或只认特定客户端的
+                      User-Agent。先在「高级选项」里填一个自定义 User-Agent；不行就在自己电脑上跑一份，
+                      从自家宽带去拉（部署到 VPS 仍是机房 IP，一样可能被挡）。
+                    </li>
+                    <li>
+                      <b>客户端报的是什么？</b>
+                      <code>400</code>：拉到了但没有可用节点，看第 1、2 条；
+                      <code>502</code>：机场拒绝了本站的拉取，看第 1、3 条；
+                      超时：稍后再试，反复超时看第 3 条。
+                    </li>
+                    <li>
+                      <b>还是不行？</b>
+                      带上客户端的报错截图（遮住订阅地址）到{" "}
+                      <a href={`${REPO_URL}/issues`} target="_blank" rel="noreferrer">
+                        GitHub Issues
+                      </a>{" "}
+                      反馈。
+                    </li>
+                  </ol>
+                </details>
               </div>
             )}
 

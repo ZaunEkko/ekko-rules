@@ -30,31 +30,40 @@ Nodes · DNS · policy groups · routing rules, all in a single file
 **2.** Paste your subscription URL (the field is masked by default)
 **3.** Press "one-tap import" — the button follows whichever client you picked
 
-Done. Flip UDP, XUDP and the rest under advanced options if you need them — the link rewrites itself as you go. Copying the link or scanning it with a phone works too. Shadowrocket is the exception: the page presents two ordered actions and two QR codes, **1. node subscription** and **2. routing config**. Import both in that order. The first is added from Home and owns refreshes, the profile name, the traffic/expiry banner, and the node list. The second is added from Configuration: native `PROXY` follows the Home-selected node by default, while groups can select Home subscription nodes, `DIRECT`, `REJECT`, or the nested manual selector. A user confirmed this two-step configuration works on a device with `site-v0.4.31`.
+Done. The first visit walks you through these three steps; "重看引导" next to the heading replays it. Flip UDP, XUDP and the rest under advanced options if you need them — the link rewrites itself as you go. Copying the link or scanning it with a phone works too. Shadowrocket is the exception: the page presents two ordered actions and two QR codes, **1. node subscription** and **2. routing config**. Import both in that order. The first is added from Home and owns refreshes, the profile name, the traffic/expiry banner, and the node list. The second is added from Configuration: native `PROXY` follows the Home-selected node by default, while groups can select Home subscription nodes, `DIRECT`, `REJECT`, or the nested manual selector. A user confirmed this two-step configuration works on a device with `site-v0.4.31`.
 
 **The site stores nothing.** No accounts and no profile list; the subscription body is held in memory for the conversion and deleted straight after, and no log records the address. The trade-off is that **the link carries your subscription credential** — import it into your own client, do not forward it.
 
 Rules default to this repository's Ekko Rules. The page can also switch to the common ACL4SSR sets, or take a remote configuration URL of your own.
 
-## Two reasons a conversion comes back empty
+## Import or refresh failed? Check in this order
 
-**The provider blocked the converter.** A public converter fetches your
-subscription from its own server, so the provider sees an unfamiliar IP. Some
-refuse it outright; others only answer a specific client User-Agent. Try these
-in order of effort:
+The same checklist sits under step 3 on the page; expand it there.
 
-1. Set a custom User-Agent under "advanced options" — often that is all the
-   provider checks.
-2. **Run it on your own computer** (the next section). The fetch then comes
-   from your home connection, the address the provider already sees from you.
-   Deploying to a VPS is not the same thing: that is still a datacenter IP and
-   can be blocked for the same reason.
-
-**The subscription is switched off in the provider's panel.** Plenty of
-providers keep it disabled by default, and changing plan or resetting the link
-disables it again. The URL still resolves, but what comes back is empty. Check
-that the subscription is enabled and that you copied the current link; reset it
-if in doubt.
+1. **Is the subscription switched on in the provider's panel?** Plenty of
+   providers keep it disabled by default, and changing plan or resetting the
+   link disables it again; an expired plan or used-up traffic fails the same
+   way. The URL still resolves, but what comes back is empty. Check that the
+   subscription is enabled and that you copied the current link; after a reset,
+   generate a new link from the new address.
+2. **Did the whole address get copied?** The token usually sits after the `?`,
+   and a truncated one reads as an invalid subscription. Press "显示" (show)
+   next to the field and compare.
+3. **Did the provider block the converter?** A public converter fetches your
+   subscription from its own server, so the provider sees an unfamiliar IP.
+   Some refuse it outright; others only answer a specific client User-Agent.
+   Try these in order of effort:
+   - Set a custom User-Agent under "advanced options" — often that is all the
+     provider checks.
+   - **Run it on your own computer** (the next section). The fetch then comes
+     from your home connection, the address the provider already sees from you.
+     Deploying to a VPS is not the same thing: that is still a datacenter IP
+     and can be blocked for the same reason.
+4. **What does the client report?** `400`: the fetch worked but produced no
+   usable nodes — see 1 and 2. `502`: the provider refused the site's fetch —
+   see 1 and 3. A timeout: try again shortly; if it keeps timing out, see 3.
+5. **Still stuck?** Open an [issue](https://github.com/ZaunEkko/ekko-rules/issues)
+   with a screenshot of the client's error, subscription address covered.
 
 ## Client switches that rewrite the profile
 

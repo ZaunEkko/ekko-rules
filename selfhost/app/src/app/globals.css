@@ -728,6 +728,69 @@ html[data-shell] body {
   color: var(--ink-soft);
 }
 [data-shell] .open-client-note b { color: var(--ink); }
+
+/* Troubleshooting, folded to one line until needed. */
+[data-shell] .open-trouble {
+  margin: 1rem 0 0;
+  padding-top: .8rem;
+  border-top: 1px solid var(--rule-soft);
+  font-family: var(--sans);
+}
+[data-shell] .open-trouble summary {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--ink);
+  list-style: none;
+  cursor: pointer;
+}
+[data-shell] .open-trouble summary::-webkit-details-marker { display: none; }
+[data-shell] .open-trouble summary::before {
+  content: "+";
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid var(--rule);
+  font: 700 .72rem/1 var(--mono);
+  color: var(--blue);
+}
+[data-shell] .open-trouble[open] summary::before { content: "−"; }
+[data-shell] .open-trouble summary:hover { color: var(--blue); }
+[data-shell] .open-trouble ol {
+  display: grid;
+  gap: .7rem;
+  margin: .9rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: trouble;
+}
+[data-shell] .open-trouble li {
+  position: relative;
+  padding-left: 2rem;
+  font-size: .78rem;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  counter-increment: trouble;
+}
+[data-shell] .open-trouble li::before {
+  content: counter(trouble, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  font: 400 .72rem/1.75rem var(--mono);
+  line-height: inherit;
+  color: var(--ink-faint);
+}
+[data-shell] .open-trouble li b { display: block; color: var(--ink); }
+[data-shell] .open-trouble code {
+  padding: 0 .25rem;
+  background: var(--paper-sunk);
+  font: .72rem var(--mono);
+  color: var(--ink);
+}
+[data-shell] .open-trouble a { color: var(--blue); text-underline-offset: .2em; }
 [data-shell] .shadowrocket-import-notice {
   border: 1px solid var(--vermilion);
   border-radius: 0;
