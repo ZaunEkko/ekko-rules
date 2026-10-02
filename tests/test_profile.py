@@ -242,6 +242,7 @@ class CanonicalSourceTests(unittest.TestCase):
             "🎨 Adobe": [
                 "♻️ 手动切换",
                 "DIRECT",
+                "REJECT",
                 "__ALL_SUBSCRIPTION_NODES__",
             ],
             "☁️ 国内云服务": [
@@ -928,8 +929,8 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
             ["♻️ 手动切换", "DIRECT"],
         )
         self.assertEqual(
-            mihomo_groups["🎨 Adobe"][:2],
-            ["♻️ 手动切换", "DIRECT"],
+            mihomo_groups["🎨 Adobe"][:3],
+            ["♻️ 手动切换", "DIRECT", "REJECT"],
         )
         self.assertEqual(
             mihomo_groups["🎮 游戏平台"][:2],
@@ -966,7 +967,8 @@ class PhaseThreeDirectRecoveryTests(unittest.TestCase):
             subconverter,
         )
         self.assertIn(
-            "custom_proxy_group=🎨 Adobe`select`[]♻️ 手动切换`[]DIRECT`",
+            "custom_proxy_group=🎨 Adobe`select`[]♻️ 手动切换`[]DIRECT`"
+            "[]REJECT`",
             subconverter,
         )
         self.assertIn(

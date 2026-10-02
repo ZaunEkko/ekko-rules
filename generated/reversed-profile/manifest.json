@@ -6,7 +6,7 @@
   "self_hash_included": false,
   "files": {
     "Mihomo/reversed-template-lite.yaml": "e92910589aa87f9df8cab785b72d45a24960d57a9b5f3841ed9bd1368322b2c8",
-    "Mihomo/reversed-template.yaml": "a3e0d69da7782bc470766b4af94da1b36e72c7e279bef1d1a489e44861a5224b",
+    "Mihomo/reversed-template.yaml": "3fe3e906fada28210814be1cf5c723e251da120498f48acd99dbeeff4b7d9767",
     "Providers/Ruleset/adobe.yaml": "e2d2e0295f29424e0110d12cefde09c10a3540e2753bb87ba1b99d2c6635e7ef",
     "Providers/Ruleset/advertising-curated.yaml": "b6f1ad53648416cd1851ff8535718052b8942f12289c30a3ad8d54312e58218f",
     "Providers/Ruleset/ai-developer.yaml": "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
@@ -77,8 +77,8 @@
     "Providers/Ruleset/whatsapp.yaml": "ab6c58de5d170b92f09b20b85996604a8dd7567593dc03f98505261fd22afb04",
     "Providers/Ruleset/xai.yaml": "c528ddafca25108e32bca53a4de650b0ba9a96b20667ab02fc5b95a774cf3eb6",
     "Providers/Ruleset/youtube.yaml": "d214401b85f98da6f5168ca1f16420c9c0a753f4538b109a4ff844d5e8b38e90",
-    "README.md": "4551fd976c255a642adda4a654ac64cc32f51f3b43618b983d6d46e6b4ef18f5",
-    "README_EN.md": "a8978f06debeb5897bf32262802facafe577fcf6d160fbf8f8c397e6b97998a0",
+    "README.md": "e308fa8728750f2b926dbf8b61178fe053e198b5024feeced78c903346979a46",
+    "README_EN.md": "8f5ee7784f9490eb5600f203adccf2112a6be7d268f14ccbb4b27a8321efb79c",
     "Ruleset/adobe.list": "6a132b875d756df756454308e4872750d7b66cd2baefef39ce16f8a0a190353e",
     "Ruleset/advertising-curated.list": "25ab282e4c5fc31352c89e1a7a7dd79eb05c200cfed620cd17b54c7a7f4e8724",
     "Ruleset/ai-developer.list": "064c45c6b25dfd29ce123eb9147f4e46466e355462f34dde01fcec98ce5e7934",
@@ -151,6 +151,6 @@
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
     "analysis.json": "c1d0a3bb20b2bd2d434a72d3c33153a48e2a0d0d1d737edad8c0424a7dd493ae",
     "config/ekko-rules-lite.ini": "dfc6da5cb408f266cf47c81ee2e6da36fffe2e37889b8270c25aad207787e3ef",
-    "config/ekko-rules.ini": "c11a3cfd01384f2d0b354313f3a3d8fe2906b2bf8fdffed6710e52a52cbf5c9a"
+    "config/ekko-rules.ini": "08a492e42d7f344bc3e44065a3d5a9307bdbebf4d493fa3a641a22900f797a82"
   }
 }
