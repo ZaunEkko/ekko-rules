@@ -111,6 +111,7 @@ groups:
   members:
   - ♻️ 手动切换
   - DIRECT
+  - REJECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 14
   name: 🎬 YouTube
