@@ -1917,3 +1917,12 @@ with the network that places it. Nothing about KOOK is special-cased: any
 Alibaba Cloud mainland region is now recognised the same way, and its overseas
 regions still are not. `oopz.com` and `fanbook.com` are
 unrelated overseas sites and stay out.
+
+## ER-080 — Adobe can be blocked from its own group
+
+**Type:** one member added to `🎨 Adobe`; no rule, segment or default change
+
+`🎨 Adobe` offered `♻️ 手动切换`, `DIRECT` and the subscription nodes, so
+Adobe traffic could be routed but never blocked. `REJECT` now sits after
+`DIRECT`. The group still defaults to `♻️ 手动切换`, and the lite build still
+sends the same rules to `🚀 国外服务`, which is unchanged.
