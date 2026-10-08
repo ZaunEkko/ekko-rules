@@ -21,7 +21,7 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 10,196 file rules are partitioned by evidence boundary. Each figure is the
+The 10,195 file rules are partitioned by evidence boundary. Each figure is the
 sum of the segments in that boundary, taken from the canonical tree rather than
 carried forward, because the previous revision of this table had drifted: it
 partitioned 10,027 rules and split the mainland and remainder categories 369
@@ -34,17 +34,17 @@ rules apart from what the sources actually held.
 | Observation-derived advertising curation | 590 | Derived from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
 | Overseas shopping curation | 76 | Reviewed per host: overseas retail and cross-border forwarding roots whose storefront, availability or bot challenge depends on which exit reaches them |
 | Finance and account registration curation | 44 | Reviewed per host: payments, virtual cards, SMS receipt and overseas banks and brokers, each resolved before admission and each geo-sensitive enough that the exit is part of the account |
-| Specialized, private/local, and service corpus | 2,520 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
+| Specialized, private/local, and service corpus | 2,519 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
 No component of the current product derives from a third-party rule list. ER-047 retired the two pinned `v2fly/domain-list-community` imports that once carried 2,331 rules, and with them the `Copyright (c) 2018-2019 V2Ray` attribution they required.
 
-The final 2,520-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
+The final 2,519-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
 
 ## Direct canonical inputs
 
 ### Repository-maintained rules and policy
 
-Most current rules, targets, group structure, ordering, and filters are maintained directly by Ekko Rules. Factual indicators may overlap other public corpora without proving direct copying. Product decisions—including group boundaries, rule placement, first-match priority, default `REJECT` behavior, and removals—are local work. The two-rule `author-domain` segment is an explicit user-requested authorship-display exception: `boxnook.cc` and `zaunekko.com`, in that order, are the first rules globally and map to the default-direct mainland group; they are not presented as an upstream import or general service corpus. ER-021's two exact Steam mainland download hosts and five anchored Ele.me/Alibaba mainland service roots, ER-022's reviewed mainland app, game-platform, and game-voice expansion, and ER-023's region-aware cloud corpus are repository-maintained curation rather than additional mechanical upstream imports. ER-023 uses current official endpoint documentation and community categorization as review evidence, but normal generation consumes only committed canonical rules and performs no upstream fetch.
+Most current rules, targets, group structure, ordering, and filters are maintained directly by Ekko Rules. Factual indicators may overlap other public corpora without proving direct copying. Product decisions—including group boundaries, rule placement, first-match priority, default `REJECT` behavior, and removals—are local work. The one-rule `author-domain` segment is an explicit user-requested authorship-display exception: `zaunekko.com` is the first rule globally and maps to the default-direct mainland group; they are not presented as an upstream import or general service corpus. ER-021's two exact Steam mainland download hosts and five anchored Ele.me/Alibaba mainland service roots, ER-022's reviewed mainland app, game-platform, and game-voice expansion, and ER-023's region-aware cloud corpus are repository-maintained curation rather than additional mechanical upstream imports. ER-023 uses current official endpoint documentation and community categorization as review evidence, but normal generation consumes only committed canonical rules and performs no upstream fetch.
 
 Six late-recovery rulesets derive from frozen Phase 2 repository evidence. They restore historical DIRECT-default behavior after the Phase 3 reduction, but do not reassert current vendor ownership. `tests/fixtures/public-rule-exclusions.json` further removes non-general entries from the public product while immutable Phase 2/3 fixtures and `phase-3-recovery-ledger.json` remain unchanged as historical evidence.
 
