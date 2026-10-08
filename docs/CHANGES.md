@@ -1926,3 +1926,19 @@ unrelated overseas sites and stay out.
 Adobe traffic could be routed but never blocked. `REJECT` now sits after
 `DIRECT`. The group still defaults to `♻️ 手动切换`, and the lite build still
 sends the same rules to `🚀 国外服务`, which is unchanged.
+
+## ER-081 — The conversion station goes through a proxy
+
+**Type:** one rule removed from `author-domain`; no group or segment change
+
+ER-030 put `boxnook.cc` in the first segment with `zaunekko.com`, so
+`sub.boxnook.cc` went `DIRECT` through `🌏 国内网站`. The domain is served
+through Cloudflare, and from the mainland it has to go through an overseas
+node. The rule is gone, and the station now reaches `🐟 漏网之鱼` on `MATCH`,
+which defaults to `♻️ 手动切换`. The standard build has no general
+overseas group (`🚀 国外服务` exists only in lite), so this needs no new
+segment and no new group. `author-domain` keeps `zaunekko.com` alone, still
+first and still direct.
+
+The canonical scope drops one rule, from 10,196 to 10,195 rule-file rules
+(10,197 to 10,196 with the FINAL). First-match overlap metrics are unchanged.
