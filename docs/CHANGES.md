@@ -1942,3 +1942,25 @@ first and still direct.
 
 The canonical scope drops one rule, from 10,196 to 10,195 rule-file rules
 (10,197 to 10,196 with the FINAL). First-match overlap metrics are unchanged.
+
+## ER-082 — Windows web probes use Fake-IP
+
+**Type:** one exception removed from the selfhost Mihomo DNS base
+
+The default `fake-ip-filter` no longer excludes `www.msftconnecttest.com`,
+so the Windows HTTP connectivity probe can use the same Fake-IP mapping as
+other web connections. The probe checks the response from `connecttest.txt`;
+it does not require the DNS answer to match a fixed IP. `*.msftncsi.com`
+remains excluded because `dns.msftncsi.com` is a separate DNS probe that
+compares the answer against a predefined address. Both domains retain their
+existing `private` DIRECT routing.
+
+The standard and lite selfhost conversions share this base. The change is a
+targeted trial for a reported Windows "No Internet" state; whether it resolves
+that state still requires a client subscription refresh and a runtime NCSI
+check.
+
+Evidence:
+
+- <https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/troubleshoot-ncsi-guidance>
+- <https://wiki.metacubex.one/config/dns/#fake-ip-filter>
