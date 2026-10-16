@@ -34,6 +34,7 @@ CN_APNIC_VERDICTS = EVIDENCE / "cn-apnic-verdicts-2026-09-19.json"
 CN_OBSERVATION = EVIDENCE / "cn-observation-2026-09-19.json"
 CN_LEGACY_DIRECT = EVIDENCE / "cn-legacy-direct-2026-09-19.json"
 LANZOU_RUNTIME_OBSERVATION = EVIDENCE / "lanzou-runtime-observation-2026-09-23.json"
+CN_SUFFIX_REVIEW = EVIDENCE / "cn-suffix-fallback-2026-10-16.json"
 ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
@@ -3058,7 +3059,7 @@ class AdvertisingAdmissionContractTests(unittest.TestCase):
 
 
 class MainlandEvidenceContractTests(unittest.TestCase):
-    """The mainland segments carry 4,283 rules and must be auditable too.
+    """Every mainland service rule or fallback policy needs a committed basis.
 
     Advertising got this contract first because a wrong rule there blocks
     something. A wrong rule here sends traffic direct that should be proxied,
@@ -3091,11 +3092,21 @@ class MainlandEvidenceContractTests(unittest.TestCase):
                 LANZOU_RUNTIME_OBSERVATION.read_text(encoding="utf-8")
             )["roots"]
         }
-        evidenced = apnic | observed | legacy | runtime
+        suffix_review = json.loads(CN_SUFFIX_REVIEW.read_text(encoding="utf-8"))
+        reviewed_services = {
+            record["root"] for record in suffix_review["service_additions"]
+        }
+        # The approved .cn policy is not a claim of measured mainland hosting.
+        fallback = suffix_review["fallback"]
+        self.assertEqual(fallback["slug"], "china-direct-curated")
+        self.assertEqual(fallback["rule"], "DOMAIN-SUFFIX,cn")
+        self.assertEqual(fallback["target"], "🌏 国内网站")
+        evidenced = apnic | observed | legacy | runtime | reviewed_services
         unmapped = [
             entry
             for slug in ("china-web", "china-direct-curated")
             for entry in self.sources.rules[slug]
+            if (slug, entry) != (fallback["slug"], fallback["rule"])
             if parse_rule(entry, context="mainland evidence")[1].lower() not in evidenced
         ]
         self.assertEqual(unmapped, [], "mainland rules with no committed evidence")
@@ -3143,6 +3154,84 @@ class MainlandEvidenceContractTests(unittest.TestCase):
             self.CN_GRANDFATHERED_LIMIT,
             "the mainland grandfathered set may shrink, never grow",
         )
+
+
+class ChinaSuffixFallbackTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.sources = load_profile_sources(SOURCES)
+        cls.review = json.loads(CN_SUFFIX_REVIEW.read_text(encoding="utf-8"))
+
+    def test_unlisted_cn_sites_default_to_mainland_without_a_target_ip(self) -> None:
+        for product in PRODUCTS:
+            for domain in (
+                "ccopyright.com.cn",
+                "www.ccopyright.com.cn",
+                "register.ccopyright.com.cn",
+                "unlisted.example.cn",
+                "unlisted.example.net.cn",
+                "unlisted.example.org.cn",
+                "WWW.UNLISTED.EXAMPLE.CN.",
+            ):
+                with self.subTest(product=product, domain=domain):
+                    self.assertEqual(
+                        first_match(self.sources, product=product, domain=domain),
+                        {
+                            "slug": "china-direct-curated",
+                            "target": "🌏 国内网站",
+                            "rule": "DOMAIN-SUFFIX,cn",
+                        },
+                    )
+
+    def test_existing_cn_proxy_and_advertising_policies_keep_first_match(self) -> None:
+        counts = Counter()
+        for boundary in self.review["preserved_policies"]:
+            counts[boundary["policy"]] += len(boundary["rules"])
+            for rule in boundary["rules"]:
+                kind, value, _ = parse_rule(rule, context="frozen CN policy")
+                hosts = (value, f"probe.{value}") if kind == "DOMAIN-SUFFIX" else (value,)
+                for product in PRODUCTS:
+                    for domain in hosts:
+                        with self.subTest(product=product, domain=domain):
+                            self.assertEqual(
+                                first_match(self.sources, product=product, domain=domain),
+                                {
+                                    "slug": boundary["slug"],
+                                    "target": boundary["targets"][product],
+                                    "rule": rule,
+                                },
+                            )
+        self.assertEqual(counts, {"PROXY_SELECTOR": 49, "REJECT": 23})
+
+    def test_cn_fallback_does_not_capture_other_suffixes_or_lookalikes(self) -> None:
+        for product in PRODUCTS:
+            for domain in (
+                "example.com", "example.cn.evil.example", "examplecn.com", "cn.example"
+            ):
+                with self.subTest(product=product, domain=domain):
+                    self.assertEqual(
+                        first_match(self.sources, product=product, domain=domain),
+                        {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"},
+                    )
+
+    def test_steampy_uses_mainland_policy_with_an_anchored_boundary(self) -> None:
+        for product in PRODUCTS:
+            for domain in ("steampy.com", "www.steampy.com", "bbs.steampy.com"):
+                with self.subTest(product=product, domain=domain):
+                    self.assertEqual(
+                        first_match(self.sources, product=product, domain=domain),
+                        {
+                            "slug": "china-web",
+                            "target": "🌏 国内网站",
+                            "rule": "DOMAIN-SUFFIX,steampy.com",
+                        },
+                    )
+            self.assertEqual(
+                first_match(
+                    self.sources, product=product, domain="steampy.com.evil.example"
+                )["slug"],
+                "final",
+            )
 
 
 class LiteProductTests(unittest.TestCase):
@@ -3253,11 +3342,19 @@ class LiteProductTests(unittest.TestCase):
                 self.assertEqual(verdict["slug"], "game-download")
                 self.assertEqual(verdict["rule"], "DOMAIN,uu.gdl.queniukx.cn")
                 self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
-                # queniukx.cn is a shared Alibaba namespace; other tenants are not admitted.
+                # Other tenants do not inherit the exact UU download classification.
+                # Their .cn suffix now reaches the separately approved domestic fallback.
                 other = first_match(
                     self.sources, product=product, domain="other.gdl.queniukx.cn"
                 )
-                self.assertEqual(other["slug"], "final")
+                self.assertEqual(
+                    other,
+                    {
+                        "slug": "china-direct-curated",
+                        "target": "🌏 国内网站",
+                        "rule": "DOMAIN-SUFFIX,cn",
+                    },
+                )
 
     def test_domestic_voice_chat_hosts_stay_direct_in_both_products(self) -> None:
         cases = {
@@ -3354,7 +3451,7 @@ class ProvenanceAccountingTests(unittest.TestCase):
     NAMED_BOUNDARIES = (
         ("Current late recovery", lambda slug: slug.endswith("late-recovery")),
         (
-            "Observation-derived mainland direct curation",
+            "Mainland direct curation and fallback policy",
             lambda slug: slug in {"china-web", "china-direct-curated"},
         ),
         (
@@ -3456,7 +3553,7 @@ class ProvenanceAccountingTests(unittest.TestCase):
         self.assertEqual(
             int(narrative.group(1).replace(",", "")),
             self.counted_boundaries()[
-                "Observation-derived mainland direct curation"
+                "Mainland direct curation and fallback policy"
             ],
         )
 

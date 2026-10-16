@@ -10,6 +10,21 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
+- id: cn-suffix-fallback-and-steampy
+  status: accepted
+  scope: routing-policy
+  summary: Otherwise-unmatched .cn names and the mainland-facing SteamPY marketplace default to the domestic website policy.
+  evidence:
+  - https://github.com/ZaunEkko/ekko-rules/issues/148
+  - https://steampy.com/
+  - docs/evidence/cn-suffix-fallback-2026-10-16.json
+  - tests/test_profile.py
+  first_observed: '2026-10-16'
+  last_verified: '2026-10-16'
+  phase_2_candidate: none
+  recommended_action: keep-after-specialized-rules
+  current_product: standard
+  resolution: The repository owner approved a .cn routing fallback after all specialized business rules and before GEOIP, rather than claiming every .cn site is mainland-hosted. DOMAIN-SUFFIX,cn is the last china-direct-curated rule and targets the default-DIRECT domestic website group in both products. A frozen first-match audit preserves 49 existing proxy-selector and 23 advertising rules. Putting the fallback in earlier china-web would capture 35 of those proxy rules. The official SteamPY homepage supports a separate anchored steampy.com service rule in china-web; ccopyright.com.cn and its registration subdomains are covered by the late .cn fallback. No other public suffix is admitted.
 - id: overseas-ai-generators
   status: accepted
   scope: routing-policy

@@ -61,7 +61,7 @@ all concrete business rules
 → MATCH,🐟 漏网之鱼
 ```
 
-The classic domain layer uses only `DOMAIN` and `DOMAIN-SUFFIX` entries selected from a pinned source revision. It uses no `GEOSITE`, `DOMAIN-KEYWORD`, regular expression, or single-label/public-suffix catchall. Matches use `🌏 国内网站`, whose default action is `DIRECT`.
+The mainland domain layer uses reviewed `DOMAIN` and `DOMAIN-SUFFIX` rules. The broad mainland roots segment ends with a `.cn` fallback after its nine existing roots, sending otherwise-unclassified `.cn` names, including `.com.cn`, to the default-DIRECT `🌏 国内网站` group. Explicit proxy, advertising and service policies match first. No other public suffix, `GEOSITE`, keyword or regular-expression rule is added. This is a routing default, not a claim that every `.cn` site is mainland-hosted.
 
 The terminal GEOIP rule supplements this with mainland destination-IP classification. `no-resolve` prevents the matcher from initiating DNS resolution but still allows it to evaluate an already-known destination IP. Every destination-IP rule retains `no-resolve`; unmatched traffic reaches `🐟 漏网之鱼`.
 

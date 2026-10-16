@@ -1964,3 +1964,32 @@ Evidence:
 
 - <https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/troubleshoot-ncsi-guidance>
 - <https://wiki.metacubex.one/config/dns/#fake-ip-filter>
+
+## ER-083 — Default-direct .cn fallback after explicit service policies
+
+**Date:** 2026-10-16
+
+**Type:** terminal domain fallback and mainland service coverage; Issue #148
+
+`DOMAIN-SUFFIX,cn` is the last entry in `china-direct-curated`, after every
+specialized business segment and before China GEOIP and FINAL. Otherwise-unlisted
+`.cn` names, including `.com.cn` and the China Copyright Protection Center's
+`ccopyright.com.cn` registration subdomains, now use the default-DIRECT domestic
+website policy without waiting for a destination IP. This is an explicit routing
+policy approved by the repository owner, not evidence that all `.cn` sites are
+mainland-hosted. No other public suffix gains a fallback.
+
+The frozen first-match audit preserves all 49 existing `.cn` proxy-selector
+rules and all 23 `.cn` advertising rules in both products, including their
+subdomains where the original matcher is a suffix. Adding the fallback to
+earlier `china-web` would instead capture 35 proxy rules from Google, Microsoft
+and overseas cloud services; keeping it in the tail avoids that change.
+
+SteamPY's official domestic-facing marketplace separately gains
+`DOMAIN-SUFFIX,steampy.com` in `china-web`, based on the public service review.
+The review and the pre-change policy snapshot are recorded in
+`docs/evidence/cn-suffix-fallback-2026-10-16.json`.
+
+The corpus grows from 10,195 to 10,197 file rules (10,198 with FINAL). The 56 rule
+files, 57 segments, 44/10 policy groups, destination-IP rules and first-match
+overlap metrics remain unchanged.
