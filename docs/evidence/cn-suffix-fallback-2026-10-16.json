@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-16",
+  "issue": "https://github.com/ZaunEkko/ekko-rules/issues/148",
+  "decision": "The repository owner approved default DIRECT classification for otherwise-unmatched .cn names, preserving all earlier explicit service and advertising policies.",
+  "fallback": {
+    "slug": "china-direct-curated",
+    "rule": "DOMAIN-SUFFIX,cn",
+    "target": "🌏 国内网站",
+    "placement": "Last rule of the existing mainland tail, after every specialized domain segment and before china-geoip-direct and FINAL.",
+    "scope": "A routing-policy choice, not an assertion that every .cn domain is mainland-hosted or reachable directly."
+  },
+  "service_additions": [
+    {
+      "root": "steampy.com",
+      "slug": "china-web",
+      "rule": "DOMAIN-SUFFIX,steampy.com",
+      "official_url": "https://steampy.com/",
+      "purpose": "SteamPY is a mainland-facing marketplace for CDKeys, game purchases and Steam balance.",
+      "public_evidence": "The official homepage identifies SteamPY/匹歪, lists the above services, gives an address in Shanghai and displays telecom licence 琼B2-20210122.",
+      "admission_basis": "Official service review; no claim of a measured mainland IP allocation."
+    }
+  ],
+  "coverage_example": {
+    "domain": "ccopyright.com.cn",
+    "official_reference": "https://www.ncac.gov.cn/xxfb/bqshfw/bqdj/djjg/202410/t20241018_870052.html",
+    "before": {
+      "slug": "final",
+      "target": "🐟 漏网之鱼",
+      "rule": "MATCH"
+    },
+    "after_rule": "DOMAIN-SUFFIX,cn"
+  },
+  "baseline": {
+    "rules_with_terminal": 10196,
+    "proxy_selector_cn_rules": 49,
+    "reject_cn_rules": 23,
+    "audit_scope": "Canonical DOMAIN / DOMAIN-SUFFIX rules ending in .cn; domain-only first-match evaluation in both products. Selector membership does not attest actual client runtime egress."
+  },
+  "preserved_policies": [
+    {
+      "slug": "advertising-curated",
+      "targets": {
+        "core": "🛑 广告拦截",
+        "lite": "🛑 广告拦截"
+      },
+      "policy": "REJECT",
+      "rules": [
+        "DOMAIN,ad.caijing.com.cn",
+        "DOMAIN,ad.cyzone.cn",
+        "DOMAIN,ad.eepw.com.cn",
+        "DOMAIN,ad.jschina.com.cn",
+        "DOMAIN,ad.wanfangdata.com.cn",
+        "DOMAIN,ad.weather.com.cn",
+        "DOMAIN,ad.yqxiu.cn",
+        "DOMAIN,adjs.pxto.com.cn",
+        "DOMAIN,adm2.autoimg.cn",
+        "DOMAIN,adm3.autoimg.cn",
+        "DOMAIN,advertnew.wanfangdata.com.cn",
+        "DOMAIN,ady.dongyingnews.cn",
+        "DOMAIN,amp.ad.sina.com.cn",
+        "DOMAIN,cpro.zol.com.cn",
+        "DOMAIN,pgdt.gtimg.cn",
+        "DOMAIN,s.360.cn",
+        "DOMAIN,s.union.360.cn",
+        "DOMAIN,ssp.360.cn",
+        "DOMAIN,ta.trs.cn",
+        "DOMAIN-SUFFIX,outin.cn",
+        "DOMAIN-SUFFIX,sensorsdata.cn",
+        "DOMAIN-SUFFIX,tagtic.cn",
+        "DOMAIN-SUFFIX,wwads.cn"
+      ]
+    },
+    {
+      "slug": "finance",
+      "targets": {
+        "core": "💳 金融服务",
+        "lite": "🚀 国外服务"
+      },
+      "policy": "PROXY_SELECTOR",
+      "rules": [
+        "DOMAIN-SUFFIX,wildcard.com.cn"
+      ]
+    },
+    {
+      "slug": "adobe",
+      "targets": {
+        "core": "🎨 Adobe",
+        "lite": "🚀 国外服务"
+      },
+      "policy": "PROXY_SELECTOR",
+      "rules": [
+        "DOMAIN-SUFFIX,adobedc.cn"
+      ]
+    },
+    {
+      "slug": "prime-video",
+      "targets": {
+        "core": "🎬 PrimeVideo",
+        "lite": "🎬 流媒体"
+      },
+      "policy": "PROXY_SELECTOR",
+      "rules": [
+        "DOMAIN-SUFFIX,amazonprimevideo.cn",
+        "DOMAIN-SUFFIX,amazonprimevideo.com.cn"
+      ]
+    },
+    {
+      "slug": "cloud-storage",
+      "targets": {
+        "core": "☁️ 云盘服务",
+        "lite": "🚀 国外服务"
+      },
+      "policy": "PROXY_SELECTOR",
+      "rules": [
+        "DOMAIN-SUFFIX,apple-icloud.cn",
+        "DOMAIN-SUFFIX,appleicloud.cn",
+        "DOMAIN-SUFFIX,icloud-apple.cn",
+        "DOMAIN-SUFFIX,icloud.com.cn",
+        "DOMAIN-SUFFIX,icloud.net.cn",
+        "DOMAIN-SUFFIX,icloudapple.cn"
+      ]
+    },
+    {
+      "slug": "apple",
+      "targets": {
+        "core": "🍎 苹果服务",
+        "lite": "🚀 国外服务"
+      },
+      "policy": "PROXY_SELECTOR",
+      "rules": [
+        "DOMAIN-SUFFIX,apple-dns.cn",
+        "DOMAIN-SUFFIX,apple-dns.com.cn",
+        "DOMAIN-SUFFIX,apple.cn",
+        "DOMAIN-SUFFIX,apple.com.cn"
+      ]
+    },
+    {
+      "slug": "overseas-cloud",
+      "targets": {
+        "core": "☁️ 海外云服务",
+        "lite": "🚀 国外服务"
+      },
+      "policy": "PROXY_SELECTOR",
+      "rules": [
+        "DOMAIN-SUFFIX,ap-hongkong.tencentcos.cn",
+        "DOMAIN-SUFFIX,ap-hongkong.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,ap-singapore.tencentcos.cn",
+        "DOMAIN-SUFFIX,ap-singapore.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,ap-mumbai.tencentcos.cn",
+        "DOMAIN-SUFFIX,ap-mumbai.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,ap-jakarta.tencentcos.cn",
+        "DOMAIN-SUFFIX,ap-jakarta.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,ap-seoul.tencentcos.cn",
+        "DOMAIN-SUFFIX,ap-seoul.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,ap-bangkok.tencentcos.cn",
+        "DOMAIN-SUFFIX,ap-bangkok.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,ap-tokyo.tencentcos.cn",
+        "DOMAIN-SUFFIX,ap-tokyo.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,na-siliconvalley.tencentcos.cn",
+        "DOMAIN-SUFFIX,na-siliconvalley.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,na-ashburn.tencentcos.cn",
+        "DOMAIN-SUFFIX,na-ashburn.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,na-toronto.tencentcos.cn",
+        "DOMAIN-SUFFIX,na-toronto.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,sa-saopaulo.tencentcos.cn",
+        "DOMAIN-SUFFIX,sa-saopaulo.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,eu-frankfurt.tencentcos.cn",
+        "DOMAIN-SUFFIX,eu-frankfurt.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,eu-moscow.tencentcos.cn",
+        "DOMAIN-SUFFIX,eu-moscow.tencentcos.com.cn",
+        "DOMAIN-SUFFIX,oos-cnhk-hqnet.ctyunapi.cn",
+        "DOMAIN-SUFFIX,oos-cnhk-nqnet.ctyunapi.cn"
+      ]
+    },
+    {
+      "slug": "microsoft",
+      "targets": {
+        "core": "🧩 微软服务",
+        "lite": "🚀 国外服务"
+      },
+      "policy": "PROXY_SELECTOR",
+      "rules": [
+        "DOMAIN-SUFFIX,bing.com.cn",
+        "DOMAIN-SUFFIX,microsoftonline.cn"
+      ]
+    },
+    {
+      "slug": "google",
+      "targets": {
+        "core": "🔎 Google",
+        "lite": "🚀 国外服务"
+      },
+      "policy": "PROXY_SELECTOR",
+      "rules": [
+        "DOMAIN-SUFFIX,google.cn",
+        "DOMAIN-SUFFIX,google.com.cn",
+        "DOMAIN-SUFFIX,googleapis.cn",
+        "DOMAIN-SUFFIX,googleusercontent.cn",
+        "DOMAIN-SUFFIX,gstatic.cn"
+      ]
+    }
+  ]
+}
