@@ -61,7 +61,7 @@ Ruleset 地址前缀：`https://raw.githubusercontent.com/ZaunEkko/ekko-rules/ma
 → MATCH,🐟 漏网之鱼
 ```
 
-经典域名层仅使用固定版本来源筛选出的 `DOMAIN` 与 `DOMAIN-SUFFIX`，不使用 `GEOSITE`、`DOMAIN-KEYWORD`、正则或单标签/公共后缀兜底。命中后进入默认 `DIRECT` 的 `🌏 国内网站`。
+大陆域名规则使用经评审的 `DOMAIN` 与 `DOMAIN-SUFFIX`。末尾的大陆宽域根域段在九条既有根域之后增加 `.cn` 兜底，覆盖未被具体规则分类的 `.cn` 及 `.com.cn` 等域名，进入默认 `DIRECT` 的 `🌏 国内网站`。已有代理、广告拦截和具体业务分类均先匹配；不增加其他公共后缀、`GEOSITE`、关键词或正则规则。`.cn` 直连是路由默认策略，不代表所有站点均托管于大陆。
 
 末尾 GEOIP 继续补充中国大陆目标 IP。`no-resolve` 阻止该匹配器主动解析域名；客户端已有目标 IP 时仍可匹配。所有目标 IP 规则均保留 `no-resolve`，未命中的流量进入 `🐟 漏网之鱼`。
 
