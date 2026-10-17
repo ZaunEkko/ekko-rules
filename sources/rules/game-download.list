@@ -1,9 +1,11 @@
+DOMAIN,a0.ww.np.dl.playstation.net
 DOMAIN,ares.dl.playstation.net
 DOMAIN,assets1.xboxlive.cn
 DOMAIN,assets1.xboxlive.com
 DOMAIN,assets2.xboxlive.cn
 DOMAIN,assets2.xboxlive.com
 DOMAIN,autopatchos.starrails.com
+DOMAIN,b0.ww.np.dl.playstation.net
 DOMAIN,blizzard.gcdn.cloudn.co.kr
 DOMAIN,blzddist1-a.akamaihd.net
 DOMAIN,blzddistkr1-a.akamaihd.net
@@ -44,6 +46,8 @@ DOMAIN,gamedownloads-rockstargames-com.akamaized.net
 DOMAIN,gog-cdn-fastly-cp77.gog.com
 DOMAIN,gog-cdn-fastly.gog.com
 DOMAIN,gog-cdn.akamaized.net
+DOMAIN,gs-sec.ww.np.dl.playstation.net
+DOMAIN,gst.prod.dl.playstation.net
 DOMAIN,gstore.val.manlaxy.com
 DOMAIN,gstore.val.smogfly.com
 DOMAIN,kr.cdn.blizzard.com
@@ -53,6 +57,7 @@ DOMAIN,lv.queniujq.cn
 DOMAIN,origin-a.akamaihd.net
 DOMAIN,packagespc.xboxlive.com
 DOMAIN,prod.cloudflare.cdn.ea.com
+DOMAIN,sgst.prod.dl.playstation.net
 DOMAIN,st.dl.bscstorage.net
 DOMAIN,st.dl.eccdnx.com
 DOMAIN,steampipe-kr.akamaized.net

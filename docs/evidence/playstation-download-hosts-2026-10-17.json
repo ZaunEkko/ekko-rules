@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-17",
+  "service": "PlayStation 3, PlayStation 4 and PlayStation 5 game downloads and title updates",
+  "decision": "The repository owner approved classifying all five reviewed PS3/PS4/PS5 download and title-update hosts under game-download.",
+  "target": "🎮 游戏下载",
+  "default_action": "DIRECT",
+  "runtime_observation": {
+    "host": "gst.prod.dl.playstation.net",
+    "destination_port": 80,
+    "reported_activity": "The user was downloading a PS5 game.",
+    "observed_match": "DOMAIN-SUFFIX,playstation.net",
+    "observed_target": "🎮 游戏平台",
+    "method": "User-supplied gateway connection screenshot; personal source addresses and proxy-node details are not retained."
+  },
+  "admitted_hosts": [
+    {
+      "host": "a0.ww.np.dl.playstation.net",
+      "rule": "DOMAIN,a0.ww.np.dl.playstation.net",
+      "purpose": "PS3 and PSP title-update XML containing package URLs; the exact host also serves other PSN resources such as EULAs.",
+      "evidence": ["ps3-cfw2ofw-convert", "ps3-update-tool", "playstation-title-info-checker"]
+    },
+    {
+      "host": "b0.ww.np.dl.playstation.net",
+      "rule": "DOMAIN,b0.ww.np.dl.playstation.net",
+      "purpose": "PS3 title-update package downloads under /tppkg/np/.",
+      "evidence": ["ps3-update-tool"]
+    },
+    {
+      "host": "gst.prod.dl.playstation.net",
+      "rule": "DOMAIN,gst.prod.dl.playstation.net",
+      "purpose": "PS5 application and delta package downloads.",
+      "evidence": ["psxdownloadhelper-cdn-patterns", "cache-domains-sony", "user-runtime-screenshot"]
+    },
+    {
+      "host": "sgst.prod.dl.playstation.net",
+      "rule": "DOMAIN,sgst.prod.dl.playstation.net",
+      "purpose": "PS5 title-update XML and JSON manifests, PlayGo information packages and chunk checksums.",
+      "evidence": ["psxdownloadhelper-cdn-patterns", "cache-domains-sony"]
+    },
+    {
+      "host": "gs-sec.ww.np.dl.playstation.net",
+      "rule": "DOMAIN,gs-sec.ww.np.dl.playstation.net",
+      "purpose": "PS4 title-update XML describing patch downloads; also used for PS Vita update metadata.",
+      "evidence": ["ps4-updates-python", "cache-domains-sony"]
+    }
+  ],
+  "public_sources": [
+    {
+      "id": "ps3-cfw2ofw-convert",
+      "revision": "fbbb4bdee79f22deb7b966c49ce05dc7d14af63a",
+      "url": "https://github.com/esc0rtd3w/ps3-cfw2ofw-convert/blob/fbbb4bdee79f22deb7b966c49ce05dc7d14af63a/convert.bat"
+    },
+    {
+      "id": "ps3-update-tool",
+      "revision": "1f52d73a3fdda99287fbe5a5051ab76c590a1cef",
+      "url": "https://gist.github.com/LiEnby/3c9c1053e4abe832865b2d23adaeccdd/1f52d73a3fdda99287fbe5a5051ab76c590a1cef"
+    },
+    {
+      "id": "playstation-title-info-checker",
+      "url": "https://kood.info/pstic/readme.html"
+    },
+    {
+      "id": "psxdownloadhelper-cdn-patterns",
+      "revision": "6ae5b4443718da224c6d4beab8b879a330d61928",
+      "url": "https://github.com/ahyaghoubi/psxdownloadhelper/blob/6ae5b4443718da224c6d4beab8b879a330d61928/docs/cdn-patterns.md"
+    },
+    {
+      "id": "ps4-updates-python",
+      "revision": "1651af34dc98c12174934cfc1e8d78bf0b8d2cfc",
+      "url": "https://github.com/andshrew/PS4-Updates-Python/tree/1651af34dc98c12174934cfc1e8d78bf0b8d2cfc"
+    },
+    {
+      "id": "cache-domains-sony",
+      "url": "https://github.com/uklans/cache-domains/blob/master/sony.txt",
+      "role": "Corroborating hostname list only; it also includes web assets and is not imported as a download allowlist."
+    }
+  ],
+  "already_covered": {
+    "rule": "DOMAIN-SUFFIX,ww.prod.dl.playstation.net",
+    "examples": ["gs2.ww.prod.dl.playstation.net", "gs2-sec.ww.prod.dl.playstation.net"]
+  },
+  "boundary": {
+    "selection": "Five manually reviewed exact hosts; no external ruleset or source code is imported.",
+    "preserved_platform_hosts": [
+      "psnobj.prod.dl.playstation.net",
+      "psn-rsc.prod.dl.playstation.net",
+      "tmdb.np.dl.playstation.net",
+      "uef.np.dl.playstation.net",
+      "vulcan.dl.playstation.net"
+    ],
+    "excluded_suffixes": ["dl.playstation.net", "prod.dl.playstation.net"],
+    "unobserved_subdomains": "The five additions are exact DOMAIN rules and do not classify arbitrary child hosts."
+  },
+  "verification_limits": "Domain roles are documented by public tools, with a gateway observation for gst. Direct Sony XML retrieval attempts did not succeed. Direct reachability and download performance after the rule change have not been established; the download group remains user-selectable."
+}
