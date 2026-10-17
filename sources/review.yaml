@@ -10,8 +10,23 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
-- id: tcdnos-bytes-download-policy
+- id: tcdnos-root-download-policy
   status: accepted
+  scope: game-download
+  summary: The owner expands the download policy to the whole tcdnos.com suffix after another Delta Force delivery line was missed.
+  evidence:
+  - docs/evidence/tcdnos-root-download-policy-2026-10-17.json
+  - docs/evidence/tcdnos-bytes-download-policy-2026-10-17.json
+  - sources/rules/game-download.list
+  - tests/test_profile.py
+  first_observed: '2026-10-17'
+  last_verified: '2026-10-17'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: The user reported df-repo.yz.tcdnos.com after the bytes-only release and explicitly approved routing the whole tcdnos.com suffix through game-download, accepting that non-game software downloads also follow the group. DOMAIN-SUFFIX,tcdnos.com replaces the narrower bytes rule rather than adding overlapping entries. Live AliDNS DoH resolves the observed yz host through Unicom CDN, while the earlier bytes host uses Volcengine. An audit found no other existing canonical rules under tcdnos.com; corpus size and first-match overlap metrics are unchanged. Both products retain the existing DIRECT default and manual selection. This is an owner-selected routing policy, not a claim of exclusive gaming use or an exhaustive host inventory.
+- id: tcdnos-bytes-download-policy
+  status: legacy
   scope: game-download
   summary: The owner assigns the bytes.tcdnos.com distribution namespace to the game-download policy after observing a Delta Force download.
   evidence:
@@ -21,9 +36,9 @@ items:
   first_observed: '2026-10-17'
   last_verified: '2026-10-17'
   phase_2_candidate: none
-  recommended_action: keep
+  recommended_action: superseded-by-tcdnos-root-download-policy
   current_product: standard
-  resolution: The user reported df-repo.bytes.tcdnos.com during a Delta Force download and explicitly chose to classify the whole bytes.tcdnos.com suffix under game-download, which defaults to DIRECT in both products and remains manually selectable. AliDNS DoH resolves df-repo, dlied6, down and downv6 under that namespace through volcgslb.com and volcgtm.com. This is an owner-approved routing policy, not proof that every host serves games or that Honor of Kings uses the namespace. The tcdnos.com parent, other provider namespaces, CDN canonical names and destination IPs are not added.
+  resolution: ER-085 originally admitted bytes.tcdnos.com after the user's Delta Force download observation, leaving the parent and other provider namespaces excluded. ER-086 supersedes that boundary with the explicitly approved tcdnos.com root policy after df-repo.yz.tcdnos.com was reported. The original evidence file remains a historical record; the narrower rule is removed to avoid redundant coverage.
 - id: cn-suffix-fallback-and-steampy
   status: accepted
   scope: routing-policy

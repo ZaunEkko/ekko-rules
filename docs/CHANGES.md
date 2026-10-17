@@ -2060,3 +2060,32 @@ suffix boundary. No client download-speed result is claimed.
 The corpus grows to 10,203 file rules (10,204 with FINAL). Rule files,
 segments, policy groups, destination-IP rules and first-match overlap
 metrics are unchanged.
+
+## ER-086 — Cover every tcdnos.com delivery line with the download policy
+
+**Date:** 2026-10-17
+
+**Type:** replace one suffix rule; no count, group or default change
+
+After the bytes-only release, the user reported another Delta Force download
+host, `df-repo.yz.tcdnos.com`. It is a sibling provider namespace, so the
+existing `bytes.tcdnos.com` rule did not match and the host reached FINAL.
+Live AliDNS DoH resolves it through Unicom CDN, whereas the earlier bytes
+host resolves through Volcengine.
+
+The owner explicitly approved putting the whole `tcdnos.com` suffix into
+`🎮 游戏下载`, accepting that non-game software downloads also follow that
+selector. `DOMAIN-SUFFIX,tcdnos.com` replaces the narrower bytes rule and
+covers both observed hosts, other provider namespaces and future hosts.
+Both products retain the existing DIRECT default and manual selection.
+The change does not assert that every host under the suffix serves games.
+
+The evidence and first-match audit are recorded in
+`docs/evidence/tcdnos-root-download-policy-2026-10-17.json`. No other
+existing canonical rule falls under the expanded suffix. Regression checks
+cover bytes, yz, other provider examples and lookalike-domain exclusions;
+the previous bytes-only review and evidence are retained as history.
+
+The corpus remains 10,203 file rules (10,204 with FINAL). First-match
+overlap metrics, destination-IP rules, segments and groups are unchanged.
+Client download performance after the update remains subject to real use.

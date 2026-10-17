@@ -3356,20 +3356,25 @@ class LiteProductTests(unittest.TestCase):
                     },
                 )
 
-    def test_tcdnos_bytes_namespace_uses_download_policy_in_both_products(self) -> None:
+    def test_tcdnos_root_uses_download_policy_in_both_products(self) -> None:
         hosts = (
+            "tcdnos.com",
             "bytes.tcdnos.com",
             "df-repo.bytes.tcdnos.com",
+            "df-repo.yz.tcdnos.com",
             "dlied6.bytes.tcdnos.com",
             "down.bytes.tcdnos.com",
             "downv6.bytes.tcdnos.com",
             "other.bytes.tcdnos.com",
+            "df-repo.aly.tcdnos.com",
+            "downv6.ydcdn.tcdnos.com",
+            "other.tcdnos.com",
+            "future.provider.tcdnos.com",
         )
         excluded = (
-            "tcdnos.com",
-            "other.tcdnos.com",
-            "df-repo.aly.tcdnos.com",
-            "otherbytes.tcdnos.com",
+            "tcdnos.net",
+            "not-tcdnos.com",
+            "tcdnos.com.evil.example",
             "bytes.tcdnos.com.evil.example",
         )
         for product in PRODUCTS:
@@ -3381,7 +3386,7 @@ class LiteProductTests(unittest.TestCase):
                         {
                             "slug": "game-download",
                             "target": "🎮 游戏下载",
-                            "rule": "DOMAIN-SUFFIX,bytes.tcdnos.com",
+                            "rule": "DOMAIN-SUFFIX,tcdnos.com",
                         },
                     )
                     self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
@@ -3391,6 +3396,9 @@ class LiteProductTests(unittest.TestCase):
                         first_match(self.sources, product=product, domain=domain),
                         {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"},
                     )
+        self.assertNotIn(
+            "DOMAIN-SUFFIX,bytes.tcdnos.com", self.sources.rules["game-download"]
+        )
 
     def test_playstation_download_chain_stays_direct_in_both_products(self) -> None:
         cases = {
