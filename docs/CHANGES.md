@@ -1993,3 +1993,42 @@ The review and the pre-change policy snapshot are recorded in
 The corpus grows from 10,195 to 10,197 file rules (10,198 with FINAL). The 56 rule
 files, 57 segments, 44/10 policy groups, destination-IP rules and first-match
 overlap metrics remain unchanged.
+
+## ER-084 — PS3, PS4 and PS5 download endpoints reach the download policy
+
+**Date:** 2026-10-17
+
+**Type:** five exact game-download rules; no group, segment or default change
+
+A gateway screenshot showed `gst.prod.dl.playstation.net:80` reaching
+`DOMAIN-SUFFIX,playstation.net` and the game-platform proxy while the user
+downloaded a PS5 game. The existing download suffix
+`ww.prod.dl.playstation.net` covers the PS4 `gs2` and `gs2-sec` hosts, but does
+not cover the PS5 `gst.prod` and `sgst.prod` siblings.
+
+`gst.prod.dl.playstation.net`, `sgst.prod.dl.playstation.net` and
+`gs-sec.ww.np.dl.playstation.net` now have exact `DOMAIN` rules in
+`game-download`, before `game-platform`. Public download-tool documentation
+identifies the first as PS5 application and delta packages, the second as
+PS5 update manifests and supporting files, and the third as PS4 title-update
+XML. The policy remains DIRECT-first and can still be selected independently.
+
+PS3's `a0.ww.np.dl.playstation.net` title-update XML and
+`b0.ww.np.dl.playstation.net` patch packages also gain exact rules in
+`game-download`. The `a0` host is shared with other PSN resources such as
+EULAs; the approved classification applies to the whole exact host.
+
+PSN web assets such as `psnobj`, `psn-rsc`, `tmdb`, `uef`
+and `vulcan` retain their platform routing. Neither the whole
+`dl.playstation.net` suffix nor the `prod.dl.playstation.net` suffix is
+admitted, and the five exact additions do not capture arbitrary child hosts.
+
+Evidence and pinned tool references are recorded in
+`docs/evidence/playstation-download-hosts-2026-10-17.json`. Sony XML retrieval
+did not succeed during review; the change does not assert measured direct
+reachability or download speed. Regression checks cover both products and
+the preserved web-resource boundary.
+
+The corpus grows to 10,202 file rules (10,203 with FINAL). Rule files,
+segments, policy groups, destination-IP rules and first-match overlap
+metrics are unchanged.

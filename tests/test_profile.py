@@ -3356,6 +3356,63 @@ class LiteProductTests(unittest.TestCase):
                     },
                 )
 
+    def test_playstation_download_chain_stays_direct_in_both_products(self) -> None:
+        cases = {
+            "a0.ww.np.dl.playstation.net": "DOMAIN,a0.ww.np.dl.playstation.net",
+            "b0.ww.np.dl.playstation.net": "DOMAIN,b0.ww.np.dl.playstation.net",
+            "gst.prod.dl.playstation.net": "DOMAIN,gst.prod.dl.playstation.net",
+            "sgst.prod.dl.playstation.net": "DOMAIN,sgst.prod.dl.playstation.net",
+            "gs-sec.ww.np.dl.playstation.net": (
+                "DOMAIN,gs-sec.ww.np.dl.playstation.net"
+            ),
+            "gs2.ww.prod.dl.playstation.net": (
+                "DOMAIN-SUFFIX,ww.prod.dl.playstation.net"
+            ),
+            "gs2-sec.ww.prod.dl.playstation.net": (
+                "DOMAIN-SUFFIX,ww.prod.dl.playstation.net"
+            ),
+            "ares.dl.playstation.net": "DOMAIN,ares.dl.playstation.net",
+            "zeus.dl.playstation.net": "DOMAIN,zeus.dl.playstation.net",
+        }
+        for product in PRODUCTS:
+            for domain, rule in cases.items():
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(
+                        verdict,
+                        {"slug": "game-download", "target": "🎮 游戏下载", "rule": rule},
+                    )
+                    self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
+
+    def test_playstation_download_boundary_preserves_web_policy(self) -> None:
+        hosts = (
+            "psnobj.prod.dl.playstation.net",
+            "psn-rsc.prod.dl.playstation.net",
+            "tmdb.np.dl.playstation.net",
+            "uef.np.dl.playstation.net",
+            "vulcan.dl.playstation.net",
+            "prod.dl.playstation.net",
+            "dl.playstation.net",
+            "other.a0.ww.np.dl.playstation.net",
+            "other.b0.ww.np.dl.playstation.net",
+            "other.gst.prod.dl.playstation.net",
+            "other.sgst.prod.dl.playstation.net",
+            "other.gs-sec.ww.np.dl.playstation.net",
+        )
+        for product in PRODUCTS:
+            for domain in hosts:
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(
+                        verdict,
+                        {
+                            "slug": "game-platform",
+                            "target": "🎮 游戏平台",
+                            "rule": "DOMAIN-SUFFIX,playstation.net",
+                        },
+                    )
+                    self.assertEqual(self.effective_action(verdict["target"]), "PROXY")
+
     def test_domestic_voice_chat_hosts_stay_direct_in_both_products(self) -> None:
         cases = {
             "bj-sig07-turn-1697275940.kaihei.co": "DOMAIN-SUFFIX,kaihei.co",
