@@ -2032,3 +2032,31 @@ the preserved web-resource boundary.
 The corpus grows to 10,202 file rules (10,203 with FINAL). Rule files,
 segments, policy groups, destination-IP rules and first-match overlap
 metrics are unchanged.
+
+## ER-085 — Route the bytes.tcdnos.com namespace through game downloads
+
+**Date:** 2026-10-17
+
+**Type:** one owner-approved download suffix; no group or default change
+
+The user reported `df-repo.bytes.tcdnos.com` during a Delta Force download.
+The canonical first-match simulation sent that host to FINAL. After review
+of the broader CDN boundary, the owner chose to put the whole
+`bytes.tcdnos.com` namespace into `🎮 游戏下载`, which already defaults to
+DIRECT in both products and remains manually selectable.
+
+`DOMAIN-SUFFIX,bytes.tcdnos.com` covers the observed `df-repo` host, the
+reviewed `dlied6`, `down` and `downv6` siblings, and any other hosts under
+that suffix. This is an explicit routing-policy choice, not a claim that
+all of those hosts exclusively serve games or that Honor of Kings uses
+them. The parent `tcdnos.com`, other provider namespaces and the observed
+Volcengine CDN canonical names are not added.
+
+The decision and live AliDNS DoH snapshots are recorded in
+`docs/evidence/tcdnos-bytes-download-policy-2026-10-17.json`. Regression
+checks cover both products, their effective DIRECT action and the anchored
+suffix boundary. No client download-speed result is claimed.
+
+The corpus grows to 10,203 file rules (10,204 with FINAL). Rule files,
+segments, policy groups, destination-IP rules and first-match overlap
+metrics are unchanged.

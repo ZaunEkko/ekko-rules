@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-17",
+  "service": "Owner-selected bytes.tcdnos.com download namespace",
+  "decision": "After reporting a Delta Force download on df-repo.bytes.tcdnos.com and discussing the broader CDN boundary, the repository owner explicitly chose to put the whole bytes.tcdnos.com suffix into the game-download group.",
+  "rule": "DOMAIN-SUFFIX,bytes.tcdnos.com",
+  "target": "🎮 游戏下载",
+  "default_action": "DIRECT",
+  "runtime_observation": {
+    "host": "df-repo.bytes.tcdnos.com",
+    "reported_activity": "The user reported that Delta Force currently used this host for downloads.",
+    "source": "User report in this chat; no packet capture or download URL was supplied.",
+    "canonical_first_match_before_change": "MATCH -> 🐟 漏网之鱼",
+    "first_match_method": "Repository first_match simulation in both products; not a live gateway observation."
+  },
+  "dns_observations": {
+    "resolver": "https://dns.alidns.com/resolve",
+    "method": "HTTPS DNS JSON A queries; the local system resolver returned fake-IP addresses and was not used for CDN address evidence.",
+    "hosts": [
+      {
+        "host": "df-repo.bytes.tcdnos.com",
+        "canonical_names": ["df-repo.bytes.tcdnos.com.volcgslb.com", "sz-txtf-v4.volcgtm.com"],
+        "addresses": ["39.91.161.34", "39.91.161.122"]
+      },
+      {
+        "host": "dlied6.bytes.tcdnos.com",
+        "canonical_names": ["dlied6.bytes.tcdnos.com.volcgslb.com", "sz-tx-all.volcgtm.com"],
+        "addresses": ["116.148.232.76", "116.148.232.95"]
+      },
+      {
+        "host": "down.bytes.tcdnos.com",
+        "canonical_names": ["down.bytes.tcdnos.com.volcgslb.com", "sz-txtf-v4.volcgtm.com"],
+        "addresses": ["39.91.161.122", "39.91.161.34"]
+      },
+      {
+        "host": "downv6.bytes.tcdnos.com",
+        "canonical_names": ["downv6.bytes.tcdnos.com.volcgslb.com", "sz-tx-all.volcgtm.com"],
+        "addresses": ["116.148.232.95", "116.148.232.76"]
+      }
+    ],
+    "namespace_apex": "bytes.tcdnos.com returned NXDOMAIN for A at review time; the suffix rule still matches the apex if it becomes active.",
+    "limits": "DNS responses are time- and location-dependent snapshots. Canonical names and addresses establish the observed delivery chain, not the purpose of every host. No destination-IP rule is added."
+  },
+  "boundary": {
+    "selection": "Explicit owner-approved routing policy for bytes.tcdnos.com and all its subdomains, including future or otherwise unobserved hosts.",
+    "excluded_suffixes": ["tcdnos.com", "volcgslb.com", "volcgtm.com"],
+    "excluded_sibling_example": "df-repo.aly.tcdnos.com is a boundary-test example, not an observed download host.",
+    "policy_override": "The download group remains manually selectable; DIRECT is its existing default."
+  },
+  "verification_limits": "Exclusive gaming use of the bytes namespace and Honor of Kings use were not established. Public search and certificate-transparency lookup did not establish a complete host inventory. Post-change client reachability and download performance remain untested."
+}
