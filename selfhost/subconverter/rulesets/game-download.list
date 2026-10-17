@@ -77,7 +77,6 @@ DOMAIN,xz.sycontroller.com
 DOMAIN,yif.gdtstream.com
 DOMAIN,zeus.dl.playstation.net
 DOMAIN-SUFFIX,3839apk.com
-DOMAIN-SUFFIX,bytes.tcdnos.com
 DOMAIN-SUFFIX,cdn.ubi.com
 DOMAIN-SUFFIX,dyn.riotcdn.net
 DOMAIN-SUFFIX,maindown4399.com
@@ -85,6 +84,7 @@ DOMAIN-SUFFIX,pdl.wow.battlenet.com.cn
 DOMAIN-SUFFIX,steamcontent.com
 DOMAIN-SUFFIX,steamserver.net
 DOMAIN-SUFFIX,tapapks.com
+DOMAIN-SUFFIX,tcdnos.com
 DOMAIN-SUFFIX,werepository.com.cn
 DOMAIN-SUFFIX,wmupd.com
 DOMAIN-SUFFIX,ww.prod.dl.playstation.net

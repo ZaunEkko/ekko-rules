@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-10-17",
+  "service": "Owner-selected tcdnos.com download distribution policy",
+  "decision": "The owner explicitly approved routing the whole tcdnos.com suffix through the game-download group after reporting df-repo.yz.tcdnos.com, accepting that non-game software downloads can follow the same group.",
+  "rule": "DOMAIN-SUFFIX,tcdnos.com",
+  "replaces": "DOMAIN-SUFFIX,bytes.tcdnos.com",
+  "target": "🎮 游戏下载",
+  "default_action": "DIRECT",
+  "previous_release": "rules-v0.4.16",
+  "previous_evidence": "docs/evidence/tcdnos-bytes-download-policy-2026-10-17.json",
+  "runtime_observation": {
+    "host": "df-repo.yz.tcdnos.com",
+    "reported_activity": "The user identified another missed host while discussing Delta Force downloads.",
+    "source": "User report in this chat; no packet capture, source address or signed download URL is retained.",
+    "canonical_first_match_before_change": "MATCH -> 🐟 漏网之鱼",
+    "canonical_first_match_after_change": "DOMAIN-SUFFIX,tcdnos.com -> 🎮 游戏下载",
+    "method": "Repository first_match simulation in core and lite; not a live gateway observation."
+  },
+  "dns_observation": {
+    "resolver": "https://dns.alidns.com/resolve?name=df-repo.yz.tcdnos.com&type=A",
+    "canonical_names": [
+      "df-repo.yz.tcdnos.com.cdn.unicomcdn.com.cn",
+      "df-repo.yz.tcdnos.com.cdn.unicomcdn.cn",
+      "kzcsmm3q.sched.downzy-p3.unigslb.cn"
+    ],
+    "addresses": ["116.148.180.57", "116.148.180.59", "116.148.180.136", "116.148.180.55", "116.148.180.56"],
+    "limits": "DNS is a time- and location-dependent snapshot of the delivery chain. No address or CDN canonical-name rule is added."
+  },
+  "first_match_audit": {
+    "method": "Apply rule_covers to every canonical rule, replace the bytes suffix in a proposed source model, and compare core/lite coverage_metrics and selected first_match verdicts before editing.",
+    "existing_rules_under_expanded_suffix": [
+      {"slug": "game-download", "rule": "DOMAIN-SUFFIX,bytes.tcdnos.com"}
+    ],
+    "other_existing_rules_under_expanded_suffix": 0,
+    "rule_count_delta": 0,
+    "first_match_overlap_change": "No change in either product."
+  },
+  "boundary": {
+    "selection": "tcdnos.com and every subdomain, including bytes, yz, other providers and unobserved future names; non-game uses also follow the owner-selected group.",
+    "excluded_examples": ["tcdnos.net", "not-tcdnos.com", "tcdnos.com.evil.example"],
+    "excluded_infrastructure": "DNS canonical names and address ranges outside tcdnos.com are not admitted.",
+    "policy_override": "DIRECT remains the existing default; choosing another member of the download group moves all matched traffic together."
+  },
+  "verification_limits": "The policy does not establish exclusive gaming use, Honor of Kings use, or a complete inventory of tcdnos.com services. Post-update client reachability and download performance have not been measured."
+}
