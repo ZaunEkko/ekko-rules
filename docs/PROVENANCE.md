@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines two builds of one product over the same corpus: 56 rule files, 57 ordered segments including FINAL, and 10,203 rules including FINAL, with 44 proxy groups in the full build and 10 in the lite build. The lite build changes only the policy a segment targets, never the rules or their order, and `LiteProductTests` holds the two to the same effective action on every segment. Subconverter and Mihomo consume the same ordered corpus through one entry point per build.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines two builds of one product over the same corpus: 56 rule files, 57 ordered segments including FINAL, and 10,204 rules including FINAL, with 44 proxy groups in the full build and 10 in the lite build. The lite build changes only the policy a segment targets, never the rules or their order, and `LiteProductTests` holds the two to the same effective action on every segment. Subconverter and Mihomo consume the same ordered corpus through one entry point per build.
 
 The product contains 207 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,7 +21,7 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 10,202 file rules are partitioned by evidence boundary. Each figure is the
+The 10,203 file rules are partitioned by evidence boundary. Each figure is the
 sum of the segments in that boundary, taken from the canonical tree rather than
 carried forward, because the previous revision of this table had drifted: it
 partitioned 10,027 rules and split the mainland and remainder categories 369
@@ -34,15 +34,17 @@ rules apart from what the sources actually held.
 | Observation-derived advertising curation | 590 | Derived from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
 | Overseas shopping curation | 76 | Reviewed per host: overseas retail and cross-border forwarding roots whose storefront, availability or bot challenge depends on which exit reaches them |
 | Finance and account registration curation | 44 | Reviewed per host: payments, virtual cards, SMS receipt and overseas banks and brokers, each resolved before admission and each geo-sensitive enough that the exit is part of the account |
-| Specialized, private/local, and service corpus | 2,524 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
+| Specialized, private/local, and service corpus | 2,525 | Current canonical curation; combines reconstructed factual indicators with subsequent independent rebuilding and additions |
 
 No component of the current product derives from a third-party rule list. ER-047 retired the two pinned `v2fly/domain-list-community` imports that once carried 2,331 rules, and with them the `Copyright (c) 2018-2019 V2Ray` attribution they required.
 
-The final 2,524-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
+The final 2,525-rule category is not a claim of wholly original authorship or a single upstream. Original per-rule source boundaries were not recoverable. It identifies rules whose current inclusion, order, target, and maintenance are governed directly by this repository rather than the frozen recovery selection or one of the observation-derived pipelines.
 
 ## Direct canonical inputs
 
 ### Repository-maintained rules and policy
+
+ER-085 adds the owner-approved `DOMAIN-SUFFIX,bytes.tcdnos.com` routing policy to `game-download`, defaulting to DIRECT in both products. The user observed `df-repo.bytes.tcdnos.com` during a Delta Force download, then explicitly selected the whole `bytes.tcdnos.com` namespace. Live AliDNS DoH responses establish that reviewed hosts use Volcengine CDN canonical names; they do not prove exclusive gaming use or Honor of Kings traffic. The decision, DNS snapshots and excluded parent/provider boundaries are recorded in `docs/evidence/tcdnos-bytes-download-policy-2026-10-17.json`. No third-party rule list is imported.
 
 ER-084 adds five individually reviewed exact PlayStation download and title-update hosts for PS3, PS4 and PS5. The user's gateway screenshot establishes the PS5 `gst.prod` misclassification; public download-tool documentation and source code establish the reviewed hosts' roles. Pinned tool references and the preserved web-resource boundary are recorded in `docs/evidence/playstation-download-hosts-2026-10-17.json`. Public lists are corroborating evidence only, not mechanically imported rulesets. Direct download reachability and performance remain subject to client validation.
 

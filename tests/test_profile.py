@@ -3356,6 +3356,42 @@ class LiteProductTests(unittest.TestCase):
                     },
                 )
 
+    def test_tcdnos_bytes_namespace_uses_download_policy_in_both_products(self) -> None:
+        hosts = (
+            "bytes.tcdnos.com",
+            "df-repo.bytes.tcdnos.com",
+            "dlied6.bytes.tcdnos.com",
+            "down.bytes.tcdnos.com",
+            "downv6.bytes.tcdnos.com",
+            "other.bytes.tcdnos.com",
+        )
+        excluded = (
+            "tcdnos.com",
+            "other.tcdnos.com",
+            "df-repo.aly.tcdnos.com",
+            "otherbytes.tcdnos.com",
+            "bytes.tcdnos.com.evil.example",
+        )
+        for product in PRODUCTS:
+            for domain in hosts:
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(
+                        verdict,
+                        {
+                            "slug": "game-download",
+                            "target": "🎮 游戏下载",
+                            "rule": "DOMAIN-SUFFIX,bytes.tcdnos.com",
+                        },
+                    )
+                    self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
+            for domain in excluded:
+                with self.subTest(product=product, domain=domain):
+                    self.assertEqual(
+                        first_match(self.sources, product=product, domain=domain),
+                        {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"},
+                    )
+
     def test_playstation_download_chain_stays_direct_in_both_products(self) -> None:
         cases = {
             "a0.ww.np.dl.playstation.net": "DOMAIN,a0.ww.np.dl.playstation.net",
