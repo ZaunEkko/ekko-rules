@@ -88,6 +88,76 @@ function whitelistRules(pattern: string): string[] {
   return [`${pattern.includes("*") ? "DOMAIN-WILDCARD" : "DOMAIN"},${pattern},fake-ip`];
 }
 
+function resolverList(value: unknown): string[] {
+  return (Array.isArray(value) ? value : [value])
+    .filter((item): item is string => typeof item === "string" && item.length > 0);
+}
+
+function routedResolver(server: string): boolean {
+  const fragment = server.indexOf("#");
+  return fragment >= 0 && server.slice(fragment + 1).split("&")
+    .some(part => part.length > 0 && !part.includes("=") && part !== "DIRECT");
+}
+
+function independentResolver(server: string, localResolver: string): boolean {
+  if (routedResolver(server) || server === "system") return false;
+  try {
+    const endpoint = new URL(server.includes("://") ? server : `udp://${server}`);
+    const local = new URL(localResolver);
+    const defaults: Record<string, string> = {"http:": "80", "https:": "443", "tls:": "853", "quic:": "853"};
+    const loopbacks = ["127.0.0.1", "localhost", "[::1]", "0.0.0.0", "[::]"];
+    const sameHost = endpoint.hostname === local.hostname ||
+      (loopbacks.includes(endpoint.hostname) && loopbacks.includes(local.hostname));
+    return !sameHost || (endpoint.port || defaults[endpoint.protocol] || "53") !== local.port;
+  } catch {
+    return false;
+  }
+}
+
+/** Keep alias endpoints resolvable before a rule-routed DoH connection exists. */
+function protectAliasBootstrap(
+  dns: Record<string, unknown>,
+  domains: string[],
+  localResolver: string,
+): void {
+  const policy = record(dns["nameserver-policy"]);
+  const upstreams = [dns.nameserver, dns.fallback, ...Object.values(policy)]
+    .flatMap(resolverList);
+  if (dns["respect-rules"] !== true && !upstreams.some(routedResolver)) return;
+
+  const existing = new Map(Object.entries(policy)
+    .filter(([key]) => !key.startsWith("geosite:") && !key.startsWith("rule-set:"))
+    .flatMap(([key, servers]) => key.split(",").map(domain => [domain, resolverList(servers)] as const)));
+  const pending = domains.filter(domain => {
+    const servers = existing.get(domain);
+    return !servers?.length || !servers.every(server => independentResolver(server, localResolver));
+  });
+  if (!pending.length) return;
+
+  const bootstrap = [dns["direct-nameserver"], dns.nameserver, dns["default-nameserver"]]
+    .map(resolverList)
+    .find(servers => servers.length > 0 && servers.every(server =>
+      independentResolver(server, localResolver),
+    ));
+  if (!bootstrap) {
+    throw new Error("Cannot preserve subscription hosts: independent DNS bootstrap is required.");
+  }
+
+  const result = { ...policy };
+  // Mihomo supports comma-separated exact domains. Bound key length to keep
+  // generated YAML in simple-key form instead of emitting explicit long keys.
+  let key = "";
+  for (const domain of [...new Set(pending)].sort()) {
+    if (key && key.length + domain.length + 1 > 900) {
+      result[key] = bootstrap;
+      key = "";
+    }
+    key = key ? `${key},${domain}` : domain;
+  }
+  if (key) result[key] = bootstrap;
+  dns["nameserver-policy"] = result;
+}
+
 /**
  * The engine retains nodes but discards source-level hosts. Domain aliases also
  * need the DNS listener: Mihomo's outbound resolver only reads IP-valued hosts,
@@ -138,10 +208,12 @@ export function preserveMihomoHosts(body: string, sources: readonly string[]): s
       };
     }
 
+    const domains = [...new Set(aliases.map(([, domain]) => domain))];
+    protectAliasBootstrap(dns, domains, nameserver);
+
     // Hosts redirects are applied before fake-IP filtering, so filter the
     // destination domains, not just the original node names.
     if (dns["enhanced-mode"] === "fake-ip") {
-      const domains = [...new Set(aliases.map(([, domain]) => domain))];
       const filters = Array.isArray(dns["fake-ip-filter"])
         ? dns["fake-ip-filter"].filter((item): item is string => typeof item === "string")
         : [];

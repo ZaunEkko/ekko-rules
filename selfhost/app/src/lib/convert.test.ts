@@ -71,6 +71,26 @@ test("keeps the Mihomo base local by default and preserves fallback coverage", a
   assert.doesNotMatch(fallbackFilter, /^    geosite:$/m);
 });
 
+test("uses encrypted rule-routed overseas DNS without changing mainland bootstrap", async () => {
+  const base = parseYaml(await readFile(
+    new URL("../../../subconverter/base/ekko-rules-base.yaml", import.meta.url), "utf8",
+  ));
+  const dns = base.dns;
+  const overseas = [dns["nameserver-policy"]["geosite:gfw"],
+    dns["nameserver-policy"]["geosite:geolocation-!cn"], dns.fallback];
+  for (const servers of overseas) {
+    assert.ok(servers.length >= 2);
+    assert.ok(servers.every((server: string) => {
+      const url = new URL(server);
+      return url.protocol === "https:" && url.hash === "#RULES";
+    }));
+  }
+  assert.ok(dns["direct-nameserver"].every((server: string) => !new URL(server).hash));
+  assert.equal(dns["direct-nameserver-follow-policy"], false);
+  assert.equal(dns["fallback-filter"].geoip, true);
+  assert.equal(dns["fallback-filter"]["geoip-code"], "CN");
+});
+
 test("normalizes safe upstream subscription usage metadata", () => {
   assert.equal(
     sanitizeSubscriptionUserinfo(
