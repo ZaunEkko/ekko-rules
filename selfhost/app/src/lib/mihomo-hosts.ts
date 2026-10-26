@@ -119,10 +119,24 @@ export function preserveMihomoHosts(body: string, sources: readonly string[]): s
     if (!Array.isArray(dns["proxy-server-nameserver"]) || !dns["proxy-server-nameserver"].length) {
       dns["proxy-server-nameserver"] = ["system"];
     }
-    dns["proxy-server-nameserver-policy"] = {
-      ...record(dns["proxy-server-nameserver-policy"]),
-      ...Object.fromEntries(aliases.map(([domain]) => [domain, [nameserver]])),
-    };
+    const existingPolicy = record(dns["proxy-server-nameserver-policy"]);
+    const nodes = field(parsed, "proxies");
+    const aliasDomains = new Set(aliases.map(([domain]) => domain.toLowerCase()));
+    // A homogeneous subscription needs only one resolver entry. Mixed inputs
+    // retain per-domain policies so unrelated nodes keep their own DNS path.
+    const servers = Array.isArray(nodes) ? nodes.map(node => record(node).server) : [];
+    const allAliased = servers.length > 0 && servers.every(server =>
+      typeof server === "string" && (isIP(server) || aliasDomains.has(server.toLowerCase())),
+    ) && servers.some(server => typeof server === "string" && aliasDomains.has(server.toLowerCase()));
+    if (allAliased && !Object.keys(existingPolicy).length) {
+      dns["proxy-server-nameserver"] = [nameserver];
+      delete dns["proxy-server-nameserver-policy"];
+    } else {
+      dns["proxy-server-nameserver-policy"] = {
+        ...existingPolicy,
+        ...Object.fromEntries(aliases.map(([domain]) => [domain, [nameserver]])),
+      };
+    }
 
     // Hosts redirects are applied before fake-IP filtering, so filter the
     // destination domains, not just the original node names.
