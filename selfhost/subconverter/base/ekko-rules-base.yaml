@@ -33,13 +33,11 @@ dns:
       - https://223.5.5.5/dns-query
       - https://doh.pub/dns-query
     "geosite:gfw":
-      - 8.8.8.8
-      - 1.1.1.1
-      - tls://1.0.0.1:853
-      - tls://dns.google:853
+      - https://1.1.1.1/dns-query#RULES
+      - https://dns.google/dns-query#RULES
     "geosite:geolocation-!cn":
-      - tls://1.0.0.1:853
-      - tls://dns.google:853
+      - https://1.1.1.1/dns-query#RULES
+      - https://dns.google/dns-query#RULES
   proxy-server-nameserver:
     - https://223.5.5.5/dns-query
     - https://doh.pub/dns-query
@@ -48,10 +46,8 @@ dns:
     - https://doh.pub/dns-query
   direct-nameserver-follow-policy: false
   fallback:
-    - 8.8.8.8
-    - 1.1.1.1
-    - tls://1.0.0.1:853
-    - tls://dns.google:853
+    - https://1.1.1.1/dns-query#RULES
+    - https://dns.google/dns-query#RULES
   fallback-filter:
     geoip: true
     geoip-code: CN

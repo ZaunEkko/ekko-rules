@@ -2155,3 +2155,44 @@ per-domain entries. Subscriptions without mappings retain the previous path.
 
 References: [Mihomo DNS configuration](https://wiki.metacubex.one/config/dns/),
 [DNSPod public DoH](https://cloud.tencent.com/document/product/302/110784).
+
+## ER-089 — Encrypted, rule-routed overseas DNS with independent node bootstrap
+
+**Date:** 2026-10-26
+
+**Type:** converter DNS transport and bootstrap compatibility; no routing-rule change
+
+The GFW policy, non-mainland policy and fallback now use
+`https://1.1.1.1/dns-query#RULES` and `https://dns.google/dns-query#RULES`.
+This replaces mixed plaintext UDP and direct DoT with two independent DoH
+providers connected according to the client's existing routing rules. Mainland
+DoH, DIRECT policy and IP-based bootstrap defaults are retained. DoT remains a
+supported encrypted transport; the change is based on measured reachability,
+not a claim that DoT is obsolete.
+
+Local probes found direct legacy DoT timing out at about five seconds and
+direct Cloudflare / Google DoH failing on this network. Both DoH providers
+resolved all three test domains over the existing proxy path. A successful
+endpoint response alone was not treated as whole-configuration acceptance.
+
+The gateway pins host-alias destinations to independent bootstrap resolvers
+when other upstreams are routed. Without this, a proxy entry whose primary
+answer is rejected by the fallback filter can need that same unresolved proxy
+to reach fallback DNS. Existing independent custom endpoint policies are
+preserved, and exact domains are grouped into bounded comma-separated keys.
+The compact node resolver and fake-IP exclusions remain in place.
+
+Cold-core checks covered the normal alias configuration, a forced-fallback
+scenario and an equivalent node set without hosts. All three sampled nodes
+connected in each protected case; all three failed in the forced-fallback
+control without bootstrap protection. Google, GitHub and Baidu DNS queries
+succeeded in all three protected cases.
+
+The saved local configuration passed a 48/48-site browser connectivity run;
+an isolated mainland-group refresh averaged 43 ms in that run. All three node
+checks passed. The 192 application tests and production build also passed.
+These are local samples, not a whole-browser throughput guarantee.
+
+References: [Mihomo DNS](https://wiki.metacubex.one/config/dns/),
+[Cloudflare DoH](https://developers.cloudflare.com/1.1.1.1/encryption/dns-over-https/make-api-requests/),
+[Google secure DNS transports](https://developers.google.com/speed/public-dns/docs/secure-transports).

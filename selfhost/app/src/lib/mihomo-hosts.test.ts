@@ -130,3 +130,55 @@ test("keeps the existing resolver for unrelated nodes in a mixed subscription", 
   assert.deepEqual(result.dns["proxy-server-nameserver"], ["119.29.29.29"]);
   assert.deepEqual(result.dns["proxy-server-nameserver-policy"], {"entry.example": ["udp://127.0.0.1:1053"]});
 });
+
+test("bootstraps alias endpoints independently of proxied fallback and overseas policy", () => {
+  const body = complete.replace("  fake-ip-filter:",
+    "  fallback: ['https://dns.google/dns-query#RULES']\n  direct-nameserver: ['https://223.5.5.5/dns-query']\n  nameserver-policy: {unrelated.example: 'https://dns.google/dns-query#RULES'}\n  fake-ip-filter:");
+  const result = parse(preserveMihomoHosts(body, [
+    "hosts: {entry.example: relay.example, relay.example: final.example}\n",
+  ]));
+  const policy = result.dns["nameserver-policy"];
+  assert.equal(policy["unrelated.example"], "https://dns.google/dns-query#RULES");
+  const guarded = Object.entries(policy).filter(([key]) => key.split(",").includes("relay.example"));
+  assert.equal(guarded.length, 1);
+  assert.deepEqual(guarded[0][1], ["https://223.5.5.5/dns-query"]);
+  assert.ok(guarded[0][0].split(",").includes("final.example"));
+  assert.ok(result.dns["fake-ip-filter"].includes("final.example"));
+});
+
+test("does not treat DoH parameters as a proxy and bounds grouped bootstrap keys", () => {
+  const direct = complete.replace("  fake-ip-filter:",
+    "  fallback: ['https://dns.google/dns-query#h3=true']\n  fake-ip-filter:");
+  const unchanged = parse(preserveMihomoHosts(direct, ["hosts: {entry.example: relay.example}\n"]));
+  assert.equal(unchanged.dns["nameserver-policy"], undefined);
+
+  const mappings = Object.fromEntries(Array.from({length:40}, (_, index) =>
+    [`node-${index}.example`, `${"a".repeat(40)}-${index}.endpoint.example`]));
+  const proxied = complete.replace("  fake-ip-filter:", "  fallback: ['https://dns.google/dns-query#RULES']\n  fake-ip-filter:");
+  const result = parse(preserveMihomoHosts(proxied, [`hosts: ${JSON.stringify(mappings)}\n`]));
+  const keys = Object.keys(result.dns["nameserver-policy"]);
+  assert.ok(keys.length > 1);
+  assert.ok(keys.every(key => key.length <= 900));
+  assert.equal(keys.flatMap(key => key.split(",")).length, 40);
+});
+
+test("preserves independent custom DNS for an alias endpoint", () => {
+  const body = complete.replace("  fake-ip-filter:",
+    "  fallback: ['https://dns.google/dns-query#RULES']\n  nameserver-policy: {relay.example: 'https://custom-resolver.example/dns-query'}\n  fake-ip-filter:");
+  const result = parse(preserveMihomoHosts(body, ["hosts: {entry.example: relay.example}\n"]));
+  assert.deepEqual(result.dns["nameserver-policy"], {
+    "relay.example": "https://custom-resolver.example/dns-query",
+  });
+});
+
+test("rejects its own DNS listener as bootstrap but permits a separate local HTTPS resolver", () => {
+  const body = complete.replace("  nameserver: [223.5.5.5]",
+    "  nameserver: [system]\n  direct-nameserver: ['udp://localhost:1053#DIRECT']\n  default-nameserver: [223.5.5.5]\n  fallback: ['https://dns.google/dns-query#RULES']");
+  const result = parse(preserveMihomoHosts(body, ["hosts: {entry.example: relay.example}\n"]));
+  assert.deepEqual(Object.values(result.dns["nameserver-policy"]), [["223.5.5.5"]]);
+
+  const separate = complete.replace("127.0.0.1:1053", "127.0.0.1:53")
+    .replace("  fake-ip-filter:", "  fallback: ['https://dns.google/dns-query#RULES']\n  nameserver-policy: {relay.example: 'https://127.0.0.1'}\n  fake-ip-filter:");
+  const preserved = parse(preserveMihomoHosts(separate, ["hosts: {entry.example: relay.example}\n"]));
+  assert.equal(preserved.dns["nameserver-policy"]["relay.example"], "https://127.0.0.1");
+});
