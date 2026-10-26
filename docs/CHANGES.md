@@ -2089,3 +2089,36 @@ the previous bytes-only review and evidence are retained as history.
 The corpus remains 10,203 file rules (10,204 with FINAL). First-match
 overlap metrics, destination-IP rules, segments and groups are unchanged.
 Client download performance after the update remains subject to real use.
+
+## ER-087 — Preserve upstream hosts in complete Mihomo conversions
+
+**Date:** 2026-10-26
+
+**Type:** subscription gateway compatibility fix; no routing-corpus change
+
+The conversion engine retains node definitions but drops source-level `hosts`.
+An upstream subscription can rely on those mappings to reach its nodes even
+when direct DNS resolution of their server names stops working. The gateway
+now merges optional IP, IP-array and domain-alias mappings from the subscription
+and its fetched node providers into the complete Clash / Mihomo output. The
+main subscription takes precedence when source mappings conflict.
+
+Domain aliases use the generated configuration's own DNS listener through
+per-domain `proxy-server-nameserver-policy` entries. Alias destinations are
+excluded from fake-IP responses, including when the template uses whitelist
+or rule-based filtering. Other nodes keep the template's existing resolvers;
+the gateway does not copy a provider's local DNS port or rewrite node fields.
+Sources without host mappings retain their previous conversion behavior.
+
+Only the DNS and hosts sections are serialized. Node text, numeric-looking
+credentials, groups and routing rules remain intact. YAML is parsed with a
+bounded alias expansion and subscription contents are omitted from errors.
+
+Validation: 185 gateway tests, TypeScript checking and the production build
+passed. Mihomo v1.19.32 accepted a real generated configuration. In an isolated
+comparison using identical encrypted DNS upstreams, three authorized nodes
+failed before the repair and connected after it. No subscriber credentials,
+node definitions or account identifiers are included in the repository.
+
+References: [Mihomo hosts](https://wiki.metacubex.one/config/dns/hosts/),
+[Mihomo DNS configuration](https://wiki.metacubex.one/config/dns/).
