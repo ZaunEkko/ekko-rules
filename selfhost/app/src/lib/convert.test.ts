@@ -4,6 +4,7 @@ import { createServer, type Server } from "node:http";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { parse as parseYaml } from "yaml";
 import {
   authorizeLocalAccess,
   applyConvertOptions,
@@ -55,13 +56,16 @@ test("keeps the Mihomo base local by default and preserves fallback coverage", a
   assert.match(base, /^  listen: 127\.0\.0\.1:53$/m);
   assert.match(base, /^    "geosite:gfw":$/m);
   assert.match(base, /^  fallback:$/m);
-  // DIRECT exits must not inherit the overseas DoT policy: those upstreams are
-  // often unreachable from the mainland, and a direct connection wants the
-  // mainland answer anyway (see ER-075).
-  assert.match(
-    base,
-    /^  direct-nameserver:\n    - 119\.29\.29\.29\n    - 223\.5\.5\.5\n  direct-nameserver-follow-policy: false$/m,
-  );
+  // DIRECT exits use mainland DoH independently of overseas policy (ER-075,
+  // ER-088). Keep bootstrap IPs available without resolving a DoH hostname.
+  const dns = parseYaml(base).dns;
+  assert.equal(dns["direct-nameserver-follow-policy"], false);
+  assert.deepEqual(dns["direct-nameserver"], dns.nameserver);
+  assert.deepEqual(dns["nameserver-policy"]["geosite:cn"], dns.nameserver);
+  assert.deepEqual(dns["proxy-server-nameserver"], dns.nameserver);
+  assert.ok(dns.nameserver.length >= 2);
+  assert.ok(dns.nameserver.every((server: string) => new URL(server).protocol === "https:"));
+  assert.ok(dns["default-nameserver"].every((server: string) => /^\d+(?:\.\d+){3}$/.test(server)));
 
   const fallbackFilter = base.slice(base.indexOf("  fallback-filter:"));
   assert.doesNotMatch(fallbackFilter, /^    geosite:$/m);

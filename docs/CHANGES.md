@@ -2122,3 +2122,36 @@ node definitions or account identifiers are included in the repository.
 
 References: [Mihomo hosts](https://wiki.metacubex.one/config/dns/hosts/),
 [Mihomo DNS configuration](https://wiki.metacubex.one/config/dns/).
+
+## ER-088 — Mainland DoH defaults and compact alias resolution
+
+**Date:** 2026-10-26
+
+**Type:** converter DNS defaults and gateway compatibility; no routing-rule change
+
+The native upstream subscription used mainland DoH while the converter template
+used plaintext UDP for ordinary, domestic-policy, DIRECT and default node
+resolution. These four paths now use `https://223.5.5.5/dns-query` and
+`https://doh.pub/dns-query`. Bootstrap servers remain IP-based, DIRECT continues
+to ignore overseas nameserver policies, and the overseas policy is retained.
+
+Browser measurements on the reported connectivity page observed 301 ms for the
+existing template and 64 / 58 ms in two DoH trials. A warm-cache run of the
+existing configuration also reached 78 ms, so these samples do not establish a
+universal speedup or isolate packet loss, caching and server-side scheduling.
+The same domestic requests matched DIRECT throughout.
+
+After saving the final DoH and compact-resolver configuration locally, the
+same page reported 12/12 mainland sites reachable with a 23 ms average, and
+all three proxy-node checks still succeeded. These are request-latency samples,
+not download-throughput measurements.
+
+Separate cold-core tests retained hosts and fake-IP exclusions while removing
+only the alias DNS policy: all three sampled nodes failed. Using one local
+node resolver instead restored all three. The gateway therefore emits a single
+local resolver when every node's domain has an exact alias and the template
+has no custom node policy. Mixed subscriptions and custom policies keep scoped
+per-domain entries. Subscriptions without mappings retain the previous path.
+
+References: [Mihomo DNS configuration](https://wiki.metacubex.one/config/dns/),
+[DNSPod public DoH](https://cloud.tencent.com/document/product/302/110784).

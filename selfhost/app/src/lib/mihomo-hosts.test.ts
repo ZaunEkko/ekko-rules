@@ -113,3 +113,20 @@ test("reads anchored, quoted, flow-style and BOM-prefixed hosts", () => {
   assert.equal(parse(preserveMihomoHosts(complete, [source])).hosts["entry.example"], "192.0.2.7");
   assert.equal(parse(preserveMihomoHosts(complete, ["\uFEFFhosts: {entry.example: 192.0.2.8}\n"])).hosts["entry.example"], "192.0.2.8");
 });
+
+test("uses one local resolver when every node needs an alias and the template has no custom policy", () => {
+  const body = complete.replace("  proxy-server-nameserver-policy:\n    other.example: [9.9.9.9]\n", "");
+  const result = parse(preserveMihomoHosts(body, ["hosts: {entry.example: relay.example}\n"]));
+  assert.deepEqual(result.dns["proxy-server-nameserver"], ["udp://127.0.0.1:1053"]);
+  assert.equal(result.dns["proxy-server-nameserver-policy"], undefined);
+  assert.ok(result.dns["fake-ip-filter"].includes("relay.example"));
+});
+
+test("keeps the existing resolver for unrelated nodes in a mixed subscription", () => {
+  const body = complete
+    .replace("  proxy-server-nameserver-policy:\n    other.example: [9.9.9.9]\n", "")
+    .replace("proxy-groups:", "  - {name: other, type: ss, server: unrelated.example, port: 443, password: example}\nproxy-groups:");
+  const result = parse(preserveMihomoHosts(body, ["hosts: {entry.example: relay.example}\n"]));
+  assert.deepEqual(result.dns["proxy-server-nameserver"], ["119.29.29.29"]);
+  assert.deepEqual(result.dns["proxy-server-nameserver-policy"], {"entry.example": ["udp://127.0.0.1:1053"]});
+});
