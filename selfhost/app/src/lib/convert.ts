@@ -34,6 +34,7 @@ import {
 } from "./proxy-providers";
 import { parseRemoteConfigPresets } from "./remote-configs";
 import { buildShadowrocketConfig } from "./shadowrocket";
+import { preserveMihomoHosts } from "./mihomo-hosts";
 
 export type ConvertRequest = {
   subscriptionUrl: string;
@@ -1293,6 +1294,9 @@ export async function convertSubscription(
       body = buildShadowrocketConfig(body, nodeResponse.body);
     }
     assertConvertedBody(body, request.target, outputMode);
+    if (usesMihomoOutput(request.target) && outputMode === "complete") {
+      body = preserveMihomoHosts(body, [subscriptionBody, ...providerBodies]);
+    }
     body = applyTargetOutputOptions(body, request.target, convertOptions);
     if (usesMihomoOutput(request.target)) {
       // Last stop before the client parses it. A credential the engine wrote
