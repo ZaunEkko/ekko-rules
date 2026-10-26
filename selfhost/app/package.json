@@ -15,7 +15,8 @@
     "next": "15.5.23",
     "qrcode.react": "4.2.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "yaml": "2.9.1"
   },
   "devDependencies": {
     "@types/node": "^22.17.2",
