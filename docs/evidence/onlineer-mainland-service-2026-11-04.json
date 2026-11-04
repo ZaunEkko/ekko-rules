@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-04",
+  "issue": "https://github.com/ZaunEkko/ekko-rules/issues/163",
+  "service": "OnlineER — 在线ER图生成平台",
+  "root": "fybgame.top",
+  "rule": "DOMAIN-SUFFIX,fybgame.top",
+  "slug": "china-web",
+  "target": "🌏 国内网站",
+  "default_action": "DIRECT",
+  "decision": "The owner accepted the contributor's request to classify this dedicated service suffix under the existing mainland website policy in both products.",
+  "http_observations": [
+    {
+      "url": "https://fybgame.top/",
+      "status": 200,
+      "title": "OnlineER — 在线ER图生成平台",
+      "x_cache_lookup": "Cache Hit",
+      "has_x_nws_log_uuid": true
+    },
+    {
+      "url": "https://www.fybgame.top/",
+      "status": 200,
+      "title": "OnlineER — 在线ER图生成平台",
+      "x_cache_lookup": "Cache Hit",
+      "has_x_nws_log_uuid": true
+    }
+  ],
+  "dns_observation": {
+    "resolver": "1.1.1.1",
+    "apex_cname_chain": [
+      "fybgame.top",
+      "fybgame.top.cdn.dnsv1.com",
+      "e33hi2ka.slt.sched.tdnsv8.com"
+    ],
+    "www_cname": "www.fybgame.top.cdn.dnsv1.com",
+    "limits": "A time- and location-dependent DNS snapshot; shared canonical names and IP ranges are not admitted."
+  },
+  "first_match_audit": {
+    "existing_canonical_rules_under_suffix": [],
+    "rule_count_delta": 1,
+    "overlap_metrics_changed": false,
+    "products": ["core", "lite"],
+    "method": "Check rule_covers against all canonical entries, then compare coverage_metrics and first_match in a proposed source model before editing."
+  },
+  "boundary": {
+    "included": ["fybgame.top", "www.fybgame.top", "api.fybgame.top"],
+    "excluded": [
+      "not-fybgame.top",
+      "fybgame.top.evil.example",
+      "unlisted.example.top",
+      "dnsv1.com",
+      "tdnsv8.com",
+      "fybgame.top.cdn.dnsv1.com",
+      "e33hi2ka.slt.sched.tdnsv8.com",
+      "other.cdn.dnsv1.com"
+    ],
+    "selection": "The service root and every subdomain; example subdomains describe routing scope rather than a verified inventory of live endpoints."
+  },
+  "verification_limits": "The rule is an approved service-routing preference, not a claim of mainland-only hosting. HTTP and DNS observations do not establish direct-path client reachability or performance. Before-change domain-only simulation reaches FINAL; actual connections can still match destination-IP or GEOIP rules."
+}

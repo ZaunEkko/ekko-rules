@@ -2,7 +2,7 @@
 
 ## Current canonical product
 
-The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines two builds of one product over the same corpus: 56 rule files, 57 ordered segments including FINAL, and 10,204 rules including FINAL, with 44 proxy groups in the full build and 10 in the lite build. The lite build changes only the policy a segment targets, never the rules or their order, and `LiteProductTests` holds the two to the same effective action on every segment. Subconverter and Mihomo consume the same ordered corpus through one entry point per build.
+The sanitized `sources/` tree is the sole normal-generation input. Generation is offline and does not fetch upstream projects, Git history, DNS, or an MMDB. The current manifest defines two builds of one product over the same corpus: 56 rule files, 57 ordered segments including FINAL, and 10,205 rules including FINAL, with 44 proxy groups in the full build and 10 in the lite build. The lite build changes only the policy a segment targets, never the rules or their order, and `LiteProductTests` holds the two to the same effective action on every segment. Subconverter and Mihomo consume the same ordered corpus through one entry point per build.
 
 The product contains 207 destination-IP matchers, all with `no-resolve`. It publishes no automatic-latency group, proxy-provider health probe, Full/local preset, Extended variant, or repository-owned Clash base configuration.
 
@@ -21,7 +21,7 @@ Accordingly, the historical expanded profile should not be described as the curr
 
 ## Current rule accounting
 
-The 10,203 file rules are partitioned by evidence boundary. Each figure is the
+The 10,204 file rules are partitioned by evidence boundary. Each figure is the
 sum of the segments in that boundary, taken from the canonical tree rather than
 carried forward, because the previous revision of this table had drifted: it
 partitioned 10,027 rules and split the mainland and remainder categories 369
@@ -30,7 +30,7 @@ rules apart from what the sources actually held.
 | Component | Rules | Provenance treatment |
 |---|---:|---|
 | Current late recovery | 2,683 | Frozen historical recovery emission minus 11 explicit public-product exclusions and the reassignments recorded in the exclusion ledger |
-| Mainland direct curation and fallback policy | 4,285 | 4,283 observation-derived rules, one official-service-reviewed SteamPY root and one owner-approved .cn routing fallback |
+| Mainland direct curation and fallback policy | 4,286 | 4,283 observation-derived rules, two explicitly reviewed service roots (SteamPY and OnlineER) and one owner-approved .cn routing fallback |
 | Observation-derived advertising curation | 590 | Derived from this repository's own traffic observation and publisher ads.txt declarations, each entry reviewed per host and verified to run live delivery infrastructure |
 | Overseas shopping curation | 76 | Reviewed per host: overseas retail and cross-border forwarding roots whose storefront, availability or bot challenge depends on which exit reaches them |
 | Finance and account registration curation | 44 | Reviewed per host: payments, virtual cards, SMS receipt and overseas banks and brokers, each resolved before admission and each geo-sensitive enough that the exit is part of the account |
@@ -58,7 +58,9 @@ ER-073 adds 19 reviewed product roots for overseas AI generation to the existing
 
 ### Mainland direct curation and fallback policy
 
-`sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 4,285 rules: 4,283 observation-derived entries, one officially reviewed SteamPY service root, and the separately approved `.cn` fallback policy. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
+ER-090 adds the dedicated `fybgame.top` suffix for OnlineER under the existing default-DIRECT mainland website policy after the owner accepted Issue #163. The apex and `www` serve the same ER-diagram platform. `docs/evidence/onlineer-mainland-service-2026-11-04.json` records the official-site observations, DNS delivery chain and first-match audit. Shared `dnsv1.com` and `tdnsv8.com` infrastructure is excluded. This is a reviewed service-routing choice, not a claim of mainland-only hosting or measured client performance.
+
+`sources/rules/china-web.list` and `sources/rules/china-direct-curated.list` carry 4,286 rules: 4,283 observation-derived entries, two explicitly reviewed service roots (SteamPY and OnlineER), and the separately approved `.cn` fallback policy. `scripts/page_host_scan.py` reads the hostnames a mainland origin's markup and scripts reference, which supplies candidates but cannot decide them — a mainland page also references foreign fonts, libraries and advertising. `scripts/vendor_domain_discovery.py` reaches the backend and sub-brand domains no homepage links to, by querying Certificate Transparency for the names a vendor proved control of to a certificate authority.
 
 ER-074 moves `DOMAIN-SUFFIX,steamserver.net` out of `game-platform-late-recovery` into `game-download`. Steam picks content servers from the public address it sees on the connection-manager (CM) link. The user's own Steam client logs show the proxied CM made Steam hand out Tokyo caches that the DIRECT download policy could not reach quickly; with the CM direct, Steam handed out mainland CDNs at full speed. The committed record is `docs/evidence/steam-cm-runtime-observation-2026-09-25.json`, and the move is recorded as a reassignment in the public-rule exclusion ledger, so the frozen recovery set shrinks rather than grows.
 
