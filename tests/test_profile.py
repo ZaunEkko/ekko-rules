@@ -35,6 +35,7 @@ CN_OBSERVATION = EVIDENCE / "cn-observation-2026-09-19.json"
 CN_LEGACY_DIRECT = EVIDENCE / "cn-legacy-direct-2026-09-19.json"
 LANZOU_RUNTIME_OBSERVATION = EVIDENCE / "lanzou-runtime-observation-2026-09-23.json"
 CN_SUFFIX_REVIEW = EVIDENCE / "cn-suffix-fallback-2026-10-16.json"
+ONLINEER_REVIEW = EVIDENCE / "onlineer-mainland-service-2026-11-04.json"
 ADS_TXT_EVIDENCE = EVIDENCE / "ads-txt-2026-09-19.json"
 GENERATED = ROOT / "generated" / "reversed-profile"
 PHASE_3_BEFORE = ROOT / "tests" / "fixtures" / "phase-3-before.json"
@@ -3096,6 +3097,9 @@ class MainlandEvidenceContractTests(unittest.TestCase):
         reviewed_services = {
             record["root"] for record in suffix_review["service_additions"]
         }
+        reviewed_services.add(
+            json.loads(ONLINEER_REVIEW.read_text(encoding="utf-8"))["root"]
+        )
         # The approved .cn policy is not a claim of measured mainland hosting.
         fallback = suffix_review["fallback"]
         self.assertEqual(fallback["slug"], "china-direct-curated")
@@ -3355,6 +3359,36 @@ class LiteProductTests(unittest.TestCase):
                         "rule": "DOMAIN-SUFFIX,cn",
                     },
                 )
+
+    def test_onlineer_uses_only_its_service_suffix_in_both_products(self) -> None:
+        for product in PRODUCTS:
+            for domain in ("fybgame.top", "www.fybgame.top", "api.fybgame.top"):
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(
+                        verdict,
+                        {
+                            "slug": "china-web",
+                            "target": "🌏 国内网站",
+                            "rule": "DOMAIN-SUFFIX,fybgame.top",
+                        },
+                    )
+                    self.assertEqual(self.effective_action(verdict["target"]), "DIRECT")
+            for domain in (
+                "not-fybgame.top",
+                "fybgame.top.evil.example",
+                "unlisted.example.top",
+                "dnsv1.com",
+                "tdnsv8.com",
+                "fybgame.top.cdn.dnsv1.com",
+                "e33hi2ka.slt.sched.tdnsv8.com",
+                "other.cdn.dnsv1.com",
+            ):
+                with self.subTest(product=product, domain=domain):
+                    self.assertEqual(
+                        first_match(self.sources, product=product, domain=domain),
+                        {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"},
+                    )
 
     def test_tcdnos_root_uses_download_policy_in_both_products(self) -> None:
         hosts = (

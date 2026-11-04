@@ -1,5 +1,5 @@
 schema_version: 1
-reviewed_on: 2026-09-23
+reviewed_on: 2026-11-04
 purpose: Non-generating review queue for historical, uncertain, legacy, brand-defense, personal/community, or relocation evidence. Entries never change generated routing by themselves; phase_2_candidate records are historical labels, not current products.
 allowed_statuses:
 - observe
@@ -10,6 +10,21 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
+- id: onlineer-mainland-service
+  status: accepted
+  scope: china-web
+  summary: OnlineER's dedicated fybgame.top service suffix follows the existing default-DIRECT mainland website policy in both products.
+  evidence:
+  - https://github.com/ZaunEkko/ekko-rules/issues/163
+  - docs/evidence/onlineer-mainland-service-2026-11-04.json
+  - sources/rules/china-web.list
+  - tests/test_profile.py
+  first_observed: '2026-11-04'
+  last_verified: '2026-11-04'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: ER-090 adds only DOMAIN-SUFFIX,fybgame.top after the owner accepted Issue 163. The apex and www both serve the OnlineER ER-diagram platform. DNS canonical names and response headers corroborate the delivery chain but do not establish mainland-only hosting; shared dnsv1.com and tdnsv8.com infrastructure stays outside the rule.
 - id: tcdnos-root-download-policy
   status: accepted
   scope: game-download
