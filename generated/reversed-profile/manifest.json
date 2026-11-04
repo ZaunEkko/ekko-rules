@@ -25,7 +25,7 @@
     "Providers/Ruleset/china-geoip-direct.yaml": "09e1eded090516a2b76d42d89721996b6eb1854895d11122af8bdf2ff12c536c",
     "Providers/Ruleset/china-media-late-recovery.yaml": "dc5f0d045b12e93c1a81ade4cdba7d875a4521437ba4c943b625d87d9f5b809e",
     "Providers/Ruleset/china-media.yaml": "7f7f7c87054fd7ce69abd449039dd62e69214026e6837f2847646f7c0e363ac4",
-    "Providers/Ruleset/china-web.yaml": "7fd5e0d2865892558782b810efa1498afb03c4b3b1a1cb7484591734f8761d97",
+    "Providers/Ruleset/china-web.yaml": "52c34961dcb8cd087f8fad43afa449c5b1bee349210482a867e747c0d035f37d",
     "Providers/Ruleset/claude.yaml": "03d1c1da8af1d036d17387011d23f8aa69f1290f7d09ea5f4e76df73cbf94137",
     "Providers/Ruleset/cloud-storage.yaml": "aa7efedd4f06f6253d69491231ce4e3da123746d6866b8772c32e872522b2fc3",
     "Providers/Ruleset/dazn.yaml": "c7ccfc4109357213bce831b93025ede9f322f9fccee0e7aca39150748d16d11b",
@@ -97,7 +97,7 @@
     "Ruleset/china-geoip-direct.list": "17b98929dcf837281a498702a4723b323be1b206f9563c9f6cf9d4e3db9a02df",
     "Ruleset/china-media-late-recovery.list": "62bd0b2fd47fc40b1b860318edd12845ce6a7fc15a55ae3efa4b77f6b9a6980a",
     "Ruleset/china-media.list": "863fe1c329df0b6682d18dd955c17c304e6a57cc805761158e46c8384256a40e",
-    "Ruleset/china-web.list": "c0b878137389abe8f95329f148d268260f4d691f5c72b482bd709e8692d48984",
+    "Ruleset/china-web.list": "04756236a42138070d21fe367eca9d5ecef1db05b01a1f80eb5450a020fdcc2a",
     "Ruleset/claude.list": "d7773fec75adf789cfea2a8d533bcdf658a865b550624f6e8e055084de87598a",
     "Ruleset/cloud-storage.list": "372214c0aef91fe00f630335f637613afbca23f0348e979211d672762d6cfac7",
     "Ruleset/dazn.list": "82da3ade078dd16fec09f3305316fed2e134bf9ebc4783046f19da3cd499f8a4",
@@ -149,7 +149,7 @@
     "Ruleset/whatsapp.list": "64d4e26a55c074662d27c2871c6243dde22a4657b68faf3dc8059b510b9735b1",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "a9121b39e1d5824e95eee7d32cd53016bdfcba7b29c31b6831218d31b97dab90",
+    "analysis.json": "91d1b85739fe1e1d3cf25b7313c336d637edb172b38a97ee5210d620ddf9dd20",
     "config/ekko-rules-lite.ini": "dfc6da5cb408f266cf47c81ee2e6da36fffe2e37889b8270c25aad207787e3ef",
     "config/ekko-rules.ini": "08a492e42d7f344bc3e44065a3d5a9307bdbebf4d493fa3a641a22900f797a82"
   }

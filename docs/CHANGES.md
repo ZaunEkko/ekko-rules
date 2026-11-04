@@ -2196,3 +2196,28 @@ These are local samples, not a whole-browser throughput guarantee.
 References: [Mihomo DNS](https://wiki.metacubex.one/config/dns/),
 [Cloudflare DoH](https://developers.cloudflare.com/1.1.1.1/encryption/dns-over-https/make-api-requests/),
 [Google secure DNS transports](https://developers.google.com/speed/public-dns/docs/secure-transports).
+
+## ER-090 — Route OnlineER through the mainland website policy
+
+**Date:** 2026-11-04
+
+**Type:** add one dedicated service suffix; no group or default change
+
+Issue [#163](https://github.com/ZaunEkko/ekko-rules/issues/163) requests
+`fybgame.top` for OnlineER, an online ER-diagram platform. Both the apex and
+`www` return the platform's title. Add `DOMAIN-SUFFIX,fybgame.top` to
+`china-web`, targeting the existing default-DIRECT `🌏 国内网站` group in
+both products.
+
+The rule covers the service root and its subdomains. Shared `dnsv1.com` and
+`tdnsv8.com` delivery infrastructure, unrelated `.top` sites and lookalikes
+remain outside this suffix. The HTTP/DNS snapshot and first-match review
+are recorded in `docs/evidence/onlineer-mainland-service-2026-11-04.json`.
+They establish the service identity and delivery chain, not mainland-only
+hosting or a direct-path client performance result.
+
+The corpus grows to 10,204 file rules (10,205 with FINAL), including 4,276
+`china-web` rules. Existing first-match overlap metrics, destination-IP
+rules, segments, groups and defaults are unchanged. Regression checks cover
+the intended root/subdomains, effective DIRECT action and shared-CDN and
+lookalike exclusions in both products.
