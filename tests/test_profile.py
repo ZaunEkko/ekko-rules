@@ -3360,6 +3360,40 @@ class LiteProductTests(unittest.TestCase):
                     },
                 )
 
+    def test_claude_service_suffixes_follow_the_main_site_in_both_products(self) -> None:
+        suffixes = (
+            "claudemcpcontent.com",
+            "claude.dev",
+            "claudepages.dev",
+            "clau.de",
+            "claude.new",
+            "claude.app",
+            "claudeacademy.com",
+        )
+        for product, target in (("core", "🧲 Claude"), ("lite", "🧲 海外 AI")):
+            for suffix in suffixes:
+                for domain in (suffix, f"sample.{suffix}"):
+                    with self.subTest(product=product, domain=domain):
+                        self.assertEqual(
+                            first_match(self.sources, product=product, domain=domain),
+                            {
+                                "slug": "claude",
+                                "target": target,
+                                "rule": f"DOMAIN-SUFFIX,{suffix}",
+                            },
+                        )
+            for destination in (
+                {"domain": "notclaudemcpcontent.com"},
+                {"domain": "claudemcpcontent.com.example"},
+                {"domain": "claudemcpclient.com"},
+                {"ip": "160.79.104.10"},
+            ):
+                with self.subTest(product=product, destination=destination):
+                    self.assertEqual(
+                        first_match(self.sources, product=product, **destination),
+                        {"slug": "final", "target": "🐟 漏网之鱼", "rule": "MATCH"},
+                    )
+
     def test_onlineer_uses_only_its_service_suffix_in_both_products(self) -> None:
         for product in PRODUCTS:
             for domain in ("fybgame.top", "www.fybgame.top", "api.fybgame.top"):

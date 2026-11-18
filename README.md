@@ -141,7 +141,7 @@ https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-pr
 Ekko Rules 主要面向需要单独选择节点或地区的场景：
 
 - **广告拦截**：`🛑 广告拦截` 使用固定版本、锚定域名规则并默认 `REJECT`；仍可手动改为节点或 `DIRECT`；
-- **AI 与设计工具分流**：OpenAI、Claude 独立分组；Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq、Figma，以及 Kimi、Z.ai、Qwen、MiniMax 等国际站统一归入 `🧲 海外 AI`；官方海外生成平台也归入这一组，包括 Suno、Udio、AIVA、Stable Audio 等音乐/语音工具，Runway、Pika、Luma 等视频工具，Midjourney、Ideogram、Leonardo、Recraft 等图像设计工具与 Meshy 3D；只收录已核实的产品域名，不兜底共用 CDN 或所有 `.ai` 域名。DeepSeek、小红书，以及 Seko、可灵、Vidu、即梦、海螺、LiblibAI、RunningHub、吐司、MOKI、蝉镜等国产 AI 大陆站进入默认直连的 `🌏 国内网站`；
+- **AI 与设计工具分流**：OpenAI、Claude 独立分组。Claude 组覆盖主站、MCP 应用沙盒、开发站点、页面托管和官方跳转域名。Gemini、Grok、Microsoft AI、Cursor、Hugging Face、Perplexity、Poe、OpenRouter、Mistral、Groq、Figma，以及 Kimi、Z.ai、Qwen、MiniMax 等国际站统一归入 `🧲 海外 AI`；官方海外生成平台也归入这一组，包括 Suno、Udio、AIVA、Stable Audio 等音乐/语音工具，Runway、Pika、Luma 等视频工具，Midjourney、Ideogram、Leonardo、Recraft 等图像设计工具与 Meshy 3D；只收录已核实的产品域名，不兜底共用 CDN 或所有 `.ai` 域名。DeepSeek、小红书，以及 Seko、可灵、Vidu、即梦、海螺、LiblibAI、RunningHub、吐司、MOKI、蝉镜等国产 AI 大陆站进入默认直连的 `🌏 国内网站`；
 - **主流流媒体**：YouTube、Netflix、Disney+、Apple TV+、`🎬 HBO GO/MAX`、Prime Video、DAZN、TikTok 等重点服务单独处理；HBO GO 与 Max 共用一组，DAZN 保持独立；
 - **区域媒体**：美国长尾统一归入 `🎬 美国流媒体`，港澳台、B站港澳台、东南亚、日本、韩国、爱奇艺和国内流媒体分别处理；已核验的量子、非凡、暴风、索尼、百度、闪电、火狐、速博、红牛、最大、iKun 等第三方视频接口及其专用播放域名进入默认直连的 `🌏 国内流媒体`，避免播放流量落入代理兜底；
 - **游戏分流**：中国大陆游戏平台、登录、社区和语音进入默认直连的 `🌏 国内网站`，专用下载端点进入默认直连的 `🎮 游戏下载`；`🎮 游戏平台` 仅承载海外平台并默认使用 `♻️ 手动切换`；

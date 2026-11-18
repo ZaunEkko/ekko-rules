@@ -2221,3 +2221,37 @@ The corpus grows to 10,204 file rules (10,205 with FINAL), including 4,276
 rules, segments, groups and defaults are unchanged. Regression checks cover
 the intended root/subdomains, effective DIRECT action and shared-CDN and
 lookalike exclusions in both products.
+
+## ER-091 — Route Claude service domains with the main site
+
+**Date:** 2026-11-18
+
+Add seven anchored suffixes to the existing `claude` segment. They use
+`🧲 Claude` in the full build and `🧲 海外 AI` in the lite build.
+[Issue #166](https://github.com/ZaunEkko/ekko-rules/issues/166)
+
+| Suffix | Public observation |
+|---|---|
+| `claudemcpcontent.com` | Google and Cloudflare DoH resolve a sampled subdomain to `160.79.104.10` and `2607:6bc0::10`. The apex has no A or AAAA record. Claude clients use these subdomains for MCP Apps iframes. [Claude MCP issue](https://github.com/anthropics/claude-ai-mcp/issues/61) |
+| `claude.dev` | HTTPS returns 200. The terms identify Anthropic as the operator. [Site terms](https://claude.dev/terms/) |
+| `claudepages.dev` | HTTPS returns 200 at the apex. A sampled subdomain resolves and redirects to the sign-in endpoint at `auth.claudepages.dev`. |
+| `clau.de`, `claude.app` | HTTPS returns 302 to `https://claude.ai/`. |
+| `claude.new` | HTTPS returns 302 to `https://claude.ai/new/`. |
+| `claudeacademy.com` | HTTPS returns 301 to `https://academy.claude.com/`. |
+
+Admission of `claudemcpclient.com` depends on evidence of a live service
+endpoint. Certificate Transparency records cover the apex and wildcard. The
+apex had no A or AAAA answers, and the sampled subdomain returned NXDOMAIN.
+[DNS response](https://dns.google/resolve?name=claudemcpclient.com&type=A) · [Certificate records](https://api.certspotter.com/v1/issuances?domain=claudemcpclient.com&include_subdomains=true&expand=dns_names)
+
+Anthropic lists `160.79.104.0/21` as an outbound range, including requests
+its service makes to external MCP servers. It lists `160.79.104.0/23` as
+the inbound range within that block. The domain rules cover the reviewed
+requests, and an IP rule would also match traffic identified only by a
+destination address in the block.
+[Anthropic IP documentation](https://platform.claude.com/docs/en/api/ip-addresses) · [ARIN registration](https://rdap.arin.net/registry/ip/160.79.104.10)
+
+The corpus now has 10,211 file rules and 10,212 including FINAL. First-match
+tests cover the new domains, subdomains, and lookalikes in both builds. The
+simulation verifies policy-group selection. Actual exit selection depends on
+the client's group settings.

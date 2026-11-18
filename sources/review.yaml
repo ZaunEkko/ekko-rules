@@ -1,5 +1,5 @@
 schema_version: 1
-reviewed_on: 2026-11-04
+reviewed_on: 2026-11-18
 purpose: Non-generating review queue for historical, uncertain, legacy, brand-defense, personal/community, or relocation evidence. Entries never change generated routing by themselves; phase_2_candidate records are historical labels, not current products.
 allowed_statuses:
 - observe
@@ -10,6 +10,22 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
+- id: claude-mcp-and-service-domains
+  status: accepted
+  scope: claude
+  summary: Seven Claude service suffixes follow the same routing policy as the main site.
+  evidence:
+  - https://github.com/ZaunEkko/ekko-rules/issues/166
+  - https://github.com/anthropics/claude-ai-mcp/issues/61
+  - https://claude.dev/terms/
+  - https://platform.claude.com/docs/en/api/ip-addresses
+  - docs/CHANGES.md
+  first_observed: '2026-11-18'
+  last_verified: '2026-11-18'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: ER-091 adds the seven Claude service suffixes supported by public DNS, HTTPS or MCP Apps observations. Certificate records cover claudemcpclient.com and its wildcard, with a concrete service endpoint still to be confirmed. Anthropic lists the proposed CIDR as an outbound range. The reviewed requests match by domain.
 - id: onlineer-mainland-service
   status: accepted
   scope: china-web
