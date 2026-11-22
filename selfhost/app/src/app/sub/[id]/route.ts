@@ -39,7 +39,7 @@ export async function GET(
     const profile = await readStoredProfile(id);
     const result = await convertSubscription(
       {
-        subscriptionUrl: profile.subscriptionUrl,
+        subscriptionUrls: profile.subscriptionUrls,
         target: profile.target,
         options: profile.options,
       },

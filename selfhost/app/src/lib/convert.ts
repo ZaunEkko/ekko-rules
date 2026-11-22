@@ -30,14 +30,16 @@ import {
 } from "./node-compat";
 import {
   findProxyProviderUrls,
+  MAX_PROXY_PROVIDERS,
   stripProxyProviders,
 } from "./proxy-providers";
 import { parseRemoteConfigPresets } from "./remote-configs";
 import { buildShadowrocketConfig } from "./shadowrocket";
 import { preserveMihomoHosts } from "./mihomo-hosts";
+import { parseSubscriptionSources } from "./subscription-sources";
 
 export type ConvertRequest = {
-  subscriptionUrl: string;
+  subscriptionUrls: string[];
   target: TargetFormat;
   options: ConvertOptions;
   accessPassword?: string;
@@ -465,14 +467,11 @@ export function parseConvertRequest(input: unknown): ConvertRequest {
     throw new Error("Request body must be a JSON object.");
   }
   const body = input as Record<string, unknown>;
-  const subscriptionUrl = body.subscriptionUrl;
+  const subscriptionUrls = parseSubscriptionSources(body.subscriptionUrls, body.subscriptionUrl);
   const target = body.target;
   const convertOptions = parseConvertOptions(body.options);
   const accessPassword = body.accessPassword;
 
-  if (typeof subscriptionUrl !== "string" || !subscriptionUrl.trim()) {
-    throw new Error("subscriptionUrl is required.");
-  }
   if (typeof target !== "string" || !isSupportedTarget(target)) {
     throw new Error("A supported target is required.");
   }
@@ -481,7 +480,7 @@ export function parseConvertRequest(input: unknown): ConvertRequest {
   }
 
   return {
-    subscriptionUrl: subscriptionUrl.trim(),
+    subscriptionUrls,
     target,
     options: convertOptions,
     accessPassword,
@@ -503,6 +502,7 @@ type LimitedRequestOptions = {
   requestLabel?: string;
   headers?: Record<string, string>;
   resolvedAddresses?: readonly string[];
+  bodyBudget?: { remaining: number };
 };
 
 function createPinnedLookup(addresses: readonly string[]): LookupFunction {
@@ -618,8 +618,10 @@ export async function requestTextWithLimits(
         let total = 0;
         response.on("data", (chunk: Buffer) => {
           total += chunk.byteLength;
-          if (total > init.maxBytes) {
+          if (init.bodyBudget) init.bodyBudget.remaining -= chunk.byteLength;
+          if (total > init.maxBytes || (init.bodyBudget && init.bodyBudget.remaining < 0)) {
             const error = new Error("Upstream response exceeds size limit.");
+            fail(error);
             response.destroy(error);
             request.destroy(error);
             return;
@@ -998,149 +1000,141 @@ export async function convertSubscription(
       shared ? budgetMs : Math.min(budgetMs, remainingMs()),
     );
 
-  const safeUrl = parsePublicHttpUrl(request.subscriptionUrl);
-  const resolvedAddresses = await resolveWithinDeadline(
-    safeUrl.hostname,
-    remainingMs(),
-  );
-
-  // Ordered by `upstreamUserAgentAttempts`: the caller's agent first, then the
-  // one this target's output is written for. A provider that refuses the first
-  // or answers it with something no subscription can be built from gets a
-  // second question rather than handing the visitor an unexplained 502.
+  const multipleSources = request.subscriptionUrls.length > 1;
+  const bodyBudget = multipleSources ? { remaining: runtime.maxSubscriptionBytes } : undefined;
   const userAgentAttempts = upstreamUserAgentAttempts(
     request.target,
     convertOptions.customUserAgent,
     options.sourceUserAgent,
   );
-
-  let preflight: Awaited<ReturnType<typeof requestTextWithLimits>> | undefined;
-  let effectiveUserAgent = upstreamUserAgent;
-  let refusal = "Subscription content is empty or unsupported.";
-  for (const agent of userAgentAttempts) {
-    const attempt = await requestTextWithLimits(safeUrl.href, {
-      method: "GET",
-      timeoutMs: remainingMs(),
-      maxBytes: runtime.maxSubscriptionBytes,
-      userAgent: agent,
-      requestLabel: "Subscription fetch",
-      resolvedAddresses,
-    });
-    if (!attempt.ok) {
-      refusal = `Subscription fetch failed with HTTP ${attempt.status}.`;
-      continue;
+  const fetchSubscription = async (url: string) => {
+    const safeUrl = parsePublicHttpUrl(url);
+    const resolvedAddresses = await resolveWithinDeadline(safeUrl.hostname, remainingMs());
+    let refusal = "Subscription content is empty or unsupported.";
+    for (const agent of userAgentAttempts) {
+      const response = await requestTextWithLimits(safeUrl.href, {
+        method: "GET",
+        timeoutMs: remainingMs(),
+        maxBytes: runtime.maxSubscriptionBytes,
+        userAgent: agent,
+        requestLabel: "Subscription fetch",
+        resolvedAddresses,
+        bodyBudget,
+      });
+      if (!response.ok) {
+        refusal = `Subscription fetch failed with HTTP ${response.status}.`;
+        continue;
+      }
+      if (!looksLikeSubscription(response.body)) {
+        refusal = "Subscription content is empty or unsupported.";
+        continue;
+      }
+      if (agent !== upstreamUserAgent) {
+        safeLog("subscription.user_agent_fallback", { target: request.target });
+      }
+      return {
+        response,
+        agent,
+        providerUrls: findProxyProviderUrls(
+          response.body,
+          multipleSources ? MAX_PROXY_PROVIDERS + 1 : MAX_PROXY_PROVIDERS,
+        ),
+      };
     }
-    if (!looksLikeSubscription(attempt.body)) {
-      refusal = "Subscription content is empty or unsupported.";
-      continue;
-    }
-    preflight = attempt;
-    effectiveUserAgent = agent;
-    break;
-  }
-  if (!preflight) {
     throw new Error(refusal);
-  }
-  if (effectiveUserAgent !== upstreamUserAgent) {
-    // The agent itself is never logged: it is the calling client's, not ours.
-    safeLog("subscription.user_agent_fallback", { target: request.target });
-  }
-  const subscriptionUserinfo = sanitizeSubscriptionUserinfo(
-    preflight.headers.get("subscription-userinfo"),
-  ) ?? subscriptionUserinfoFromStatus(preflight.body);
-  const subscriptionBody = preflight.body;
+  };
+  const fetched = await Promise.allSettled(request.subscriptionUrls.map(fetchSubscription));
+  const sources = fetched.map((result, index) => {
+    if (result.status === "fulfilled") return result.value;
+    throw multipleSources ? new SubscriptionSourceError(index, result.reason) : result.reason;
+  });
+  const subscriptionUserinfo = multipleSources ? undefined
+    : sanitizeSubscriptionUserinfo(sources[0].response.headers.get("subscription-userinfo"))
+      ?? subscriptionUserinfoFromStatus(sources[0].response.body);
 
-  // A subscription that keeps its nodes in `proxy-providers:` hands over a
-  // config, not nodes. Follow those URLs here, under the same checks the
-  // subscription itself went through, so the engine receives the nodes rather
-  // than a provider it cannot reach.
-  const providerUrls = findProxyProviderUrls(subscriptionBody);
-  // All at once, and never more than half the budget: the conversion still
-  // has to happen after this. Run in sequence instead, a couple of
-  // unresponsive providers would spend the whole budget on their own.
+  const providers = sources.flatMap(({ agent, providerUrls }, sourceIndex) =>
+    providerUrls.map((url) => ({ agent, url, sourceIndex })),
+  );
+  if (providers.length > MAX_PROXY_PROVIDERS) {
+    throw new Error(`subscriptionUrls reference more than ${MAX_PROXY_PROVIDERS} proxy providers in total.`);
+  }
+
+  // A shared provider deadline leaves room for the engine and applies to DNS
+  // and download together. The request-wide budget also counts retried bodies.
   const providerStageMs = Math.min(
     remainingMs(),
     Math.max(5_000, Math.floor(remainingMs() / 2)),
   );
-  // One deadline for the stage, not one per operation: the lookup and the
-  // fetch happen in sequence, so granting the allowance to each would let a
-  // slow provider spend twice what the stage reserved.
   const providerDeadline = Date.now() + providerStageMs;
-  const providerRemainingMs = (): number =>
+  const providerRemainingMs = () =>
     Math.min(remainingMs(), Math.max(1, providerDeadline - Date.now()));
   const providerResults = await Promise.allSettled(
-    providerUrls.map(async (providerUrl) => {
-      const safeProviderUrl = parsePublicHttpUrl(providerUrl);
-      const providerAddresses = await resolveWithinDeadline(
-        safeProviderUrl.hostname,
-        providerRemainingMs(),
-      );
-      const fetched = await requestTextWithLimits(safeProviderUrl.href, {
+    providers.map(async ({ agent, url }) => {
+      const safeUrl = parsePublicHttpUrl(url);
+      const resolvedAddresses = await resolveWithinDeadline(safeUrl.hostname, providerRemainingMs());
+      const response = await requestTextWithLimits(safeUrl.href, {
         method: "GET",
         timeoutMs: providerRemainingMs(),
         maxBytes: runtime.maxSubscriptionBytes,
-        userAgent: effectiveUserAgent,
+        userAgent: agent,
         requestLabel: "Proxy provider fetch",
-        resolvedAddresses: providerAddresses,
+        resolvedAddresses,
+        bodyBudget,
       });
-      if (!fetched.ok) {
-        throw new Error(`HTTP ${fetched.status}`);
+      if (!response.ok) throw new Error(`Proxy provider fetch failed with HTTP ${response.status}.`);
+      if (!looksLikeSubscription(response.body)) {
+        throw new Error("Proxy provider content is empty or unsupported.");
       }
-      return fetched.body;
+      return response.body;
     }),
   );
-  const providerBodies: string[] = [];
-  let providerFailure: string | null = null;
+  const providerBodies = sources.map((): string[] => []);
+  let providerFailure: string | undefined;
   let providerTimedOut = false;
-  for (const result of providerResults) {
-    if (result.status === "rejected") {
-      // A spent budget is this server running out of time, not the visitor
-      // handing over a bad subscription; wrapping it would answer 400.
+  for (const [index, result] of providerResults.entries()) {
+    const { sourceIndex } = providers[index];
+    if (result.status === "fulfilled") {
+      providerBodies[sourceIndex].push(result.value);
+    } else {
+      if (multipleSources) throw new SubscriptionSourceError(sourceIndex, result.reason);
       if (isTimeoutFailure(result.reason)) providerTimedOut = true;
-      // One dead provider out of several is survivable; the reason is only
-      // reported when none of them produced nodes.
       providerFailure = publicErrorMessage(result.reason);
-      continue;
     }
-    if (looksLikeSubscription(result.value)) providerBodies.push(result.value);
   }
-  if (providerUrls.length > 0 && providerBodies.length === 0) {
+  if (providers.length && !multipleSources && !providerBodies[0].length) {
     if (providerTimedOut) throw new Error(CONVERSION_TIMED_OUT);
     throw new Error(
-      `This subscription keeps its nodes in proxy-providers, and none could be read${
-        providerFailure ? ` (${providerFailure})` : ""
-      }.`,
+      `This subscription keeps its nodes in proxy-providers, and none could be read${providerFailure ? ` (${providerFailure})` : ""}.`,
     );
   }
 
   const requestId = randomUUID();
   const workDir = path.join(runtime.sharedDir, requestId);
-  const inputName = "subscription.input";
-  const inputPath = path.join(workDir, inputName);
   const sharedPrefix = runtime.sharedUrlPrefix.replace(/\/$/, "");
-  const engineInputUrls = [`${sharedPrefix}/${requestId}/${inputName}`];
+  const engineInputUrls: string[] = [];
+  const sourceRenames: string[] = [];
+  let providerIndex = 0;
 
   await mkdir(workDir, { recursive: true, mode: 0o700 });
   try {
-    // The stripped document still carries any inline proxies; the providers'
-    // contents follow as inputs of their own. The engine merges several inputs
-    // when they are joined with a pipe.
-    const inputBody = providerBodies.length
-      ? stripProxyProviders(subscriptionBody)
-      : subscriptionBody;
-    await writeFile(
-      inputPath,
-      normalizeSubscriptionContent(repairNodesForEngine(inputBody)),
-      { encoding: "utf8", mode: 0o600 },
-    );
-    for (const [index, body] of providerBodies.entries()) {
-      const name = `provider-${index + 1}.input`;
-      await writeFile(
-        path.join(workDir, name),
-        normalizeSubscriptionContent(repairNodesForEngine(body)),
-        { encoding: "utf8", mode: 0o600 },
-      );
-      engineInputUrls.push(`${sharedPrefix}/${requestId}/${name}`);
+    for (const [index, { response }] of sources.entries()) {
+      const bodies = providerBodies[index];
+      const inputBody = bodies.length ? stripProxyProviders(response.body) : response.body;
+      const inputs = [
+        { name: `subscription-${index + 1}.input`, body: inputBody },
+        ...bodies.map((body) => ({ name: `provider-${++providerIndex}.input`, body })),
+      ];
+      for (const { name, body } of inputs) {
+        if (multipleSources) {
+          sourceRenames.push(`!!GROUPID=${engineInputUrls.length}!!^@${sourceNodePrefix(index)}`);
+        }
+        await writeFile(
+          path.join(workDir, name),
+          normalizeSubscriptionContent(repairNodesForEngine(body)),
+          { encoding: "utf8", mode: 0o600 },
+        );
+        engineInputUrls.push(`${sharedPrefix}/${requestId}/${name}`);
+      }
     }
 
     // A pasted config URL is fetched here rather than by the engine: this
@@ -1237,6 +1231,38 @@ export async function convertSubscription(
     endpoint.searchParams.set("expand", "true");
     applyConvertOptions(endpoint, convertOptions, request.target);
 
+    if (multipleSources) {
+      // The engine may skip an unparsable input when other inputs have nodes.
+      // Verify each source before applying the user's optional node filters.
+      const validation = new URL("/sub", `${runtime.subconverterBaseUrl}/`);
+      validation.searchParams.set("target", "clash");
+      validation.searchParams.set("list", "true");
+      validation.searchParams.set("url", engineInputUrls.join("|"));
+      validation.searchParams.set("emoji", "false");
+      validation.searchParams.set("rename", sourceRenames.join("`"));
+      const checked = await requestTextWithLimits(validation.href, {
+        timeoutMs: remainingMs(),
+        maxBytes: runtime.maxSubscriptionBytes * 4,
+        requestLabel: "Subscription validation",
+        userAgent: "clash.meta",
+      });
+      if (!checked.ok && checked.status !== 400) {
+        throw new Error(`Subscription validation failed with HTTP ${checked.status}.`);
+      }
+      const lines = checked.body.split(/\r?\n/);
+      const start = lines.findIndex((line) => /^proxies:/.test(line));
+      const names = start < 0 ? [] : mihomoProxyNames(
+        lines.slice(start + 1, topLevelSectionEnd(lines, start)),
+      );
+      for (const index of sources.keys()) {
+        if (!names.some((name) => name.startsWith(sourceNodePrefix(index)))) {
+          throw new SubscriptionSourceError(index, new Error("Subscription content is empty or unsupported."));
+        }
+      }
+      const rename = [endpoint.searchParams.get("rename"), ...sourceRenames].filter(Boolean);
+      endpoint.searchParams.set("rename", rename.join("`"));
+    }
+
     const converted = await requestTextWithLimits(endpoint.toString(), {
       method: "GET",
       timeoutMs: remainingMs(),
@@ -1295,7 +1321,10 @@ export async function convertSubscription(
     }
     assertConvertedBody(body, request.target, outputMode);
     if (usesMihomoOutput(request.target) && outputMode === "complete") {
-      body = preserveMihomoHosts(body, [subscriptionBody, ...providerBodies]);
+      body = preserveMihomoHosts(
+        body,
+        sources.flatMap(({ response }, index) => [response.body, ...providerBodies[index]]),
+      );
     }
     body = applyTargetOutputOptions(body, request.target, convertOptions);
     if (usesMihomoOutput(request.target)) {
@@ -1434,6 +1463,16 @@ function assertConvertedBody(
   }
 }
 
+function sourceNodePrefix(index: number): string {
+  return `订阅 ${index + 1} · `;
+}
+
+class SubscriptionSourceError extends Error {
+  constructor(index: number, cause: unknown) {
+    super(`第 ${index + 1} 条订阅失败：${publicErrorMessage(cause)}`, { cause });
+  }
+}
+
 export function publicErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     const message = error.message;
@@ -1450,11 +1489,14 @@ export function isDeploymentConfigurationError(message: string): boolean {
 }
 
 export function publicErrorStatus(error: unknown): number {
+  if (error instanceof SubscriptionSourceError) {
+    return isTimeoutFailure(error.cause) ? 504 : publicErrorStatus(error.cause);
+  }
   const message = typeof error === "string" ? error : publicErrorMessage(error);
   if (isDeploymentConfigurationError(message)) return 503;
   if (/password/i.test(message)) return 401;
   if (
-    /^(?:Request body|subscriptionUrl|A supported target|accessPassword|remoteConfig|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
+    /^(?:Request body|subscriptionUrls?|A supported target|accessPassword|remoteConfig|options|autoUpdate|emoji|udp|xudp|tfo|skipCertVerify|tls13|sort|filterUnsupported|appendType|singboxIpv6|include|exclude|rename|customUserAgent|updateIntervalHours|Profile name)\b/i.test(
       message,
     ) ||
     /^(?:Invalid subscription URL|Only http and https subscription URLs|Subscription URLs must not include credentials|Subscription URL is too long|Subscription host (?:is not allowed|resolves to a blocked address)|Encoded hostnames are not allowed|Subscription content is empty or unsupported|This subscription keeps its nodes in proxy-providers|Node provider output is only available)/i.test(

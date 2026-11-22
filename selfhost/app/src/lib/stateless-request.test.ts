@@ -46,13 +46,13 @@ test("uses a named YAML subscription for Home and a native configuration for Con
   assert.notEqual(homePath, configPath);
   const parsed = parseStatelessConvertQuery(new URL(homePath, "https://example.test").searchParams);
   assert.equal(parsed.target, "clash");
-  assert.equal(parsed.subscriptionUrl, "https://example.test/private?token=abc");
+  assert.equal(parsed.subscriptionUrls[0], "https://example.test/private?token=abc");
   assert.equal(parsed.remoteConfig, "ekko-lite");
   assert.equal(parsed.options.udp, true);
   assert.equal(parsed.name, "laomao-ssr");
   const nativeParsed = parseStatelessConvertQuery(new URL(configPath, "https://example.test").searchParams);
   assert.equal(nativeParsed.target, "shadowrocket");
-  assert.equal(nativeParsed.subscriptionUrl, parsed.subscriptionUrl);
+  assert.deepEqual(nativeParsed.subscriptionUrls, parsed.subscriptionUrls);
   assert.equal(shadowrocketHomeProfilePath("abc", "手机/节点.conf"),
     `/sub/abc/${encodeURIComponent("手机-节点")}.yaml?srhome=1&remark=${encodeURIComponent("手机-节点")}`);
   assert.equal(shadowrocketConfigProfilePath("abc", "手机/节点.conf"),
@@ -65,7 +65,7 @@ test("reads a stateless conversion request out of its own link", () => {
       "url=https://example.test/sub&target=singbox&udp=true&fdn=false&include=HK&interval=12&name=主力&config=acl4ssr-full",
     ),
   );
-  assert.equal(parsed.subscriptionUrl, "https://example.test/sub");
+  assert.equal(parsed.subscriptionUrls[0], "https://example.test/sub");
   assert.equal(parsed.target, "singbox");
   assert.equal(parsed.name, "主力");
   assert.equal(parsed.remoteConfig, "acl4ssr-full");
@@ -155,7 +155,7 @@ test("a built link parses back into the same request", () => {
   assert.equal(url.startsWith("https://sub.example.com/sub?"), true);
 
   const parsed = parseStatelessConvertQuery(new URL(url).searchParams);
-  assert.equal(parsed.subscriptionUrl, "https://example.test/sub?token=abc");
+  assert.equal(parsed.subscriptionUrls[0], "https://example.test/sub?token=abc");
   assert.equal(parsed.target, "surge");
   assert.equal(parsed.options.emoji, false);
   assert.equal(parsed.options.rename, "a@b");
@@ -214,7 +214,7 @@ test("a packed link survives a client that re-reads the address its own way", ()
 
   const parsed = parseStatelessConvertQuery(new URLSearchParams(packed));
   assert.equal(
-    parsed.subscriptionUrl,
+    parsed.subscriptionUrls[0],
     "https://provider.example/api/v1/client/subscribe?token=abc123",
   );
   assert.equal(parsed.target, "shadowrocket");
@@ -233,5 +233,36 @@ test("a packed link that arrives damaged is refused rather than half-read", () =
   assert.throws(
     () => parseStatelessConvertQuery(new URLSearchParams("p=dGFyZ2V0PWNsYXNo")),
     /subscriptionUrl is required/i,
+  );
+});
+
+test("preserves ordered distinct sources in links and packed Shadowrocket imports", () => {
+  const first = "https://one.example/sub?token=a&flag=b";
+  const second = "https://two.example/sub?token=c%7Cd";
+  const query = buildStatelessConvertQuery({
+    subscriptionUrls: [first, second, first],
+    target: "shadowrocket",
+  });
+  const plain = new URLSearchParams(query);
+  assert.deepEqual(plain.getAll("url"), [first, second]);
+  assert.deepEqual(parseStatelessConvertQuery(plain).subscriptionUrls, [first, second]);
+
+  for (const path of [
+    shadowrocketConfigImportPath("合并", query),
+    shadowrocketHomeImportPath("合并", query),
+  ]) {
+    const input = new URL(path, "https://station.example");
+    assert.deepEqual(parseStatelessConvertQuery(input.searchParams).subscriptionUrls, [first, second]);
+  }
+});
+
+test("rejects an empty source and more than five distinct sources", () => {
+  const query = new URLSearchParams({ url: "https://one.example/sub" });
+  query.append("url", "");
+  assert.throws(() => parseStatelessConvertQuery(query), /required for every source/);
+  const tooMany = Array.from({ length: 6 }, (_, index) => `https://example.com/sub/${index}`);
+  assert.throws(
+    () => buildStatelessConvertQuery({ subscriptionUrls: tooMany, target: "clash" }),
+    /at most 5/,
   );
 });

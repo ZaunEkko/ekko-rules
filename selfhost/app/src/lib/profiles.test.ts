@@ -28,7 +28,10 @@ test("stores the private source behind an opaque restart-safe profile id", () =>
   withProfileDirectory(async (directory) => {
     const profile = await createStoredProfile({
       name: "我的 Mihomo",
-      subscriptionUrl: "https://example.com/private-subscription?token=secret",
+      subscriptionUrls: [
+        "https://example.com/private-subscription?token=secret",
+        "https://second.example.com/subscription?token=another-secret",
+      ],
       target: "clash",
       options: {
         autoUpdate: true,
@@ -81,7 +84,8 @@ test("loads version 1 profiles with current option defaults", () =>
     );
 
     const profile = await readStoredProfile(id);
-    assert.equal(profile.version, 3);
+    assert.equal(profile.version, 4);
+    assert.deepEqual(profile.subscriptionUrls, ["https://example.com/legacy"]);
     assert.equal(profile.options.emoji, true);
     assert.equal(profile.options.autoUpdate, false);
     assert.equal(profile.options.updateIntervalHours, 24);
@@ -105,7 +109,7 @@ test("migrates version 2 interval settings to the explicit update switch", () =>
     );
 
     const profile = await readStoredProfile(id);
-    assert.equal(profile.version, 3);
+    assert.equal(profile.version, 4);
     assert.equal(profile.options.autoUpdate, true);
     assert.equal(profile.options.updateIntervalHours, 12);
   }));
