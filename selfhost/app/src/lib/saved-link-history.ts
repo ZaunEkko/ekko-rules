@@ -1,9 +1,12 @@
+import { uniqueSubscriptionUrls } from "./subscription-sources";
+
 export type SavedLinkComparable = {
   name: string;
   link: string;
   target: string;
   restore?: {
-    url: string;
+    url?: string;
+    subscriptionUrls?: string[];
     remoteConfigId: string;
     customRemoteConfig?: string;
     convertOptions: Record<string, unknown>;
@@ -28,7 +31,7 @@ export function savedLinkIdentity(entry: SavedLinkComparable): string {
   return JSON.stringify([
     entry.target,
     entry.name.trim(),
-    entry.restore.url.trim(),
+    uniqueSubscriptionUrls(entry.restore.subscriptionUrls ?? [entry.restore.url ?? ""]),
     entry.restore.remoteConfigId,
     entry.restore.customRemoteConfig?.trim() ?? "",
     stableOptions(entry.restore.convertOptions),

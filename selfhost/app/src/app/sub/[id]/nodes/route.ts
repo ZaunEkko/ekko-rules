@@ -43,7 +43,7 @@ export async function GET(
 
     const result = await convertSubscription(
       {
-        subscriptionUrl: profile.subscriptionUrl,
+        subscriptionUrls: profile.subscriptionUrls,
         target: "clash",
         options: profile.options,
       },

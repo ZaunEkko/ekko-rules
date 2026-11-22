@@ -1,5 +1,6 @@
 import json
 import re
+from itertools import count
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 # One provider answers Stash with an error page and Mihomo with a node list.
@@ -10,6 +11,9 @@ MIHOMO_AGENT = re.compile(r"clash|mihomo|meta", re.IGNORECASE)
 GATED_REFUSAL = json.dumps(
     {"message": "遇到了些问题，我们正在进行处理"}, ensure_ascii=False
 ).encode("utf-8")
+
+
+MERGE_PORTS = count(8443)
 
 
 class FixtureHandler(SimpleHTTPRequestHandler):
@@ -23,6 +27,31 @@ class FixtureHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_GET(self):
+        if self.path in {"/merge-a.yaml", "/merge-a-provider.yaml", "/merge-b.yaml", "/merge-invalid.yaml"}:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/yaml; charset=utf-8")
+            if self.path == "/merge-invalid.yaml":
+                body = b"proxies: []\n"
+            elif self.path == "/merge-a-provider.yaml":
+                body = (
+                    "proxy-providers:\n"
+                    "  one:\n"
+                    "    type: http\n"
+                    "    url: http://fixture:8080/merge-a.yaml\n"
+                ).encode()
+            else:
+                first = self.path == "/merge-a.yaml"
+                server = "203.0.113.41" if first else "203.0.113.42"
+                port = 443 if first else next(MERGE_PORTS)
+                body = (
+                    "proxies:\n"
+                    f"  - {{name: Same Name, type: ss, server: {server}, port: {port}, "
+                    "cipher: aes-128-gcm, password: fixture}\n"
+                ).encode()
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if self.path != UA_GATED_PATH:
             super().do_GET()
             return

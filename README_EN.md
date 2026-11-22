@@ -27,7 +27,7 @@ Nodes · DNS · policy groups · routing rules, all in a single file
 <!-- DEMO: record the walkthrough once sub.boxnook.cc is live -->
 
 **1.** Open **[sub.boxnook.cc](https://sub.boxnook.cc)**
-**2.** Paste your subscription URL (the field is masked by default)
+**2.** Paste your subscription URLs (masked by default). Paste up to five, one per line, to generate one refreshable subscription.
 **3.** Press "one-tap import" — the button follows whichever client you picked
 
 Done. The first visit walks you through these three steps; "重看引导" next to the heading replays it. Flip UDP, XUDP and the rest under advanced options if you need them — the link rewrites itself as you go. Copying the link or scanning it with a phone works too. Shadowrocket is the exception: the page presents two ordered actions and two QR codes, **1. node subscription** and **2. routing config**. Import both in that order. The first is added from Home and owns refreshes, the profile name, the traffic/expiry banner, and the node list. The second is added from Configuration: native `PROXY` follows the Home-selected node by default, while groups can select Home subscription nodes, `DIRECT`, `REJECT`, or the nested manual selector. A user confirmed this two-step configuration works on a device with `site-v0.4.31`.

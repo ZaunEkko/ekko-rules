@@ -1,3 +1,7 @@
+import {
+  parseSubscriptionSources,
+  type SubscriptionSourceInput,
+} from "./subscription-sources";
 import { randomBytes, randomUUID } from "node:crypto";
 import {
   mkdir,
@@ -18,10 +22,10 @@ import {
 const PROFILE_ID_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 
 export type StoredProfile = {
-  version: 3;
+  version: 4;
   id: string;
   name: string;
-  subscriptionUrl: string;
+  subscriptionUrls: string[];
   target: TargetFormat;
   options: ConvertOptions;
   createdAt: string;
@@ -29,7 +33,7 @@ export type StoredProfile = {
 
 export type PublicProfile = Omit<
   StoredProfile,
-  "subscriptionUrl" | "version" | "options"
+  "subscriptionUrls" | "version" | "options"
 > & {
   subscriptionPath: string;
   downloadPath: string;
@@ -73,10 +77,9 @@ function parseStoredProfile(raw: string, expectedId: string): StoredProfile {
 
   const profile = value as Record<string, unknown>;
   if (
-    (profile.version !== 1 && profile.version !== 2 && profile.version !== 3) ||
+    ![1, 2, 3, 4].includes(profile.version as number) ||
     profile.id !== expectedId ||
     typeof profile.name !== "string" ||
-    typeof profile.subscriptionUrl !== "string" ||
     typeof profile.target !== "string" ||
     !isSupportedTarget(profile.target) ||
     typeof profile.createdAt !== "string"
@@ -84,8 +87,17 @@ function parseStoredProfile(raw: string, expectedId: string): StoredProfile {
     throw new Error("Stored profile is invalid.");
   }
 
+  let subscriptionUrls: string[];
+  try {
+    subscriptionUrls = profile.version === 4
+      ? parseSubscriptionSources(profile.subscriptionUrls)
+      : parseSubscriptionSources(undefined, profile.subscriptionUrl);
+  } catch {
+    throw new Error("Stored profile is invalid.");
+  }
+
   let storedOptions: unknown = undefined;
-  if (profile.version === 3) {
+  if (profile.version === 3 || profile.version === 4) {
     storedOptions = profile.options;
   } else if (profile.version === 2) {
     const legacy =
@@ -101,19 +113,18 @@ function parseStoredProfile(raw: string, expectedId: string): StoredProfile {
   }
 
   return {
-    version: 3,
+    version: 4,
     id: profile.id,
     name: profile.name,
-    subscriptionUrl: profile.subscriptionUrl,
+    subscriptionUrls,
     target: profile.target,
     options: parseConvertOptions(storedOptions),
     createdAt: profile.createdAt,
-  } as StoredProfile;
+  };
 }
 
-export async function createStoredProfile(input: {
+export async function createStoredProfile(input: SubscriptionSourceInput & {
   name?: string;
-  subscriptionUrl: string;
   target: TargetFormat;
   options?: ConvertOptions;
 }): Promise<StoredProfile> {
@@ -122,10 +133,10 @@ export async function createStoredProfile(input: {
 
   const id = randomBytes(24).toString("base64url");
   const profile: StoredProfile = {
-    version: 3,
+    version: 4,
     id,
     name: cleanName(input.name, input.target),
-    subscriptionUrl: input.subscriptionUrl,
+    subscriptionUrls: parseSubscriptionSources(input.subscriptionUrls, input.subscriptionUrl),
     target: input.target,
     options: parseConvertOptions(input.options),
     createdAt: new Date().toISOString(),

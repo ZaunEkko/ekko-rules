@@ -69,7 +69,7 @@ test("convert requests accept known targets and reject unknown targets", () => {
       target: "singbox",
     }),
     {
-      subscriptionUrl: "https://example.com/subscription",
+      subscriptionUrls: ["https://example.com/subscription"],
       target: "singbox",
       options: {
         autoUpdate: false,
