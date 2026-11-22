@@ -43,7 +43,7 @@ export async function GET(
     }
     const result = await convertSubscription(
       {
-        subscriptionUrl: profile.subscriptionUrl,
+        subscriptionUrls: profile.subscriptionUrls,
         // Existing v0.4.24 srconfig URLs must refresh into the same native
         // representation now used by newly generated .conf addresses.
         target: nativeConfig || configScan ? "shadowrocket" : "clash",

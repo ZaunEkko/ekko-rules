@@ -209,6 +209,87 @@ function clashGroupProxyNames(output, groupName) {
   });
 }
 
+
+async function assertMergedSubscriptions() {
+  const first = "http://fixture:8080/merge-a-provider.yaml";
+  const second = "http://fixture:8080/merge-b.yaml";
+  const names = ["订阅 1 · Same Name", "订阅 2 · Same Name"];
+  const query = new URLSearchParams({
+    target: "clash", name: "Merged fixture", emoji: "false", include: "^Same Name$",
+  });
+  query.append("url", first);
+  query.append("url", second);
+  query.append("url", first);
+
+  async function checkClash(address) {
+    const response = await fetch(address);
+    const body = await response.text();
+    if (!response.ok || response.headers.has("subscription-userinfo")) {
+      throw new Error(`Merged refresh returned invalid status or traffic metadata: ${response.status}. ${response.ok ? "" : body}`);
+    }
+    if (JSON.stringify(clashProxyNames(body)) !== JSON.stringify(names)) {
+      throw new Error(`Merged proxy names are absent, duplicated, or out of order: ${clashProxyNames(body)}.`);
+    }
+    const choices = clashGroupProxyNames(body, "♻️ 手动切换");
+    if (!names.every((name) => choices.includes(name))) {
+      throw new Error("Merged nodes are missing from the manual selector.");
+    }
+    return body;
+  }
+
+  const address = `${baseUrl}/sub?${query}`;
+  const firstLoad = await checkClash(address);
+  const refreshed = await checkClash(address);
+  if (firstLoad === refreshed) throw new Error("Merged refresh did not pick up changed upstream nodes.");
+
+  const broken = new URLSearchParams(query);
+  broken.delete("url");
+  broken.append("url", first);
+  broken.append("url", "http://fixture:8080/merge-invalid.yaml");
+  const invalid = await fetch(`${baseUrl}/sub?${broken}`);
+  if (invalid.ok || !/第 2 条订阅失败/.test(await invalid.text())) {
+    throw new Error("A malformed second source did not fail the entire refresh.");
+  }
+  broken.delete("url");
+  broken.append("url", first);
+  broken.append("url", "http://fixture:8080/missing-merge-source.yaml");
+  const missing = await fetch(`${baseUrl}/sub?${broken}`);
+  if (missing.ok || !/第 2 条订阅失败.*HTTP 404/.test(await missing.text())) {
+    throw new Error("An unavailable second source did not identify the failing source.");
+  }
+
+  const packedHome = Buffer.from(query.toString()).toString("base64url");
+  await checkClash(`${baseUrl}/i/merged.yaml?srhome=1&p=${packedHome}`);
+  query.set("target", "shadowrocket");
+  const packedConfig = Buffer.from(query.toString()).toString("base64url");
+  const native = await fetch(`${baseUrl}/i/merged.conf?p=${packedConfig}`);
+  const config = await native.text();
+  if (!native.ok || !config.includes("[Proxy Group]") ||
+      !names.every((name) => config.includes(name))) {
+    throw new Error("Native Shadowrocket import lost a merged source.");
+  }
+
+  const stored = await fetch(`${baseUrl}/api/profiles`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      name: "Merged local fixture",
+      subscriptionUrls: [first, second],
+      target: "clash",
+      options: { emoji: false },
+    }),
+  });
+  const profileResponse = await stored.json();
+  if (!stored.ok || JSON.stringify(profileResponse).includes("fixture:8080")) {
+    throw new Error("The merged local profile failed or exposed its source URLs.");
+  }
+  const { profile } = profileResponse;
+  createdProfiles.set(profile.id, profile);
+  await checkClash(`${baseUrl}${profile.subscriptionPath}`);
+  await deleteProfile(profile);
+  console.log(JSON.stringify({ phase: "multi-subscription", refresh: true, strict_failure: true, shadowrocket: true, stored_profile: true }));
+}
+
 async function assertDefaultNodeOrderAndEmoji() {
   const output = await convert("clash");
   const names = clashProxyNames(output);
@@ -847,6 +928,7 @@ async function main() {
   await assertStoredShadowrocketHomeRoute();
   await assertGatewayModernProtocolSubscriptions();
   await assertUserAgentFallback();
+  await assertMergedSubscriptions();
   await assertDefaultNodeOrderAndEmoji();
   await assertOutputOptionTransforms();
 

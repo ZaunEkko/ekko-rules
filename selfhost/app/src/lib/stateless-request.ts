@@ -1,3 +1,7 @@
+import {
+  parseSubscriptionSources,
+  type SubscriptionSourceInput,
+} from "./subscription-sources";
 import { isSupportedTarget, type TargetFormat } from "./capabilities";
 import {
   DEFAULT_CONVERT_OPTIONS,
@@ -174,7 +178,7 @@ const TEXT_PARAMS = {
 export const MAX_STATELESS_NAME_LENGTH = 50;
 
 export type StatelessConvertRequest = {
-  subscriptionUrl: string;
+  subscriptionUrls: string[];
   target: TargetFormat;
   options: ConvertOptions;
   name: string;
@@ -203,10 +207,7 @@ export function parseStatelessConvertQuery(
     return parseStatelessConvertQuery(new URLSearchParams(expanded));
   }
 
-  const subscriptionUrl = (params.get("url") || "").trim();
-  if (!subscriptionUrl) {
-    throw new Error("subscriptionUrl is required.");
-  }
+  const subscriptionUrls = parseSubscriptionSources(params.getAll("url"));
 
   const target = (params.get("target") || "clash").trim();
   if (!isSupportedTarget(target)) {
@@ -241,7 +242,7 @@ export function parseStatelessConvertQuery(
   }
 
   return {
-    subscriptionUrl,
+    subscriptionUrls,
     target,
     options: parseConvertOptions(draft),
     name,
@@ -253,15 +254,16 @@ export function parseStatelessConvertQuery(
  * Emits only the choices that differ from the defaults so a shared link stays
  * short and readable.
  */
-export function buildStatelessConvertQuery(input: {
-  subscriptionUrl: string;
+export function buildStatelessConvertQuery(input: SubscriptionSourceInput & {
   target: TargetFormat;
   options?: Partial<ConvertOptions>;
   name?: string;
   remoteConfig?: string;
 }): string {
   const params = new URLSearchParams();
-  params.set("url", input.subscriptionUrl.trim());
+  for (const url of parseSubscriptionSources(input.subscriptionUrls, input.subscriptionUrl)) {
+    params.append("url", url);
+  }
   params.set("target", input.target);
 
   const options = { ...DEFAULT_CONVERT_OPTIONS, ...(input.options || {}) };

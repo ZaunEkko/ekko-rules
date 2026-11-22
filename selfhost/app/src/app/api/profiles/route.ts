@@ -122,7 +122,7 @@ export async function POST(request: Request) {
     );
     const stored = await createStoredProfile({
       name,
-      subscriptionUrl: parsed.subscriptionUrl,
+      subscriptionUrls: parsed.subscriptionUrls,
       target: parsed.target,
       options: parsed.options,
     });

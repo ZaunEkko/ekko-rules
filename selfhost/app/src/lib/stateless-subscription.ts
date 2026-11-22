@@ -63,7 +63,7 @@ export async function serveStatelessSubscription(
 
     const result = await convertSubscription(
       {
-        subscriptionUrl: parsed.subscriptionUrl,
+        subscriptionUrls: parsed.subscriptionUrls,
         target: conversionTarget,
         options: parsed.options,
       },

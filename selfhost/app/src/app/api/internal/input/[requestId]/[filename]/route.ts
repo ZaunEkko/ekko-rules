@@ -1,6 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { getRuntimeConfig } from "@/lib/convert";
+import { MAX_PROXY_PROVIDERS } from "@/lib/proxy-providers";
+import { MAX_SUBSCRIPTION_SOURCES } from "@/lib/subscription-sources";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,11 +12,14 @@ export const dynamic = "force-dynamic";
  * template, and — when the subscription kept its nodes in `proxy-providers:` —
  * the bodies the gateway fetched from those providers.
  */
-const HANDOFF_FILES = new Set(["subscription.input", "remote.ini"]);
-const PROVIDER_FILE_PATTERN = /^provider-[1-8]\.input$/;
+const HANDOFF_FILES = new Set([
+  "remote.ini",
+  ...Array.from({ length: MAX_SUBSCRIPTION_SOURCES }, (_, index) => `subscription-${index + 1}.input`),
+  ...Array.from({ length: MAX_PROXY_PROVIDERS }, (_, index) => `provider-${index + 1}.input`),
+]);
 
 function isHandoffFile(name: string): boolean {
-  return HANDOFF_FILES.has(name) || PROVIDER_FILE_PATTERN.test(name);
+  return HANDOFF_FILES.has(name);
 }
 
 const REQUEST_ID_PATTERN =

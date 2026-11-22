@@ -126,6 +126,10 @@ a { color: inherit; }
 .control::placeholder { color: #9aa7af; }
 .field-action { align-self: stretch; min-width: 4rem; border: 0; border-left: 1px solid var(--line-soft); background: #f6f9fa; color: var(--blue); font-size: .76rem; font-weight: 680; }
 .field-action:hover { background: var(--blue-soft); }
+.subscription-sources { display: grid; gap: .55rem; }
+.subscription-source-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .3rem .75rem; color: var(--ink-soft); font-size: .8rem; }
+.subscription-source-actions button { min-height: 2.15rem; }
+.subscription-source-actions button:disabled { opacity: .55; cursor: default; }
 .form-row { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: .85rem; }
 .select-shell { position: relative; }
 .select-shell::after { content: ""; position: absolute; right: 1rem; width: .45rem; height: .45rem; border-right: 1.5px solid var(--ink-soft); border-bottom: 1.5px solid var(--ink-soft); transform: translateY(-.14rem) rotate(45deg); pointer-events: none; }

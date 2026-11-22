@@ -129,7 +129,10 @@ function indentOf(line: string): number {
  * A `file:` provider is ignored too: it names a path on whatever machine wrote
  * the config, which is not this one.
  */
-export function findProxyProviderUrls(content: string): string[] {
+export function findProxyProviderUrls(
+  content: string,
+  limit = MAX_PROXY_PROVIDERS,
+): string[] {
   const section = proxyProviderSection(content);
   if (!section) return [];
 
@@ -147,7 +150,7 @@ export function findProxyProviderUrls(content: string): string[] {
       const value = parseYamlScalar(match[1]);
       if (!/^https?:\/\//i.test(value)) continue;
       if (!urls.includes(value)) urls.push(value);
-      if (urls.length >= MAX_PROXY_PROVIDERS) break;
+      if (urls.length >= limit) break;
     }
     return urls;
   }
@@ -174,7 +177,7 @@ export function findProxyProviderUrls(content: string): string[] {
         const value = parseYamlScalar(match[1]);
         if (/^https?:\/\//i.test(value) && !urls.includes(value)) {
           urls.push(value);
-          if (urls.length >= MAX_PROXY_PROVIDERS) break;
+          if (urls.length >= limit) break;
         }
       }
       keyIndent = null;
@@ -196,7 +199,7 @@ export function findProxyProviderUrls(content: string): string[] {
     const value = parseYamlScalar(match[1]);
     if (!/^https?:\/\//i.test(value)) continue;
     if (!urls.includes(value)) urls.push(value);
-    if (urls.length >= MAX_PROXY_PROVIDERS) break;
+    if (urls.length >= limit) break;
   }
   return urls;
 }

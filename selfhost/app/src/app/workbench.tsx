@@ -31,6 +31,10 @@ import {
   dedupeSavedLinks,
   savedLinkIdentity,
 } from "@/lib/saved-link-history";
+import {
+  MAX_SUBSCRIPTION_SOURCES,
+  uniqueSubscriptionUrls,
+} from "@/lib/subscription-sources";
 import { Picker } from "./picker";
 import { SiteMark } from "./site-mark";
 import { Tally } from "./tally";
@@ -192,7 +196,8 @@ type SavedLink = {
   options: string[];
   /** Enough to put the form back the way it was, so a record can be edited. */
   restore: {
-    url: string;
+    url?: string;
+    subscriptionUrls?: string[];
     remoteConfigId: string;
     /* The id alone is not enough for a pasted config: "__custom__" says which
        field was in use, not what was typed into it. Without this, restoring
@@ -373,7 +378,9 @@ export function Workbench({
   initialCapabilities: Capabilities;
   initialStoresProfiles: boolean;
 }) {
-  const [subscriptionUrl, setSubscriptionUrl] = useState("");
+  const [sourceFields, setSourceFields] = useState([""]);
+  const subscriptionUrls = useMemo(() => uniqueSubscriptionUrls(sourceFields), [sourceFields]);
+  const sourceReady = subscriptionUrls.length > 0;
   const [savedLinks, setSavedLinks] = useState<SavedLink[]>([]);
   const [profileName, setProfileName] = useState("");
   const [target, setTarget] = useState("clash");
@@ -447,14 +454,14 @@ export function Workbench({
   );
   const siteLinks = capabilities?.site_links ?? [];
   const statelessQuery = useMemo(() => {
-    if (storesProfiles || !subscriptionUrl.trim()) return "";
+    if (storesProfiles || !sourceReady) return "";
     const remoteConfig = usingCustomRemoteConfig
       ? customRemoteConfig.trim()
       : remoteConfigId === "ekko"
         ? ""
         : remoteConfigId;
     return buildStatelessConvertQuery({
-      subscriptionUrl,
+      subscriptionUrls,
       target: target as StatelessConvertRequest["target"],
       options: {
         ...convertOptions,
@@ -470,12 +477,12 @@ export function Workbench({
     profileName,
     remoteConfigId,
     storesProfiles,
-    subscriptionUrl,
+    sourceReady,
+    subscriptionUrls,
     supportsXudp,
     target,
     usingCustomRemoteConfig,
   ]);
-  const sourceReady = Boolean(subscriptionUrl.trim());
   // One open deployment can answer on several domains. A visitor's link must
   // stay on the domain they actually opened, so the current origin wins there;
   // the personal shape keeps using its configured prefix.
@@ -805,7 +812,7 @@ export function Workbench({
   /** Put the form back where it was, so a record can be adjusted rather than rebuilt. */
   const restoreLink = useCallback((entry: SavedLink) => {
     if (!entry.restore) return;
-    setSubscriptionUrl(entry.restore.url);
+    setSourceFields(entry.restore.subscriptionUrls ?? [entry.restore.url ?? ""]);
     setCustomRemoteConfig(entry.restore.customRemoteConfig ?? "");
     setTarget(entry.target);
     setRemoteConfigId(entry.restore.remoteConfigId);
@@ -825,7 +832,7 @@ export function Workbench({
    * because wanting a blank form is not wanting to lose them.
    */
   const resetForm = useCallback(() => {
-    setSubscriptionUrl("");
+    setSourceFields([""]);
     setProfileName("");
     setTarget("clash");
     setRemoteConfigId("ekko");
@@ -834,7 +841,7 @@ export function Workbench({
   }, []);
 
   const formTouched =
-    subscriptionUrl !== "" ||
+    sourceFields.some(Boolean) ||
     profileName !== "" ||
     target !== "clash" ||
     remoteConfigId !== "ekko" ||
@@ -1029,7 +1036,7 @@ export function Workbench({
       convertOptions,
       profileName || selectedTarget.short_label,
       {
-        url: subscriptionUrl,
+        subscriptionUrls,
         remoteConfigId,
         customRemoteConfig,
         convertOptions,
@@ -1040,6 +1047,7 @@ export function Workbench({
 
   async function createProfile(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!sourceReady) return;
     setError(null);
 
     // Nothing is stored on an open deployment, so the link is assembled in the
@@ -1063,7 +1071,7 @@ export function Workbench({
         cache: "no-store",
         body: JSON.stringify({
           name: profileName || undefined,
-          subscriptionUrl,
+          subscriptionUrls,
           target,
           options: convertOptions,
           accessPassword: accessPassword || undefined,
@@ -1697,38 +1705,91 @@ export function Workbench({
                     : "会写进生成的链接，请勿把链接分享给他人"}
                 </small>
               </label>
-              <span className="input-shell has-action">
-                <input
-                  id="subscription-url"
-                  className="control control-mono"
-                  value={subscriptionUrl}
-                  onChange={(event) => {
-                    setSubscriptionUrl(event.target.value);
-                    // Pasting the address is the step; do not make them also
-                    // press "next". Only on the edit itself, so a replay with
-                    // the field already filled still stops here.
-                    if (guideStep === 1 && event.target.value.trim()) {
-                      setGuideStep(2);
-                    }
-                  }}
-                  type={showUrl ? "url" : "password"}
-                  autoComplete="off"
-                  spellCheck={false}
-                  required
-                  placeholder="https://provider.example/subscription"
-                />
-                <button
-                  type="button"
-                  className="field-action"
-                  onClick={() => setShowUrl((value) => !value)}
-                >
-                  {showUrl ? "隐藏" : "显示"}
-                </button>
-              </span>
+              <div className="subscription-sources">
+                {sourceFields.map((value, index) => (
+                  <span className="input-shell has-action" key={index}>
+                    <input
+                      id={index === 0 ? "subscription-url" : `subscription-url-${index + 1}`}
+                      aria-label={`机场订阅地址 ${index + 1}`}
+                      className="control control-mono"
+                      value={value}
+                      onChange={(event) => {
+                        const nextValue = event.target.value;
+                        setSourceFields((fields) => fields.map(
+                          (field, fieldIndex) => fieldIndex === index ? nextValue : field,
+                        ));
+                        if (guideStep === 1 && nextValue.trim()) setGuideStep(2);
+                      }}
+                      onPaste={(event) => {
+                        const text = event.clipboardData.getData("text");
+                        if (!/[\r\n]/.test(text)) return;
+                        event.preventDefault();
+                        const pasted = uniqueSubscriptionUrls(text.split(/\r\n|[\r\n]/));
+                        if (!pasted.length) return;
+                        const next = uniqueSubscriptionUrls([
+                          ...sourceFields.slice(0, index),
+                          ...pasted,
+                          ...sourceFields.slice(index + 1),
+                        ]);
+                        if (next.length > MAX_SUBSCRIPTION_SOURCES) {
+                          setError(`每次最多合并 ${MAX_SUBSCRIPTION_SOURCES} 条订阅。`);
+                          return;
+                        }
+                        setError(null);
+                        setSourceFields(next);
+                        if (guideStep === 1) setGuideStep(2);
+                      }}
+                      onBlur={() => {
+                        if (!value.trim()) return;
+                        const first = sourceFields.findIndex((field) => field.trim() === value.trim());
+                        if (first !== index) {
+                          setSourceFields((fields) => fields.map((field, fieldIndex) => fieldIndex === index ? "" : field));
+                        }
+                      }}
+                      type={showUrl ? "url" : "password"}
+                      autoComplete="off"
+                      spellCheck={false}
+                      placeholder="https://provider.example/subscription"
+                    />
+                    {sourceFields.length > 1 ? (
+                      <button
+                        type="button"
+                        className="field-action"
+                        aria-label={`移除第 ${index + 1} 条订阅`}
+                        onClick={() => setSourceFields(
+                          (fields) => fields.filter((_, fieldIndex) => fieldIndex !== index),
+                        )}
+                      >
+                        移除
+                      </button>
+                    ) : null}
+                    {index === 0 ? (
+                      <button
+                        type="button"
+                        className="field-action"
+                        onClick={() => setShowUrl((shown) => !shown)}
+                      >
+                        {showUrl ? "隐藏" : "显示"}
+                      </button>
+                    ) : null}
+                  </span>
+                ))}
+                <div className="subscription-source-actions">
+                  <span>{subscriptionUrls.length ? `已添加 ${subscriptionUrls.length} 条订阅` : "支持一次粘贴多行，每行一条。"}</span>
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    disabled={sourceFields.length >= MAX_SUBSCRIPTION_SOURCES}
+                    onClick={() => setSourceFields((fields) => [...fields, ""])}
+                  >
+                    添加订阅
+                  </button>
+                </div>
+              </div>
               {renderGuideNote(
                 1,
                 "粘贴机场订阅",
-                "把机场给你的订阅地址粘贴到上面。粘贴好会自动进入下一步。",
+                "可以粘贴一条或多条订阅地址，多条时每行一条。",
               )}
             </div>
 
@@ -2632,13 +2693,17 @@ export function Workbench({
                   </div>
                 </>
               ) : null}
-              <QRCodeSVG
-                value={qrValue}
-                size={220}
-                level="M"
-                marginSize={4}
-                title={`${qrProfile.name} 本地订阅二维码`}
-              />
+              {new TextEncoder().encode(qrValue).length <= 2331 ? (
+                <QRCodeSVG
+                  value={qrValue}
+                  size={220}
+                  level="M"
+                  marginSize={4}
+                  title={`${qrProfile.name} 本地订阅二维码`}
+                />
+              ) : (
+                <div className="qr-instruction" role="status">链接较长，请使用下方的复制地址。</div>
+              )}
               <div className="qr-value">
                 <span>
                   {qrProfile.target === "shadowrocket"
