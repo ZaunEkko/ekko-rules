@@ -2255,3 +2255,14 @@ The corpus now has 10,211 file rules and 10,212 including FINAL. First-match
 tests cover the new domains, subdomains, and lookalikes in both builds. The
 simulation verifies policy-group selection. Actual exit selection depends on
 the client's group settings.
+
+## ER-092 — Route Manjuu through the mainland website policy
+
+**Date:** 2026-11-26
+
+Add `DOMAIN-SUFFIX,manjuu.com` to `china-web` at the owner's request. Manjuu's
+mainland Azur Promilia (《蓝色星原：旅谣》) site and platform CDN are subdomains
+of this suffix. Both builds select the default-DIRECT `🌏 国内网站` group.
+The [service review](evidence/manjuu-mainland-game-service-2026-11-26.json)
+records the official sources. The corpus has 10,212 file rules and 10,213
+including FINAL.
