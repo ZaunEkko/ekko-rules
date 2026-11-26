@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-26",
+  "service": "蛮啾 / 蓝色星原：旅谣",
+  "root": "manjuu.com",
+  "rule": "DOMAIN-SUFFIX,manjuu.com",
+  "slug": "china-web",
+  "target": "🌏 国内网站",
+  "default_action": "DIRECT",
+  "official_sources": [
+    {
+      "url": "https://www.manjuu.com/",
+      "evidence": "Manjuu's company homepage identifies the publisher and lists Azur Lane."
+    },
+    {
+      "url": "https://azurpromilia.manjuu.com/home/news/detail/912070871064121344/",
+      "evidence": "Azur Promilia's mainland site publishes the mainland launch and download FAQ."
+    },
+    {
+      "url": "https://plat-cdn.manjuu.com/platform/website/3/NOTICE/814196517119332352_fd55815f.html",
+      "evidence": "Manjuu's platform CDN hosts an official Azur Promilia announcement."
+    }
+  ],
+  "decision": "The owner requested mainland routing for manjuu.com. The anchored suffix covers the publisher root and its subdomains in both products."
+}

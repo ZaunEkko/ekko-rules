@@ -1,5 +1,5 @@
 schema_version: 1
-reviewed_on: 2026-11-18
+reviewed_on: 2026-11-26
 purpose: Non-generating review queue for historical, uncertain, legacy, brand-defense, personal/community, or relocation evidence. Entries never change generated routing by themselves; phase_2_candidate records are historical labels, not current products.
 allowed_statuses:
 - observe
@@ -10,6 +10,19 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
+- id: manjuu-mainland-game-service
+  status: accepted
+  scope: china-web
+  summary: Manjuu's manjuu.com suffix uses the mainland website policy for the publisher and Azur Promilia's mainland service.
+  evidence:
+  - docs/evidence/manjuu-mainland-game-service-2026-11-26.json
+  - sources/rules/china-web.list
+  first_observed: '2026-11-26'
+  last_verified: '2026-11-26'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: ER-092 places DOMAIN-SUFFIX,manjuu.com in china-web at the owner's request. Manjuu publishes Azur Promilia's mainland site and announcements under this suffix. Both builds select the default-DIRECT mainland website group.
 - id: claude-mcp-and-service-domains
   status: accepted
   scope: claude
