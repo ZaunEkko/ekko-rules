@@ -2266,3 +2266,30 @@ of this suffix. Both builds select the default-DIRECT `🌏 国内网站` group.
 The [service review](evidence/manjuu-mainland-game-service-2026-11-26.json)
 records the official sources. The corpus has 10,212 file rules and 10,213
 including FINAL.
+
+## ER-093 — Add an identity and eligibility verification policy
+
+**Date:** 2026-11-27
+
+The new `identity-verification` ruleset follows overseas shopping and
+precedes the mainland domain fallback. The full build has a dedicated
+`🪪 身份与资格验证` selector with `♻️ 手动切换` first, followed by `DIRECT`
+and the subscription nodes. The lite build uses `🚀 国外服务`.
+
+| Service | Verified routing scope |
+|---|---|
+| SheerID | Exact hosts for the hosted form, verification requests, and Proof consent. [Hosted form guide](https://developer.sheerid.com/tutorials/secure-verification-creation) · [Reference](https://developer.sheerid.com/reference) · [Proof consent](https://proof.sheerid.com/consent) |
+| UNiDAYS | `www.myunidays.com` serves the account and student verification flow. [Verification support](https://www.myunidays.com/US/en-US/support) |
+| Student Beans | Exact account, hosted merchant flow, academic federation, and consumer site hosts. [Pion account documentation](https://developers.wearepion.com/sbid-status-api) · [Merchant example](https://images.samsung.com/is/content/samsung/assets/pl/regulaminy_2022/Aneks_nr_1_do_Regulamin_Oferta_studencka.pdf) · [Feide federation](https://www.feide.no/tjenester-med-feide-innlogging?id=2000509) · [Student Beans](https://www.studentbeans.com/us) |
+| ID.me | Exact authorization, group verification, and Wallet hosts. [ID.me integration](https://docs.id.me/guides/o-auth-2-0/integration) · [Wallet support](https://help.id.me/hc/en-us/articles/10252753179287-My-discount-from-IDMe-Shop-isn-t-working) |
+| Persona | `withpersona.com` covers customizable hosted and embedded verification subdomains. [Hosted Flow](https://docs.withpersona.com/hosted-flow) · [WebView allowlist](https://docs.withpersona.com/2026-09-29/hosted-flow-webview-considerations) |
+| Veriff | `veriff.me` and the exact `alchemy`, `eu`, `saas`, and `us` hosts under `veriff.com` cover the service's published legacy and replacement session hosts during the December migration. [Allowlist](https://devdocs.veriff.com/docs/allowlisted-urls-and-ip-addresses) · [Migration notice](https://status.veriff.com/incidents/mnh76bnp2dfl) |
+| Sumsub | `in.sumsub.com` and `static.sumsub.com` cover the verification link and WebSDK script. [Link example](https://docs.sumsub.com/docs/fireblocks-integration) · [WebSDK](https://docs.sumsub.com/docs/get-started-with-web-sdk) |
+
+`portal.anthropic.com` follows the existing Claude policy through the
+`anthropic.com` suffix. Rules for the shared Persona service apply to its
+own domain. [Claude Verification Portal](https://portal.anthropic.com/verify) · [Claude identity verification](https://support.claude.com/en/articles/14328960-identity-verification-on-claude)
+
+The two builds share 19 new domain matchers, bringing the totals to 57
+rulesets, 58 segments including FINAL, and 10,232 rules including FINAL.
+The full build has 45 policy groups and the lite build has 10.

@@ -3,10 +3,10 @@
   "products": {
     "core": {
       "summary": {
-        "proxy_group_count": 44,
-        "ruleset_count": 56,
-        "segment_count": 57,
-        "rule_count": 10213,
+        "proxy_group_count": 45,
+        "ruleset_count": 57,
+        "segment_count": 58,
+        "rule_count": 10232,
         "destination_ip_rule_count": 207
       },
       "quality": {
@@ -814,7 +814,21 @@
           "index": 55,
           "manifest_order": 55,
           "start": 10202,
-          "end": 10211,
+          "end": 10220,
+          "count": 19,
+          "target": "🪪 身份与资格验证",
+          "slug": "identity-verification",
+          "scope": "both",
+          "rule_types": {
+            "DOMAIN": 17,
+            "DOMAIN-SUFFIX": 2
+          }
+        },
+        {
+          "index": 56,
+          "manifest_order": 56,
+          "start": 10221,
+          "end": 10230,
           "count": 10,
           "target": "🌏 国内网站",
           "slug": "china-direct-curated",
@@ -824,10 +838,10 @@
           }
         },
         {
-          "index": 56,
-          "manifest_order": 56,
-          "start": 10212,
-          "end": 10212,
+          "index": 57,
+          "manifest_order": 57,
+          "start": 10231,
+          "end": 10231,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -837,10 +851,10 @@
           }
         },
         {
-          "index": 57,
-          "manifest_order": 57,
-          "start": 10213,
-          "end": 10213,
+          "index": 58,
+          "manifest_order": 58,
+          "start": 10232,
+          "end": 10232,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",
@@ -854,9 +868,9 @@
     "lite": {
       "summary": {
         "proxy_group_count": 10,
-        "ruleset_count": 56,
-        "segment_count": 57,
-        "rule_count": 10213,
+        "ruleset_count": 57,
+        "segment_count": 58,
+        "rule_count": 10232,
         "destination_ip_rule_count": 207
       },
       "quality": {
@@ -1664,7 +1678,21 @@
           "index": 55,
           "manifest_order": 55,
           "start": 10202,
-          "end": 10211,
+          "end": 10220,
+          "count": 19,
+          "target": "🚀 国外服务",
+          "slug": "identity-verification",
+          "scope": "both",
+          "rule_types": {
+            "DOMAIN": 17,
+            "DOMAIN-SUFFIX": 2
+          }
+        },
+        {
+          "index": 56,
+          "manifest_order": 56,
+          "start": 10221,
+          "end": 10230,
           "count": 10,
           "target": "🌏 国内网站",
           "slug": "china-direct-curated",
@@ -1674,10 +1702,10 @@
           }
         },
         {
-          "index": 56,
-          "manifest_order": 56,
-          "start": 10212,
-          "end": 10212,
+          "index": 57,
+          "manifest_order": 57,
+          "start": 10231,
+          "end": 10231,
           "count": 1,
           "target": "DIRECT",
           "slug": "china-geoip-direct",
@@ -1687,10 +1715,10 @@
           }
         },
         {
-          "index": 57,
-          "manifest_order": 57,
-          "start": 10213,
-          "end": 10213,
+          "index": 58,
+          "manifest_order": 58,
+          "start": 10232,
+          "end": 10232,
           "count": 1,
           "target": "🐟 漏网之鱼",
           "slug": "final",

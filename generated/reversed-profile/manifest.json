@@ -5,8 +5,8 @@
   "self": "manifest.json",
   "self_hash_included": false,
   "files": {
-    "Mihomo/reversed-template-lite.yaml": "e92910589aa87f9df8cab785b72d45a24960d57a9b5f3841ed9bd1368322b2c8",
-    "Mihomo/reversed-template.yaml": "3fe3e906fada28210814be1cf5c723e251da120498f48acd99dbeeff4b7d9767",
+    "Mihomo/reversed-template-lite.yaml": "ab86eae7efe5983bac95e00cd18e280fb8e2f7fd149fa43c80c0951ab976fde3",
+    "Mihomo/reversed-template.yaml": "6299a3880ee37153fee7136b3808d72767fe132fd6b482818b5adff49a060beb",
     "Providers/Ruleset/adobe.yaml": "e2d2e0295f29424e0110d12cefde09c10a3540e2753bb87ba1b99d2c6635e7ef",
     "Providers/Ruleset/advertising-curated.yaml": "b6f1ad53648416cd1851ff8535718052b8942f12289c30a3ad8d54312e58218f",
     "Providers/Ruleset/ai-developer.yaml": "ef5dbdb989a3412fa0752b4da94ec064e5a59da5574f11b5686d2aea6b8c9fc8",
@@ -42,6 +42,7 @@
     "Providers/Ruleset/hbo-go.yaml": "e7fc15f9a8afce374e6365985d9b3ab6df1c181e4c2fb83ee40884e237214254",
     "Providers/Ruleset/hbo-max.yaml": "80b025db9fd58216c1becee57c65c3f8facf3352f15993ed1be522cf12f5efee",
     "Providers/Ruleset/icloud.yaml": "b3cf1286b7fbd0becc1dbf8ef7dbc1384d3264077d49c53455b1e339557fb328",
+    "Providers/Ruleset/identity-verification.yaml": "5a58d212b29b0d319f98a967870f1751be63c607b124e0968f69f5928d7c32df",
     "Providers/Ruleset/instagram.yaml": "585816ec77939570e4fee6d48c748b8f69b9004e1d5846cb115f7dc359cb3085",
     "Providers/Ruleset/iqiyi-late-recovery.yaml": "d0f5a9809bff58274b01ecf1d9f0782e46372095d5ddf0d43d18299a857bfa10",
     "Providers/Ruleset/iqiyi.yaml": "3d4c0a29bfc2fe683ba259d1690ba97d1aa5af6b86b0545cb9a8b23f8be485d3",
@@ -77,8 +78,8 @@
     "Providers/Ruleset/whatsapp.yaml": "ab6c58de5d170b92f09b20b85996604a8dd7567593dc03f98505261fd22afb04",
     "Providers/Ruleset/xai.yaml": "c528ddafca25108e32bca53a4de650b0ba9a96b20667ab02fc5b95a774cf3eb6",
     "Providers/Ruleset/youtube.yaml": "d214401b85f98da6f5168ca1f16420c9c0a753f4538b109a4ff844d5e8b38e90",
-    "README.md": "e78b7256f543a6ebefc54f341be6d6e2ba23d2feb8248e29e1f6feeebdb0b50e",
-    "README_EN.md": "3f264bea81185e0b8959bcc181610fff63c71fd1033b688886d32927c43aee69",
+    "README.md": "d793e617f8ab1ab17373d8651356f971e1789e6aa9a376d9de55e6f229294f21",
+    "README_EN.md": "c8c00cfdef28361eaed65926b5e11a4e44aa98a11c32cfc7d342093dd234139a",
     "Ruleset/adobe.list": "6a132b875d756df756454308e4872750d7b66cd2baefef39ce16f8a0a190353e",
     "Ruleset/advertising-curated.list": "25ab282e4c5fc31352c89e1a7a7dd79eb05c200cfed620cd17b54c7a7f4e8724",
     "Ruleset/ai-developer.list": "064c45c6b25dfd29ce123eb9147f4e46466e355462f34dde01fcec98ce5e7934",
@@ -114,6 +115,7 @@
     "Ruleset/hbo-go.list": "df0e71b63f2189a245f740ed40280e613a1dd2a203a28f9135a63608a8591c9a",
     "Ruleset/hbo-max.list": "76a309cf767328e4b45f4e7f92a0974a3203e450e36ac24d54b40038f1e94464",
     "Ruleset/icloud.list": "a18ea06b044741747d770012fed661d9226f1bc87613b101a9d34ca28795bc84",
+    "Ruleset/identity-verification.list": "9f2f4087ea2aaf674ec3bde4f41ca038e67d29e3ec3e903b12f0137a9ecca2a6",
     "Ruleset/instagram.list": "2c53e50d9ace34812d766055953f1bd4211d2cf1260bcef42959f470bf4469fa",
     "Ruleset/iqiyi-late-recovery.list": "407322aa98e651e5b38cb7c3e515d1a81e42646f6a0b6ef8fb6fddf6c990be62",
     "Ruleset/iqiyi.list": "321eba5e279b80a3155397da69dba7cff0b471f9f72a1265c44d70b2c13e58f3",
@@ -149,8 +151,8 @@
     "Ruleset/whatsapp.list": "64d4e26a55c074662d27c2871c6243dde22a4657b68faf3dc8059b510b9735b1",
     "Ruleset/xai.list": "82b8ec35bac749f1cdf2b449645ba4eff36fe5c7a878c5e3986168ab2d504781",
     "Ruleset/youtube.list": "42dfec36b1d6102836e5601cfb535eb5e2ba9d051ce51cc23e7973046a50f2be",
-    "analysis.json": "18215591a9cd192826b2e764034824ed48529ea0cfd0dff8ca8d872ba17bf122",
-    "config/ekko-rules-lite.ini": "dfc6da5cb408f266cf47c81ee2e6da36fffe2e37889b8270c25aad207787e3ef",
-    "config/ekko-rules.ini": "08a492e42d7f344bc3e44065a3d5a9307bdbebf4d493fa3a641a22900f797a82"
+    "analysis.json": "fff476af9906485c75363466ee7017cc4cdddbd0ce68d714fb816cb7e1a1e12e",
+    "config/ekko-rules-lite.ini": "202d37ce934fc3a6a9d2b55aa871db2bbda784836950d20eba9621b7113eba43",
+    "config/ekko-rules.ini": "4c918842abff5b6b312ba2e202e960df8c6cb96491ccc520ad66cae53f2e733c"
   }
 }

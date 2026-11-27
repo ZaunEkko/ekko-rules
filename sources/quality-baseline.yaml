@@ -1,15 +1,15 @@
 schema_version: 1
 phase: public-single-product
-measured_on: '2026-11-26'
+measured_on: '2026-11-27'
 products:
   core:
     scope:
-      rule_files: 56
-      rule_segments: 56
+      rule_files: 57
+      rule_segments: 57
       terminal_segments: 1
-      proxy_groups: 44
-      rules_in_files: 10212
-      rules_with_terminal: 10213
+      proxy_groups: 45
+      rules_in_files: 10231
+      rules_with_terminal: 10232
       destination_ip_rules: 207
       destination_ip_rules_without_no_resolve: 0
     first_match_unreachable:
@@ -27,12 +27,12 @@ products:
         union: 41
   lite:
     scope:
-      rule_files: 56
-      rule_segments: 56
+      rule_files: 57
+      rule_segments: 57
       terminal_segments: 1
       proxy_groups: 10
-      rules_in_files: 10212
-      rules_with_terminal: 10213
+      rules_in_files: 10231
+      rules_with_terminal: 10232
       destination_ip_rules: 207
       destination_ip_rules_without_no_resolve: 0
     first_match_unreachable:

@@ -126,7 +126,7 @@ Download it, replace `PUT_YOUR_SUBSCRIPTION_URL_HERE` with your own subscription
 
 The rules are public, so they also work in any Subconverter frontend that accepts a custom remote configuration: set the output to `Clash` and the remote configuration to one of these two.
 
-Full build, 44 policy groups:
+Full build, 45 policy groups:
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
@@ -157,6 +157,7 @@ Ekko Rules focuses on traffic that commonly needs a dedicated node or region:
 - **Cloud infrastructure**: `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - **Overseas shopping**: `🛒 海外购物` defaults to `♻️ 手动切换` and covers the regional Amazon storefronts, eBay and Etsy, Japanese shops such as DLsite, Rakuten, ZOZO, Suruga-ya, Mandarake and AmiAmi, forwarding services such as Buyee, ZenMarket and tenso, and regional retailers such as Gmarket, SSG and Takealot. What these sites show, what they will sell you and whether they challenge you at all depends on which exit reaches them, so a separate group lets you pick a node for shopping alone. Anything already classified elsewhere stays there: Alibaba's Lazada and Shopee mainland entries remain direct, Coupang remains under `🎬 韩国媒体`, and `aws.amazon.com` and the Prime Video image CDN keep their cloud and streaming policies;
 - **Finance and account registration**: `💳 金融服务` defaults to `♻️ 手动切换` and covers payments and remittance (Wise, PayPal, Payoneer, Revolut, Remitly, Western Union), virtual cards (WildCard, Dupay, Privacy.com), SMS receipt and virtual numbers (SMS-Activate, 5SIM, SMSPVA, OnlineSIM, TextNow), and overseas banks and brokers (HSBC, Citi, Chase, Bank of America, Wells Fargo, DBS, OCBC, UOB, Standard Chartered, Barclays, Schwab, Fidelity, Interactive Brokers, Futu, moomoo, Tiger). A financial account is checked against where it is used, and an exit that does not match its history triggers verification or a freeze; virtual cards and SMS receipt sit in the same group because the address that registers a card or a number is the address the account is thereafter expected to arrive from. Mainland banks are not here — they stay on the default-direct `🌏 国内网站`;
+- **Identity and eligibility verification**. `🪪 身份与资格验证` defaults to `♻️ 手动切换` for verification traffic from SheerID, UNiDAYS, Student Beans, ID.me, Persona, Veriff, and Sumsub. Claude's own `portal.anthropic.com` follows the Claude policy. The lite build routes the third-party verification traffic through `🚀 国外服务`.
 - **Other important traffic**: music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - **Fallback**: unmatched traffic reaches `🐟 漏网之鱼`.
 
@@ -164,12 +165,12 @@ All groups remain manually switchable and automatic latency testing is disabled;
 
 ## Lite build: same routing, 10 policy groups
 
-Forty-four groups exist so that each kind of traffic can be pointed at its own node. If you do not need that, what you get instead is a screen of dropdowns to work through. The lite build folds them together:
+Forty-five groups exist so that each kind of traffic can be pointed at its own node. If you do not need that, what you get instead is a screen of dropdowns to work through. The lite build folds them together:
 
 | | Full | Lite |
 |---|---|---|
-| Policy groups | 44 | 10 |
-| Routing segments | 57 | 57, unchanged |
+| Policy groups | 45 | 10 |
+| Routing segments | 58 | 58, unchanged |
 
 The ten that remain are `♻️ 手动切换`, `🌏 国内网站`, `🎬 流媒体`, `🧲 海外 AI`, `🎮 游戏平台`, `🎮 游戏下载`, `🚀 国外服务`, `🛑 广告拦截`, `🔞 NSFW`, and `🐟 漏网之鱼`.
 
@@ -189,6 +190,7 @@ all concrete business rules
 → overseas cloud → domestic cloud
 → Microsoft and its late recovery → Google
 → overseas shopping
+→ identity and eligibility verification
 → broad mainland roots
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
