@@ -1456,6 +1456,7 @@ Ruleset 地址前缀：`{rules_base}`。
 - `☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud 及国内厂商海外区域端点；广告和具体业务规则仍优先；
 - `🛒 海外购物` 默认 `♻️ 手动切换`，覆盖各区域亚马逊、eBay、Etsy、日本店铺与转运代购及地区电商——这类站点的店面内容与人机验证取决于出口 IP，独立成组便于单独挑节点；
 - `💳 金融服务` 默认 `♻️ 手动切换`，覆盖支付汇款、虚拟卡、接码与虚拟号码，以及海外银行与券商——金融账号按“在哪里用”被核对，需要一个能单独钉死的出口；国内银行仍在默认直连的 `🌏 国内网站`；
+- `🪪 身份与资格验证` 默认 `♻️ 手动切换`，覆盖 SheerID、UNiDAYS、Student Beans、ID.me、Persona、Veriff 和 Sumsub 的验证链路。Claude 自有的 `portal.anthropic.com` 随 Claude 主站分流。精简版将第三方验证链路归入 `🚀 国外服务`。
 - 音乐、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认 `REJECT`，仍可手动改为节点或 `DIRECT`；
 - 未命中规则的流量交给 `🐟 漏网之鱼`。
 
@@ -1471,6 +1472,7 @@ Ruleset 地址前缀：`{rules_base}`。
 → 海外云服务 → 国内云服务
 → 微软服务及其 late-recovery → Google
 → 海外购物
+→ 身份与资格验证
 → 大陆宽域根域
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
@@ -1525,6 +1527,7 @@ Ruleset URL prefix: `{rules_base}`.
 - `☁️ 国内云服务` defaults to `DIRECT` for domestic cloud websites, consoles, APIs, object storage, and CDNs; `☁️ 海外云服务` defaults to `♻️ 手动切换` for global AWS, Azure, Google Cloud, Cloudflare, DigitalOcean, Vultr, Linode/Akamai, Oracle Cloud, and overseas regional endpoints from mainland cloud vendors; advertising and concrete business rules remain earlier;
 - `🛒 海外购物` defaults to `♻️ 手动切换` and covers the regional Amazon storefronts, eBay, Etsy, Japanese shops, cross-border forwarding services, and regional retailers — what these sites show and whether they challenge you depends on which exit reaches them, so a separate group lets you pick a node for shopping alone;
 - `💳 金融服务` defaults to `♻️ 手动切换` and covers payments and remittance, virtual cards, SMS receipt and virtual numbers, and overseas banks and brokers — a financial account is checked against where it is used, so it needs an exit it can keep; mainland banks stay on the default-direct `🌏 国内网站`;
+- `🪪 身份与资格验证` defaults to `♻️ 手动切换` for verification traffic from SheerID, UNiDAYS, Student Beans, ID.me, Persona, Veriff, and Sumsub. Claude's own `portal.anthropic.com` follows the Claude policy. The lite build routes the third-party verification traffic through `🚀 国外服务`.
 - music, cloud storage, Microsoft, Apple, Google, and mainland Chinese sites have dedicated groups; `🔞 NSFW` defaults to `REJECT` while remaining manually switchable to a node or `DIRECT`;
 - unmatched traffic reaches `🐟 漏网之鱼`.
 
@@ -1540,6 +1543,7 @@ all concrete business rules
 → overseas cloud → domestic cloud
 → Microsoft and its late recovery → Google
 → overseas shopping
+→ identity and eligibility verification
 → broad mainland roots
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼

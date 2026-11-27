@@ -115,7 +115,7 @@ https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-pr
 
 规则本身是公开的，也可以在任何支持自定义远程配置的 Subconverter 前端里使用：「生成类型」选 `Clash`，「远程配置」填下面两条之一。
 
-完整版，44 个策略组：
+完整版，45 个策略组：
 
 ```text
 https://raw.githubusercontent.com/ZaunEkko/ekko-rules/main/generated/reversed-profile/config/ekko-rules.ini
@@ -153,6 +153,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 - **云基础设施**：`☁️ 国内云服务` 默认 `DIRECT`，覆盖国内云官网、控制台、API、对象存储和 CDN；`☁️ 海外云服务` 默认 `♻️ 手动切换`，覆盖全球 AWS、Azure、Google Cloud、Cloudflare、DigitalOcean、Vultr、Linode/Akamai、Oracle Cloud，以及国内厂商的海外区域端点；广告和具体业务规则仍优先；
 - **海外购物**：`🛒 海外购物` 默认 `♻️ 手动切换`，覆盖各区域亚马逊、eBay、Etsy 等欧美零售，DLsite、乐天、ZOZO、骏河屋、Mandarake、AmiAmi 等日本店铺，Buyee、ZenMarket、tenso 等转运代购，以及 Gmarket、SSG、Takealot 等地区电商。这类站点的店面内容、可购范围与人机验证都取决于出口 IP，独立成组便于单独挑节点；已在别处归类的不重复收录——阿里系的 Lazada 与 Shopee 大陆入口保持直连，Coupang 仍在 `🎬 韩国媒体`，`aws.amazon.com` 与 Prime Video 图床各自留在云与流媒体分组；
 - **金融与账号注册**：`💳 金融服务` 默认 `♻️ 手动切换`，覆盖 Wise、PayPal、Payoneer、Revolut、Remitly、西联汇等支付汇款，WildCard、Dupay、Privacy.com 等虚拟卡，SMS-Activate、5SIM、SMSPVA、OnlineSIM、TextNow 等接码与虚拟号码，以及汇丰、花旗、大通、星展、渣打、盈富、盛陆、富途、moomoo、老虎等海外银行与券商。金融账号是按“在哪里用”被核对的，和历史不符的出口会触发验证甚至冻结；虚拟卡与接码在同一组，是因为注册时的地址就是账号日后被期待的地址。国内银行不在此组，仍由默认直连的 `🌏 国内网站` 承载；
+- **身份与资格验证**。`🪪 身份与资格验证` 默认 `♻️ 手动切换`，覆盖 SheerID、UNiDAYS、Student Beans、ID.me、Persona、Veriff 和 Sumsub 的验证链路。Claude 自有的 `portal.anthropic.com` 随 Claude 主站分流。精简版将第三方验证链路归入 `🚀 国外服务`。
 - **其他重点流量**：音乐平台、云盘、Microsoft、Apple、Google 和国内网站均有对应分组；`🔞 NSFW` 默认使用 `REJECT` 拦截，仍可手动改为节点或 `DIRECT`；
 - **最终兜底**：没有命中上述规则的流量交给 `🐟 漏网之鱼`。
 
@@ -160,12 +161,12 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 
 ## 精简版：同样的分流，10 个策略组
 
-44 个策略组是为了能分别挑节点。用不到这种粒度的人，面对的就是一屏需要逐个确认的下拉框。精简版把这些合并掉：
+45 个策略组是为了能分别挑节点。用不到这种粒度的人，面对的就是一屏需要逐个确认的下拉框。精简版把这些合并掉：
 
 | | 完整版 | 精简版 |
 |---|---|---|
-| 策略组 | 44 | 10 |
-| 分流规则 | 57 段 | 同样 57 段 |
+| 策略组 | 45 | 10 |
+| 分流规则 | 58 段 | 同样 58 段 |
 
 保留下来的 10 个是 `♻️ 手动切换`、`🌏 国内网站`、`🎬 流媒体`、`🧲 海外 AI`、`🎮 游戏平台`、`🎮 游戏下载`、`🚀 国外服务`、`🛑 广告拦截`、`🔞 NSFW` 和 `🐟 漏网之鱼`。
 
@@ -185,6 +186,7 @@ Ekko Rules 主要面向需要单独选择节点或地区的场景：
 → 海外云服务 → 国内云服务
 → 微软服务及其 late-recovery → Google
 → 海外购物
+→ 身份与资格验证
 → 大陆宽域根域
 → GEOIP,CN,DIRECT,no-resolve
 → MATCH,🐟 漏网之鱼
