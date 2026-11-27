@@ -156,14 +156,14 @@ class CanonicalSourceTests(unittest.TestCase):
         cls.sources = load_profile_sources(SOURCES)
 
     def test_shape_and_order_snapshot(self) -> None:
-        self.assertEqual(len(self.sources.segments), 57)
-        self.assertEqual(len(self.sources.rule_segments), 56)
-        # The raw list carries both products: 44 for the full one plus the two
+        self.assertEqual(len(self.sources.segments), 58)
+        self.assertEqual(len(self.sources.rule_segments), 57)
+        # The raw list carries both products: 45 for the full one plus the two
         # groups only the lite product publishes.
-        self.assertEqual(len(self.sources.proxy_groups), 46)
-        self.assertEqual(len(self.sources.segments_for("core")), 57)
-        self.assertEqual(len(self.sources.rule_segments_for("core")), 56)
-        self.assertEqual(len(self.sources.proxy_groups_for("core")), 44)
+        self.assertEqual(len(self.sources.proxy_groups), 47)
+        self.assertEqual(len(self.sources.segments_for("core")), 58)
+        self.assertEqual(len(self.sources.rule_segments_for("core")), 57)
+        self.assertEqual(len(self.sources.proxy_groups_for("core")), 45)
         self.assertEqual(self.sources.terminal.slug, "final")
         self.assertEqual(self.sources.terminal.target, "🐟 漏网之鱼")
         self.assertNotIn(
@@ -214,6 +214,7 @@ class CanonicalSourceTests(unittest.TestCase):
                 "📪 邮件服务",
                 "🛒 海外购物",
                 "💳 金融服务",
+                "🪪 身份与资格验证",
                 "🔞 NSFW",
                 "🌏 国内网站",
                 "🐟 漏网之鱼",
@@ -232,6 +233,11 @@ class CanonicalSourceTests(unittest.TestCase):
                 ["REJECT", "♻️ 手动切换", "DIRECT", "__ALL_SUBSCRIPTION_NODES__"],
             )
         expected_group_members = {
+            "🪪 身份与资格验证": [
+                "♻️ 手动切换",
+                "DIRECT",
+                "__ALL_SUBSCRIPTION_NODES__",
+            ],
             "🖥️ 远程串流流量": [
                 "DIRECT",
                 "♻️ 手动切换",
@@ -2579,8 +2585,8 @@ class GenerationTests(unittest.TestCase):
                     self.assertNotIn(f"/{alias_slug}.list", active_text)
                     self.assertNotIn(f"/{alias_slug}.yaml", active_text)
                     self.assertNotIn(f"RULE-SET,{alias_slug},", active_text)
-        self.assertEqual(len(self.sources.rule_segments), 56)
-        self.assertEqual(len(self.sources.segments), 57)
+        self.assertEqual(len(self.sources.rule_segments), 57)
+        self.assertEqual(len(self.sources.segments), 58)
 
     def test_stale_file_is_detected_by_check_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -3275,6 +3281,52 @@ class LiteProductTests(unittest.TestCase):
         }
         self.assertEqual(core, lite, "the lite product must not change a single rule")
 
+    def test_identity_verification_endpoints_in_both_products(self) -> None:
+        slug = "identity-verification"
+        domains = {rule.split(",")[1]: rule for rule in self.sources.rules[slug]}
+        domains.update(
+            {
+                "inquiry.withpersona.com": "DOMAIN-SUFFIX,withpersona.com",
+                "cdn.withpersona.com": "DOMAIN-SUFFIX,withpersona.com",
+                "magic.us.veriff.me": "DOMAIN-SUFFIX,veriff.me",
+            }
+        )
+        for product, target in (
+            ("core", "🪪 身份与资格验证"),
+            ("lite", "🚀 国外服务"),
+        ):
+            for domain, rule in domains.items():
+                with self.subTest(product=product, domain=domain):
+                    self.assertEqual(
+                        first_match(self.sources, product=product, domain=domain),
+                        {"slug": slug, "target": target, "rule": rule},
+                    )
+
+    def test_identity_verification_keeps_first_party_and_lookalike_hosts_separate(self) -> None:
+        for product, claude_target in (("core", "🧲 Claude"), ("lite", "🧲 海外 AI")):
+            with self.subTest(product=product, domain="portal.anthropic.com"):
+                self.assertEqual(
+                    first_match(self.sources, product=product, domain="portal.anthropic.com"),
+                    {
+                        "slug": "claude",
+                        "target": claude_target,
+                        "rule": "DOMAIN-SUFFIX,anthropic.com",
+                    },
+                )
+            for domain, slug in {
+                "auth0.openai.com": "openai",
+                "www.paypal.com": "finance",
+                "verify.sheerid.com.example": "final",
+                "custom.verify.sheerid.com": "final",
+                "withpersona.com.example": "final",
+                "notveriff.me": "final",
+                "station.veriff.com": "final",
+                "docs.sumsub.com": "final",
+            }.items():
+                with self.subTest(product=product, domain=domain):
+                    verdict = first_match(self.sources, product=product, domain=domain)
+                    self.assertEqual(verdict["slug"], slug)
+
     def test_folding_a_group_never_changes_what_traffic_does(self) -> None:
         changed = [
             (
@@ -3659,6 +3711,10 @@ class ProvenanceAccountingTests(unittest.TestCase):
             "Finance and account registration curation",
             lambda slug: slug == "finance",
         ),
+        (
+            "Identity and eligibility verification curation",
+            lambda slug: slug == "identity-verification",
+        ),
     )
     REMAINDER_LABEL = "Specialized, private/local, and service corpus"
 
@@ -3774,6 +3830,7 @@ class DocumentedRoutingOrderTests(unittest.TestCase):
         "microsoft": ("微软服务", "Microsoft"),
         "google": ("Google", "Google"),
         "overseas-shopping": ("海外购物", "overseas shopping"),
+        "identity-verification": ("身份与资格验证", "identity and eligibility verification"),
         "china-direct-curated": ("大陆宽域根域", "broad mainland roots"),
         "china-geoip-direct": ("GEOIP,CN,DIRECT,no-resolve", "GEOIP,CN,DIRECT,no-resolve"),
         "final": ("漏网之鱼", "漏网之鱼"),

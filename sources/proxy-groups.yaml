@@ -338,6 +338,14 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 - order: 42
+  name: 🪪 身份与资格验证
+  type: select
+  scope: core
+  members:
+  - ♻️ 手动切换
+  - DIRECT
+  - __ALL_SUBSCRIPTION_NODES__
+- order: 43
   name: 🔞 NSFW
   type: select
   scope: both
@@ -346,7 +354,7 @@ groups:
   - ♻️ 手动切换
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
-- order: 43
+- order: 44
   name: 🌏 国内网站
   type: select
   scope: both
@@ -354,7 +362,7 @@ groups:
   - DIRECT
   - ♻️ 手动切换
   - __ALL_SUBSCRIPTION_NODES__
-- order: 44
+- order: 45
   name: 🎬 流媒体
   type: select
   scope: lite
@@ -363,7 +371,7 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 
-- order: 45
+- order: 46
   name: 🚀 国外服务
   type: select
   scope: lite
@@ -372,7 +380,7 @@ groups:
   - DIRECT
   - __ALL_SUBSCRIPTION_NODES__
 
-- order: 46
+- order: 47
   name: 🐟 漏网之鱼
   type: select
   scope: both

@@ -1,5 +1,5 @@
 schema_version: 1
-reviewed_on: 2026-11-26
+reviewed_on: 2026-11-27
 purpose: Non-generating review queue for historical, uncertain, legacy, brand-defense, personal/community, or relocation evidence. Entries never change generated routing by themselves; phase_2_candidate records are historical labels, not current products.
 allowed_statuses:
 - observe
@@ -10,6 +10,19 @@ allowed_statuses:
 - candidate-move
 - accepted
 items:
+- id: identity-and-eligibility-verification
+  status: accepted
+  scope: identity-verification
+  summary: Seven third-party providers share a dedicated verification policy in the full build.
+  evidence:
+  - docs/CHANGES.md#er-093--add-an-identity-and-eligibility-verification-policy
+  - sources/rules/identity-verification.list
+  first_observed: '2026-11-27'
+  last_verified: '2026-11-27'
+  phase_2_candidate: none
+  recommended_action: keep
+  current_product: standard
+  resolution: ER-093 adds 19 anchored rules for verified provider endpoints. The full build uses the manual-first identity and eligibility selector and the lite build uses overseas services. Claude's portal matches the existing Claude suffix in both builds.
 - id: manjuu-mainland-game-service
   status: accepted
   scope: china-web

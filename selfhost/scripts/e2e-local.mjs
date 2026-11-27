@@ -411,9 +411,9 @@ async function assertShadowrocketNativeOutput() {
         .split(/\r?\n/)
         .filter((line) => /^[^#;\s].*?\s*=/.test(line)).length
     : 0;
-  if (groupCount !== 44) {
+  if (groupCount !== 45) {
     throw new Error(
-      `Shadowrocket complete config expected 44 policy groups, got ${groupCount}.`,
+      `Shadowrocket complete config expected 45 policy groups, got ${groupCount}.`,
     );
   }
   console.log(JSON.stringify({

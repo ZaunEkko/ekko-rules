@@ -383,17 +383,24 @@ segments:
   scope: both
 - order: 55
   kind: ruleset
+  slug: identity-verification
+  target: 🪪 身份与资格验证
+  lite_target: 🚀 国外服务
+  source: rules/identity-verification.list
+  scope: both
+- order: 56
+  kind: ruleset
   slug: china-direct-curated
   target: 🌏 国内网站
   source: rules/china-direct-curated.list
   scope: both
-- order: 56
+- order: 57
   kind: ruleset
   slug: china-geoip-direct
   target: DIRECT
   source: rules/china-geoip-direct.list
   scope: both
-- order: 57
+- order: 58
   kind: terminal
   slug: final
   target: 🐟 漏网之鱼
